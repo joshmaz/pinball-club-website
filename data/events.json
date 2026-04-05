@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Monthly Tournament",
+        "date": "2023-10-15",
+        "location": "Local Arcade",
+        "description": "Join us for our monthly pinball tournament."
+    },
+    {
+        "name": "Charity Event",
+        "date": "2023-11-05",
+        "location": "Community Center",
+        "description": "A fun event to raise funds for charity."
+    }
+]
