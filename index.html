@@ -1,23 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Southern New Hampshire Pinball Club - Home</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+  <meta charset="UTF-8">
+  <title>Southern New Hampshire Pinball Club</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to the Southern New Hampshire Pinball Club</h1>
-    </header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="events.html">Events</a>
-        <a href="standings.html">Standings</a>
-        <a href="about.html">About</a>
-    </nav>
-    <main>
-        <p>This is the home page of the Southern New Hampshire Pinball Club website. Here you can find information about our club, upcoming events, standings, and more.</p>
-    </main>
+
+<header>
+  <h1>Southern New Hampshire Pinball Club</h1>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/events.html">Events</a>
+    <a href="/standings.html">Standings</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Flip. Compete. Repeat.</h2>
+  <p>Join us for weekly pinball tournaments, leagues, and events.</p>
+</section>
+
+<section class="content">
+  <h3>Upcoming Events</h3>
+  <ul id="events-list">
+    <li>Loading events...</li>
+  </ul>
+</section>
+
+<footer>
+  <p>© Southern New Hampshire Pinball Club</p>
+</footer>
+
+<script>
+fetch('/data/events.json')
+  .then(res => res.json())
+  .then(data => {
+    const list = document.getElementById('events-list');
+    list.innerHTML = '';
+
+    data.events.forEach(event => {
+      const li = document.createElement('li');
+      li.textContent = `${event.date} - ${event.name}`;
+      list.appendChild(li);
+    });
+  });
+</script>
+
 </body>
 </html>
