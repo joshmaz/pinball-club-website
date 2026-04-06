@@ -9,6 +9,7 @@
 
 <header>
   <h1>Southern New Hampshire Pinball Club</h1>
+   <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="logo">
   <nav>
     <a href="/">Home</a>
     <a href="/events.html">Events</a>
@@ -19,18 +20,111 @@
 
 <section class="hero">
   <h2>Flip. Compete. Repeat.</h2>
+  <img src="assets/images/SNHPC_logo_color.png" alt="SNH Pinball Club Logo" class="logo">
   <p>Join us for weekly pinball tournaments, leagues, and events.</p>
 </section>
 
 <section class="content">
   <h3>Upcoming Events</h3>
-  <ul id="events-list">
-    <li>Loading events...</li>
-  </ul>
+  <p>Join us at the Pintastic Pinball and Game Room Expo!</p>
+  <img src="assets/images/pintastic_expo.jpg" alt="Pintastic Pinball Expo" class="event-image">
+  
+  <h3>We are Moving to a New Space! (We hope...)</h3>
+  <p>After ten years in our current location, we are excited to announce our move to a new and more inviting space! Read more here.</p>
+
+  <div id="gallery"></div>
+
+  <script>
+  const images = [
+    "/assets/images-machines/image_0.png",
+    "/assets/images-machines/image_1.jpg",
+    "/assets/images-machines/image_11.jpg",
+    "/assets/images-machines/image_12.jpg",
+    "/assets/images-machines/image_13.jpg",
+    "/assets/images-machines/image_14.jpg",
+    "/assets/images-machines/image_15.gif",
+    "/assets/images-machines/image_16.png",
+    "/assets/images-machines/image_17.png",
+    "/assets/images-machines/image_21.jpg",
+    "/assets/images-machines/image_22.jpg",
+    "/assets/images-machines/image_23.jpg",
+    "/assets/images-machines/image_25.jpg",
+    "/assets/images-machines/image_26.jpg",
+    "/assets/images-machines/image_27.jpg",
+    "/assets/images-machines/image_28.png",
+    "/assets/images-machines/image_29.jpg",
+    "/assets/images-machines/image_30.png",
+    "/assets/images-machines/image_31.jpg",
+    "/assets/images-machines/image_32.jpg",
+    "/assets/images-machines/image_33.jpg",
+    "/assets/images-machines/image_35.jpg",
+    "/assets/images-machines/image_36.jpg",
+    "/assets/images-machines/image_37.jpg",
+    "/assets/images-machines/image_39.png",
+    "/assets/images-machines/image_4.jpg",
+    "/assets/images-machines/image_40.png",
+    "/assets/images-machines/image_41.jpg",
+    "/assets/images-machines/image_42.jpg",
+    "/assets/images-machines/image_44.jpg",
+    "/assets/images-machines/image_45.jpg",
+    "/assets/images-machines/image_46.png",
+    "/assets/images-machines/image_47.png",
+    "/assets/images-machines/image_5.png",
+    "/assets/images-machines/image_50.jpg",
+    "/assets/images-machines/image_51.png",
+    "/assets/images-machines/image_52.jpg",
+    "/assets/images-machines/image_53.jpg",
+    "/assets/images-machines/image_54.jpg",
+    "/assets/images-machines/image_55.jpg",
+    "/assets/images-machines/image_56.jpg",
+    "/assets/images-machines/image_57.jpg",
+    "/assets/images-machines/image_58.png",
+    "/assets/images-machines/image_59.jpg",
+    "/assets/images-machines/image_6.jpg",
+    "/assets/images-machines/image_60.jpg",
+    "/assets/images-machines/image_62.jpg",
+    "/assets/images-machines/image_64.jpg",
+    "/assets/images-machines/image_65.png",
+    "/assets/images-machines/image_66.jpg",
+    "/assets/images-machines/image_67.jpg",
+    "/assets/images-machines/image_68.jpg",
+    "/assets/images-machines/image_69.jpg",
+    "/assets/images-machines/image_7.jpg",
+    "/assets/images-machines/image_70.jpg",
+    "/assets/images-machines/image_71.png",
+    "/assets/images-machines/image_72.jpg",
+    "/assets/images-machines/image_73.jpg",
+    "/assets/images-machines/image_75.png",
+    "/assets/images-machines/image_76.jpg",
+    "/assets/images-machines/image_77.jpg",
+    "/assets/images-machines/image_78.jpg",
+    "/assets/images-machines/image_79.jpg",
+    "/assets/images-machines/image_8.jpg",
+    "/assets/images-machines/image_80.png",
+    "/assets/images-machines/image_81.jpg",
+    "/assets/images-machines/image_82.jpg",
+    "/assets/images-machines/image_84.jpg",
+    "/assets/images-machines/image_86.jpg",
+    "/assets/images-machines/image_87.jpg",
+    "/assets/images-machines/image_89.jpg",
+    "/assets/images-machines/image_9.jpg",
+    "/assets/images-machines/image_90.jpg",
+    "/assets/images-machines/image_91.png"
+  ];
+
+  const gallery = document.getElementById("gallery");
+
+  images.forEach(src => {
+    const img = document.createElement("img");
+    img.src = src;
+    gallery.appendChild(img);
+  });
+  </script>
+
 </section>
 
 <footer>
-  <p>© Southern New Hampshire Pinball Club</p>
+  <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
 
 <script>
