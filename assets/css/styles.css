@@ -37,12 +37,15 @@ footer {
 #gallery {
   width: 100%;
   max-width: 800px;
+  height: 400px;              /* force consistent height */
   margin: 20px auto;
-  text-align: center;
+  overflow: hidden;
+  position: relative;
 }
 
 #gallery img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;          /* THIS is the magic */
   border-radius: 8px;
 }
