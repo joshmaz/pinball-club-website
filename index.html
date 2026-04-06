@@ -32,7 +32,9 @@
   <h3>We are Moving to a New Space! (We hope...)</h3>
   <p>After ten years in our current location, we are excited to announce our move to a new and more inviting space! Read more here.</p>
 
-  <div id="gallery"></div>
+  div id="gallery">
+  <img id="gallery-image" src="" alt="Pinball Machine">
+  /div>
 
   <script>
   const images = [
@@ -112,14 +114,19 @@
     "/assets/images-machines/image_91.png"
   ];
 
-  const gallery = document.getElementById("gallery");
 
-  images.forEach(src => {
-    const img = document.createElement("img");
-    img.src = src;
-    gallery.appendChild(img);
-  });
-  </script>
+    let currentIndex = 0;
+    const imgElement = document.getElementById("gallery-image");
+
+    // Set initial image
+    imgElement.src = images[currentIndex];
+
+    // Rotate every 3 seconds
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % images.length;
+      imgElement.src = images[currentIndex];
+    }, 3000);
+</script>
 
 </section>
 

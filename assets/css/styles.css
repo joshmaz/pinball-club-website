@@ -33,3 +33,16 @@ footer {
   padding: 1rem;
   background: #000;
 }
+
+#gallery {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+#gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
