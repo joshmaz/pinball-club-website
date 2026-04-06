@@ -11,6 +11,16 @@ header {
   text-align: center;
 }
 
+a {
+  color: #4da3ff; /* brighter blue */
+  text-decoration: none;
+}
+
+a:hover {
+  color: #80c1ff;
+  text-decoration: underline;
+}
+
 nav a {
   margin: 0 10px;
   color: #0ff;
