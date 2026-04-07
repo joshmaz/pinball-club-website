@@ -1,14 +1,14 @@
 [
-    {
-        "name": "Monthly Maintenance Day",
-        "date": "2026-04-28",
-        "location": "At the Club",
-        "description": "Join us for our monthly maintenance day."
-    },
-    {
-        "name": "American Pinball Warrior Tournament",
-        "date": "2026-04-11",
-        "location": "Pintastic- Club Rooms",
-        "description": "A fun event to compete in!"
-    }
+  {
+    "name": "Monthly Maintenance Day",
+    "date": "2026-04-28",
+    "location": "At the Club",
+    "description": "Join us for our monthly maintenance day."
+  },
+  {
+    "name": "American Pinball Warrior Tournament",
+    "date": "2026-04-11",
+    "location": "Pintastic- Club Rooms",
+    "description": "A fun event to compete in!"
+  }
 ]
