@@ -1,14 +1,14 @@
 [
     {
-        "name": "Monthly Tournament",
-        "date": "2023-10-15",
-        "location": "Local Arcade",
-        "description": "Join us for our monthly pinball tournament."
+        "name": "Monthly Maintenance Day",
+        "date": "2026-04-28",
+        "location": "At the Club",
+        "description": "Join us for our monthly maintenance day."
     },
     {
-        "name": "Charity Event",
-        "date": "2023-11-05",
-        "location": "Community Center",
-        "description": "A fun event to raise funds for charity."
+        "name": "American Pinball Warrior Tournament",
+        "date": "2026-04-11",
+        "location": "Pintastic- Club Rooms",
+        "description": "A fun event to compete in!"
     }
 ]
