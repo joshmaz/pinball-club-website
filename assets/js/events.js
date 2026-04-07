@@ -1,7 +1,24 @@
+// This script fetches event data from '/assets/data/events.json' and dynamically creates event cards in the element with id 'events-container'.
+// Expected structure of events.json:
+// [
+//   {
+//     "title": "Event Title",
+//     "date": "YYYY-MM-DD",
+//     "location": "Event Location",
+//     "description": "Event Description"
+//   },
+//   ...
+// ]
+
 fetch('/assets/data/events.json')
   .then(response => response.json())
   .then(events => {
     const container = document.getElementById('events-container');
+
+    if (!container) {
+      console.error("Element with id 'events-container' not found.");
+      return;
+    }
 
     events.forEach(event => {
       const div = document.createElement('div');
