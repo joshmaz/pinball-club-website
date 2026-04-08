@@ -1,9 +1,17 @@
+html { font-size: 16px; }
 body {
   font-family: Arial, sans-serif;
+  font-size: 1rem;
   margin: 0;
   background: #111;
   color: #fff;
+  line-height: 1.5;
 }
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
 
 header {
   background: #000;
@@ -11,8 +19,10 @@ header {
   text-align: center;
 }
 
+a:focus-visible { outline: 2px solid #4da3ff; }
+
 a {
-  color: #4da3ff; /* brighter blue */
+  color: #4da3ff;
   text-decoration: none;
 }
 
