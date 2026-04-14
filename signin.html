@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Southern New Hampshire Pinball Club</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+
+<header>
+  <h1>Southern New Hampshire Pinball Club</h1>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/events.html">Events</a>
+    <a href="/standings.html">Standings</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Flip. Compete. Repeat.</h2>
+</section>
+
+<section class="content">
+  <h3>Welcome to the Southern New Hampshire Pinball Club!</h3>
+  <input id="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <button onclick="signup()">Sign Up</button>
+</section>
+
+<footer>
+  <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
+  <p>©2026 Southern New Hampshire Pinball Club</p>
+</footer>
+
+<script>
+  async function signup() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    document.getElementById("status").innerText =
+      error ? error.message : "Signup successful! Check your email.";
+  }
+
+  async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    document.getElementById("status").innerText =
+      error ? error.message : "Logged in!";
+  }
+</script>
+
+<script>
+  const supabaseUrl = "https://dawypferbucqanrkcdkj.supabase.co";
+  const supabaseKey = "sb_publishable_Ln6seWBtVCpbztzRAuipbg_nNJNncXU";
+
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+</script>
+
+</body>
+</html>

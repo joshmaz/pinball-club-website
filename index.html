@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Southern New Hampshire Pinball Club</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
 
@@ -159,6 +160,7 @@
 </section>
 
 <footer>
+  <button onclick="logout()">Logout</button>
   <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
   <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
@@ -176,6 +178,33 @@ fetch('/data/events.json')
       list.appendChild(li);
     });
   });
+</script>
+
+<script>
+  async function logout() {
+    await supabase.auth.signOut();
+    location.reload();
+  }
+</script>
+
+<script>
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      document.getElementById("status").innerText =
+        "Logged in as " + user.email;
+    }
+  }
+
+  checkUser();
+</script>
+
+<script>
+  const supabaseUrl = "https://dawypferbucqanrkcdkj.supabase.co";
+  const supabaseKey = "sb_publishable_Ln6seWBtVCpbztzRAuipbg_nNJNncXU";
+
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 </script>
 
 </body>
