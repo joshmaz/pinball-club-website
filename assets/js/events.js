@@ -10,7 +10,7 @@
 //   ...
 // ]
 
-fetch('/assets/data/events.json')
+fetch('data/events.json')
   .then(response => response.json())
   .then(events => {
     const container = document.getElementById('events-container');
@@ -25,7 +25,7 @@ fetch('/assets/data/events.json')
       div.className = 'event-card';
 
       div.innerHTML = `
-        <h3>${event.title}</h3>
+        <h3>${event.title || event.name || "Untitled Event"}</h3>
         <p><strong>Date:</strong> ${event.date}</p>
         <p><strong>Location:</strong> ${event.location}</p>
         <p>${event.description}</p>

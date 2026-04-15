@@ -11,10 +11,10 @@
 <header>
   <h1>Southern New Hampshire Pinball Club</h1>
   <nav>
-    <a href="/">Home</a>
-    <a href="/events.html">Events</a>
-    <a href="/standings.html">Standings</a>
-    <a href="/about.html">About</a>
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="standings.html">Standings</a>
+    <a href="about.html">About</a>
   </nav>
 </header>
 
@@ -46,7 +46,7 @@
 
   <p>We're excited about what's ahead, but we can't do it alone. It's going to take memberships, donations, resources, and a whole lot of heart and elbow grease to make this happen. Together, we can build a new space that keeps the pinball spirit alive for years to come.</p>
 
-  <p><a href="/donate" class="cta-button">Help keep the Southern New Hampshire Pinball Club alive!</a></p>
+  <p><a href="donate/" class="cta-button">Help keep the Southern New Hampshire Pinball Club alive!</a></p>
 
   <p>Stay tuned for updates, and thanks for being part of our journey./n/n</p>
   
@@ -144,16 +144,17 @@
   ];
 
 
+    const galleryImages = images.map((path) => path.replace(/^\//, ""));
     let currentIndex = 0;
     const imgElement = document.getElementById("gallery-image");
 
     // Set initial image
-    imgElement.src = images[currentIndex];
+    imgElement.src = galleryImages[currentIndex];
 
     // Rotate every 3 seconds
     setInterval(() => {
-      currentIndex = (currentIndex + 1) % images.length;
-      imgElement.src = images[currentIndex];
+      currentIndex = (currentIndex + 1) % galleryImages.length;
+      imgElement.src = galleryImages[currentIndex];
     }, 3000);
 </script>
 
@@ -166,38 +167,20 @@
 </footer>
 
 <script>
-fetch('/data/events.json')
+fetch('data/events.json')
   .then(res => res.json())
   .then(data => {
     const list = document.getElementById('events-list');
+    if (!list) return;
     list.innerHTML = '';
+    const events = Array.isArray(data) ? data : (data.events || []);
 
-    data.events.forEach(event => {
+    events.forEach(event => {
       const li = document.createElement('li');
-      li.textContent = `${event.date} - ${event.name}`;
+      li.textContent = `${event.date} - ${event.name || event.title || "Untitled Event"}`;
       list.appendChild(li);
     });
   });
-</script>
-
-<script>
-  async function logout() {
-    await supabase.auth.signOut();
-    location.reload();
-  }
-</script>
-
-<script>
-  async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (user) {
-      document.getElementById("status").innerText =
-        "Logged in as " + user.email;
-    }
-  }
-
-  checkUser();
 </script>
 
 <script>
@@ -205,6 +188,26 @@ fetch('/data/events.json')
   const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhd3lwZmVyYnVjcWFucmtjZGtqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTgwMDQsImV4cCI6MjA5MTY3NDAwNH0.3gSkiDYbSR2Kk457ttcPIQrQZbtSreNIihCqijK5vNs";
 
   const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+</script>
+
+<script>
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    const statusElement = document.getElementById("status");
+
+    if (user && statusElement) {
+      statusElement.innerText = "Logged in as " + user.email;
+    }
+  }
+
+  checkUser();
+</script>
+
+<script>
+  async function logout() {
+    await supabase.auth.signOut();
+    location.reload();
+  }
 </script>
 
 </body>
