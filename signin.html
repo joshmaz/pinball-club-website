@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <title>Southern New Hampshire Pinball Club</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
 
@@ -38,10 +40,14 @@
 
 <script>
   async function signup() {
+    if (!window.snhSupabase) {
+      document.getElementById("status").innerText = "Configuration error. See README.";
+      return;
+    }
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await window.snhSupabase.auth.signUp({
       email,
       password,
     });
@@ -51,10 +57,14 @@
   }
 
   async function login() {
+    if (!window.snhSupabase) {
+      document.getElementById("status").innerText = "Configuration error. See README.";
+      return;
+    }
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await window.snhSupabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -62,13 +72,6 @@
     document.getElementById("status").innerText =
       error ? error.message : "Logged in!";
   }
-</script>
-
-<script>
-  const supabaseUrl = "https://dawypferbucqanrkcdkj.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhd3lwZmVyYnVjcWFucmtjZGtqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTgwMDQsImV4cCI6MjA5MTY3NDAwNH0.3gSkiDYbSR2Kk457ttcPIQrQZbtSreNIihCqijK5vNs";
-
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 </script>
 
 </body>

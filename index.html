@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <title>Southern New Hampshire Pinball Club</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
 
@@ -50,16 +52,11 @@
 
   <p>Stay tuned for updates, and thanks for being part of our journey./n/n</p>
   
-  <h3>Upcoming Events</h3>
-  <p>Join us at the Pintastic Pinball and Game Room Expo!</p>
-  <img src="assets/images/Logo_sticker-2048x1423.png" alt="Pintastic Pinball Expo" class="event-image">
-
-  <p>Find us on Facebook! <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">https://www.facebook.com/snhpinball</a></p>
+   <p>Find us on Facebook! <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">https://www.facebook.com/snhpinball</a></p>
   <img src="assets/images/Facebook_info.png" alt="Facebook Page">
   
-  <p>Looking for pinball people from the club? <a href="https://discord.gg/2DefFFcs8a" class="btn-discord">
-  Join the Conversation on Discord
-  </a></p>
+  <p>Looking to connect with other pinball people from the club? <a href="https://discord.gg/2DefFFcs8a" class="btn-discord">
+  Join the Conversation on Discord</a></p>
 
   <div id="gallery">
     <img id="gallery-image" src="" alt="Pinball Machine">
@@ -184,15 +181,9 @@ fetch('data/events.json')
 </script>
 
 <script>
-  const supabaseUrl = "https://dawypferbucqanrkcdkj.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhd3lwZmVyYnVjcWFucmtjZGtqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTgwMDQsImV4cCI6MjA5MTY3NDAwNH0.3gSkiDYbSR2Kk457ttcPIQrQZbtSreNIihCqijK5vNs";
-
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-</script>
-
-<script>
   async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser();
+    if (!window.snhSupabase) return;
+    const { data: { user } } = await window.snhSupabase.auth.getUser();
     const statusElement = document.getElementById("status");
 
     if (user && statusElement) {
@@ -205,7 +196,8 @@ fetch('data/events.json')
 
 <script>
   async function logout() {
-    await supabase.auth.signOut();
+    if (!window.snhSupabase) return;
+    await window.snhSupabase.auth.signOut();
     location.reload();
   }
 </script>
