@@ -43,6 +43,20 @@ function createEventCard(event) {
   const div = document.createElement('div');
   div.className = 'event-card';
 
+  const imageUrl = event.imageUrl;
+  if (imageUrl != null && String(imageUrl).trim() !== '') {
+    const img = document.createElement('img');
+    img.src = String(imageUrl);
+    img.alt = `${event.title || event.name || 'Event'} image`;
+    img.loading = 'lazy';
+    img.referrerPolicy = 'no-referrer';
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.borderRadius = '8px';
+    img.style.marginBottom = '0.75rem';
+    div.appendChild(img);
+  }
+
   const h3 = document.createElement('h3');
   h3.textContent = event.title || event.name || 'Untitled Event';
   div.appendChild(h3);
@@ -66,6 +80,18 @@ function createEventCard(event) {
     const descP = document.createElement('p');
     descP.textContent = String(desc);
     div.appendChild(descP);
+  }
+
+  const eventUrl = event.url;
+  if (eventUrl != null && String(eventUrl).trim() !== '') {
+    const linkP = document.createElement('p');
+    const link = document.createElement('a');
+    link.href = String(eventUrl);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'View event details';
+    linkP.appendChild(link);
+    div.appendChild(linkP);
   }
 
   return div;
@@ -125,6 +151,153 @@ function wirePastToggle(toggle, region) {
   });
 }
 
+/**
+ * Groups past events by year in descending order (newest year first).
+ * Events with unknown dates are grouped under "Unknown".
+ * @param {object[]} pastEvents
+ * @returns {{ year: string, events: object[] }[]}
+ */
+function getPastEventsByYear(pastEvents) {
+  const byYear = new Map();
+  for (const event of pastEvents) {
+    const d = parseEventDate(event.date);
+    const year = d ? String(d.getFullYear()) : 'Unknown';
+    if (!byYear.has(year)) {
+      byYear.set(year, []);
+    }
+    byYear.get(year).push(event);
+  }
+
+  const sortedYears = [...byYear.keys()].sort((a, b) => {
+    if (a === 'Unknown') return 1;
+    if (b === 'Unknown') return -1;
+    return Number(b) - Number(a);
+  });
+
+  const list = [];
+  for (const year of sortedYears) {
+    const events = byYear.get(year);
+    const byDateDesc = (a, b) => {
+      const da = parseEventDate(a.date);
+      const db = parseEventDate(b.date);
+      if (da && db) return db - da;
+      if (da) return -1;
+      if (db) return 1;
+      return 0;
+    };
+    events.sort(byDateDesc);
+    list.push({ year, events });
+  }
+  return list;
+}
+
+/**
+ * Past events by year: only one year’s cards are in the DOM at a time.
+ */
+function renderPastEventsYearNavigator(region, pastByYearList) {
+  if (pastByYearList.length === 0) {
+    return;
+  }
+
+  let selectedIndex = 0;
+
+  const nav = document.createElement('div');
+  nav.className = 'events-past-year-nav';
+  nav.setAttribute('role', 'group');
+  nav.setAttribute('aria-label', 'Browse past events by year');
+
+  const btnOlder = document.createElement('button');
+  btnOlder.type = 'button';
+  btnOlder.className = 'events-past-year-arrow';
+  btnOlder.setAttribute('aria-label', 'Show earlier years');
+  btnOlder.textContent = '◀';
+
+  const tabsWrap = document.createElement('div');
+  tabsWrap.className = 'events-past-year-tabs';
+
+  const btnNewer = document.createElement('button');
+  btnNewer.type = 'button';
+  btnNewer.className = 'events-past-year-arrow';
+  btnNewer.setAttribute('aria-label', 'Show more recent years');
+  btnNewer.textContent = '▶';
+
+  const panel = document.createElement('div');
+  panel.className = 'events-past-year-panel';
+  panel.setAttribute('aria-live', 'polite');
+
+  const tabButtons = [];
+
+  function renderYearCards() {
+    const { year, events } = pastByYearList[selectedIndex];
+    panel.replaceChildren();
+
+    const sub = document.createElement('h3');
+    sub.className = 'events-past-current-year';
+    sub.textContent = year;
+    panel.appendChild(sub);
+
+    const countP = document.createElement('p');
+    countP.className = 'events-past-year-meta';
+    countP.textContent = `${events.length} event${events.length === 1 ? '' : 's'}`;
+    panel.appendChild(countP);
+
+    for (const event of events) {
+      panel.appendChild(createEventCard(event));
+    }
+
+    for (let i = 0; i < tabButtons.length; i++) {
+      const pressed = i === selectedIndex;
+      tabButtons[i].setAttribute('aria-pressed', String(pressed));
+      tabButtons[i].classList.toggle('events-past-year-tab-selected', pressed);
+      if (pressed) {
+        tabButtons[i].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+
+    btnOlder.disabled = selectedIndex >= pastByYearList.length - 1;
+    btnNewer.disabled = selectedIndex <= 0;
+  }
+
+  for (let i = 0; i < pastByYearList.length; i++) {
+    const { year, events } = pastByYearList[i];
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'events-past-year-tab';
+    tab.textContent = year;
+    tab.setAttribute('aria-pressed', 'false');
+    tab.title = `${events.length} event${events.length === 1 ? '' : 's'} in ${year}`;
+    tab.addEventListener('click', () => {
+      selectedIndex = i;
+      renderYearCards();
+    });
+    tabButtons.push(tab);
+    tabsWrap.appendChild(tab);
+  }
+
+  btnOlder.addEventListener('click', () => {
+    if (selectedIndex < pastByYearList.length - 1) {
+      selectedIndex += 1;
+      renderYearCards();
+    }
+  });
+
+  btnNewer.addEventListener('click', () => {
+    if (selectedIndex > 0) {
+      selectedIndex -= 1;
+      renderYearCards();
+    }
+  });
+
+  nav.appendChild(btnOlder);
+  nav.appendChild(tabsWrap);
+  nav.appendChild(btnNewer);
+
+  region.appendChild(nav);
+  region.appendChild(panel);
+
+  renderYearCards();
+}
+
 function renderEventsList(container, events) {
   container.innerHTML = '';
   if (events.length === 0) {
@@ -171,9 +344,8 @@ function renderEventsList(container, events) {
   pastHeading.textContent = 'Past events';
   region.appendChild(pastHeading);
 
-  for (const event of past) {
-    region.appendChild(createEventCard(event));
-  }
+  const pastByYearList = getPastEventsByYear(past);
+  renderPastEventsYearNavigator(region, pastByYearList);
 
   container.appendChild(toggle);
   container.appendChild(region);

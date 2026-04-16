@@ -115,6 +115,89 @@ footer {
   margin: 0 0 0.75rem;
 }
 
+.events-past-year-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+}
+
+.events-past-year-arrow {
+  flex: 0 0 auto;
+  min-width: 2.5rem;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  color: #0ff;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.events-past-year-arrow:hover:not(:disabled) {
+  color: #80c1ff;
+  border-color: #555;
+}
+
+.events-past-year-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.events-past-year-tabs {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.1rem 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.events-past-year-tab {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.65rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #ccc;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.events-past-year-tab:hover {
+  border-color: #555;
+  color: #eee;
+}
+
+.events-past-year-tab-selected {
+  color: #0ff;
+  border-color: #0aa;
+  background: #142020;
+}
+
+.events-past-year-panel {
+  margin-top: 0.25rem;
+}
+
+.events-past-current-year {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  color: #80c1ff;
+  border-bottom: 1px solid #2d2d2d;
+  padding-bottom: 0.25rem;
+}
+
+.events-past-year-meta {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+
 .games-section-title {
   margin: 0 0 0.5rem;
 }
