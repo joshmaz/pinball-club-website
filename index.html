@@ -53,7 +53,7 @@
 
   <p><a href="donate/" class="cta-button">Help keep the Southern New Hampshire Pinball Club alive!</a></p>
 
-  <p>Stay tuned for updates, and thanks for being part of our journey./n/n</p>
+  <p>Stay tuned for updates, and thanks for being part of our journey.<p>
   
    <p>Find us on Facebook! <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">https://www.facebook.com/snhpinball</a></p>
   <img src="assets/images/Facebook_info.png" alt="Facebook Page">
@@ -165,23 +165,6 @@
   <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
   <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
-
-<script>
-fetch('data/events.json')
-  .then(res => res.json())
-  .then(data => {
-    const list = document.getElementById('events-list');
-    if (!list) return;
-    list.innerHTML = '';
-    const events = Array.isArray(data) ? data : (data.events || []);
-
-    events.forEach(event => {
-      const li = document.createElement('li');
-      li.textContent = `${event.date} - ${event.name || event.title || "Untitled Event"}`;
-      list.appendChild(li);
-    });
-  });
-</script>
 
 <script>
   async function checkUser() {
