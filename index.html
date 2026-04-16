@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Southern New Hampshire Pinball Club</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
@@ -17,7 +18,9 @@
     <a href="events.html">Events</a>
     <a href="standings.html">Standings</a>
     <a href="about.html">About</a>
+    <a href="signin.html">Members</a>
   </nav>
+  <p id="auth-status" class="auth-status" aria-live="polite"></p>
 </header>
 
 <section class="hero">
@@ -158,7 +161,7 @@
 </section>
 
 <footer>
-  <button onclick="logout()">Logout</button>
+  <button type="button" id="logout-btn" onclick="logout()" hidden>Logout</button>
   <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
   <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
@@ -183,11 +186,15 @@ fetch('data/events.json')
 <script>
   async function checkUser() {
     if (!window.snhSupabase) return;
-    const { data: { user } } = await window.snhSupabase.auth.getUser();
-    const statusElement = document.getElementById("status");
-
-    if (user && statusElement) {
-      statusElement.innerText = "Logged in as " + user.email;
+    const { data: { session } } = await window.snhSupabase.auth.getSession();
+    const statusEl = document.getElementById("auth-status");
+    const logoutBtn = document.getElementById("logout-btn");
+    const user = session && session.user;
+    if (statusEl) {
+      statusEl.textContent = user ? "Signed in as " + user.email : "";
+    }
+    if (logoutBtn) {
+      logoutBtn.hidden = !user;
     }
   }
 
