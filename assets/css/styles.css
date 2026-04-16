@@ -43,11 +43,123 @@ nav a {
   color: #aaa;
 }
 
+/* Legacy hero used on a few pages (signin/donate) */
 .hero {
   padding: 3rem;
   text-align: center;
   background: linear-gradient(45deg, #ff0080, #00ffff);
   color: #000;
+}
+
+/* Shared hero pattern for Home / Events / Games pages */
+.page-hero {
+  position: relative;
+  padding: 0;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+  border-bottom: 1px solid #222;
+}
+
+.page-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(10, 10, 14, 0.88) 0%, rgba(12, 20, 28, 0.82) 45%, rgba(8, 18, 22, 0.9) 100%);
+  z-index: 0;
+}
+
+.page-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.75rem 1.25rem 3rem;
+  min-height: 176px;
+}
+
+.page-hero-inner h2 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  color: #fff;
+}
+
+.page-hero-lead {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: #e8f4f4;
+  line-height: 1.45;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+.page-hero-note {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #9cc;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* Per-page hero backdrops / text accents */
+.page-hero--home .page-hero-backdrop {
+  background: linear-gradient(45deg, #ff0080, #00ffff);
+}
+.page-hero--home .page-hero-inner h2 {
+  color: #000;
+  text-shadow: none;
+}
+.page-hero--home .page-hero-lead {
+  color: #111;
+  text-shadow: none;
+}
+
+.page-hero--events .page-hero-backdrop {
+  background:
+    linear-gradient(120deg, rgba(10, 10, 14, 0.88) 0%, rgba(12, 20, 28, 0.82) 45%, rgba(8, 18, 22, 0.9) 100%),
+    url('../images/events-hero.svg') center center / cover no-repeat;
+}
+.page-hero--events .page-hero-lead {
+  color: #e8f4f4;
+}
+.page-hero--events .page-hero-note {
+  color: #9cc;
+}
+
+.page-hero--games .page-hero-backdrop {
+  background:
+    linear-gradient(120deg, rgba(16, 12, 10, 0.85) 0%, rgba(12, 18, 24, 0.82) 50%, rgba(14, 20, 16, 0.88) 100%),
+    url('../images/games-hero.svg') center center / cover no-repeat;
+}
+.page-hero--games .page-hero-lead {
+  color: #f7efe5;
+}
+.page-hero--games .page-hero-note {
+  color: #d0c4b5;
+}
+
+.page-hero--about .page-hero-backdrop {
+  background:
+    linear-gradient(120deg, rgba(12, 14, 22, 0.88) 0%, rgba(12, 20, 28, 0.84) 50%, rgba(14, 20, 18, 0.9) 100%),
+    url('../images/about-hero.svg') center center / cover no-repeat;
+}
+.page-hero--about .page-hero-lead {
+  color: #dce8f4;
+}
+.page-hero--about .page-hero-note {
+  color: #a9c0d6;
+}
+
+.page-hero--members .page-hero-backdrop {
+  background:
+    linear-gradient(120deg, rgba(14, 12, 20, 0.88) 0%, rgba(12, 18, 24, 0.84) 50%, rgba(18, 16, 16, 0.9) 100%),
+    url('../images/members-hero.svg') center center / cover no-repeat;
+}
+.page-hero--members .page-hero-lead {
+  color: #e4eeff;
+}
+.page-hero--members .page-hero-note {
+  color: #b4c7de;
 }
 
 .content {

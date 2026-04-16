@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="">
+  <defs>
+    <linearGradient id="abBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1018"/>
+      <stop offset="50%" stop-color="#101a24"/>
+      <stop offset="100%" stop-color="#121515"/>
+    </linearGradient>
+    <linearGradient id="abAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5aa7ff" stop-opacity="0.22"/>
+      <stop offset="50%" stop-color="#9d7dff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#00d6ff" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="360" fill="url(#abBg)"/>
+  <rect width="1200" height="360" fill="url(#abAccent)"/>
+  <g fill="none" stroke="#8fb7d8" stroke-opacity="0.28">
+    <circle cx="260" cy="185" r="88"/>
+    <circle cx="940" cy="185" r="88"/>
+    <path d="M 315 185 C 430 120, 770 120, 885 185"/>
+    <path d="M 315 185 C 430 250, 770 250, 885 185"/>
+  </g>
+  <g fill="#9cc" fill-opacity="0.35">
+    <circle cx="600" cy="185" r="12"/>
+    <circle cx="520" cy="185" r="7"/>
+    <circle cx="680" cy="185" r="7"/>
+  </g>
+</svg>
