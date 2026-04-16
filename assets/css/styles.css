@@ -1,4 +1,4 @@
-html { font-size: 16px; }
+html { font-size: 17px; }
 body {
   font-family: Arial, sans-serif;
   font-size: 1rem;
@@ -77,4 +77,34 @@ footer {
   height: auto;
   margin: 1rem 0;
   border-radius: 8px;
+}
+
+.events-empty-upcoming {
+  margin: 0 0 1rem;
+  color: #ccc;
+}
+
+.events-past-toggle {
+  margin: 1.25rem 0 0;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  color: #0ff;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.events-past-toggle:hover {
+  color: #80c1ff;
+  border-color: #555;
+}
+
+.events-past-region {
+  margin-top: 1rem;
+}
+
+.events-past-heading {
+  font-size: 1.25rem;
+  margin: 0 0 0.75rem;
 }
