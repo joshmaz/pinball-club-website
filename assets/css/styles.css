@@ -37,6 +37,12 @@ nav a {
   text-decoration: none;
 }
 
+.auth-status {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
 .hero {
   padding: 3rem;
   text-align: center;

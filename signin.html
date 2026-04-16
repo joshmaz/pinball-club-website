@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Southern New Hampshire Pinball Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in | Southern New Hampshire Pinball Club</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -17,6 +18,7 @@
     <a href="events.html">Events</a>
     <a href="standings.html">Standings</a>
     <a href="about.html">About</a>
+    <a href="signin.html" aria-current="page">Sign in</a>
   </nav>
 </header>
 
@@ -26,8 +28,8 @@
 
 <section class="content">
   <h3>Welcome to the Southern New Hampshire Pinball Club!</h3>
-  <input id="email" placeholder="Email" />
-  <input id="password" type="password" placeholder="Password" />
+  <input id="email" type="email" autocomplete="email" placeholder="Email" />
+  <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
   <button onclick="login()">Login</button>
   <button onclick="signup()">Sign Up</button>
   <p id="status" aria-live="polite"></p>
@@ -39,38 +41,63 @@
 </footer>
 
 <script>
+  function getCredentials() {
+    var email = document.getElementById("email").value.trim();
+    var password = document.getElementById("password").value;
+    return { email: email, password: password };
+  }
+
   async function signup() {
+    var status = document.getElementById("status");
     if (!window.snhSupabase) {
-      document.getElementById("status").innerText = "Configuration error. See README.";
+      status.innerText = "Configuration error. See README.";
       return;
     }
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    var creds = getCredentials();
+    if (!creds.email || !creds.password) {
+      status.innerText = "Enter email and password.";
+      return;
+    }
 
-    const { data, error } = await window.snhSupabase.auth.signUp({
-      email,
-      password,
+    var result = await window.snhSupabase.auth.signUp({
+      email: creds.email,
+      password: creds.password,
     });
 
-    document.getElementById("status").innerText =
-      error ? error.message : "Signup successful! Check your email.";
+    if (result.error) {
+      status.innerText = result.error.message;
+      return;
+    }
+    if (result.data.session) {
+      window.location.href = "index.html";
+      return;
+    }
+    status.innerText =
+      "Check your email to confirm your account, then sign in here.";
   }
 
   async function login() {
+    var status = document.getElementById("status");
     if (!window.snhSupabase) {
-      document.getElementById("status").innerText = "Configuration error. See README.";
+      status.innerText = "Configuration error. See README.";
       return;
     }
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    var creds = getCredentials();
+    if (!creds.email || !creds.password) {
+      status.innerText = "Enter email and password.";
+      return;
+    }
 
-    const { data, error } = await window.snhSupabase.auth.signInWithPassword({
-      email,
-      password,
+    var result = await window.snhSupabase.auth.signInWithPassword({
+      email: creds.email,
+      password: creds.password,
     });
 
-    document.getElementById("status").innerText =
-      error ? error.message : "Logged in!";
+    if (result.error) {
+      status.innerText = result.error.message;
+      return;
+    }
+    window.location.href = "index.html";
   }
 </script>
 

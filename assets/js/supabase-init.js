@@ -6,5 +6,18 @@
     );
     return;
   }
-  window.snhSupabase = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey);
+  var sup = window.supabase;
+  if (!sup || typeof sup.createClient !== 'function') {
+    console.error(
+      '[SNH] @supabase/supabase-js did not load. Check script order and the CDN script tag.'
+    );
+    return;
+  }
+  window.snhSupabase = sup.createClient(c.supabaseUrl, c.supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  });
 })();
