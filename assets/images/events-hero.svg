@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="">
+  <defs>
+    <linearGradient id="evBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#120818"/>
+      <stop offset="40%" stop-color="#081828"/>
+      <stop offset="100%" stop-color="#082018"/>
+    </linearGradient>
+    <linearGradient id="evAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff0080" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#00ffff" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ff0080" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="360" fill="url(#evBg)"/>
+  <rect width="1200" height="360" fill="url(#evAccent)"/>
+  <!-- abstract playfield + ball -->
+  <ellipse cx="600" cy="200" rx="380" ry="120" fill="none" stroke="#0ff" stroke-opacity="0.15" stroke-width="2"/>
+  <circle cx="600" cy="188" r="28" fill="#1a1a1a" stroke="#0ff" stroke-width="2.5" opacity="0.9" filter="url(#glow)"/>
+  <!-- flipper hints -->
+  <path d="M 420 248 L 480 218 L 495 235 L 435 258 Z" fill="#0ff" fill-opacity="0.2" stroke="#0ff" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M 780 248 L 720 218 L 705 235 L 765 258 Z" fill="#0ff" fill-opacity="0.2" stroke="#0ff" stroke-opacity="0.5" stroke-width="1.5"/>
+  <line x1="200" y1="120" x2="1000" y2="120" stroke="#ff0080" stroke-opacity="0.12" stroke-width="1"/>
+</svg>

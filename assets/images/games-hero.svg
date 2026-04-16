@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="">
+  <defs>
+    <linearGradient id="gmBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#140f08"/>
+      <stop offset="45%" stop-color="#1b130a"/>
+      <stop offset="100%" stop-color="#101820"/>
+    </linearGradient>
+    <linearGradient id="gmAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffb347" stop-opacity="0.24"/>
+      <stop offset="50%" stop-color="#00d6ff" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#ff0080" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="360" fill="url(#gmBg)"/>
+  <rect width="1200" height="360" fill="url(#gmAccent)"/>
+  <!-- cabinet silhouettes -->
+  <rect x="260" y="118" width="140" height="178" rx="10" fill="#0d1115" stroke="#4cc7ff" stroke-opacity="0.35"/>
+  <rect x="530" y="92" width="140" height="204" rx="10" fill="#0f1114" stroke="#ff9f43" stroke-opacity="0.4"/>
+  <rect x="800" y="130" width="140" height="166" rx="10" fill="#0d1216" stroke="#8de969" stroke-opacity="0.35"/>
+  <!-- light bars -->
+  <rect x="276" y="136" width="108" height="6" fill="#00d6ff" fill-opacity="0.55"/>
+  <rect x="546" y="110" width="108" height="6" fill="#ffb347" fill-opacity="0.6"/>
+  <rect x="816" y="148" width="108" height="6" fill="#8de969" fill-opacity="0.55"/>
+  <!-- score dashes -->
+  <g stroke="#fff" stroke-opacity="0.15">
+    <line x1="120" y1="80" x2="220" y2="80"/>
+    <line x1="980" y1="280" x2="1080" y2="280"/>
+    <line x1="1010" y1="90" x2="1110" y2="90"/>
+  </g>
+</svg>
