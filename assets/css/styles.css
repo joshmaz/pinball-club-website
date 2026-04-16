@@ -114,3 +114,52 @@ footer {
   font-size: 1.25rem;
   margin: 0 0 0.75rem;
 }
+
+.games-section-title {
+  margin: 0 0 0.5rem;
+}
+
+.games-note {
+  margin: 0 0 1.25rem;
+  color: #ccc;
+}
+
+.games-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.9rem;
+}
+
+.games-list-item {
+  padding: 0.8rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #171717;
+}
+
+.games-list-item strong {
+  display: block;
+  color: #0ff;
+}
+
+.game-card-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin-top: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #2d2d2d;
+  background: #101010;
+}
+
+.games-details {
+  margin: 0.5rem 0 0;
+  color: #d4d4d4;
+}
+
+.games-previous-title {
+  margin-top: 2.2rem;
+}
