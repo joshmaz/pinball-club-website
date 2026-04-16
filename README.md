@@ -11,6 +11,7 @@ This is the official website for the Southern New Hampshire Pinball Club. It inc
 - `assets/css/styles.css`: Stylesheet
 - `assets/js/`: JavaScript files (to be added)
 - `assets/images/`: Images
+- `assets/images-machines/`: Machine images
 - `data/events.json`: Event data
 
 ## Deployment

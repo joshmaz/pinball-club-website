@@ -4,12 +4,16 @@
 const EVENTS_URL = 'data/events.json';
 
 function showMessage(container, title, details) {
-  container.innerHTML = `
-    <div class="event-card">
-      <h3>${title}</h3>
-      <p>${details}</p>
-    </div>
-  `;
+  container.replaceChildren();
+  const card = document.createElement('div');
+  card.className = 'event-card';
+  const h3 = document.createElement('h3');
+  h3.textContent = title;
+  const p = document.createElement('p');
+  p.textContent = details;
+  card.appendChild(h3);
+  card.appendChild(p);
+  container.appendChild(card);
 }
 
 function startOfToday() {
@@ -38,12 +42,32 @@ function parseEventDate(dateStr) {
 function createEventCard(event) {
   const div = document.createElement('div');
   div.className = 'event-card';
-  div.innerHTML = `
-    <h3>${event.title || event.name || 'Untitled Event'}</h3>
-    <p><strong>Date:</strong> ${event.date || 'TBD'}</p>
-    <p><strong>Location:</strong> ${event.location || 'TBD'}</p>
-    <p>${event.description || ''}</p>
-  `;
+
+  const h3 = document.createElement('h3');
+  h3.textContent = event.title || event.name || 'Untitled Event';
+  div.appendChild(h3);
+
+  const dateP = document.createElement('p');
+  const dateStrong = document.createElement('strong');
+  dateStrong.textContent = 'Date: ';
+  dateP.appendChild(dateStrong);
+  dateP.appendChild(document.createTextNode(String(event.date || 'TBD')));
+  div.appendChild(dateP);
+
+  const locP = document.createElement('p');
+  const locStrong = document.createElement('strong');
+  locStrong.textContent = 'Location: ';
+  locP.appendChild(locStrong);
+  locP.appendChild(document.createTextNode(String(event.location || 'TBD')));
+  div.appendChild(locP);
+
+  const desc = event.description;
+  if (desc != null && String(desc).trim() !== '') {
+    const descP = document.createElement('p');
+    descP.textContent = String(desc);
+    div.appendChild(descP);
+  }
+
   return div;
 }
 
