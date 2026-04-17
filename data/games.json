@@ -1,103 +1,722 @@
 {
   "currentGames": [
-    { "title": "300", "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.", "imageFilename": "300.jpg", "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300" },
-    { "title": "Alien Poker", "details": "1980 Williams. Current club machine.", "imageFilename": "alien-poker.jpg" },
-    { "title": "Black Jack", "details": "1977 Bally. Current club machine." },
-    { "title": "Black Pyramid", "details": "1984 Bally. Current club machine." },
-    { "title": "Embryon", "details": "1981 Bally. Current club machine." },
-    { "title": "Future Spa", "details": "1979 Bally. Current club machine." },
-    { "title": "Heavy Metal Meltdown", "details": "1987 Bally. Current club machine." },
-    { "title": "Hokus Pokus", "details": "1975 Bally. Current club machine.", "imageFilename": "hokus-pokus.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/hokus-pokus", "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus" },
-    { "title": "Mr. & Mrs. Pac-Man", "details": "1982 Bally. Current club machine." },
-    { "title": "Starship Troopers", "details": "1997 Sega. Current club machine." },
-    { "title": "Truck Stop", "details": "1988 Bally. Current club machine." }
+    {
+      "title": "300",
+      "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
+      "imageFilename": "300.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
+      "releaseDate": "1975-08-01"
+    },
+    {
+      "title": "Alien Poker",
+      "details": "1980 Williams. Current club machine.",
+      "imageFilename": "alien-poker.jpg",
+      "releaseDate": "1980-10-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker"
+    },
+    {
+      "title": "Black Jack",
+      "details": "1977 Bally. Current club machine.",
+      "releaseDate": "1977-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/black-jack"
+    },
+    {
+      "title": "Black Pyramid",
+      "details": "1984 Bally. Current club machine.",
+      "releaseDate": "1984-07-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid"
+    },
+    {
+      "title": "Embryon",
+      "details": "1981 Bally. Current club machine.",
+      "releaseDate": "1981-06-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/embryon"
+    },
+    {
+      "title": "Future Spa",
+      "details": "1979 Bally. Current club machine.",
+      "releaseDate": "1979-10-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/future-spa"
+    },
+    {
+      "title": "Heavy Metal Meltdown",
+      "details": "1987 Bally. Current club machine.",
+      "releaseDate": "1987-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown"
+    },
+    {
+      "title": "Hokus Pokus",
+      "details": "1975 Bally. Current club machine.",
+      "imageFilename": "hokus-pokus.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/hokus-pokus",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
+      "releaseDate": "1975-04-01"
+    },
+    {
+      "title": "Mr. & Mrs. Pac-Man",
+      "details": "1982 Bally. Current club machine.",
+      "releaseDate": "1982-05-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man"
+    },
+    {
+      "title": "Starship Troopers",
+      "details": "1997 Sega. Current club machine.",
+      "releaseDate": "1997-12-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers"
+    },
+    {
+      "title": "Truck Stop",
+      "details": "1988 Bally. Current club machine.",
+      "releaseDate": "1988-11-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop"
+    }
   ],
   "previousGames": [
-    { "title": "Space Shuttle", "details": "1980 Williams solid state. Design by Barry Oursler and Joe Kaminkow. 2 flippers, 4 pop bumpers, 1 ramp, multiball.", "imageFilename": "space-shuttle.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/space-shuttle", "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle" },
-    { "title": "High Speed", "details": "1986 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 ramp, standup banks.", "imageFilename": "high-speed.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/high-speed", "pinsideUrl": "https://pinside.com/pinball/machine/high-speed" },
-    { "title": "The Getaway: High Speed II", "details": "1992 Williams DMD. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 2 ramps, supercharger.", "imageFilename": "the-getaway-high-speed-ii.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/the-getaway-high-speed-ii", "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii" },
-    { "title": "The Bally Game Show", "details": "1990 Bally solid state. Design by Dan Langlois and Peter Perry. 2 flippers, 2 ramps, 2-ball multiball.", "imageFilename": "the-bally-game-show.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/the-bally-game-show", "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show" },
-    { "title": "Metallica (Pro)", "details": "2013 Stern DMD. Design by John Borg. 2 flippers, 2 ramps, in-line drop targets.", "imageFilename": "metallica-pro.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica", "pinsideUrl": "https://pinside.com/pinball/machine/metallica" },
-    { "title": "KISS (Pro)", "details": "2015 Stern DMD. Designed by John Borg. 2 flippers, 2 ramps, 4 pop bumpers, spinning disk.", "imageFilename": "kiss-pro.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss", "pinsideUrl": "https://pinside.com/pinball/machine/kiss" },
-    { "title": "PIN-BOT", "details": "1986 Williams solid state. Design by Barry Oursler and Python Anghelo. 2 flippers, 5-drop bank, 3 kickout holes, 2-ball multiball.", "imageFilename": "pin-bot.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/pinbot", "pinsideUrl": "https://pinside.com/pinball/machine/pinbot" },
-    { "title": "Doodle Bug", "details": "1971 Williams EM. Design by Norm Clark. 2 flippers, 5 pop bumpers, 5 standup targets.", "imageFilename": "doodle-bug.jpg", "pinsideUrl": "https://pinside.com/pinball/machine/doodle-bug" },
-    { "title": "The Simpsons Pinball Party", "details": "2003 Stern DMD. Designed by Keith P. Johnson and Joe Balcer. 5 flippers, 4 ramps, custom callouts from the TV cast.", "imageFilename": "the-simpsons-pinball-party.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/the-simpsons-pinball-party", "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party" },
-    { "title": "Lost World", "details": "1977 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 2 saucers, spinner.", "imageFilename": "lost-world.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/lost-world", "pinsideUrl": "https://pinside.com/pinball/machine/lost-world" },
-    { "title": "Argosy", "details": "1977 Williams EM. Design by Chris Otis. 2 flippers, 1 spinner, 2 pop bumpers, 1 saucer.", "imageFilename": "argosy.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/argosy", "pinsideUrl": "https://pinside.com/pinball/machine/argosy" },
-    { "title": "Target Alpha", "details": "1976 Gottlieb EM. Design by Ed Krynski. 4 flippers, 2 pop bumpers, 15 drop targets.", "imageFilename": "target-alpha.png", "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha" },
-    { "title": "Airborne", "details": "1996 Capcom solid state. Design by Claude Fernandez. 2 flippers and many ramps.", "imageFilename": "airborne.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/airborne", "pinsideUrl": "https://pinside.com/pinball/machine/airborne" },
-    { "title": "Hot Shot", "details": "1973 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 1 pop bumper, 14 drop targets, saucer.", "imageFilename": "hot-shot.png", "pinsideUrl": "https://pinside.com/pinball/machine/hot-shot" },
-    { "title": "2001", "details": "1971 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 20 drop targets." },
-    { "title": "Fun Land", "details": "1968 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 spinners.", "imageFilename": "fun-land.jpg", "pinsideUrl": "https://pinside.com/pinball/machine/fun-land" },
-    { "title": "Major League", "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp." },
-    { "title": "The Lord of the Rings", "details": "2003 Stern DMD. Designed by George Gomez, Keith P. Johnson, and Chris Granner. 2 flippers, 3 ramps, 3 pop bumpers, One Ring toy.", "imageFilename": "the-lord-of-the-rings.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings", "pinsideUrl": "https://pinside.com/pinball/machine/lord-of-the-rings" },
-    { "title": "The Hobbit (Smaug)", "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.", "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit", "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit" },
-    { "title": "Robocop", "details": "1989 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, jump ramp, spinner, 3-ball multiball.", "imageFilename": "robocop.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/robocop", "pinsideUrl": "https://pinside.com/pinball/machine/robocop" },
-    { "title": "Time Warp", "details": "1979 Williams EM. Design by Barry Oursler. 2 banana flippers, 5 pop bumpers.", "imageFilename": "time-warp.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/time-warp", "pinsideUrl": "https://pinside.com/pinball/machine/time-warp" },
-    { "title": "Flash Gordon", "details": "1981 Bally solid state. Design by Claude Fernandez. 3 flippers, 3 pop bumpers, in-line targets.", "imageFilename": "flash-gordon.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/flash-gordon", "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon" },
-    { "title": "Ice Fever", "details": "1985 Gottlieb solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, captive ball behind drop targets.", "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever", "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever" },
-    { "title": "Star Trek", "details": "1991 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3-ball multiball.", "imageFilename": "star-trek.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/star-trek", "pinsideUrl": "https://pinside.com/pinball/machine/star-trek" },
-    { "title": "X-Men Wolverine LE", "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.", "imageFilename": "x-men-wolverine-le.jpg", "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le" },
-    { "title": "Roy Clark The Entertainer", "details": "1977 Fascination solid state cocktail table. 2 flippers, 3 pop bumpers, 4 drop targets.", "pinsideUrl": "https://pinside.com/pinball/machine/entertainer" },
-    { "title": "Swords of Fury", "details": "1988 Williams solid state. 4 flippers, no pop bumpers, mini-playfield, 5-bank drop targets.", "imageFilename": "swords-of-fury.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/swords-of-fury", "pinsideUrl": "https://pinside.com/pinball/machine/swords-of-fury" },
-    { "title": "Baywatch", "details": "1995 Sega DMD. Design by Joe Kaminkow and Joe Balcer. 3 flippers plus shark flipper, 3 ramps, 5-ball multiball.", "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch", "pinsideUrl": "https://pinside.com/pinball/machine/baywatch" },
-    { "title": "WHO dunnit", "details": "1995 Williams DMD. Design by Dwight Sullivan and Barry Oursler. 2 flippers, 2 ramps.", "imageFilename": "who-dunnit.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/who-dunnit", "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit" },
-    { "title": "The Lost World Jurassic Park", "details": "1997 Sega DMD. Design by John Borg. 2 flippers, 2 ramps.", "imageFilename": "the-lost-world-jurassic-park.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park", "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park" },
-    { "title": "Congo", "details": "1995 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, gorilla sub-playfield.", "imageFilename": "congo.gif", "kineticistUrl": "https://www.kineticist.com/games/pinball/congo", "pinsideUrl": "https://pinside.com/pinball/machine/congo" },
-    { "title": "Time Machine", "details": "1988 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3 ramps, chime box.", "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine", "pinsideUrl": "https://pinside.com/pinball/machine/time-machine" },
-    { "title": "Aztec", "details": "1976 Williams EM. 2 flippers, 2 pop bumpers, 6 standup targets, spinner.", "imageFilename": "aztec.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/aztec", "pinsideUrl": "https://pinside.com/pinball/machine/aztec" },
-    { "title": "Street Fighter II", "details": "1993 Gottlieb Premier solid state. 5 flippers, three-level playfield, bash car.", "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii", "pinsideUrl": "https://pinside.com/pinball/machine/street-fighter-ii" },
-    { "title": "Flash", "details": "1979 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 spinner.", "imageFilename": "flash.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/flash", "pinsideUrl": "https://pinside.com/pinball/machine/flash" },
-    { "title": "Volley", "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 15 drop targets.", "kineticistUrl": "https://www.kineticist.com/games/pinball/volley", "pinsideUrl": "https://pinside.com/pinball/machine/volley" },
-    { "title": "Genesis", "details": "1993 Gottlieb Premier solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, 2 ramps.", "imageFilename": "genesis.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/genesis", "pinsideUrl": "https://pinside.com/pinball/machine/genesis" },
-    { "title": "Evil Knievel", "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.", "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel" },
-    { "title": "Strikes and Spares", "details": "1978 Bally solid state. 2 flippers, 3 pop bumpers, 10 star rollover buttons.", "imageFilename": "strikes-and-spares.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/strikes-and-spares", "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares" },
-    { "title": "Ship Ahoy", "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 stand-up targets, spinner." },
-    { "title": "The Flintstones", "details": "1994 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, bowling alley toy.", "imageFilename": "the-flintstones.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/the-flintstones", "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones" },
-    { "title": "Judge Dredd", "details": "1993 Williams DMD widebody. Design by John Trudeau. 4 flippers, 2 ramps, 6-ball multiball.", "imageFilename": "judge-dredd.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/judge-dredd", "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd" },
-    { "title": "Firepower", "details": "1980 Williams solid state. Design by Steve Ritchie. 2 flippers, 4 pop bumpers, 3-ball multiball.", "imageFilename": "firepower.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/firepower", "pinsideUrl": "https://pinside.com/pinball/machine/firepower" },
-    { "title": "Total Nuclear Annihilation", "details": "2017 Spooky Pinball. Designed by Scott Danesi. 3 flippers, 1 pop bumper, in-line drop targets.", "imageFilename": "total-nuclear-annihilation.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/total-nuclear-annihilation", "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation" },
-    { "title": "Cleopatra", "details": "1977 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 5 drop targets, 2 saucers.", "imageFilename": "cleopatra.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/cleopatra", "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra" },
-    { "title": "F-14 Tomcat", "details": "1987 Williams solid state. Design by Steve Ritchie. 4 flippers, 1 pop bumper, 4-ball multiball.", "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat", "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat" },
-    { "title": "Old Chicago", "details": "1976 Bally EM. Design by Greg Kmiec. 2 flippers, 5 pop bumpers, standup targets, drop targets, spinner.", "imageFilename": "old-chicago.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/old-chicago", "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago" },
-    { "title": "Terminator 2: Judgment Day", "details": "1991 Williams DMD. Design by Steve Ritchie. 2 flippers, 3 pop bumpers, 2 ramps.", "imageFilename": "terminator-2-judgment-day.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day", "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day", "removedOn": "2026-04-07" },
-    { "title": "Monopoly", "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.", "removedOn": "2026-04-07" },
-    { "title": "Godzilla (Pro)", "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Harley-Davidson (2nd Edition)", "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Disco Fever", "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Road Kings", "details": "1986 Williams. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Mustang", "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Target Pool", "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.", "imageFilename": "target-pool.jpg", "removedOn": "2026-04-04" },
-    { "title": "NBA Fastbreak", "details": "1997 Bally DMD. Design by George Gomez. 3 flippers including one backbox flipper, 3 ramps, 4 up-kickers.", "imageFilename": "nba-fastbreak.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak", "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak", "removedOn": "2026-04-04" },
-    { "title": "Hot Line", "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.", "imageFilename": "hot-line.jpg", "removedOn": "2026-04-04" },
-    { "title": "Solar Ride", "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Spider-Man", "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Charlie's Angels", "details": "1978 Gottlieb solid state. Design by Allen Edwall. 2 flippers, 2 pop bumpers, 8 drop targets.", "imageFilename": "charlies-angels.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels", "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels", "removedOn": "2026-04-04" },
-    { "title": "Avengers: Infinity Quest (Pro)", "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.", "removedOn": "2026-04-04" },
-    { "title": "Jurassic Park (Pro)", "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.", "removedOn": "2026-03-30" },
-    { "title": "Deadpool (Pro)", "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.", "removedOn": "2026-03-30" },
-    { "title": "Xenon", "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.", "removedOn": "2026-03-22" },
-    { "title": "Royal Flush", "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.", "removedOn": "2026-03-22" },
-    { "title": "Joust", "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.", "removedOn": "2025-12-31" },
-    { "title": "Grand Prix", "details": "1976 Williams EM. Design by Steve Kordek. 2 flippers, 2 spinners, 2 pop bumpers.", "imageFilename": "grand-prix.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/grand-prix", "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix", "removedOn": "2025-11-04" },
-    { "title": "Crescendo", "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.", "removedOn": "2025-11-04" },
-    { "title": "World Cup Soccer", "details": "1994 Williams DMD. Design by John Popadiuk and Larry DeMar. 2 flippers, 2 ramps, spinning soccer ball, goalie target.", "imageFilename": "world-cup-soccer.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/world-cup-soccer", "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer", "removedOn": "2025-10-29" },
-    { "title": "Solar City", "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.", "removedOn": "2025-10-28" },
-    { "title": "The Amazing Spider-Man", "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.", "removedOn": "2025-09-08" },
-    { "title": "Kings of Steel", "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.", "removedOn": "2025-07-18" },
-    { "title": "Dogies", "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.", "removedOn": "2025-07-18" },
-    { "title": "Rock", "details": "1985 Gottlieb. Former club machine; removed from the lineup on 2025-04-30.", "removedOn": "2025-04-30" },
-    { "title": "Amigo", "details": "1973 Bally. Former club machine; removed from the lineup on 2025-04-30.", "removedOn": "2025-04-30" },
-    { "title": "Last Action Hero", "details": "1993 Data East solid state. Design by Tim Seckel, Joe Kaminkow, Ed Cebula, and John Borg. 2 flippers, 3 pop bumpers, 1 ramp, 6-ball multiball.", "imageFilename": "last-action-hero.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/last-action-hero", "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero" },
-    { "title": "World Poker Tour", "details": "2006 Stern DMD. Designed by Steve Ritchie and Keith P. Johnson. 4 flippers, 3 pop bumpers, 16 drop targets, ace hole.", "imageFilename": "world-poker-tour.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/world-poker-tour", "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour" },
-    { "title": "NASCAR", "details": "2005 Stern DMD. Designed by Pat Lawlor. 2 flippers, 2 ramps, 3 pop bumpers, motor speedway.", "imageFilename": "nascar.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/nascar", "pinsideUrl": "https://pinside.com/pinball/machine/nascar" },
-    { "title": "Johnny Mnemonic", "details": "1995 Williams DMD. Design by George Gomez. 2 flippers, 2 ramps, magnetic glove toy.", "imageFilename": "johnny-mnemonic.jpg", "kineticistUrl": "https://www.kineticist.com/games/pinball/johnny-mnemonic", "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic" },
-    { "title": "Sorcerer", "details": "1985 Williams solid state. Design by Mark Ritchie. 2 flippers, 3 pop bumpers, 1 ramp, 2-ball multiball.", "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer", "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer" },
-    { "title": "Count-Down", "details": "1979 Gottlieb solid state. Design by Ed Krynski. 4 flippers, 1 pop bumper, drop target banks.", "imageFilename": "count-down.jpg" },
-    { "title": "Genie", "details": "1979 Gottlieb solid state. Design by Ed Krynski. 5 flippers, 3 pop bumpers, 11 drop targets.", "imageFilename": "genie.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/genie", "pinsideUrl": "https://pinside.com/pinball/machine/genie" },
-    { "title": "Jacks Open", "details": "1977 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 9 drop targets, no slingshots.", "imageFilename": "jacks-open.png", "pinsideUrl": "https://pinside.com/pinball/machine/jacks-open" },
-    { "title": "Apollo", "details": "1967 Williams EM. Design by Norm Clark. 2 flippers, 4 pop bumpers, 7 standup targets.", "imageFilename": "apollo.png", "pinsideUrl": "https://pinside.com/pinball/machine/apollo" },
-    { "title": "Flight 2000", "details": "1980 Stern Electronics solid state. Design by Harry Williams. 2 flippers, 2 pop bumpers, 5 drop targets, 3-ball multiball.", "imageFilename": "flight-2000.png", "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000", "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000" },
-    { "title": "Rush (Premium)", "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration. Left the club in April 2025.", "imageFilename": "rush-premium.jpg", "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium", "removedOn": "2025-04" }
+    {
+      "title": "Space Shuttle",
+      "details": "1980 Williams solid state. Design by Barry Oursler and Joe Kaminkow. 2 flippers, 4 pop bumpers, 1 ramp, multiball.",
+      "imageFilename": "space-shuttle.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/space-shuttle",
+      "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle",
+      "releaseDate": "1980-01-01"
+    },
+    {
+      "title": "High Speed",
+      "details": "1986 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 ramp, standup banks.",
+      "imageFilename": "high-speed.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/high-speed",
+      "pinsideUrl": "https://pinside.com/pinball/machine/high-speed",
+      "releaseDate": "1986-01-01"
+    },
+    {
+      "title": "The Getaway: High Speed II",
+      "details": "1992 Williams DMD. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 2 ramps, supercharger.",
+      "imageFilename": "the-getaway-high-speed-ii.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-getaway-high-speed-ii",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii",
+      "releaseDate": "1992-01-01"
+    },
+    {
+      "title": "The Bally Game Show",
+      "details": "1990 Bally solid state. Design by Dan Langlois and Peter Perry. 2 flippers, 2 ramps, 2-ball multiball.",
+      "imageFilename": "the-bally-game-show.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-bally-game-show",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show",
+      "releaseDate": "1990-01-01"
+    },
+    {
+      "title": "Metallica (Pro)",
+      "details": "2013 Stern DMD. Design by John Borg. 2 flippers, 2 ramps, in-line drop targets.",
+      "imageFilename": "metallica-pro.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica",
+      "pinsideUrl": "https://pinside.com/pinball/machine/metallica",
+      "releaseDate": "2013-04-01"
+    },
+    {
+      "title": "KISS (Pro)",
+      "details": "2015 Stern DMD. Designed by John Borg. 2 flippers, 2 ramps, 4 pop bumpers, spinning disk.",
+      "imageFilename": "kiss-pro.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss",
+      "pinsideUrl": "https://pinside.com/pinball/machine/kiss",
+      "releaseDate": "2015-01-01"
+    },
+    {
+      "title": "PIN-BOT",
+      "details": "1986 Williams solid state. Design by Barry Oursler and Python Anghelo. 2 flippers, 5-drop bank, 3 kickout holes, 2-ball multiball.",
+      "imageFilename": "pin-bot.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/pinbot",
+      "pinsideUrl": "https://pinside.com/pinball/machine/pinbot",
+      "releaseDate": "1986-10-01"
+    },
+    {
+      "title": "Doodle Bug",
+      "details": "1971 Williams EM. Design by Norm Clark. 2 flippers, 5 pop bumpers, 5 standup targets.",
+      "imageFilename": "doodle-bug.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/doodle-bug",
+      "releaseDate": "1971-03-01"
+    },
+    {
+      "title": "The Simpsons Pinball Party",
+      "details": "2003 Stern DMD. Designed by Keith P. Johnson and Joe Balcer. 5 flippers, 4 ramps, custom callouts from the TV cast.",
+      "imageFilename": "the-simpsons-pinball-party.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-simpsons-pinball-party",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party",
+      "releaseDate": "2003-01-01"
+    },
+    {
+      "title": "Lost World",
+      "details": "1977 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 2 saucers, spinner.",
+      "imageFilename": "lost-world.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/lost-world",
+      "pinsideUrl": "https://pinside.com/pinball/machine/lost-world",
+      "releaseDate": "1977-01-01"
+    },
+    {
+      "title": "Argosy",
+      "details": "1977 Williams EM. Design by Chris Otis. 2 flippers, 1 spinner, 2 pop bumpers, 1 saucer.",
+      "imageFilename": "argosy.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/argosy",
+      "pinsideUrl": "https://pinside.com/pinball/machine/argosy",
+      "releaseDate": "1977-09-01"
+    },
+    {
+      "title": "Target Alpha",
+      "details": "1976 Gottlieb EM. Design by Ed Krynski. 4 flippers, 2 pop bumpers, 15 drop targets.",
+      "imageFilename": "target-alpha.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha",
+      "releaseDate": "1976-11-01"
+    },
+    {
+      "title": "Airborne",
+      "details": "1996 Capcom solid state. Design by Claude Fernandez. 2 flippers and many ramps.",
+      "imageFilename": "airborne.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/airborne",
+      "pinsideUrl": "https://pinside.com/pinball/machine/airborne",
+      "releaseDate": "1996-03-01"
+    },
+    {
+      "title": "Hot Shot",
+      "details": "1973 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 1 pop bumper, 14 drop targets, saucer.",
+      "imageFilename": "hot-shot.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hot-shot",
+      "releaseDate": "1973-09-01"
+    },
+    {
+      "title": "2001",
+      "details": "1971 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 20 drop targets.",
+      "releaseDate": "1971-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/2001"
+    },
+    {
+      "title": "Fun Land",
+      "details": "1968 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 spinners.",
+      "imageFilename": "fun-land.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/fun-land",
+      "releaseDate": "1968-05-01"
+    },
+    {
+      "title": "Major League",
+      "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp.",
+      "releaseDate": "1963-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/major-league"
+    },
+    {
+      "title": "The Lord of the Rings",
+      "details": "2003 Stern DMD. Designed by George Gomez, Keith P. Johnson, and Chris Granner. 2 flippers, 3 ramps, 3 pop bumpers, One Ring toy.",
+      "imageFilename": "the-lord-of-the-rings.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings",
+      "pinsideUrl": "https://pinside.com/pinball/machine/lord-of-the-rings",
+      "releaseDate": "2003-11-01"
+    },
+    {
+      "title": "The Hobbit (Smaug)",
+      "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
+      "releaseDate": "2016-03-01"
+    },
+    {
+      "title": "Robocop",
+      "details": "1989 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, jump ramp, spinner, 3-ball multiball.",
+      "imageFilename": "robocop.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/robocop",
+      "pinsideUrl": "https://pinside.com/pinball/machine/robocop",
+      "releaseDate": "1989-11-01"
+    },
+    {
+      "title": "Time Warp",
+      "details": "1979 Williams EM. Design by Barry Oursler. 2 banana flippers, 5 pop bumpers.",
+      "imageFilename": "time-warp.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/time-warp",
+      "pinsideUrl": "https://pinside.com/pinball/machine/time-warp",
+      "releaseDate": "1979-09-01"
+    },
+    {
+      "title": "Flash Gordon",
+      "details": "1981 Bally solid state. Design by Claude Fernandez. 3 flippers, 3 pop bumpers, in-line targets.",
+      "imageFilename": "flash-gordon.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flash-gordon",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon",
+      "releaseDate": "1981-02-01"
+    },
+    {
+      "title": "Ice Fever",
+      "details": "1985 Gottlieb solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, captive ball behind drop targets.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever",
+      "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever",
+      "releaseDate": "1985-02-01"
+    },
+    {
+      "title": "Star Trek",
+      "details": "1991 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3-ball multiball.",
+      "imageFilename": "star-trek.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/star-trek",
+      "pinsideUrl": "https://pinside.com/pinball/machine/star-trek",
+      "releaseDate": "1991-01-01"
+    },
+    {
+      "title": "X-Men Wolverine LE",
+      "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.",
+      "imageFilename": "x-men-wolverine-le.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",
+      "releaseDate": "2012-09-01"
+    },
+    {
+      "title": "Roy Clark The Entertainer",
+      "details": "1977 Fascination solid state cocktail table. 2 flippers, 3 pop bumpers, 4 drop targets.",
+      "pinsideUrl": "https://pinside.com/pinball/machine/entertainer",
+      "releaseDate": "1977-09-01"
+    },
+    {
+      "title": "Swords of Fury",
+      "details": "1988 Williams solid state. 4 flippers, no pop bumpers, mini-playfield, 5-bank drop targets.",
+      "imageFilename": "swords-of-fury.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/swords-of-fury",
+      "pinsideUrl": "https://pinside.com/pinball/machine/swords-of-fury",
+      "releaseDate": "1988-06-01"
+    },
+    {
+      "title": "Baywatch",
+      "details": "1995 Sega DMD. Design by Joe Kaminkow and Joe Balcer. 3 flippers plus shark flipper, 3 ramps, 5-ball multiball.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch",
+      "pinsideUrl": "https://pinside.com/pinball/machine/baywatch",
+      "releaseDate": "1995-02-01"
+    },
+    {
+      "title": "WHO dunnit",
+      "details": "1995 Williams DMD. Design by Dwight Sullivan and Barry Oursler. 2 flippers, 2 ramps.",
+      "imageFilename": "who-dunnit.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/who-dunnit",
+      "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit",
+      "releaseDate": "1995-09-01"
+    },
+    {
+      "title": "The Lost World Jurassic Park",
+      "details": "1997 Sega DMD. Design by John Borg. 2 flippers, 2 ramps.",
+      "imageFilename": "the-lost-world-jurassic-park.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
+      "releaseDate": "1997-01-01"
+    },
+    {
+      "title": "Congo",
+      "details": "1995 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, gorilla sub-playfield.",
+      "imageFilename": "congo.gif",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/congo",
+      "pinsideUrl": "https://pinside.com/pinball/machine/congo",
+      "releaseDate": "1995-11-01"
+    },
+    {
+      "title": "Time Machine",
+      "details": "1988 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3 ramps, chime box.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine",
+      "pinsideUrl": "https://pinside.com/pinball/machine/time-machine",
+      "releaseDate": "1988-12-01"
+    },
+    {
+      "title": "Aztec",
+      "details": "1976 Williams EM. 2 flippers, 2 pop bumpers, 6 standup targets, spinner.",
+      "imageFilename": "aztec.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/aztec",
+      "pinsideUrl": "https://pinside.com/pinball/machine/aztec",
+      "releaseDate": "1976-02-01"
+    },
+    {
+      "title": "Street Fighter II",
+      "details": "1993 Gottlieb Premier solid state. 5 flippers, three-level playfield, bash car.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii",
+      "pinsideUrl": "https://pinside.com/pinball/machine/street-fighter-ii",
+      "releaseDate": "1993-03-01"
+    },
+    {
+      "title": "Flash",
+      "details": "1979 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 spinner.",
+      "imageFilename": "flash.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flash",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flash",
+      "releaseDate": "1979-02-01"
+    },
+    {
+      "title": "Volley",
+      "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 15 drop targets.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/volley",
+      "pinsideUrl": "https://pinside.com/pinball/machine/volley",
+      "releaseDate": "1976-08-01"
+    },
+    {
+      "title": "Genesis",
+      "details": "1993 Gottlieb Premier solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, 2 ramps.",
+      "imageFilename": "genesis.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/genesis",
+      "pinsideUrl": "https://pinside.com/pinball/machine/genesis",
+      "releaseDate": "1993-01-01"
+    },
+    {
+      "title": "Evil Knievel",
+      "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.",
+      "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
+      "releaseDate": "1976-01-01"
+    },
+    {
+      "title": "Strikes and Spares",
+      "details": "1978 Bally solid state. 2 flippers, 3 pop bumpers, 10 star rollover buttons.",
+      "imageFilename": "strikes-and-spares.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/strikes-and-spares",
+      "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares",
+      "releaseDate": "1978-06-01"
+    },
+    {
+      "title": "Ship Ahoy",
+      "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 stand-up targets, spinner.",
+      "releaseDate": "1976-06-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/ship-ahoy"
+    },
+    {
+      "title": "The Flintstones",
+      "details": "1994 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, bowling alley toy.",
+      "imageFilename": "the-flintstones.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-flintstones",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones",
+      "releaseDate": "1994-01-01"
+    },
+    {
+      "title": "Judge Dredd",
+      "details": "1993 Williams DMD widebody. Design by John Trudeau. 4 flippers, 2 ramps, 6-ball multiball.",
+      "imageFilename": "judge-dredd.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/judge-dredd",
+      "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd",
+      "releaseDate": "1993-09-01"
+    },
+    {
+      "title": "Firepower",
+      "details": "1980 Williams solid state. Design by Steve Ritchie. 2 flippers, 4 pop bumpers, 3-ball multiball.",
+      "imageFilename": "firepower.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/firepower",
+      "pinsideUrl": "https://pinside.com/pinball/machine/firepower",
+      "releaseDate": "1980-02-01"
+    },
+    {
+      "title": "Total Nuclear Annihilation",
+      "details": "2017 Spooky Pinball. Designed by Scott Danesi. 3 flippers, 1 pop bumper, in-line drop targets.",
+      "imageFilename": "total-nuclear-annihilation.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/total-nuclear-annihilation",
+      "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation",
+      "releaseDate": "2017-07-01"
+    },
+    {
+      "title": "Cleopatra",
+      "details": "1977 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 5 drop targets, 2 saucers.",
+      "imageFilename": "cleopatra.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/cleopatra",
+      "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra",
+      "releaseDate": "1977-12-01"
+    },
+    {
+      "title": "F-14 Tomcat",
+      "details": "1987 Williams solid state. Design by Steve Ritchie. 4 flippers, 1 pop bumper, 4-ball multiball.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat",
+      "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
+      "releaseDate": "1987-03-01"
+    },
+    {
+      "title": "Old Chicago",
+      "details": "1976 Bally EM. Design by Greg Kmiec. 2 flippers, 5 pop bumpers, standup targets, drop targets, spinner.",
+      "imageFilename": "old-chicago.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/old-chicago",
+      "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago",
+      "releaseDate": "1976-04-01"
+    },
+    {
+      "title": "Terminator 2: Judgment Day",
+      "details": "1991 Williams DMD. Design by Steve Ritchie. 2 flippers, 3 pop bumpers, 2 ramps.",
+      "imageFilename": "terminator-2-judgment-day.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
+      "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
+      "releaseDate": "1991-07-01",
+      "leftClubDate": "2026-04-07"
+    },
+    {
+      "title": "Monopoly",
+      "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
+      "releaseDate": "2001-09-01",
+      "leftClubDate": "2026-04-07",
+      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly"
+    },
+    {
+      "title": "Godzilla (Pro)",
+      "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2021-09-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro"
+    },
+    {
+      "title": "Harley-Davidson (2nd Edition)",
+      "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2002-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition"
+    },
+    {
+      "title": "Disco Fever",
+      "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1978-08-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever"
+    },
+    {
+      "title": "Road Kings",
+      "details": "1986 Williams. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1986-07-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/road-kings"
+    },
+    {
+      "title": "Mustang",
+      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1977-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/mustang"
+    },
+    {
+      "title": "Target Pool",
+      "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.",
+      "imageFilename": "target-pool.jpg",
+      "releaseDate": "1969-06-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool"
+    },
+    {
+      "title": "NBA Fastbreak",
+      "details": "1997 Bally DMD. Design by George Gomez. 3 flippers including one backbox flipper, 3 ramps, 4 up-kickers.",
+      "imageFilename": "nba-fastbreak.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
+      "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
+      "releaseDate": "1997-03-01",
+      "leftClubDate": "2026-04-04"
+    },
+    {
+      "title": "Hot Line",
+      "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.",
+      "imageFilename": "hot-line.jpg",
+      "releaseDate": "1966-09-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line"
+    },
+    {
+      "title": "Solar Ride",
+      "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1979-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride"
+    },
+    {
+      "title": "Spider-Man",
+      "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2007-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man"
+    },
+    {
+      "title": "Charlie's Angels",
+      "details": "1978 Gottlieb solid state. Design by Allen Edwall. 2 flippers, 2 pop bumpers, 8 drop targets.",
+      "imageFilename": "charlies-angles.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
+      "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
+      "releaseDate": "1978-01-01",
+      "leftClubDate": "2026-04-04"
+    },
+    {
+      "title": "Avengers: Infinity Quest (Pro)",
+      "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2020-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest-pro"
+    },
+    {
+      "title": "Jurassic Park (Pro)",
+      "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "releaseDate": "2019-01-01",
+      "leftClubDate": "2026-03-30",
+      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro"
+    },
+    {
+      "title": "Deadpool (Pro)",
+      "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "releaseDate": "2018-01-01",
+      "leftClubDate": "2026-03-30",
+      "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro"
+    },
+    {
+      "title": "Xenon",
+      "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
+      "releaseDate": "1979-01-01",
+      "leftClubDate": "2026-03-22",
+      "pinsideUrl": "https://pinside.com/pinball/machine/xenon"
+    },
+    {
+      "title": "Royal Flush",
+      "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
+      "releaseDate": "1976-01-01",
+      "leftClubDate": "2026-03-22",
+      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush"
+    },
+    {
+      "title": "Joust",
+      "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.",
+      "releaseDate": "1969-01-01",
+      "leftClubDate": "2025-12-31",
+      "pinsideUrl": "https://pinside.com/pinball/machine/joust"
+    },
+    {
+      "title": "Grand Prix",
+      "details": "1976 Williams EM. Design by Steve Kordek. 2 flippers, 2 spinners, 2 pop bumpers.",
+      "imageFilename": "grand-prix.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/grand-prix",
+      "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix",
+      "releaseDate": "1976-01-01",
+      "leftClubDate": "2025-11-04"
+    },
+    {
+      "title": "Crescendo",
+      "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.",
+      "releaseDate": "1970-01-01",
+      "leftClubDate": "2025-11-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/crescendo"
+    },
+    {
+      "title": "World Cup Soccer",
+      "details": "1994 Williams DMD. Design by John Popadiuk and Larry DeMar. 2 flippers, 2 ramps, spinning soccer ball, goalie target.",
+      "imageFilename": "world-cup-soccer.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/world-cup-soccer",
+      "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer",
+      "releaseDate": "1994-01-01",
+      "leftClubDate": "2025-10-29"
+    },
+    {
+      "title": "Solar City",
+      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.",
+      "releaseDate": "1977-01-01",
+      "leftClubDate": "2025-10-28",
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-city"
+    },
+    {
+      "title": "The Amazing Spider-Man",
+      "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.",
+      "releaseDate": "1980-01-01",
+      "leftClubDate": "2025-09-08",
+      "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man"
+    },
+    {
+      "title": "Kings of Steel",
+      "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.",
+      "releaseDate": "1984-01-01",
+      "leftClubDate": "2025-07-18",
+      "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel"
+    },
+    {
+      "title": "Dogies",
+      "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.",
+      "releaseDate": "1968-01-01",
+      "leftClubDate": "2025-07-18",
+      "pinsideUrl": "https://pinside.com/pinball/machine/dogies"
+    },
+    {
+      "title": "Rock",
+      "details": "1985 Gottlieb. Former club machine; removed from the lineup on 2025-04-30.",
+      "releaseDate": "1985-01-01",
+      "leftClubDate": "2025-04-30",
+      "pinsideUrl": "https://pinside.com/pinball/machine/rock"
+    },
+    {
+      "title": "Amigo",
+      "details": "1973 Bally. Former club machine; removed from the lineup on 2025-04-30.",
+      "releaseDate": "1973-01-01",
+      "leftClubDate": "2025-04-30",
+      "pinsideUrl": "https://pinside.com/pinball/machine/amigo"
+    },
+    {
+      "title": "Last Action Hero",
+      "details": "1993 Data East solid state. Design by Tim Seckel, Joe Kaminkow, Ed Cebula, and John Borg. 2 flippers, 3 pop bumpers, 1 ramp, 6-ball multiball.",
+      "imageFilename": "last-action-hero.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/last-action-hero",
+      "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero",
+      "releaseDate": "1993-01-01"
+    },
+    {
+      "title": "World Poker Tour",
+      "details": "2006 Stern DMD. Designed by Steve Ritchie and Keith P. Johnson. 4 flippers, 3 pop bumpers, 16 drop targets, ace hole.",
+      "imageFilename": "world-poker-tour.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/world-poker-tour",
+      "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour",
+      "releaseDate": "2006-01-01"
+    },
+    {
+      "title": "NASCAR",
+      "details": "2005 Stern DMD. Designed by Pat Lawlor. 2 flippers, 2 ramps, 3 pop bumpers, motor speedway.",
+      "imageFilename": "nascar.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/nascar",
+      "pinsideUrl": "https://pinside.com/pinball/machine/nascar",
+      "releaseDate": "2005-01-01"
+    },
+    {
+      "title": "Johnny Mnemonic",
+      "details": "1995 Williams DMD. Design by George Gomez. 2 flippers, 2 ramps, magnetic glove toy.",
+      "imageFilename": "johnny-mnemonic.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/johnny-mnemonic",
+      "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic",
+      "releaseDate": "1995-01-01"
+    },
+    {
+      "title": "Sorcerer",
+      "details": "1985 Williams solid state. Design by Mark Ritchie. 2 flippers, 3 pop bumpers, 1 ramp, 2-ball multiball.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer",
+      "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer",
+      "releaseDate": "1985-01-01"
+    },
+    {
+      "title": "Count-Down",
+      "details": "1979 Gottlieb solid state. Design by Ed Krynski. 4 flippers, 1 pop bumper, drop target banks.",
+      "imageFilename": "count-down.jpg",
+      "releaseDate": "1979-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/count-down"
+    },
+    {
+      "title": "Genie",
+      "details": "1979 Gottlieb solid state. Design by Ed Krynski. 5 flippers, 3 pop bumpers, 11 drop targets.",
+      "imageFilename": "genie.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/genie",
+      "pinsideUrl": "https://pinside.com/pinball/machine/genie",
+      "releaseDate": "1979-01-01"
+    },
+    {
+      "title": "Jacks Open",
+      "details": "1977 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 9 drop targets, no slingshots.",
+      "imageFilename": "jacks-open.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/jacks-open",
+      "releaseDate": "1977-01-01"
+    },
+    {
+      "title": "Apollo",
+      "details": "1967 Williams EM. Design by Norm Clark. 2 flippers, 4 pop bumpers, 7 standup targets.",
+      "imageFilename": "apollo.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/apollo",
+      "releaseDate": "1967-06-01"
+    },
+    {
+      "title": "Flight 2000",
+      "details": "1980 Stern Electronics solid state. Design by Harry Williams. 2 flippers, 2 pop bumpers, 5 drop targets, 3-ball multiball.",
+      "imageFilename": "flight-2000.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
+      "releaseDate": "1980-09-01"
+    },
+    {
+      "title": "Rush (Premium)",
+      "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration. Left the club in April 2025.",
+      "imageFilename": "rush-premium.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
+      "releaseDate": "2022-01-01",
+      "leftClubDate": "2025-04-01"
+    }
   ]
 }
