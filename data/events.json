@@ -1,5 +1,33 @@
 [
     {
+        "name": "Take Your Pin Home from the Club Day",
+        "date": "2026-04-18",
+        "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+        "description": "Bring a vehicle, claim your machine, and get your pin safely home before move-out.",
+        "source": "manual"
+    },
+    {
+        "name": "Get-Your-Tools Day",
+        "date": "2026-04-19",
+        "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+        "description": "Collect your stored tools, parts, bins, and personal gear. If it is yours, this is the day to grab it.",
+        "source": "manual"
+    },
+    {
+        "name": "Last Call Load-Out Party",
+        "date": "2026-04-25",
+        "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+        "description": "Final big pickup push with buddy carries and good vibes. Help clear remaining personal items before vacating.",
+        "source": "manual"
+    },
+    {
+        "name": "Clean Sweep and Memory Lap",
+        "date": "2026-04-26",
+        "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+        "description": "Final retrieval window and clean sweep day before we hand over the space.",
+        "source": "manual"
+    },
+    {
         "name": "American Pinball Warrior Tournament",
         "date": "2026-04-11",
         "location": "Pintastic- Club Rooms",
