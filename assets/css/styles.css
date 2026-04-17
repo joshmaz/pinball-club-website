@@ -113,6 +113,10 @@ nav a {
   color: #111;
   text-shadow: none;
 }
+.page-hero--home .logo {
+  width: 50%;
+  height: auto;
+}
 
 .page-hero--events .page-hero-backdrop {
   background:
@@ -179,6 +183,18 @@ nav a {
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.35);
   color: #9ef0ff;
+}
+
+.page-hero--merch .page-hero-backdrop {
+  background:
+    linear-gradient(120deg, rgba(24, 16, 8, 0.9) 0%, rgba(34, 18, 18, 0.86) 50%, rgba(20, 12, 20, 0.9) 100%),
+    radial-gradient(circle at 75% 25%, rgba(255, 200, 120, 0.2), transparent 48%);
+}
+.page-hero--merch .page-hero-lead {
+  color: #ffe8cc;
+}
+.page-hero--merch .page-hero-note {
+  color: #e5c7a1;
 }
 
 .content {
@@ -414,6 +430,70 @@ footer {
 
 .games-previous-title {
   margin-top: 2.2rem;
+}
+
+.merch-content {
+  max-width: 56rem;
+}
+
+.merch-intro {
+  margin-top: 0;
+  color: #ddd;
+}
+
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.merch-item {
+  padding: 0.85rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #171717;
+}
+
+.merch-item-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  box-sizing: border-box;
+  margin-bottom: 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #2d2d2d;
+  background: #101010;
+}
+
+.merch-item-image--contain {
+  object-fit: contain;
+  padding: 0.5rem;
+}
+
+.merch-item h3 {
+  margin: 0 0 0.45rem;
+  color: #0ff;
+}
+
+.merch-item p {
+  margin: 0;
+  color: #d9d9d9;
+}
+
+.merch-steps {
+  margin: 0.6rem 0 1rem;
+}
+
+.merch-steps li + li {
+  margin-top: 0.35rem;
+}
+
+.merch-note {
+  margin-bottom: 0;
+  color: #aebcd0;
+  font-size: 0.95rem;
 }
 
 .resources-intro code {
