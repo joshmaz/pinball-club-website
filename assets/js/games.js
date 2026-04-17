@@ -1,5 +1,6 @@
 const IMAGE_BASE_PATH = "assets/images/machines";
 const KINETICIST_ICON_PATH = "assets/images/kineticist-k.png";
+const PINSIDE_ICON_PATH = "assets/images/pinside_logo-ball.png";
 const GAMES_URL = "data/games.json";
 
 function createGamesList(games) {
@@ -31,27 +32,50 @@ function createGamesList(games) {
     item.appendChild(details);
 
     const kineticistUrl = game.kineticistUrl;
-    if (kineticistUrl) {
+    const pinsideUrl = game.pinsideUrl;
+    if (kineticistUrl || pinsideUrl) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
 
-      const link = document.createElement("a");
-      link.className = "games-kineticist-link";
-      link.href = kineticistUrl;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.title = `View ${game.title} on Kineticist`;
-      link.setAttribute("aria-label", `View ${game.title} on Kineticist`);
+      if (kineticistUrl) {
+        const kineticistLink = document.createElement("a");
+        kineticistLink.className = "games-provider-link games-kineticist-link";
+        kineticistLink.href = kineticistUrl;
+        kineticistLink.target = "_blank";
+        kineticistLink.rel = "noopener";
+        kineticistLink.title = `View ${game.title} on Kineticist`;
+        kineticistLink.setAttribute("aria-label", `View ${game.title} on Kineticist`);
 
-      const icon = document.createElement("img");
-      icon.className = "games-kineticist-icon";
-      icon.src = KINETICIST_ICON_PATH;
-      icon.alt = "";
-      icon.loading = "lazy";
-      icon.decoding = "async";
-      link.appendChild(icon);
+        const kineticistIcon = document.createElement("img");
+        kineticistIcon.className = "games-provider-icon";
+        kineticistIcon.src = KINETICIST_ICON_PATH;
+        kineticistIcon.alt = "";
+        kineticistIcon.loading = "lazy";
+        kineticistIcon.decoding = "async";
+        kineticistLink.appendChild(kineticistIcon);
 
-      linkRow.appendChild(link);
+        linkRow.appendChild(kineticistLink);
+      }
+
+      if (pinsideUrl) {
+        const pinsideLink = document.createElement("a");
+        pinsideLink.className = "games-provider-link games-pinside-link";
+        pinsideLink.href = pinsideUrl;
+        pinsideLink.target = "_blank";
+        pinsideLink.rel = "noopener";
+        pinsideLink.title = `Search ${game.title} on Pinside`;
+        pinsideLink.setAttribute("aria-label", `Search ${game.title} on Pinside`);
+
+        const pinsideIcon = document.createElement("img");
+        pinsideIcon.className = "games-provider-icon";
+        pinsideIcon.src = PINSIDE_ICON_PATH;
+        pinsideIcon.alt = "";
+        pinsideIcon.loading = "lazy";
+        pinsideIcon.decoding = "async";
+        pinsideLink.appendChild(pinsideIcon);
+
+        linkRow.appendChild(pinsideLink);
+      }
 
       item.appendChild(linkRow);
     }
