@@ -453,6 +453,7 @@ footer {
   border: 1px solid #333;
   border-radius: 8px;
   background: #171717;
+  overflow: hidden;
 }
 
 .merch-item-image {
@@ -468,6 +469,8 @@ footer {
 }
 
 .merch-item-image--contain {
+  height: 220px;
+  aspect-ratio: auto;
   object-fit: contain;
   padding: 0.5rem;
 }
