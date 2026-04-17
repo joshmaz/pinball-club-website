@@ -31,8 +31,8 @@
       "categoryId": "leagues",
       "title": "New England Pinball League",
       "shortLabel": "NEPL",
-      "summary": "Weekly league play at venues across New England, including nights at SNHPC.",
-      "description": "Check the schedule for season weeks, makeup dates, and results by location.",
+      "summary": "One of the region's most active leagues, with weekly competitive pinball nights across New England, including SNHPC.",
+      "description": "A great mix of welcoming community and serious play: check season schedules, track weekly results, and follow standings as players compete throughout the region.",
       "links": [
         { "label": "NEPL home", "url": "https://nepl.org/" },
         { "label": "Schedule", "url": "https://nepl.org/schedule" },
@@ -64,6 +64,17 @@
         { "label": "IFPA website", "url": "https://www.ifpapinball.com/" }
       ],
       "sortOrder": 20
+    },
+    {
+      "id": "belles-and-chimes",
+      "categoryId": "leagues",
+      "title": "Belles & Chimes Pinball",
+      "summary": "International network of inclusive women-led pinball leagues with local chapters.",
+      "description": "Find a nearby chapter or resources to start one in your area.",
+      "links": [
+        { "label": "Belles & Chimes", "url": "https://bellesandchimespinball.com/" }
+      ],
+      "sortOrder": 30
     },
     {
       "id": "ipdb",
@@ -119,6 +130,17 @@
       "sortOrder": 35
     },
     {
+      "id": "punk-rock-pinball",
+      "categoryId": "websites",
+      "title": "Punk Rock Pinball",
+      "summary": "Pinball podcast, community coverage, event content, and blog posts from an indie scene perspective.",
+      "description": "Includes the Punk Rock Pinball Podcast, PRPA content, and location/event writeups.",
+      "links": [
+        { "label": "Punk Rock Pinball", "url": "https://punkrockpinball.com/" }
+      ],
+      "sortOrder": 40
+    },
+    {
       "id": "marco",
       "categoryId": "parts",
       "title": "Marco Specialties",
@@ -140,6 +162,18 @@
       "sortOrder": 20
     },
     {
+      "id": "pbresource",
+      "categoryId": "parts",
+      "title": "The Pinball Resource",
+      "shortLabel": "PBR",
+      "summary": "Large inventory of factory and reproduction parts, plus manuals and technical references.",
+      "description": "Long-running parts supplier with deep coverage for Gottlieb and other manufacturers.",
+      "links": [
+        { "label": "The Pinball Resource", "url": "https://pbresource.com/index.html" }
+      ],
+      "sortOrder": 30
+    },
+    {
       "id": "pintastic",
       "categoryId": "major-events",
       "title": "Pintastic New England",
@@ -149,6 +183,17 @@
         { "label": "Pintastic NE", "url": "https://www.pintasticnewengland.com/" }
       ],
       "sortOrder": 10
+    },
+    {
+      "id": "pinfest",
+      "categoryId": "major-events",
+      "title": "PinFest",
+      "summary": "Long-running pinball show with free-play machines, vendors, tournaments, and a flea market.",
+      "description": "Hosted in Allentown, PA; dates and registration links are posted on the official site each year.",
+      "links": [
+        { "label": "PinFest", "url": "https://www.pinfestival.com/" }
+      ],
+      "sortOrder": 20
     }
   ]
 }
