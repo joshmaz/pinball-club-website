@@ -375,7 +375,7 @@ footer {
   color: #0ff;
 }
 
-.games-kineticist-link {
+.games-provider-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -389,18 +389,18 @@ footer {
   flex-shrink: 0;
 }
 
-.games-kineticist-link:hover {
+.games-provider-link:hover {
   background: rgba(77, 163, 255, 0.2);
   border-color: #4da3ff;
   color: #bde8ff;
 }
 
-.games-kineticist-link:focus-visible {
+.games-provider-link:focus-visible {
   outline: 2px solid #4da3ff;
   outline-offset: 2px;
 }
 
-.games-kineticist-icon {
+.games-provider-icon {
   display: block;
   width: 100%;
   height: 100%;
@@ -410,6 +410,7 @@ footer {
 .games-actions {
   margin-top: 0.5rem;
   display: flex;
+  gap: 0.35rem;
   justify-content: flex-end;
 }
 

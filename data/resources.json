@@ -36,6 +36,7 @@
       "links": [
         { "label": "NEPL home", "url": "https://nepl.org/" },
         { "label": "Schedule", "url": "https://nepl.org/schedule" },
+        { "label": "Locations", "url": "https://nepl.org/locations" },
         { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" }
       ],
       "sortOrder": 10
@@ -96,6 +97,17 @@
         { "label": "Pinside", "url": "https://pinside.com/" }
       ],
       "sortOrder": 20
+    },
+    {
+      "id": "pinball-map",
+      "categoryId": "websites",
+      "title": "Pinball Map",
+      "summary": "Crowdsourced map of public pinball locations with machine lists, status updates, and directions.",
+      "links": [
+        { "label": "Pinball Map", "url": "https://pinballmap.com/" },
+        { "label": "SNHPC location on Pinball Map", "url": "https://pinballmap.com/map?by_location_id=8908&by_location_name=Southern%20NH%20Pinball%20Club" }
+      ],
+      "sortOrder": 25
     },
     {
       "id": "tiltforums",
