@@ -1,0 +1,154 @@
+{
+  "categories": [
+    {
+      "id": "leagues",
+      "title": "Leagues & local competition",
+      "description": "Organized league play and recurring tournaments in the region.",
+      "sortOrder": 10
+    },
+    {
+      "id": "websites",
+      "title": "Websites & reference",
+      "description": "Rules, machine info, news, and community hubs online.",
+      "sortOrder": 20
+    },
+    {
+      "id": "parts",
+      "title": "Parts & repair",
+      "description": "Suppliers and references for boards, playfields, and shop work.",
+      "sortOrder": 30
+    },
+    {
+      "id": "major-events",
+      "title": "Major events & shows",
+      "description": "Larger pinball festivals and championships worth planning for.",
+      "sortOrder": 40
+    }
+  ],
+  "resources": [
+    {
+      "id": "nepl",
+      "categoryId": "leagues",
+      "title": "New England Pinball League",
+      "shortLabel": "NEPL",
+      "summary": "Weekly league play at venues across New England, including nights at SNHPC.",
+      "description": "Check the schedule for season weeks, makeup dates, and results by location.",
+      "links": [
+        { "label": "NEPL home", "url": "https://nepl.org/" },
+        { "label": "Schedule", "url": "https://nepl.org/schedule" },
+        { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" }
+      ],
+      "sortOrder": 10
+    },
+    {
+      "id": "npc",
+      "categoryId": "leagues",
+      "title": "Northeast Pinball Challenge",
+      "shortLabel": "NPC",
+      "summary": "Federation of pinball leagues across New England with local seasons and Grand Finals for top finishers.",
+      "description": "Play at participating locations, compete for league prizes, and qualify for the NPC team and individual finals (IFPA-submitted). Seasons and finals venues are announced on the site.",
+      "links": [
+        { "label": "NPC home", "url": "https://npcpinball.org/" },
+        { "label": "League info", "url": "https://npcpinball.org/about/" },
+        { "label": "Locations", "url": "https://npcpinball.org/locations/" }
+      ],
+      "sortOrder": 15
+    },
+    {
+      "id": "ifpa",
+      "categoryId": "leagues",
+      "title": "International Flipper Pinball Association",
+      "shortLabel": "IFPA",
+      "summary": "Worldwide rankings and sanctioned event standards.",
+      "links": [
+        { "label": "IFPA website", "url": "https://www.ifpapinball.com/" }
+      ],
+      "sortOrder": 20
+    },
+    {
+      "id": "ipdb",
+      "categoryId": "websites",
+      "title": "Internet Pinball Database",
+      "shortLabel": "IPDB",
+      "summary": "Machine photos, production numbers, and technical notes.",
+      "links": [
+        { "label": "IPDB", "url": "https://www.ipdb.org/" }
+      ],
+      "sortOrder": 10
+    },
+    {
+      "id": "pinside",
+      "categoryId": "websites",
+      "title": "Pinside",
+      "summary": "Forums, marketplace, and machine-specific discussion.",
+      "links": [
+        { "label": "Pinside", "url": "https://pinside.com/" }
+      ],
+      "sortOrder": 20
+    },
+    {
+      "id": "tiltforums",
+      "categoryId": "websites",
+      "title": "Tilt Forums",
+      "summary": "Rulesheets, strategy, and tournament discussion.",
+      "links": [
+        { "label": "Tilt Forums", "url": "https://tiltforums.com/" }
+      ],
+      "sortOrder": 30
+    },
+    {
+      "id": "pinventory",
+      "categoryId": "websites",
+      "title": "Pinventory",
+      "summary": "Fleet and collection management: machine status, maintenance history, spare parts, revenue, and QR codes so players can report issues without installing an app.",
+      "description": "Aimed at operators and serious collectors; can link machines to the Kineticist database for manufacturer info and images.",
+      "links": [
+        { "label": "Pinventory", "url": "https://pinventory.app/" },
+        { "label": "Get started", "url": "https://pinventory.app/auth" }
+      ],
+      "sortOrder": 32
+    },
+    {
+      "id": "kineticist",
+      "categoryId": "websites",
+      "title": "Kineticist",
+      "summary": "Pinball news, articles, and a game database including the Hype Index.",
+      "links": [
+        { "label": "Kineticist", "url": "https://www.kineticist.com/" }
+      ],
+      "sortOrder": 35
+    },
+    {
+      "id": "marco",
+      "categoryId": "parts",
+      "title": "Marco Specialties",
+      "summary": "Common parts, rubber kits, LEDs, and boards.",
+      "links": [
+        { "label": "Marco Specialties", "url": "https://www.marcospecialties.com/" }
+      ],
+      "sortOrder": 10
+    },
+    {
+      "id": "pbl",
+      "categoryId": "parts",
+      "title": "Pinball Life",
+      "shortLabel": "PBL",
+      "summary": "Parts, tools, and mod-friendly supplies.",
+      "links": [
+        { "label": "Pinball Life", "url": "https://www.pinballlife.com/" }
+      ],
+      "sortOrder": 20
+    },
+    {
+      "id": "pintastic",
+      "categoryId": "major-events",
+      "title": "Pintastic New England",
+      "summary": "Large regional show with games on free play, vendors, and tournaments.",
+      "description": "Dates and venue vary year to year—check the site for the next event.",
+      "links": [
+        { "label": "Pintastic NE", "url": "https://www.pintasticnewengland.com/" }
+      ],
+      "sortOrder": 10
+    }
+  ]
+}
