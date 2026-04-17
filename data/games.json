@@ -17,30 +17,35 @@
     {
       "title": "Black Jack",
       "details": "1977 Bally. Current club machine.",
+      "imageFilename": "black-jack.jpg",
       "releaseDate": "1977-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/black-jack"
     },
     {
       "title": "Black Pyramid",
       "details": "1984 Bally. Current club machine.",
+      "imageFilename": "black-pyramid.jpg",
       "releaseDate": "1984-07-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid"
     },
     {
       "title": "Embryon",
       "details": "1981 Bally. Current club machine.",
+      "imageFilename": "embryon.jpg",
       "releaseDate": "1981-06-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/embryon"
     },
     {
       "title": "Future Spa",
       "details": "1979 Bally. Current club machine.",
+      "imageFilename": "future-spa.jpg",
       "releaseDate": "1979-10-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/future-spa"
     },
     {
       "title": "Heavy Metal Meltdown",
       "details": "1987 Bally. Current club machine.",
+      "imageFilename": "heavy-metal-meltdown.jpg",
       "releaseDate": "1987-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown"
     },
@@ -55,18 +60,21 @@
     {
       "title": "Mr. & Mrs. Pac-Man",
       "details": "1982 Bally. Current club machine.",
+      "imageFilename": "mr-and-mrs-pac-man.jpg",
       "releaseDate": "1982-05-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man"
     },
     {
       "title": "Starship Troopers",
       "details": "1997 Sega. Current club machine.",
+      "imageFilename": "starship-troopers.jpg",
       "releaseDate": "1997-12-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers"
     },
     {
       "title": "Truck Stop",
       "details": "1988 Bally. Current club machine.",
+      "imageFilename": "truck-stop.jpg",
       "releaseDate": "1988-11-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop"
     }
@@ -197,8 +205,9 @@
     {
       "title": "Major League",
       "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp.",
+      "imageFilename": "major-league.jpg",
       "releaseDate": "1963-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/major-league"
+      "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams"
     },
     {
       "title": "The Lord of the Rings",
@@ -278,6 +287,7 @@
     {
       "title": "Baywatch",
       "details": "1995 Sega DMD. Design by Joe Kaminkow and Joe Balcer. 3 flippers plus shark flipper, 3 ramps, 5-ball multiball.",
+      "imageFilename": "baywatch.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch",
       "pinsideUrl": "https://pinside.com/pinball/machine/baywatch",
       "releaseDate": "1995-02-01"
@@ -414,6 +424,7 @@
     {
       "title": "F-14 Tomcat",
       "details": "1987 Williams solid state. Design by Steve Ritchie. 4 flippers, 1 pop bumper, 4-ball multiball.",
+      "imageFilename": "f-14-tomcat.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat",
       "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
       "releaseDate": "1987-03-01"
@@ -445,6 +456,7 @@
     {
       "title": "Godzilla (Pro)",
       "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "imageFilename": "godzilla-pro.jpg",
       "releaseDate": "2021-09-01",
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro"
@@ -466,6 +478,7 @@
     {
       "title": "Road Kings",
       "details": "1986 Williams. Former club machine; removed from the lineup on 2026-04-04.",
+      "imageFilename": "road-kings.jpeg",
       "releaseDate": "1986-07-01",
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/road-kings"
@@ -535,6 +548,7 @@
     {
       "title": "Jurassic Park (Pro)",
       "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "imageFilename": "jurassic-park-pro.jpg",
       "releaseDate": "2019-01-01",
       "leftClubDate": "2026-03-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro"
@@ -542,6 +556,7 @@
     {
       "title": "Deadpool (Pro)",
       "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "imageFilename": "deadpool-pro.jpg",
       "releaseDate": "2018-01-01",
       "leftClubDate": "2026-03-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro"
