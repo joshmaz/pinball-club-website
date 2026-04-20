@@ -135,10 +135,14 @@ function createResourceCard(resource) {
     for (const link of links) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = safeText(link.url);
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = safeText(link.label) || safeText(link.url);
+      const href = safeText(link.url);
+      a.href = href;
+      const isExternal = /^https?:\/\//i.test(href);
+      if (isExternal) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+      a.textContent = safeText(link.label) || href;
       li.appendChild(a);
       list.appendChild(li);
     }
