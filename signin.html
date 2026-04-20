@@ -7,7 +7,7 @@
   <title>SNHPC - Members</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
@@ -56,8 +56,8 @@
   </p>
   <input id="email" type="email" autocomplete="email" placeholder="Email" />
   <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
-  <button onclick="login()">Login</button>
-  <button onclick="signup()">Sign Up</button>
+  <button id="login-btn" onclick="login()">Login</button>
+  <button id="signup-btn" onclick="signup()">Sign Up</button>
   <p id="status" aria-live="polite"></p>
 </section>
 
@@ -69,6 +69,30 @@
 </footer>
 
 <script>
+  function setAuthEnabled(enabled, message) {
+    var emailEl = document.getElementById("email");
+    var passwordEl = document.getElementById("password");
+    var loginBtn = document.getElementById("login-btn");
+    var signupBtn = document.getElementById("signup-btn");
+    var status = document.getElementById("status");
+
+    if (emailEl) emailEl.disabled = !enabled;
+    if (passwordEl) passwordEl.disabled = !enabled;
+    if (loginBtn) loginBtn.disabled = !enabled;
+    if (signupBtn) signupBtn.disabled = !enabled;
+    if (status && message) status.innerText = message;
+  }
+
+  function getUnavailableMessage() {
+    if (window.snhSupabaseError === "missing_config") {
+      return "Member login is temporarily unavailable while we finish setup. Please try again later.";
+    }
+    if (window.snhSupabaseError === "missing_client") {
+      return "Member login is temporarily unavailable due to a loading issue. Please refresh and try again.";
+    }
+    return "Member login is temporarily unavailable right now. Please try again later.";
+  }
+
   function getCredentials() {
     var email = document.getElementById("email").value.trim();
     var password = document.getElementById("password").value;
@@ -78,7 +102,7 @@
   async function signup() {
     var status = document.getElementById("status");
     if (!window.snhSupabase) {
-      status.innerText = "Configuration error. See README.";
+      setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var creds = getCredentials();
@@ -107,7 +131,7 @@
   async function login() {
     var status = document.getElementById("status");
     if (!window.snhSupabase) {
-      status.innerText = "Configuration error. See README.";
+      setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var creds = getCredentials();
@@ -126,6 +150,10 @@
       return;
     }
     window.location.href = "index.html";
+  }
+
+  if (!window.snhSupabase) {
+    setAuthEnabled(false, getUnavailableMessage());
   }
 </script>
 
