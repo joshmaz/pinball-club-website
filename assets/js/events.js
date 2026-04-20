@@ -39,9 +39,18 @@ function parseEventDate(dateStr) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-function createEventCard(event) {
+function createEventCard(event, options = {}) {
+  const { isUpcoming = false } = options;
   const div = document.createElement('div');
   div.className = 'event-card';
+  div.classList.add(isUpcoming ? 'event-card--upcoming' : 'event-card--past');
+
+  if (isUpcoming) {
+    const badge = document.createElement('p');
+    badge.className = 'event-card-badge';
+    badge.textContent = 'Upcoming';
+    div.appendChild(badge);
+  }
 
   const imageUrl = event.imageUrl;
   if (imageUrl != null && String(imageUrl).trim() !== '') {
@@ -242,7 +251,7 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
     panel.appendChild(countP);
 
     for (const event of events) {
-      panel.appendChild(createEventCard(event));
+      panel.appendChild(createEventCard(event, { isUpcoming: false }));
     }
 
     for (let i = 0; i < tabButtons.length; i++) {
@@ -317,8 +326,18 @@ function renderEventsList(container, events) {
     empty.textContent = 'No upcoming events right now. Check back soon, or browse past events below.';
     upcomingWrap.appendChild(empty);
   } else {
+    const upcomingHeading = document.createElement('h2');
+    upcomingHeading.className = 'events-upcoming-heading';
+    upcomingHeading.textContent = 'Upcoming events';
+    upcomingWrap.appendChild(upcomingHeading);
+
+    const upcomingMeta = document.createElement('p');
+    upcomingMeta.className = 'events-upcoming-meta';
+    upcomingMeta.textContent = `${upcoming.length} event${upcoming.length === 1 ? '' : 's'} coming up`;
+    upcomingWrap.appendChild(upcomingMeta);
+
     for (const event of upcoming) {
-      upcomingWrap.appendChild(createEventCard(event));
+      upcomingWrap.appendChild(createEventCard(event, { isUpcoming: true }));
     }
   }
 

@@ -218,6 +218,91 @@ nav a {
   color: #9cc;
 }
 
+.page-hero--donate .page-hero-backdrop {
+  background:
+    linear-gradient(120deg, rgba(14, 28, 20, 0.88) 0%, rgba(10, 24, 28, 0.85) 48%, rgba(20, 14, 26, 0.9) 100%),
+    radial-gradient(circle at 20% 25%, rgba(94, 238, 238, 0.12), transparent 40%);
+}
+.page-hero--donate .page-hero-lead {
+  color: #dcf5ef;
+}
+.page-hero--donate .page-hero-note {
+  color: #a9d7d0;
+}
+
+.donate-hero-inner {
+  max-width: 48rem;
+}
+
+.donate-hero-logo {
+  display: block;
+  width: min(360px, 82%);
+  height: auto;
+  margin: 0 auto 1rem;
+  border-radius: 10px;
+}
+
+.donate-hero-actions {
+  margin: 1rem 0 0;
+}
+
+.donate-content {
+  max-width: 54rem;
+  margin: 0 auto;
+}
+
+.donate-intro {
+  margin-top: 0;
+}
+
+.donate-impact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.donate-impact-item {
+  padding: 0.85rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #161a1a;
+}
+
+.donate-impact-item h3 {
+  margin: 0 0 0.45rem;
+  color: #7de4db;
+  font-size: 1.05rem;
+}
+
+.donate-impact-item p {
+  margin: 0;
+  color: #d6d6d6;
+  font-size: 0.95rem;
+}
+
+.donate-levels {
+  margin: 0.55rem 0 1.1rem;
+}
+
+.donate-levels li + li {
+  margin-top: 0.3rem;
+}
+
+.donate-disclaimer {
+  margin: 0.9rem 0 0;
+  color: #aebcd0;
+  font-size: 0.92rem;
+}
+
+.donate-cta-row {
+  margin: 1.2rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.25rem;
+}
+
 .content {
   padding: 2rem;
 }
@@ -402,6 +487,53 @@ footer {
 .events-empty-upcoming {
   margin: 0 0 1rem;
   color: #ccc;
+}
+
+#events-container .event-card {
+  margin: 0 0 0.9rem;
+  padding: 0.85rem;
+  border: 1px solid #2f2f2f;
+  border-radius: 8px;
+  background: #171717;
+}
+
+#events-container .event-card:last-child {
+  margin-bottom: 0;
+}
+
+.events-upcoming-heading {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  color: #f2f7ff;
+}
+
+.events-upcoming-meta {
+  margin: 0 0 0.85rem;
+  color: #8fb5d8;
+  font-size: 0.9rem;
+}
+
+.event-card-badge {
+  display: inline-block;
+  margin: 0 0 0.6rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid #2d7083;
+  border-radius: 999px;
+  background: rgba(12, 93, 110, 0.25);
+  color: #7de4db;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.event-card--upcoming {
+  border-color: #2d7083;
+  background: linear-gradient(180deg, #182022 0%, #171717 100%);
+}
+
+.event-card--past {
+  border-color: #2b2b2b;
 }
 
 .events-past-toggle {
