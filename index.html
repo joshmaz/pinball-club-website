@@ -99,33 +99,7 @@
 </section>
 </main>
 
-<script>
-  (function () {
-    const images = [
-      "assets/images/machines/congo.gif",
-      "assets/images/machines/airborne.png",
-      "assets/images/machines/apollo.png",
-      "assets/images/machines/argosy.png",
-      "assets/images/machines/flight-2000.png",
-      "assets/images/machines/genie.png",
-      "assets/images/machines/hot-shot.png",
-      "assets/images/machines/jacks-open.png",
-      "assets/images/machines/last-action-hero.png",
-      "assets/images/machines/target-alpha.png",
-      "assets/images/machines/terminator-2-judgment-day.png",
-      "assets/images/machines/the-getaway-high-speed-ii.png",
-      "assets/images/machines/the-simpsons-pinball-party.png"
-    ];
-    let currentIndex = 0;
-    const imgElement = document.getElementById("gallery-image");
-    if (!imgElement) return;
-    imgElement.src = images[currentIndex];
-    setInterval(function () {
-      currentIndex = (currentIndex + 1) % images.length;
-      imgElement.src = images[currentIndex];
-    }, 3000);
-  })();
-</script>
+<script src="assets/js/home-gallery.js"></script>
 
 <footer>
   <button type="button" id="logout-btn" onclick="logout()" hidden>Logout</button>
