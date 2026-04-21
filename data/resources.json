@@ -37,8 +37,7 @@
         { "label": "NEPL home", "url": "https://nepl.org/" },
         { "label": "Schedule", "url": "https://nepl.org/schedule" },
         { "label": "Locations", "url": "https://nepl.org/locations" },
-        { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" },
-        { "label": "Standings and channels (SNHPC)", "url": "standings.html" }
+        { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" }
       ],
       "sortOrder": 10
     },
@@ -111,6 +110,29 @@
       "sortOrder": 25
     },
     {
+      "id": "pixels-and-pinball",
+      "categoryId": "websites",
+      "title": "Pixels & Pinball",
+      "summary": "New England pinball retailer: new games, preorders, and arcade gear; official partner of the New England Pinball League.",
+      "description": "Shop for in-stock and preorder titles, accessories, and arcade products—handy for buyers in the region and for following local retail and league news.",
+      "links": [
+        { "label": "Pixels & Pinball", "url": "https://pixelsandpinball.com/" }
+      ],
+      "sortOrder": 27
+    },
+    {
+      "id": "match-play-events",
+      "categoryId": "websites",
+      "title": "Match Play Events",
+      "shortLabel": "Match Play",
+      "summary": "Tournament web app: discover events, register, and follow live brackets and results—common for IFPA tournaments and league play.",
+      "description": "Players use it to find competitions and track pairings; organizers use it to run draws, scoring, and standings in the browser.",
+      "links": [
+        { "label": "Match Play Events", "url": "https://app.matchplay.events/" }
+      ],
+      "sortOrder": 29
+    },
+    {
       "id": "tiltforums",
       "categoryId": "websites",
       "title": "Tilt Forums",
@@ -162,6 +184,18 @@
         { "label": "Marco Specialties", "url": "https://www.marcospecialties.com/" }
       ],
       "sortOrder": 10
+    },
+    {
+      "id": "mitchell-lighting",
+      "categoryId": "parts",
+      "title": "Mitchell Lighting",
+      "summary": "Pinball LED bulbs and kits tuned for a warm, vintage arcade look—modern efficiency without losing that classic glow.",
+      "description": "Popular for restorations and upgrades when you want incandescent-style color and diffusion with less heat and maintenance than old bulbs.",
+      "links": [
+        { "label": "Mitchell Lighting", "url": "https://mitchelllighting.com/" },
+        { "label": "Pinside shop listing", "url": "https://pinside.com/pinball/shops/shop/1445-mitchell-lighting" }
+      ],
+      "sortOrder": 15
     },
     {
       "id": "pbl",
