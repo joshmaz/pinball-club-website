@@ -37,8 +37,7 @@
         { "label": "NEPL home", "url": "https://nepl.org/" },
         { "label": "Schedule", "url": "https://nepl.org/schedule" },
         { "label": "Locations", "url": "https://nepl.org/locations" },
-        { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" },
-        { "label": "Standings and channels (SNHPC)", "url": "standings.html" }
+        { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" }
       ],
       "sortOrder": 10
     },

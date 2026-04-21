@@ -1,12 +1,11 @@
 # Pinball Club Website
 
-This is the official website for the Southern New Hampshire Pinball Club. It includes information about events, standings, and more.
+This is the official website for the Southern New Hampshire Pinball Club. It includes information about events, resources, and more.
 
 ## Structure
 
 - `index.html`: Home page
 - `events.html`: Upcoming and past events
-- `standings.html`: Player standings
 - `about.html`: About the club
 - `assets/css/styles.css`: Stylesheet
 - `assets/js/`: JavaScript files (to be added)
