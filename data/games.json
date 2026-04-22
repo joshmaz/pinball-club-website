@@ -4,50 +4,64 @@
       "title": "300",
       "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
       "imageFilename": "300.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/300-top-score",
       "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
-      "releaseDate": "1975-08-01"
+      "releaseDate": "1975-08-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539"
     },
     {
       "title": "Alien Poker",
       "details": "1980 Williams. Current club machine.",
       "imageFilename": "alien-poker.jpg",
       "releaseDate": "1980-10-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker"
+      "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=48",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker"
     },
     {
       "title": "Black Jack",
       "details": "1977 Bally. Current club machine.",
       "imageFilename": "black-jack.jpg",
       "releaseDate": "1977-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/black-jack"
+      "pinsideUrl": "https://pinside.com/pinball/machine/black-jack",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4498",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack"
     },
     {
       "title": "Black Pyramid",
       "details": "1984 Bally. Current club machine.",
       "imageFilename": "black-pyramid.jpg",
       "releaseDate": "1984-07-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid"
+      "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=312",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-pyramid"
     },
     {
       "title": "Embryon",
       "details": "1981 Bally. Current club machine.",
       "imageFilename": "embryon.jpg",
       "releaseDate": "1981-06-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/embryon"
+      "pinsideUrl": "https://pinside.com/pinball/machine/embryon",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=783",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/embryon"
     },
     {
       "title": "Future Spa",
       "details": "1979 Bally. Current club machine.",
       "imageFilename": "future-spa.jpg",
       "releaseDate": "1979-10-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/future-spa"
+      "pinsideUrl": "https://pinside.com/pinball/machine/future-spa",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=974",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/future-spa"
     },
     {
       "title": "Heavy Metal Meltdown",
       "details": "1987 Bally. Current club machine.",
       "imageFilename": "heavy-metal-meltdown.jpg",
       "releaseDate": "1987-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown"
+      "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1150",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/heavy-metal-meltdown"
     },
     {
       "title": "Hokus Pokus",
@@ -55,28 +69,35 @@
       "imageFilename": "hokus-pokus.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/hokus-pokus",
       "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
-      "releaseDate": "1975-04-01"
+      "releaseDate": "1975-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206"
     },
     {
       "title": "Mr. & Mrs. Pac-Man",
       "details": "1982 Bally. Current club machine.",
       "imageFilename": "mr-and-mrs-pac-man.jpg",
       "releaseDate": "1982-05-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man"
+      "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1639",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mr-mrs-pac-man"
     },
     {
       "title": "Starship Troopers",
       "details": "1997 Sega. Current club machine.",
       "imageFilename": "starship-troopers.jpg",
       "releaseDate": "1997-12-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers"
+      "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4341",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/starship-troopers"
     },
     {
       "title": "Truck Stop",
       "details": "1988 Bally. Current club machine.",
       "imageFilename": "truck-stop.jpg",
       "releaseDate": "1988-11-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop"
+      "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2667",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/truck-stop"
     }
   ],
   "previousGames": [
@@ -86,7 +107,8 @@
       "imageFilename": "space-shuttle.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/space-shuttle",
       "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle",
-      "releaseDate": "1980-01-01"
+      "releaseDate": "1980-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2260"
     },
     {
       "title": "High Speed",
@@ -94,7 +116,8 @@
       "imageFilename": "high-speed.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/high-speed",
       "pinsideUrl": "https://pinside.com/pinball/machine/high-speed",
-      "releaseDate": "1986-01-01"
+      "releaseDate": "1986-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1176"
     },
     {
       "title": "The Getaway: High Speed II",
@@ -102,7 +125,8 @@
       "imageFilename": "the-getaway-high-speed-ii.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-getaway-high-speed-ii",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii",
-      "releaseDate": "1992-01-01"
+      "releaseDate": "1992-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1000"
     },
     {
       "title": "The Bally Game Show",
@@ -110,7 +134,8 @@
       "imageFilename": "the-bally-game-show.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-bally-game-show",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show",
-      "releaseDate": "1990-01-01"
+      "releaseDate": "1990-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=985"
     },
     {
       "title": "Metallica (Pro)",
@@ -118,7 +143,8 @@
       "imageFilename": "metallica-pro.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica",
       "pinsideUrl": "https://pinside.com/pinball/machine/metallica",
-      "releaseDate": "2013-04-01"
+      "releaseDate": "2013-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6028"
     },
     {
       "title": "KISS (Pro)",
@@ -126,7 +152,8 @@
       "imageFilename": "kiss-pro.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss",
       "pinsideUrl": "https://pinside.com/pinball/machine/kiss",
-      "releaseDate": "2015-01-01"
+      "releaseDate": "2015-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6265"
     },
     {
       "title": "PIN-BOT",
@@ -134,14 +161,17 @@
       "imageFilename": "pin-bot.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/pinbot",
       "pinsideUrl": "https://pinside.com/pinball/machine/pinbot",
-      "releaseDate": "1986-10-01"
+      "releaseDate": "1986-10-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1796"
     },
     {
       "title": "Doodle Bug",
       "details": "1971 Williams EM. Design by Norm Clark. 2 flippers, 5 pop bumpers, 5 standup targets.",
       "imageFilename": "doodle-bug.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/doodle-bug",
-      "releaseDate": "1971-03-01"
+      "releaseDate": "1971-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=703",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/dipsy-doodle-doodle-bug-love-bug"
     },
     {
       "title": "The Simpsons Pinball Party",
@@ -149,7 +179,8 @@
       "imageFilename": "the-simpsons-pinball-party.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-simpsons-pinball-party",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party",
-      "releaseDate": "2003-01-01"
+      "releaseDate": "2003-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4674"
     },
     {
       "title": "Lost World",
@@ -157,7 +188,8 @@
       "imageFilename": "lost-world.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/lost-world",
       "pinsideUrl": "https://pinside.com/pinball/machine/lost-world",
-      "releaseDate": "1977-01-01"
+      "releaseDate": "1977-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1476"
     },
     {
       "title": "Argosy",
@@ -165,14 +197,16 @@
       "imageFilename": "argosy.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/argosy",
       "pinsideUrl": "https://pinside.com/pinball/machine/argosy",
-      "releaseDate": "1977-09-01"
+      "releaseDate": "1977-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84"
     },
     {
       "title": "Target Alpha",
       "details": "1976 Gottlieb EM. Design by Ed Krynski. 4 flippers, 2 pop bumpers, 15 drop targets.",
       "imageFilename": "target-alpha.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha",
-      "releaseDate": "1976-11-01"
+      "releaseDate": "1976-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2500"
     },
     {
       "title": "Airborne",
@@ -180,34 +214,41 @@
       "imageFilename": "airborne.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/airborne",
       "pinsideUrl": "https://pinside.com/pinball/machine/airborne",
-      "releaseDate": "1996-03-01"
+      "releaseDate": "1996-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3783"
     },
     {
       "title": "Hot Shot",
       "details": "1973 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 1 pop bumper, 14 drop targets, saucer.",
       "imageFilename": "hot-shot.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/hot-shot",
-      "releaseDate": "1973-09-01"
+      "releaseDate": "1973-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1247",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/big-shot-hot-shot-pro-pool"
     },
     {
       "title": "2001",
       "details": "1971 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 20 drop targets.",
       "releaseDate": "1971-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/2001"
+      "pinsideUrl": "https://pinside.com/pinball/machine/2001",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697"
     },
     {
       "title": "Fun Land",
       "details": "1968 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 spinners.",
       "imageFilename": "fun-land.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/fun-land",
-      "releaseDate": "1968-05-01"
+      "releaseDate": "1968-05-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=973",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/fun-land-fun-park"
     },
     {
       "title": "Major League",
       "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp.",
       "imageFilename": "major-league.jpg",
       "releaseDate": "1963-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams"
+      "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1526"
     },
     {
       "title": "The Lord of the Rings",
@@ -215,14 +256,16 @@
       "imageFilename": "the-lord-of-the-rings.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings",
       "pinsideUrl": "https://pinside.com/pinball/machine/lord-of-the-rings",
-      "releaseDate": "2003-11-01"
+      "releaseDate": "2003-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4858"
     },
     {
       "title": "The Hobbit (Smaug)",
       "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
-      "releaseDate": "2016-03-01"
+      "releaseDate": "2016-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6224"
     },
     {
       "title": "Robocop",
@@ -230,7 +273,8 @@
       "imageFilename": "robocop.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/robocop",
       "pinsideUrl": "https://pinside.com/pinball/machine/robocop",
-      "releaseDate": "1989-11-01"
+      "releaseDate": "1989-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1976"
     },
     {
       "title": "Time Warp",
@@ -238,7 +282,8 @@
       "imageFilename": "time-warp.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/time-warp",
       "pinsideUrl": "https://pinside.com/pinball/machine/time-warp",
-      "releaseDate": "1979-09-01"
+      "releaseDate": "1979-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2568"
     },
     {
       "title": "Flash Gordon",
@@ -246,14 +291,16 @@
       "imageFilename": "flash-gordon.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/flash-gordon",
       "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon",
-      "releaseDate": "1981-02-01"
+      "releaseDate": "1981-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=874"
     },
     {
       "title": "Ice Fever",
       "details": "1985 Gottlieb solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, captive ball behind drop targets.",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever",
       "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever",
-      "releaseDate": "1985-02-01"
+      "releaseDate": "1985-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1260"
     },
     {
       "title": "Star Trek",
@@ -261,20 +308,25 @@
       "imageFilename": "star-trek.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/star-trek",
       "pinsideUrl": "https://pinside.com/pinball/machine/star-trek",
-      "releaseDate": "1991-01-01"
+      "releaseDate": "1991-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2356"
     },
     {
       "title": "X-Men Wolverine LE",
       "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.",
       "imageFilename": "x-men-wolverine-le.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",
-      "releaseDate": "2012-09-01"
+      "releaseDate": "2012-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5824",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/x-men"
     },
     {
       "title": "Roy Clark The Entertainer",
       "details": "1977 Fascination solid state cocktail table. 2 flippers, 3 pop bumpers, 4 drop targets.",
       "pinsideUrl": "https://pinside.com/pinball/machine/entertainer",
-      "releaseDate": "1977-09-01"
+      "releaseDate": "1977-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=785",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/take-five-circa-1933-the-entertainer"
     },
     {
       "title": "Swords of Fury",
@@ -282,7 +334,8 @@
       "imageFilename": "swords-of-fury.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/swords-of-fury",
       "pinsideUrl": "https://pinside.com/pinball/machine/swords-of-fury",
-      "releaseDate": "1988-06-01"
+      "releaseDate": "1988-06-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2486"
     },
     {
       "title": "Baywatch",
@@ -290,7 +343,8 @@
       "imageFilename": "baywatch.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch",
       "pinsideUrl": "https://pinside.com/pinball/machine/baywatch",
-      "releaseDate": "1995-02-01"
+      "releaseDate": "1995-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2848"
     },
     {
       "title": "WHO dunnit",
@@ -298,7 +352,8 @@
       "imageFilename": "who-dunnit.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/who-dunnit",
       "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit",
-      "releaseDate": "1995-09-01"
+      "releaseDate": "1995-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3685"
     },
     {
       "title": "The Lost World Jurassic Park",
@@ -306,7 +361,8 @@
       "imageFilename": "the-lost-world-jurassic-park.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
-      "releaseDate": "1997-01-01"
+      "releaseDate": "1997-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136"
     },
     {
       "title": "Congo",
@@ -314,14 +370,16 @@
       "imageFilename": "congo.gif",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/congo",
       "pinsideUrl": "https://pinside.com/pinball/machine/congo",
-      "releaseDate": "1995-11-01"
+      "releaseDate": "1995-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3780"
     },
     {
       "title": "Time Machine",
       "details": "1988 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3 ramps, chime box.",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine",
       "pinsideUrl": "https://pinside.com/pinball/machine/time-machine",
-      "releaseDate": "1988-12-01"
+      "releaseDate": "1988-12-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2565"
     },
     {
       "title": "Aztec",
@@ -329,14 +387,16 @@
       "imageFilename": "aztec.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/aztec",
       "pinsideUrl": "https://pinside.com/pinball/machine/aztec",
-      "releaseDate": "1976-02-01"
+      "releaseDate": "1976-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=119"
     },
     {
       "title": "Street Fighter II",
       "details": "1993 Gottlieb Premier solid state. 5 flippers, three-level playfield, bash car.",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii",
       "pinsideUrl": "https://pinside.com/pinball/machine/street-fighter-ii",
-      "releaseDate": "1993-03-01"
+      "releaseDate": "1993-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2403"
     },
     {
       "title": "Flash",
@@ -344,14 +404,16 @@
       "imageFilename": "flash.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/flash",
       "pinsideUrl": "https://pinside.com/pinball/machine/flash",
-      "releaseDate": "1979-02-01"
+      "releaseDate": "1979-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=871"
     },
     {
       "title": "Volley",
       "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 15 drop targets.",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/volley",
       "pinsideUrl": "https://pinside.com/pinball/machine/volley",
-      "releaseDate": "1976-08-01"
+      "releaseDate": "1976-08-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2743"
     },
     {
       "title": "Genesis",
@@ -359,13 +421,16 @@
       "imageFilename": "genesis.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/genesis",
       "pinsideUrl": "https://pinside.com/pinball/machine/genesis",
-      "releaseDate": "1993-01-01"
+      "releaseDate": "1993-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=996"
     },
     {
       "title": "Evil Knievel",
       "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.",
       "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
-      "releaseDate": "1976-01-01"
+      "releaseDate": "1976-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4499",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel"
     },
     {
       "title": "Strikes and Spares",
@@ -373,13 +438,16 @@
       "imageFilename": "strikes-and-spares.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/strikes-and-spares",
       "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares",
-      "releaseDate": "1978-06-01"
+      "releaseDate": "1978-06-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2406"
     },
     {
       "title": "Ship Ahoy",
       "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 stand-up targets, spinner.",
       "releaseDate": "1976-06-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/ship-ahoy"
+      "pinsideUrl": "https://pinside.com/pinball/machine/ship-ahoy",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2119",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/buccaneer-ship-ahoy-high-seas"
     },
     {
       "title": "The Flintstones",
@@ -387,7 +455,8 @@
       "imageFilename": "the-flintstones.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-flintstones",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones",
-      "releaseDate": "1994-01-01"
+      "releaseDate": "1994-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=888"
     },
     {
       "title": "Judge Dredd",
@@ -395,7 +464,8 @@
       "imageFilename": "judge-dredd.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/judge-dredd",
       "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd",
-      "releaseDate": "1993-09-01"
+      "releaseDate": "1993-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1322"
     },
     {
       "title": "Firepower",
@@ -403,7 +473,8 @@
       "imageFilename": "firepower.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/firepower",
       "pinsideUrl": "https://pinside.com/pinball/machine/firepower",
-      "releaseDate": "1980-02-01"
+      "releaseDate": "1980-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=856"
     },
     {
       "title": "Total Nuclear Annihilation",
@@ -411,7 +482,8 @@
       "imageFilename": "total-nuclear-annihilation.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/total-nuclear-annihilation",
       "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation",
-      "releaseDate": "2017-07-01"
+      "releaseDate": "2017-07-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6444"
     },
     {
       "title": "Cleopatra",
@@ -419,7 +491,8 @@
       "imageFilename": "cleopatra.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/cleopatra",
       "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra",
-      "releaseDate": "1977-12-01"
+      "releaseDate": "1977-12-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=532"
     },
     {
       "title": "F-14 Tomcat",
@@ -427,7 +500,8 @@
       "imageFilename": "f-14-tomcat.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat",
       "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
-      "releaseDate": "1987-03-01"
+      "releaseDate": "1987-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=804"
     },
     {
       "title": "Old Chicago",
@@ -435,7 +509,8 @@
       "imageFilename": "old-chicago.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/old-chicago",
       "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago",
-      "releaseDate": "1976-04-01"
+      "releaseDate": "1976-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704"
     },
     {
       "title": "Terminator 2: Judgment Day",
@@ -444,14 +519,17 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
       "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
       "releaseDate": "1991-07-01",
-      "leftClubDate": "2026-04-07"
+      "leftClubDate": "2026-04-07",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524"
     },
     {
       "title": "Monopoly",
       "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
       "releaseDate": "2001-09-01",
       "leftClubDate": "2026-04-07",
-      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly"
+      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly"
     },
     {
       "title": "Godzilla (Pro)",
@@ -459,21 +537,27 @@
       "imageFilename": "godzilla-pro.jpg",
       "releaseDate": "2021-09-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro"
+      "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6841",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/godzilla"
     },
     {
       "title": "Harley-Davidson (2nd Edition)",
       "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "2002-01-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition"
+      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4664",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/harley-davidson"
     },
     {
       "title": "Disco Fever",
       "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1978-08-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever"
+      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever"
     },
     {
       "title": "Road Kings",
@@ -481,14 +565,18 @@
       "imageFilename": "road-kings.jpeg",
       "releaseDate": "1986-07-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/road-kings"
+      "pinsideUrl": "https://pinside.com/pinball/machine/road-kings",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1970",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/road-kings"
     },
     {
       "title": "Mustang",
       "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1977-01-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/mustang"
+      "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang"
     },
     {
       "title": "Target Pool",
@@ -496,7 +584,9 @@
       "imageFilename": "target-pool.jpg",
       "releaseDate": "1969-06-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool"
+      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool"
     },
     {
       "title": "NBA Fastbreak",
@@ -505,7 +595,8 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
       "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
       "releaseDate": "1997-03-01",
-      "leftClubDate": "2026-04-04"
+      "leftClubDate": "2026-04-04",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023"
     },
     {
       "title": "Hot Line",
@@ -513,21 +604,27 @@
       "imageFilename": "hot-line.jpg",
       "releaseDate": "1966-09-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line"
+      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike"
     },
     {
       "title": "Solar Ride",
       "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1979-01-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride"
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride"
     },
     {
       "title": "Spider-Man",
       "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "2007-01-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man"
+      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007"
     },
     {
       "title": "Charlie's Angels",
@@ -536,14 +633,17 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
       "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
       "releaseDate": "1978-01-01",
-      "leftClubDate": "2026-04-04"
+      "leftClubDate": "2026-04-04",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007"
     },
     {
       "title": "Avengers: Infinity Quest (Pro)",
       "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "2020-01-01",
       "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest-pro"
+      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest"
     },
     {
       "title": "Jurassic Park (Pro)",
@@ -551,7 +651,9 @@
       "imageFilename": "jurassic-park-pro.jpg",
       "releaseDate": "2019-01-01",
       "leftClubDate": "2026-03-30",
-      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro"
+      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6573",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park"
     },
     {
       "title": "Deadpool (Pro)",
@@ -559,28 +661,36 @@
       "imageFilename": "deadpool-pro.jpg",
       "releaseDate": "2018-01-01",
       "leftClubDate": "2026-03-30",
-      "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro"
+      "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6558",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/deadpool"
     },
     {
       "title": "Xenon",
       "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
       "releaseDate": "1979-01-01",
       "leftClubDate": "2026-03-22",
-      "pinsideUrl": "https://pinside.com/pinball/machine/xenon"
+      "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon"
     },
     {
       "title": "Royal Flush",
       "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
       "releaseDate": "1976-01-01",
       "leftClubDate": "2026-03-22",
-      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush"
+      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush"
     },
     {
       "title": "Joust",
       "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.",
       "releaseDate": "1969-01-01",
       "leftClubDate": "2025-12-31",
-      "pinsideUrl": "https://pinside.com/pinball/machine/joust"
+      "pinsideUrl": "https://pinside.com/pinball/machine/joust",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1317",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/joust"
     },
     {
       "title": "Grand Prix",
@@ -589,14 +699,17 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/grand-prix",
       "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix",
       "releaseDate": "1976-01-01",
-      "leftClubDate": "2025-11-04"
+      "leftClubDate": "2025-11-04",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1072"
     },
     {
       "title": "Crescendo",
       "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.",
       "releaseDate": "1970-01-01",
       "leftClubDate": "2025-11-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/crescendo"
+      "pinsideUrl": "https://pinside.com/pinball/machine/crescendo",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=590",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo"
     },
     {
       "title": "World Cup Soccer",
@@ -605,49 +718,61 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/world-cup-soccer",
       "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer",
       "releaseDate": "1994-01-01",
-      "leftClubDate": "2025-10-29"
+      "leftClubDate": "2025-10-29",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2811"
     },
     {
       "title": "Solar City",
       "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.",
       "releaseDate": "1977-01-01",
       "leftClubDate": "2025-10-28",
-      "pinsideUrl": "https://pinside.com/pinball/machine/solar-city"
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-city",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237"
     },
     {
       "title": "The Amazing Spider-Man",
       "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.",
       "releaseDate": "1980-01-01",
       "leftClubDate": "2025-09-08",
-      "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man"
+      "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man"
     },
     {
       "title": "Kings of Steel",
       "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.",
       "releaseDate": "1984-01-01",
       "leftClubDate": "2025-07-18",
-      "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel"
+      "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/kings-of-steel"
     },
     {
       "title": "Dogies",
       "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.",
       "releaseDate": "1968-01-01",
       "leftClubDate": "2025-07-18",
-      "pinsideUrl": "https://pinside.com/pinball/machine/dogies"
+      "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/dogies"
     },
     {
       "title": "Rock",
       "details": "1985 Gottlieb. Former club machine; removed from the lineup on 2025-04-30.",
       "releaseDate": "1985-01-01",
       "leftClubDate": "2025-04-30",
-      "pinsideUrl": "https://pinside.com/pinball/machine/rock"
+      "pinsideUrl": "https://pinside.com/pinball/machine/rock",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1978",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/rock"
     },
     {
       "title": "Amigo",
       "details": "1973 Bally. Former club machine; removed from the lineup on 2025-04-30.",
       "releaseDate": "1973-01-01",
       "leftClubDate": "2025-04-30",
-      "pinsideUrl": "https://pinside.com/pinball/machine/amigo"
+      "pinsideUrl": "https://pinside.com/pinball/machine/amigo",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=71",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/amigo"
     },
     {
       "title": "Last Action Hero",
@@ -655,7 +780,8 @@
       "imageFilename": "last-action-hero.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/last-action-hero",
       "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero",
-      "releaseDate": "1993-01-01"
+      "releaseDate": "1993-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1416"
     },
     {
       "title": "World Poker Tour",
@@ -663,7 +789,8 @@
       "imageFilename": "world-poker-tour.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/world-poker-tour",
       "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour",
-      "releaseDate": "2006-01-01"
+      "releaseDate": "2006-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5134"
     },
     {
       "title": "NASCAR",
@@ -671,7 +798,8 @@
       "imageFilename": "nascar.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/nascar",
       "pinsideUrl": "https://pinside.com/pinball/machine/nascar",
-      "releaseDate": "2005-01-01"
+      "releaseDate": "2005-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5093"
     },
     {
       "title": "Johnny Mnemonic",
@@ -679,21 +807,25 @@
       "imageFilename": "johnny-mnemonic.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/johnny-mnemonic",
       "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic",
-      "releaseDate": "1995-01-01"
+      "releaseDate": "1995-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3683"
     },
     {
       "title": "Sorcerer",
       "details": "1985 Williams solid state. Design by Mark Ritchie. 2 flippers, 3 pop bumpers, 1 ramp, 2-ball multiball.",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer",
       "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer",
-      "releaseDate": "1985-01-01"
+      "releaseDate": "1985-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2242"
     },
     {
       "title": "Count-Down",
       "details": "1979 Gottlieb solid state. Design by Ed Krynski. 4 flippers, 1 pop bumper, drop target banks.",
       "imageFilename": "count-down.jpg",
       "releaseDate": "1979-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/count-down"
+      "pinsideUrl": "https://pinside.com/pinball/machine/count-down",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=573",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/count-down-space-walk"
     },
     {
       "title": "Genie",
@@ -701,21 +833,26 @@
       "imageFilename": "genie.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/genie",
       "pinsideUrl": "https://pinside.com/pinball/machine/genie",
-      "releaseDate": "1979-01-01"
+      "releaseDate": "1979-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=997"
     },
     {
       "title": "Jacks Open",
       "details": "1977 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 9 drop targets, no slingshots.",
       "imageFilename": "jacks-open.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/jacks-open",
-      "releaseDate": "1977-01-01"
+      "releaseDate": "1977-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1281",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jacks-open-lucky-hand"
     },
     {
       "title": "Apollo",
       "details": "1967 Williams EM. Design by Norm Clark. 2 flippers, 4 pop bumpers, 7 standup targets.",
       "imageFilename": "apollo.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/apollo",
-      "releaseDate": "1967-06-01"
+      "releaseDate": "1967-06-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=77",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/apollo-blast-off"
     },
     {
       "title": "Flight 2000",
@@ -723,7 +860,8 @@
       "imageFilename": "flight-2000.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
       "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
-      "releaseDate": "1980-09-01"
+      "releaseDate": "1980-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887"
     },
     {
       "title": "Rush (Premium)",
@@ -731,7 +869,9 @@
       "imageFilename": "rush-premium.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
       "releaseDate": "2022-01-01",
-      "leftClubDate": "2025-04-01"
+      "leftClubDate": "2025-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6845",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/rush"
     }
   ]
 }
