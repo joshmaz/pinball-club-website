@@ -11,15 +11,6 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park"
     },
     {
-      "title": "300",
-      "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
-      "imageFilename": "300.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/300-top-score",
-      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
-      "releaseDate": "1975-08-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539"
-    },
-    {
       "title": "Alien Poker",
       "details": "1980 Williams. Current club machine.",
       "imageFilename": "alien-poker.jpg",
@@ -138,9 +129,151 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2667",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/truck-stop"
+    },
+    {
+      "title": "Godzilla (Pro)",
+      "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "imageFilename": "godzilla-pro.jpg",
+      "releaseDate": "2021-09-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6841",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/godzilla"
+    },
+    {
+      "title": "Harley-Davidson (2nd Edition)",
+      "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2002-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4664",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/harley-davidson"
+    },
+    {
+      "title": "Disco Fever",
+      "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1978-08-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever"
+    },
+    {
+      "title": "Mustang",
+      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1977-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang"
+    },
+    {
+      "title": "Solar Ride",
+      "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1979-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride"
+    },
+    {
+      "title": "Spider-Man",
+      "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2007-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007"
+    },
+    {
+      "title": "Target Pool",
+      "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.",
+      "imageFilename": "target-pool.jpg",
+      "releaseDate": "1969-06-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool"
+    },
+    {
+      "title": "NBA Fastbreak",
+      "details": "1997 Bally DMD. Design by George Gomez. 3 flippers including one backbox flipper, 3 ramps, 4 up-kickers.",
+      "imageFilename": "nba-fastbreak.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
+      "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
+      "releaseDate": "1997-03-01",
+      "leftClubDate": "2026-04-04",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023"
+    },
+    {
+      "title": "Hot Line",
+      "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.",
+      "imageFilename": "hot-line.jpg",
+      "releaseDate": "1966-09-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike"
+    },
+    {
+      "title": "Charlie's Angels",
+      "details": "1978 Gottlieb solid state. Design by Allen Edwall. 2 flippers, 2 pop bumpers, 8 drop targets.",
+      "imageFilename": "charlies-angles.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
+      "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
+      "releaseDate": "1978-01-01",
+      "leftClubDate": "2026-04-04",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007"
+    },
+    {
+      "title": "Monopoly",
+      "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
+      "releaseDate": "2001-09-01",
+      "leftClubDate": "2026-04-07",
+      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly"
+    },
+    {
+      "title": "Terminator 2: Judgment Day",
+      "details": "1991 Williams DMD. Design by Steve Ritchie. 2 flippers, 3 pop bumpers, 2 ramps.",
+      "imageFilename": "terminator-2-judgment-day.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
+      "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
+      "releaseDate": "1991-07-01",
+      "leftClubDate": "2026-04-07",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524"
+    },
+    {
+      "title": "300",
+      "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
+      "imageFilename": "300.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/300-top-score",
+      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
+      "releaseDate": "1975-08-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539"
+    },
+    {
+      "title": "Xenon",
+      "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
+      "imageFilename": "xenon.png",
+      "releaseDate": "1979-01-01",
+      "leftClubDate": "2026-03-22",
+      "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon"
     }
   ],
   "previousGames": [
+    {
+      "title": "Flight 2000",
+      "details": "1980 Stern Electronics solid state. Design by Harry Williams. 2 flippers, 2 pop bumpers, 5 drop targets, 3-ball multiball.",
+      "imageFilename": "flight-2000.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
+      "releaseDate": "1980-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887"
+    },
     {
       "title": "Space Shuttle",
       "details": "1980 Williams solid state. Design by Barry Oursler and Joe Kaminkow. 2 flippers, 4 pop bumpers, 1 ramp, multiball.",
@@ -568,130 +701,6 @@
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704"
     },
     {
-      "title": "Terminator 2: Judgment Day",
-      "details": "1991 Williams DMD. Design by Steve Ritchie. 2 flippers, 3 pop bumpers, 2 ramps.",
-      "imageFilename": "terminator-2-judgment-day.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
-      "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
-      "releaseDate": "1991-07-01",
-      "leftClubDate": "2026-04-07",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524"
-    },
-    {
-      "title": "Monopoly",
-      "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
-      "releaseDate": "2001-09-01",
-      "leftClubDate": "2026-04-07",
-      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly"
-    },
-    {
-      "title": "Godzilla (Pro)",
-      "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.",
-      "imageFilename": "godzilla-pro.jpg",
-      "releaseDate": "2021-09-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6841",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/godzilla"
-    },
-    {
-      "title": "Harley-Davidson (2nd Edition)",
-      "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "2002-01-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4664",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/harley-davidson"
-    },
-    {
-      "title": "Disco Fever",
-      "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "1978-08-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever"
-    },
-    {
-      "title": "Mustang",
-      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "1977-01-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang"
-    },
-    {
-      "title": "Target Pool",
-      "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.",
-      "imageFilename": "target-pool.jpg",
-      "releaseDate": "1969-06-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool"
-    },
-    {
-      "title": "NBA Fastbreak",
-      "details": "1997 Bally DMD. Design by George Gomez. 3 flippers including one backbox flipper, 3 ramps, 4 up-kickers.",
-      "imageFilename": "nba-fastbreak.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
-      "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
-      "releaseDate": "1997-03-01",
-      "leftClubDate": "2026-04-04",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023"
-    },
-    {
-      "title": "Hot Line",
-      "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.",
-      "imageFilename": "hot-line.jpg",
-      "releaseDate": "1966-09-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike"
-    },
-    {
-      "title": "Solar Ride",
-      "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "1979-01-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride"
-    },
-    {
-      "title": "Spider-Man",
-      "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "2007-01-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007"
-    },
-    {
-      "title": "Charlie's Angels",
-      "details": "1978 Gottlieb solid state. Design by Allen Edwall. 2 flippers, 2 pop bumpers, 8 drop targets.",
-      "imageFilename": "charlies-angles.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
-      "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
-      "releaseDate": "1978-01-01",
-      "leftClubDate": "2026-04-04",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007"
-    },
-    {
-      "title": "Xenon",
-      "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
-      "imageFilename": "xenon.png",
-      "releaseDate": "1979-01-01",
-      "leftClubDate": "2026-03-22",
-      "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon"
-    },
-    {
       "title": "Royal Flush",
       "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
       "releaseDate": "1976-01-01",
@@ -870,15 +879,6 @@
       "releaseDate": "1967-06-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=77",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/apollo-blast-off"
-    },
-    {
-      "title": "Flight 2000",
-      "details": "1980 Stern Electronics solid state. Design by Harry Williams. 2 flippers, 2 pop bumpers, 5 drop targets, 3-ball multiball.",
-      "imageFilename": "flight-2000.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
-      "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
-      "releaseDate": "1980-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887"
     }
   ]
 }
