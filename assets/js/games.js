@@ -66,8 +66,8 @@ function createGamesList(games) {
         pinsideLink.href = pinsideUrl;
         pinsideLink.target = "_blank";
         pinsideLink.rel = "noopener";
-        pinsideLink.title = `Search ${game.title} on Pinside`;
-        pinsideLink.setAttribute("aria-label", `Search ${game.title} on Pinside`);
+        pinsideLink.title = `View ${game.title} on Pinside`;
+        pinsideLink.setAttribute("aria-label", `View ${game.title} on Pinside`);
 
         const pinsideIcon = document.createElement("img");
         pinsideIcon.className = "games-provider-icon";

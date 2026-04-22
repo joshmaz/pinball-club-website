@@ -427,6 +427,13 @@ nav a {
   font-size: 0.95rem;
 }
 
+.footer-note {
+  margin: 0 0 0.65rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #aaa;
+}
+
 .members-account-list {
   margin: 0 0 1rem;
   padding-left: 1.35rem;
