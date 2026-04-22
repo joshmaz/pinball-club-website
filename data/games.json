@@ -1,6 +1,16 @@
 {
   "currentGames": [
     {
+      "title": "Jurassic Park (Pro)",
+      "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "imageFilename": "jurassic-park-pro.jpg",
+      "releaseDate": "2019-01-01",
+      "leftClubDate": "2026-03-30",
+      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6573",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park"
+    },
+    {
       "title": "300",
       "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
       "imageFilename": "300.jpg",
@@ -19,6 +29,16 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker"
     },
     {
+      "title": "Avengers: Infinity Quest (Pro)",
+      "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "imageFilename": "avengers-infinity-quest-pro.png",
+      "releaseDate": "2020-01-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest"
+    },
+    {
       "title": "Black Jack",
       "details": "1977 Bally. Current club machine.",
       "imageFilename": "black-jack.jpg",
@@ -28,9 +48,19 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack"
     },
     {
+      "title": "Road Kings",
+      "details": "1986 Williams System 11. Design by Mark Ritchie. 2 flippers, 4 pop bumpers, dual ramps, 2-ball multiball, post-apocalyptic biker and wasteland art.",
+      "imageFilename": "road-kings.jpeg",
+      "releaseDate": "1986-07-01",
+      "leftClubDate": "2026-04-04",
+      "pinsideUrl": "https://pinside.com/pinball/machine/road-kings",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1970",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/road-kings"
+    },
+    {
       "title": "Black Pyramid",
       "details": "1984 Bally. Current club machine.",
-      "imageFilename": "black-pyramid.jpg",
+      "imageFilename": "black-pyramid.png",
       "releaseDate": "1984-07-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=312",
@@ -71,6 +101,16 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
       "releaseDate": "1975-04-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206"
+    },
+    {
+      "title": "Deadpool (Pro)",
+      "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "imageFilename": "deadpool-pro.jpg",
+      "releaseDate": "2018-01-01",
+      "leftClubDate": "2026-03-30",
+      "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6558",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/deadpool"
     },
     {
       "title": "Mr. & Mrs. Pac-Man",
@@ -156,6 +196,16 @@
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6265"
     },
     {
+      "title": "Rush (Premium)",
+      "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration. Left the club in April 2025.",
+      "imageFilename": "rush-premium.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
+      "releaseDate": "2022-01-01",
+      "leftClubDate": "2025-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6845",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/rush"
+    },
+    {
       "title": "PIN-BOT",
       "details": "1986 Williams solid state. Design by Barry Oursler and Python Anghelo. 2 flippers, 5-drop bank, 3 kickout holes, 2-ball multiball.",
       "imageFilename": "pin-bot.jpg",
@@ -201,6 +251,15 @@
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84"
     },
     {
+      "title": "The Lost World Jurassic Park",
+      "details": "1997 Sega DMD. Design by John Borg. 2 flippers, 2 ramps.",
+      "imageFilename": "the-lost-world-jurassic-park.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
+      "releaseDate": "1997-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136"
+    },
+    {
       "title": "Target Alpha",
       "details": "1976 Gottlieb EM. Design by Ed Krynski. 4 flippers, 2 pop bumpers, 15 drop targets.",
       "imageFilename": "target-alpha.png",
@@ -229,8 +288,10 @@
     {
       "title": "2001",
       "details": "1971 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 20 drop targets.",
+      "imageFilename": "2001.png",
       "releaseDate": "1971-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/2001",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/2001-dimension-galaxie",
+      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-2001",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697"
     },
     {
@@ -245,7 +306,7 @@
     {
       "title": "Major League",
       "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp.",
-      "imageFilename": "major-league.jpg",
+      "imageFilename": "major-league.png",
       "releaseDate": "1963-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1526"
@@ -262,6 +323,7 @@
     {
       "title": "The Hobbit (Smaug)",
       "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.",
+      "imageFilename": "the-hobbit.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
       "releaseDate": "2016-03-01",
@@ -297,6 +359,7 @@
     {
       "title": "Ice Fever",
       "details": "1985 Gottlieb solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, captive ball behind drop targets.",
+      "imageFilename": "ice-fever.png",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever",
       "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever",
       "releaseDate": "1985-02-01",
@@ -314,7 +377,7 @@
     {
       "title": "X-Men Wolverine LE",
       "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.",
-      "imageFilename": "x-men-wolverine-le.jpg",
+      "imageFilename": "x-men-wolverine-le.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",
       "releaseDate": "2012-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5824",
@@ -323,6 +386,7 @@
     {
       "title": "Roy Clark The Entertainer",
       "details": "1977 Fascination solid state cocktail table. 2 flippers, 3 pop bumpers, 4 drop targets.",
+      "imageFilename": "roy-clark-the-entertainer.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/entertainer",
       "releaseDate": "1977-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=785",
@@ -354,15 +418,6 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit",
       "releaseDate": "1995-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3685"
-    },
-    {
-      "title": "The Lost World Jurassic Park",
-      "details": "1997 Sega DMD. Design by John Borg. 2 flippers, 2 ramps.",
-      "imageFilename": "the-lost-world-jurassic-park.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
-      "releaseDate": "1997-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136"
     },
     {
       "title": "Congo",
@@ -560,16 +615,6 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever"
     },
     {
-      "title": "Road Kings",
-      "details": "1986 Williams. Former club machine; removed from the lineup on 2026-04-04.",
-      "imageFilename": "road-kings.jpeg",
-      "releaseDate": "1986-07-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/road-kings",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1970",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/road-kings"
-    },
-    {
       "title": "Mustang",
       "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1977-01-01",
@@ -637,37 +682,9 @@
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007"
     },
     {
-      "title": "Avengers: Infinity Quest (Pro)",
-      "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "2020-01-01",
-      "leftClubDate": "2026-04-04",
-      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest-pro",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest"
-    },
-    {
-      "title": "Jurassic Park (Pro)",
-      "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
-      "imageFilename": "jurassic-park-pro.jpg",
-      "releaseDate": "2019-01-01",
-      "leftClubDate": "2026-03-30",
-      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6573",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park"
-    },
-    {
-      "title": "Deadpool (Pro)",
-      "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.",
-      "imageFilename": "deadpool-pro.jpg",
-      "releaseDate": "2018-01-01",
-      "leftClubDate": "2026-03-30",
-      "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6558",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/deadpool"
-    },
-    {
       "title": "Xenon",
       "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
+      "imageFilename": "xenon.png",
       "releaseDate": "1979-01-01",
       "leftClubDate": "2026-03-22",
       "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
@@ -862,16 +879,6 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
       "releaseDate": "1980-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887"
-    },
-    {
-      "title": "Rush (Premium)",
-      "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration. Left the club in April 2025.",
-      "imageFilename": "rush-premium.jpg",
-      "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
-      "releaseDate": "2022-01-01",
-      "leftClubDate": "2025-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6845",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/rush"
     }
   ]
 }
