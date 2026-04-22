@@ -1,6 +1,8 @@
 const IMAGE_BASE_PATH = "assets/images/machines";
 const KINETICIST_ICON_PATH = "assets/images/kineticist-k.png";
 const PINSIDE_ICON_PATH = "assets/images/pinside_logo-ball.png";
+/** Rasterized from the www.ipdb.org favicon for consistency with other provider PNGs. */
+const IPDB_ICON_PATH = "assets/images/ipdb-favicon.png";
 const GAMES_URL = "data/games.json";
 
 function createGamesList(games) {
@@ -33,7 +35,8 @@ function createGamesList(games) {
 
     const kineticistUrl = game.kineticistUrl;
     const pinsideUrl = game.pinsideUrl;
-    if (kineticistUrl || pinsideUrl) {
+    const ipdbUrl = game.ipdbUrl;
+    if (kineticistUrl || pinsideUrl || ipdbUrl) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
 
@@ -75,6 +78,26 @@ function createGamesList(games) {
         pinsideLink.appendChild(pinsideIcon);
 
         linkRow.appendChild(pinsideLink);
+      }
+
+      if (ipdbUrl) {
+        const ipdbLink = document.createElement("a");
+        ipdbLink.className = "games-provider-link games-ipdb-link";
+        ipdbLink.href = ipdbUrl;
+        ipdbLink.target = "_blank";
+        ipdbLink.rel = "noopener";
+        ipdbLink.title = `View ${game.title} on the Internet Pinball Database`;
+        ipdbLink.setAttribute("aria-label", `View ${game.title} on the Internet Pinball Database`);
+
+        const ipdbIcon = document.createElement("img");
+        ipdbIcon.className = "games-provider-icon";
+        ipdbIcon.src = IPDB_ICON_PATH;
+        ipdbIcon.alt = "";
+        ipdbIcon.loading = "lazy";
+        ipdbIcon.decoding = "async";
+        ipdbLink.appendChild(ipdbIcon);
+
+        linkRow.appendChild(ipdbLink);
       }
 
       item.appendChild(linkRow);
