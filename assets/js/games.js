@@ -1,8 +1,8 @@
 const IMAGE_BASE_PATH = "assets/images/machines";
-const KINETICIST_ICON_PATH = "assets/images/kineticist-k.png";
-const PINSIDE_ICON_PATH = "assets/images/pinside_logo-ball.png";
+const KINETICIST_ICON_PATH = "assets/images/icons/kineticist-k.png";
+const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 /** Rasterized from the www.ipdb.org favicon for consistency with other provider PNGs. */
-const IPDB_ICON_PATH = "assets/images/ipdb-favicon.png";
+const IPDB_ICON_PATH = "assets/images/icons/ipdb-favicon.png";
 const GAMES_URL = "data/games.json";
 
 /**
