@@ -8,6 +8,18 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    (function () {
+      try {
+        if (window.location.hash.indexOf("type=recovery") !== -1) {
+          var payload = JSON.stringify({ v: 1, exp: Date.now() + 1000 * 60 * 45 });
+          window.sessionStorage.setItem("snh_pw_recovery_v1", payload);
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+  </script>
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/member-portal.js"></script>
 </head>
@@ -60,6 +72,26 @@
     <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
     <button id="login-btn" type="submit">Login</button>
     <button id="signup-btn" type="button">Sign Up</button>
+    <button id="forgot-password-btn" type="button">Forgot Password</button>
+  </form>
+  <form id="password-reset-form" class="members-auth-form" hidden>
+    <input
+      id="reset-password"
+      type="password"
+      autocomplete="new-password"
+      placeholder="New password"
+      minlength="8"
+      required
+    />
+    <input
+      id="reset-password-confirm"
+      type="password"
+      autocomplete="new-password"
+      placeholder="Confirm new password"
+      minlength="8"
+      required
+    />
+    <button id="reset-password-btn" type="submit">Set New Password</button>
   </form>
   <p id="status" aria-live="polite"></p>
 </section>
@@ -77,12 +109,14 @@
     var passwordEl = document.getElementById("password");
     var loginBtn = document.getElementById("login-btn");
     var signupBtn = document.getElementById("signup-btn");
+    var forgotPasswordBtn = document.getElementById("forgot-password-btn");
     var status = document.getElementById("status");
 
     if (emailEl) emailEl.disabled = !enabled;
     if (passwordEl) passwordEl.disabled = !enabled;
     if (loginBtn) loginBtn.disabled = !enabled;
     if (signupBtn) signupBtn.disabled = !enabled;
+    if (forgotPasswordBtn) forgotPasswordBtn.disabled = !enabled;
     if (status && message) status.innerText = message;
   }
 
@@ -118,6 +152,21 @@
       return "members.html";
     }
     return next;
+  }
+
+  function getPasswordRecoveryRedirect() {
+    return window.location.origin + window.location.pathname.replace(/[^/]*$/, "members.html");
+  }
+
+  function isRecoveryFlow() {
+    return window.location.hash.indexOf("type=recovery") !== -1;
+  }
+
+  function setRecoveryMode(enabled) {
+    var authForm = document.getElementById("auth-form");
+    var passwordResetForm = document.getElementById("password-reset-form");
+    if (authForm) authForm.hidden = enabled;
+    if (passwordResetForm) passwordResetForm.hidden = !enabled;
   }
 
   async function runAuthAction(action) {
@@ -170,6 +219,10 @@
         return;
       }
       if (result.data.session) {
+        if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
+          window.location.href = "members.html";
+          return;
+        }
         window.location.href = getRedirectTarget();
         return;
       }
@@ -200,7 +253,75 @@
         setStatusMessage(result.error.message);
         return;
       }
+      if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
+        window.location.href = "members.html";
+        return;
+      }
       window.location.href = getRedirectTarget();
+    });
+  }
+
+  async function sendPasswordReset() {
+    if (!window.snhSupabase) {
+      setAuthEnabled(false, getUnavailableMessage());
+      return;
+    }
+    var email = document.getElementById("email").value.trim();
+    if (!email) {
+      setStatusMessage("Enter your email first, then click Forgot Password.");
+      return;
+    }
+
+    await runAuthAction(async function () {
+      var result = await window.snhSupabase.auth.resetPasswordForEmail(email, {
+        redirectTo: getPasswordRecoveryRedirect()
+      });
+      if (result.error) {
+        setStatusMessage(result.error.message);
+        return;
+      }
+      setStatusMessage("Password reset email sent. Open the link in your email to set a new password.");
+    });
+  }
+
+  async function submitRecoveredPassword() {
+    if (!window.SNHMemberPortal) {
+      setStatusMessage("Password reset is temporarily unavailable. Please refresh and try again.");
+      return;
+    }
+    var session = await window.SNHMemberPortal.getSession();
+    if (!session || !session.user) {
+      setRecoveryMode(false);
+      setStatusMessage("Please sign in to continue password reset.");
+      return;
+    }
+    var newPasswordEl = document.getElementById("reset-password");
+    var confirmEl = document.getElementById("reset-password-confirm");
+    var newPassword = newPasswordEl ? newPasswordEl.value : "";
+    var confirmPassword = confirmEl ? confirmEl.value : "";
+
+    if (!newPassword || !confirmPassword) {
+      setStatusMessage("Enter and confirm your new password.");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setStatusMessage("Password must be at least 8 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setStatusMessage("Password confirmation does not match.");
+      return;
+    }
+
+    await runAuthAction(async function () {
+      await window.SNHMemberPortal.updatePassword(newPassword);
+      if (newPasswordEl) newPasswordEl.value = "";
+      if (confirmEl) confirmEl.value = "";
+      setStatusMessage("Password updated. You can now log in with your new password.");
+      setRecoveryMode(false);
+      if (window.location.hash) {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      }
     });
   }
 
@@ -217,14 +338,48 @@
       signup();
     });
   }
+  var forgotPasswordBtn = document.getElementById("forgot-password-btn");
+  if (forgotPasswordBtn) {
+    forgotPasswordBtn.addEventListener("click", function () {
+      sendPasswordReset();
+    });
+  }
+  var passwordResetForm = document.getElementById("password-reset-form");
+  if (passwordResetForm) {
+    passwordResetForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      submitRecoveredPassword();
+    });
+  }
 
   if (!window.snhSupabase) {
     setAuthEnabled(false, getUnavailableMessage());
+    setRecoveryMode(false);
   } else if (window.SNHMemberPortal) {
+    if (window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation) {
+      window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation();
+    }
+    setRecoveryMode(false);
     window.SNHMemberPortal.applyAuthChrome({
       membersLinkSelector: "[data-members-link]"
     }).then(function (session) {
+      if (isRecoveryFlow() && session && session.user) {
+        setRecoveryMode(true);
+        setStatusMessage("Choose a new password to finish resetting your account.");
+        return;
+      }
+      if (isRecoveryFlow()) {
+        setRecoveryMode(false);
+        setStatusMessage("Sign in to continue password reset.");
+      }
+      if (isRecoveryFlow()) {
+        return;
+      }
       if (session && session.user) {
+        if (window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
+          window.location.href = "members.html";
+          return;
+        }
         window.location.href = getRedirectTarget();
       }
     });

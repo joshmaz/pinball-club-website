@@ -1,6 +1,78 @@
 (function () {
+  var PASSWORD_RECOVERY_STORAGE_KEY = "snh_pw_recovery_v1";
+  var PASSWORD_RECOVERY_TTL_MS = 1000 * 60 * 45; // 45 minutes
+  var passwordRecoveryListenerAttached = false;
+
   function getClient() {
     return window.snhSupabase || null;
+  }
+
+  function hasPasswordRecoveryHash() {
+    return window.location.hash.indexOf("type=recovery") !== -1;
+  }
+
+  function setPasswordRecoveryIntent(active) {
+    try {
+      if (active) {
+        var payload = JSON.stringify({
+          v: 1,
+          exp: Date.now() + PASSWORD_RECOVERY_TTL_MS
+        });
+        window.sessionStorage.setItem(PASSWORD_RECOVERY_STORAGE_KEY, payload);
+      } else {
+        window.sessionStorage.removeItem(PASSWORD_RECOVERY_STORAGE_KEY);
+      }
+    } catch (err) {
+      // ignore storage failures (private mode, blocked storage, etc.)
+    }
+  }
+
+  function isPasswordRecoveryIntentActive() {
+    try {
+      var raw = window.sessionStorage.getItem(PASSWORD_RECOVERY_STORAGE_KEY);
+      if (!raw) return false;
+
+      // Back-compat for older "1" flag
+      if (raw === "1") return true;
+
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed.exp !== "number") {
+        window.sessionStorage.removeItem(PASSWORD_RECOVERY_STORAGE_KEY);
+        return false;
+      }
+      if (Date.now() > parsed.exp) {
+        window.sessionStorage.removeItem(PASSWORD_RECOVERY_STORAGE_KEY);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function capturePasswordRecoveryIntentFromLocation() {
+    if (hasPasswordRecoveryHash()) {
+      setPasswordRecoveryIntent(true);
+    }
+  }
+
+  function attachPasswordRecoveryListener() {
+    if (passwordRecoveryListenerAttached) return;
+    var client = getClient();
+    if (!client || !client.auth || typeof client.auth.onAuthStateChange !== "function") {
+      return;
+    }
+
+    passwordRecoveryListenerAttached = true;
+    client.auth.onAuthStateChange(function (event, session) {
+      if (event === "PASSWORD_RECOVERY") {
+        setPasswordRecoveryIntent(true);
+      }
+    });
+  }
+
+  function clearPasswordRecoveryIntent() {
+    setPasswordRecoveryIntent(false);
   }
 
   function getFriendlyAuthErrorMessage(err) {
@@ -21,6 +93,34 @@
     await client.auth.signOut();
   }
 
+  async function updatePassword(newPassword) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.auth.updateUser({ password: newPassword });
+    if (result.error) throw result.error;
+    clearPasswordRecoveryIntent();
+    return result.data;
+  }
+
+  async function updatePasswordWithCurrentPassword(currentPassword, newPassword, email) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    if (!currentPassword) throw new Error("Current password is required.");
+
+    var sessionResult = await client.auth.getSession();
+    var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+    var userEmail = email || (session && session.user ? session.user.email : "");
+    if (!userEmail) throw new Error("Could not verify your account email.");
+
+    var signInResult = await client.auth.signInWithPassword({
+      email: userEmail,
+      password: currentPassword
+    });
+    if (signInResult.error) throw signInResult.error;
+
+    return updatePassword(newPassword);
+  }
+
   async function requireAuth(options) {
     options = options || {};
     var session = await getSession();
@@ -39,9 +139,28 @@
     var membersLinks = document.querySelectorAll(options.membersLinkSelector || "[data-members-link]");
     var session = await getSession();
     var user = session && session.user;
+    var authLabel = user ? user.email : "";
+    var recoveryActive = isPasswordRecoveryIntentActive();
+
+    if (user && user.id) {
+      try {
+        var profile = await fetchProfile(user.id, user.email);
+        if (profile && profile.display_name) {
+          authLabel = profile.display_name;
+        }
+      } catch (err) {
+        authLabel = user.email;
+      }
+    }
 
     if (statusEl) {
-      statusEl.textContent = user ? "Signed in as " + user.email : "";
+      if (!user) {
+        statusEl.textContent = "";
+      } else if (recoveryActive) {
+        statusEl.textContent = "Password reset in progress for " + authLabel + ".";
+      } else {
+        statusEl.textContent = "Signed in as " + authLabel;
+      }
     }
     if (logoutBtn) {
       logoutBtn.hidden = !user;
@@ -117,11 +236,19 @@
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
     signOut: signOut,
+    updatePassword: updatePassword,
+    updatePasswordWithCurrentPassword: updatePasswordWithCurrentPassword,
     requireAuth: requireAuth,
     applyAuthChrome: applyAuthChrome,
     fetchProfile: fetchProfile,
     upsertProfile: upsertProfile,
     fetchMembership: fetchMembership,
-    formatDate: formatDate
+    formatDate: formatDate,
+    isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,
+    clearPasswordRecoveryIntent: clearPasswordRecoveryIntent,
+    capturePasswordRecoveryIntentFromLocation: capturePasswordRecoveryIntentFromLocation
   };
+
+  capturePasswordRecoveryIntentFromLocation();
+  attachPasswordRecoveryListener();
 })();

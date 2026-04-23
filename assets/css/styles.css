@@ -452,6 +452,11 @@ nav a {
   margin: 1rem 0 0;
 }
 
+.members-auth-form[hidden],
+.members-profile-form[hidden] {
+  display: none !important;
+}
+
 .members-auth-form input,
 .members-profile-form input {
   padding: 0.5rem 0.65rem;
