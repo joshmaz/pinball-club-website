@@ -584,6 +584,7 @@
     },
     {
       "title": "Metallica (Pro)",
+      "aka": ["Metallica"],
       "details": "2013 Stern DMD. Design by John Borg. 2 flippers, 2 ramps, in-line drop targets.",
       "imageFilename": "metallica-pro.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica",
@@ -602,6 +603,7 @@
     },
     {
       "title": "KISS (Pro)",
+      "aka": ["Kiss"],
       "details": "2015 Stern DMD. Designed by John Borg. 2 flippers, 2 ramps, 4 pop bumpers, spinning disk.",
       "imageFilename": "kiss-pro.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss",
@@ -846,6 +848,7 @@
     },
     {
       "title": "The Lord of the Rings",
+      "aka": ["Lord of the Rings"],
       "details": "2003 Stern DMD. Designed by George Gomez, Keith P. Johnson, and Chris Granner. 2 flippers, 3 ramps, 3 pop bumpers, One Ring toy.",
       "imageFilename": "the-lord-of-the-rings.jpg",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings",
@@ -855,7 +858,10 @@
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2025-02-26",
+          "pinballMapMachineId": 662
         }
       ]
     },
@@ -1140,6 +1146,7 @@
     },
     {
       "title": "Evil Knievel",
+      "aka": ["Evel Knievel"],
       "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.",
       "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
       "releaseDate": "1976-01-01",
@@ -1148,7 +1155,10 @@
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2023-10-03",
+          "pinballMapMachineId": 783
         }
       ]
     },
@@ -1321,6 +1331,21 @@
           "joinedClubDate": "2025-12-31",
           "leftClubDate": "2026-03-22",
           "pinballMapMachineId": 822
+        }
+      ]
+    },
+    {
+      "title": "Play Boy",
+      "details": "1947 Chicago Coin flipperless gambling machine with digital audio mods. A fun pre-flipper oddball with 10 passive bumpers, 4 kick-out holes, a time clock, projected replays, and 3- or 5-ball play. One bell for sound; art by Roy Parker.",
+      "imageFilename": "play-boy.png",
+      "releaseDate": "1947-05-26",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1824",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-10-29",
+          "leftClubDate": "2026-04-04"
         }
       ]
     },
@@ -1657,20 +1682,6 @@
       ]
     },
     {
-      "title": "Lord of the Rings",
-      "details": "2003 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2025-02-26.",
-      "releaseDate": "2003-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2025-02-26",
-          "pinballMapMachineId": 662
-        }
-      ]
-    },
-    {
       "title": "Barb Wire",
       "details": "1996 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-11-30. Removed from the map on 2025-01-17.",
       "releaseDate": "1996-01-01",
@@ -1685,8 +1696,9 @@
       ]
     },
     {
-      "title": "Guns N' Roses",
-      "details": "2020 SE) (Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
+      "title": "Guns N' Roses (SE)",
+      "aka": ["Guns N' Roses"],
+      "details": "2020 Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
       "releaseDate": "2020-01-01",
       "locationStints": [
         {
@@ -1727,8 +1739,9 @@
       ]
     },
     {
-      "title": "Led Zeppelin",
-      "details": "2020 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
+      "title": "Led Zeppelin (Pro)",
+      "aka": ["Led Zeppelin"],
+      "details": "2020 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
       "releaseDate": "2020-01-01",
       "locationStints": [
         {
@@ -1755,8 +1768,9 @@
       ]
     },
     {
-      "title": "Iron Maiden: Legacy of the Beast",
-      "details": "2018 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
+      "title": "Iron Maiden: Legacy of the Beast (Pro)",
+      "aka": ["Iron Maiden: Legacy of the Beast"],
+      "details": "2018 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
       "releaseDate": "2018-01-01",
       "locationStints": [
         {
@@ -1881,20 +1895,6 @@
       ]
     },
     {
-      "title": "Metallica",
-      "details": "2013 Pro) (Stern. From Pinball Map location activity (not on our site list before).",
-      "releaseDate": "2013-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "pinballMapMachineId": 1591,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2023-12-29"
-        }
-      ]
-    },
-    {
       "title": "Lightning Ball",
       "details": "1959 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-16. Removed from the map on 2023-12-29.",
       "releaseDate": "1959-01-01",
@@ -1905,20 +1905,6 @@
           "joinedClubDate": "2023-01-16",
           "leftClubDate": "2023-12-29",
           "pinballMapMachineId": 2362
-        }
-      ]
-    },
-    {
-      "title": "Evel Knievel",
-      "details": "1977 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-09. Removed from the map on 2023-10-03.",
-      "releaseDate": "1977-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-09",
-          "leftClubDate": "2023-10-03",
-          "pinballMapMachineId": 783
         }
       ]
     },
@@ -1945,19 +1931,6 @@
           "joinedClubDate": "2018-09-04",
           "leftClubDate": "2022-05-07",
           "pinballMapMachineId": 2647
-        }
-      ]
-    },
-    {
-      "title": "Kiss",
-      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2022-05-07.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 2353
         }
       ]
     },
@@ -2025,48 +1998,6 @@
           "pinballMapMachineId": 908
         }
       ]
-    },
-    {
-      "title": "Guns N' Roses (SE)",
-      "details": "2020 Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-09-20",
-          "leftClubDate": "2024-10-13",
-          "pinballMapMachineId": 3272
-        }
-      ],
-      "releaseDate": "2020-01-01"
-    },
-    {
-      "title": "Led Zeppelin (Pro)",
-      "details": "2020 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-04-30",
-          "leftClubDate": "2024-09-05",
-          "pinballMapMachineId": 3279
-        }
-      ],
-      "releaseDate": "2020-01-01"
-    },
-    {
-      "title": "Iron Maiden: Legacy of the Beast (Pro)",
-      "details": "2018 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-05-02",
-          "leftClubDate": "2024-09-05",
-          "pinballMapMachineId": 2923
-        }
-      ],
-      "releaseDate": "2018-01-01"
     }
   ]
 }
