@@ -725,6 +725,14 @@ footer {
   color: #d4d4d4;
 }
 
+.games-location-stints {
+  margin: 0.45rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: #a8a8a8;
+  white-space: pre-line;
+}
+
 .games-previous-title {
   margin-top: 2.2rem;
 }
