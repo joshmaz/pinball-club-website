@@ -1,38 +1,60 @@
 # Pinball Club Website
 
-This is the official website for the Southern New Hampshire Pinball Club. It includes information about events, resources, and more.
+Official site for the Southern New Hampshire Pinball Club, including public pages and an in-progress member portal.
 
-## Structure
+## What is live now
 
-- `index.html`: Home page
-- `events.html`: Upcoming and past events
-- `about.html`: About the club
-- `assets/css/styles.css`: Stylesheet
-- `assets/js/`: JavaScript files (to be added)
-- `assets/images/`: Images
-- `assets/images-machines/`: Machine images
-- `data/events.json`: Event data
+- Public club pages (`index.html`, `events.html`, `games.html`, `about.html`, etc.)
+- Supabase-backed sign up and sign in
+- Member dashboard (`members.html`) with:
+  - basic profile updates
+  - current membership status display
+  - password change for signed-in users
+- Password recovery from `signin.html` ("Forgot Password" email flow)
+
+## Membership roadmap (working notes)
+
+- **Billing:** Stripe Checkout + webhooks will be the source of truth for paid membership state.
+- **Tiering:** support free web users who can upgrade into paid/on-prem access tiers.
+- **Admin roles:** introduce site admins who can edit content safely.
+- **RBAC expansion:** evaluate scoped permissions for areas like events, machines, and membership management.
+
+Keep auth and billing concerns separated:
+
+- Supabase Auth handles identity and sessions.
+- Stripe handles payment and subscription lifecycle.
+- Supabase database stores derived membership state (status/tier/period end) for app logic.
+
+## Project layout
+
+- `assets/css/styles.css` - shared site styles
+- `assets/js/supabase-init.js` - creates Supabase client from runtime config
+- `assets/js/member-portal.js` - auth/session helpers, profile/membership helpers
+- `signin.html` - sign up/sign in experience
+- `members.html` - authenticated account page
 
 ## Deployment
 
-This site is set up to deploy automatically to GitHub Pages via the workflow in `.github/workflows/deploy.yml`.
+The site deploys to GitHub Pages via `.github/workflows/deploy.yml`.
 
 ## Secrets and local configuration
 
-Supabase URL and the anon key are **not** committed. They are written into `assets/js/config.js` by `scripts/write-config.mjs` before deploy or when you work locally.
+Supabase URL and anon key are not committed. They are generated into `assets/js/config.js` by `scripts/write-config.mjs`.
 
-1. In the GitHub repo, open **Settings → Secrets and variables → Actions** and add:
-   - `SUPABASE_URL` — project URL (e.g. `https://xxxx.supabase.co`)
-   - `SUPABASE_ANON_KEY` — anon/public key from Supabase **Project Settings → API**
-
-2. On each push to `main`, the deploy workflow generates `assets/js/config.js` from those secrets, then publishes the site.
-
-3. For **local development**, copy `.env.example` to `.env`, fill in the same two values, then run:
+1. In GitHub, add Actions secrets:
+   - `SUPABASE_URL` (example: `https://xxxx.supabase.co`)
+   - `SUPABASE_ANON_KEY` (Supabase Project Settings -> API)
+2. On push to `main`, deploy writes `assets/js/config.js` from those secrets.
+3. For local development, copy `.env.example` to `.env`, set the same values, then run:
 
    ```bash
    node --env-file=.env scripts/write-config.mjs
    ```
 
-   The file `assets/js/config.js` is gitignored. If it is missing, pages that use Supabase will log a console error until you run the command above.
+`assets/js/config.js` is gitignored. If missing, Supabase-backed pages will show unavailable auth behavior.
 
-**Note:** The anon key is still exposed to browsers after build (that is normal for Supabase). Protect data with Row Level Security in Supabase. Never put the **service role** key in the frontend or in these repository secrets for this workflow.
+## Security notes
+
+- The Supabase anon key is expected to be public in browser code.
+- Protect sensitive data with Row Level Security policies.
+- Never expose the Supabase service role key in frontend code or GitHub Pages secrets.

@@ -8,6 +8,18 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    (function () {
+      try {
+        if (window.location.hash.indexOf("type=recovery") !== -1) {
+          var payload = JSON.stringify({ v: 1, exp: Date.now() + 1000 * 60 * 45 });
+          window.sessionStorage.setItem("snh_pw_recovery_v1", payload);
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+  </script>
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/member-portal.js"></script>
 </head>
@@ -50,6 +62,38 @@
       <button type="submit">Save profile</button>
     </form>
 
+    <h3>Password</h3>
+    <form id="password-form" class="members-profile-form">
+      <label id="current-password-label" for="current-password">Current password</label>
+      <input
+        id="current-password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <label for="new-password">New password</label>
+      <input
+        id="new-password"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        required
+      >
+
+      <label for="confirm-password">Confirm new password</label>
+      <input
+        id="confirm-password"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        required
+      >
+
+      <button type="submit">Update password</button>
+    </form>
+    <p id="password-status" aria-live="polite" class="members-page-status"></p>
+
     <h3>Membership</h3>
     <div class="membership-card">
       <p><strong>Status:</strong> <span id="membership-status">Loading...</span></p>
@@ -72,6 +116,12 @@
     var emailInput = document.getElementById("member-email");
     var displayNameInput = document.getElementById("member-display-name");
     var profileForm = document.getElementById("profile-form");
+    var passwordForm = document.getElementById("password-form");
+    var passwordStatus = document.getElementById("password-status");
+    var currentPasswordLabel = document.getElementById("current-password-label");
+    var currentPasswordInput = document.getElementById("current-password");
+    var newPasswordInput = document.getElementById("new-password");
+    var confirmPasswordInput = document.getElementById("confirm-password");
     var membershipStatus = document.getElementById("membership-status");
     var membershipTier = document.getElementById("membership-tier");
     var membershipPeriodEnd = document.getElementById("membership-period-end");
@@ -81,13 +131,45 @@
       if (pageStatus) pageStatus.textContent = message;
     }
 
+    function setPasswordStatus(message) {
+      if (passwordStatus) passwordStatus.textContent = message;
+    }
+
     if (!window.SNHMemberPortal) {
       setPageStatus("Member tools are temporarily unavailable. Please refresh and try again.");
       return;
     }
 
+    if (window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation) {
+      window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation();
+    }
+
     var session = await window.SNHMemberPortal.requireAuth({ redirectToSignin: true });
     if (!session || !session.user) return;
+
+    var recoveryMode =
+      (window.SNHMemberPortal.isPasswordRecoveryIntentActive &&
+        window.SNHMemberPortal.isPasswordRecoveryIntentActive()) ||
+      window.location.hash.indexOf("type=recovery") !== -1;
+
+    function applyPasswordRecoveryUi() {
+      if (!currentPasswordInput) return;
+      if (recoveryMode) {
+        if (currentPasswordLabel) currentPasswordLabel.hidden = true;
+        currentPasswordInput.hidden = true;
+        currentPasswordInput.required = false;
+        currentPasswordInput.disabled = true;
+        currentPasswordInput.value = "";
+        setPasswordStatus("You are resetting your password. Enter a new password below (current password not required).");
+      } else {
+        if (currentPasswordLabel) currentPasswordLabel.hidden = false;
+        currentPasswordInput.hidden = false;
+        currentPasswordInput.required = true;
+        currentPasswordInput.disabled = false;
+      }
+    }
+
+    applyPasswordRecoveryUi();
 
     await window.SNHMemberPortal.applyAuthChrome({
       statusElementId: "auth-status",
@@ -99,11 +181,19 @@
       var profile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);
       emailInput.value = profile.email || session.user.email || "";
       displayNameInput.value = profile.display_name || "";
-      setPageStatus("Signed in and ready.");
+      if (recoveryMode) {
+        setPageStatus("Finish resetting your password below.");
+      } else {
+        setPageStatus("Signed in and ready.");
+      }
     } catch (err) {
       emailInput.value = session.user.email || "";
       displayNameInput.value = "";
-      setPageStatus("Signed in. Profile syncing will be enabled once profile table access is configured.");
+      if (recoveryMode) {
+        setPageStatus("Finish resetting your password below.");
+      } else {
+        setPageStatus("Signed in. Profile syncing will be enabled once profile table access is configured.");
+      }
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
@@ -129,6 +219,57 @@
         setPageStatus("Profile saved.");
       } catch (err) {
         setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+      }
+    });
+
+    passwordForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      setPasswordStatus("");
+      var currentPassword = currentPasswordInput.value;
+      var newPassword = newPasswordInput.value;
+      var confirmPassword = confirmPasswordInput.value;
+
+      if (!newPassword || !confirmPassword) {
+        setPasswordStatus("Enter and confirm your new password.");
+        return;
+      }
+      if (!recoveryMode && !currentPassword) {
+        setPasswordStatus("Enter your current password, then enter and confirm your new password.");
+        return;
+      }
+      if (newPassword.length < 8) {
+        setPasswordStatus("Password must be at least 8 characters.");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setPasswordStatus("Password confirmation does not match.");
+        return;
+      }
+
+      try {
+        if (recoveryMode) {
+          await window.SNHMemberPortal.updatePassword(newPassword);
+        } else {
+          await window.SNHMemberPortal.updatePasswordWithCurrentPassword(
+            currentPassword,
+            newPassword,
+            session.user.email
+          );
+        }
+        passwordForm.reset();
+        setPasswordStatus("Password updated successfully.");
+        recoveryMode = false;
+        applyPasswordRecoveryUi();
+        await window.SNHMemberPortal.applyAuthChrome({
+          statusElementId: "auth-status",
+          logoutButtonId: "logout-btn",
+          membersLinkSelector: "[data-members-link]"
+        });
+        if (window.location.hash) {
+          window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+        }
+      } catch (err) {
+        setPasswordStatus("Could not update password: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
       }
     });
 
