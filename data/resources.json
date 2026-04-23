@@ -105,7 +105,7 @@
       "summary": "Crowdsourced map of public pinball locations with machine lists, status updates, and directions.",
       "links": [
         { "label": "Pinball Map", "url": "https://pinballmap.com/" },
-        { "label": "SNHPC location on Pinball Map", "url": "https://pinballmap.com/map?by_location_id=8908&by_location_name=Southern%20NH%20Pinball%20Club" }
+        { "label": "SNHPC location on Pinball Map", "url": "https://pinballmap.com/map/?by_location_id=8908" }
       ],
       "sortOrder": 25
     },
