@@ -444,6 +444,62 @@ nav a {
   margin-top: 0.35rem;
 }
 
+.members-auth-form,
+.members-profile-form {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 26rem;
+  margin: 1rem 0 0;
+}
+
+.members-auth-form input,
+.members-profile-form input {
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #3a3a3a;
+  background: #131313;
+  color: #f3f3f3;
+}
+
+.members-auth-form button,
+.members-profile-form button,
+#logout-btn {
+  width: fit-content;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #0aa;
+  background: #133;
+  color: #dff;
+  cursor: pointer;
+}
+
+.members-dashboard {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.members-page-status {
+  margin: 0 0 0.65rem;
+  color: #a9d7d0;
+}
+
+.membership-card {
+  margin-top: 0.75rem;
+  padding: 0.95rem;
+  border: 1px solid #2f3f4f;
+  border-radius: 8px;
+  background: #141a1f;
+}
+
+.membership-card p {
+  margin: 0.35rem 0;
+}
+
+.membership-card-note {
+  color: #aebcd0;
+  font-size: 0.92rem;
+}
+
 .content > h3:not(.home-heading) {
   margin: 1.5rem 0 0.65rem;
   font-size: 1.2rem;

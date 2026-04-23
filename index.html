@@ -9,6 +9,7 @@
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="assets/js/supabase-init.js"></script>
+  <script src="assets/js/member-portal.js"></script>
 </head>
 <body>
 
@@ -21,7 +22,7 @@
     <a href="merch.html">Merch</a>
     <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
-    <a href="signin.html">Members</a>
+    <a href="signin.html" data-members-link>Members</a>
   </nav>
   <p id="auth-status" class="auth-status" aria-live="polite"></p>
 </header>
@@ -69,7 +70,7 @@
       <p>Nonprofit roots, NEPL, and the road to our next home.</p>
     </article>
     <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="signin.html">Members</a></h4>
+      <h4 class="home-explore-card-title"><a href="signin.html" data-members-link>Members</a></h4>
       <p>Sign in, manage membership, and access member tools.</p>
     </article>
   </div>
@@ -102,7 +103,7 @@
 <script src="assets/js/home-gallery.js"></script>
 
 <footer>
-  <button type="button" id="logout-btn" onclick="logout()" hidden>Logout</button>
+  <button type="button" id="logout-btn" hidden>Logout</button>
   <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
   <p class="footer-links"><a href="donate/">Support the club</a> · <a href="mailto:info@snhpinball.com">Contact</a> · <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a></p>
   <p class="footer-note">Club chat is moving from <a href="https://snhpc.slack.com/" target="_blank" rel="noopener noreferrer">Slack</a> to <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>; join us there as we consolidate.</p>
@@ -110,29 +111,22 @@
 </footer>
 
 <script>
-  async function checkUser() {
-    if (!window.snhSupabase) return;
-    const { data: { session } } = await window.snhSupabase.auth.getSession();
-    const statusEl = document.getElementById("auth-status");
-    const logoutBtn = document.getElementById("logout-btn");
-    const user = session && session.user;
-    if (statusEl) {
-      statusEl.textContent = user ? "Signed in as " + user.email : "";
-    }
+  (async function () {
+    if (!window.SNHMemberPortal) return;
+    await window.SNHMemberPortal.applyAuthChrome({
+      statusElementId: "auth-status",
+      logoutButtonId: "logout-btn",
+      membersLinkSelector: "[data-members-link]"
+    });
+
+    var logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
-      logoutBtn.hidden = !user;
+      logoutBtn.addEventListener("click", async function () {
+        await window.SNHMemberPortal.signOut();
+        window.location.reload();
+      });
     }
-  }
-
-  checkUser();
-</script>
-
-<script>
-  async function logout() {
-    if (!window.snhSupabase) return;
-    await window.snhSupabase.auth.signOut();
-    location.reload();
-  }
+  })();
 </script>
 
 </body>
