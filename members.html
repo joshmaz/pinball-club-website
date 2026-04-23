@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SNHPC member dashboard for account details and membership status.">
+  <title>SNHPC - My Account</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/supabase-init.js"></script>
+  <script src="assets/js/member-portal.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>Southern New Hampshire Pinball Club</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="games.html">Games</a>
+    <a href="merch.html">Merch</a>
+    <a href="resources.html">Resources</a>
+    <a href="about.html">About</a>
+    <a href="members.html" data-members-link aria-current="page">My Account</a>
+  </nav>
+  <p id="auth-status" class="auth-status" aria-live="polite"></p>
+</header>
+
+<section class="page-hero page-hero--members" aria-labelledby="members-dashboard-title">
+  <div class="page-hero-backdrop" aria-hidden="true"></div>
+  <div class="page-hero-inner">
+    <h2 id="members-dashboard-title">Member dashboard</h2>
+    <p class="page-hero-lead">Your account home for profile details and membership status.</p>
+    <p class="page-hero-note">More member tools are coming soon as we keep building.</p>
+  </div>
+</section>
+
+<main>
+  <section class="content members-dashboard">
+    <h3>My profile</h3>
+    <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
+    <form id="profile-form" class="members-profile-form">
+      <label for="member-email">Email</label>
+      <input id="member-email" type="email" disabled>
+
+      <label for="member-display-name">Display name</label>
+      <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
+
+      <button type="submit">Save profile</button>
+    </form>
+
+    <h3>Membership</h3>
+    <div class="membership-card">
+      <p><strong>Status:</strong> <span id="membership-status">Loading...</span></p>
+      <p><strong>Tier:</strong> <span id="membership-tier">Loading...</span></p>
+      <p><strong>Renews / Ends:</strong> <span id="membership-period-end">Loading...</span></p>
+      <p class="membership-card-note">Need to update your membership? Contact the club and we will help right away.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <button type="button" id="logout-btn" hidden>Logout</button>
+  <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
+  <p>©2026 Southern New Hampshire Pinball Club</p>
+</footer>
+
+<script>
+  (async function () {
+    var pageStatus = document.getElementById("member-page-status");
+    var emailInput = document.getElementById("member-email");
+    var displayNameInput = document.getElementById("member-display-name");
+    var profileForm = document.getElementById("profile-form");
+    var membershipStatus = document.getElementById("membership-status");
+    var membershipTier = document.getElementById("membership-tier");
+    var membershipPeriodEnd = document.getElementById("membership-period-end");
+    var logoutBtn = document.getElementById("logout-btn");
+
+    function setPageStatus(message) {
+      if (pageStatus) pageStatus.textContent = message;
+    }
+
+    if (!window.SNHMemberPortal) {
+      setPageStatus("Member tools are temporarily unavailable. Please refresh and try again.");
+      return;
+    }
+
+    var session = await window.SNHMemberPortal.requireAuth({ redirectToSignin: true });
+    if (!session || !session.user) return;
+
+    await window.SNHMemberPortal.applyAuthChrome({
+      statusElementId: "auth-status",
+      logoutButtonId: "logout-btn",
+      membersLinkSelector: "[data-members-link]"
+    });
+
+    try {
+      var profile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);
+      emailInput.value = profile.email || session.user.email || "";
+      displayNameInput.value = profile.display_name || "";
+      setPageStatus("Signed in and ready.");
+    } catch (err) {
+      emailInput.value = session.user.email || "";
+      displayNameInput.value = "";
+      setPageStatus("Signed in. Profile syncing will be enabled once profile table access is configured.");
+    }
+
+    var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
+    if (membership) {
+      membershipStatus.textContent = membership.status || "Unknown";
+      membershipTier.textContent = membership.tier || "Standard";
+      membershipPeriodEnd.textContent = window.SNHMemberPortal.formatDate(membership.end_date);
+    } else {
+      membershipStatus.textContent = "No membership on file yet";
+      membershipTier.textContent = "Not set";
+      membershipPeriodEnd.textContent = "Not set";
+    }
+
+    profileForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      var displayName = displayNameInput.value.trim();
+      try {
+        await window.SNHMemberPortal.upsertProfile({
+          user_id: session.user.id,
+          email: session.user.email,
+          display_name: displayName
+        });
+        setPageStatus("Profile saved.");
+      } catch (err) {
+        setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+      }
+    });
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async function () {
+        await window.SNHMemberPortal.signOut();
+        window.location.href = "signin.html";
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -9,6 +9,7 @@
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="assets/js/supabase-init.js"></script>
+  <script src="assets/js/member-portal.js"></script>
 </head>
 <body>
 
@@ -21,7 +22,7 @@
     <a href="merch.html">Merch</a>
     <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
-    <a href="signin.html" aria-current="page">Members</a>
+    <a href="signin.html" data-members-link aria-current="page">Members</a>
   </nav>
 </header>
 
@@ -54,10 +55,12 @@
     improving it. We are laying the groundwork now with the goal of making member access smoother,
     more convenient, and more helpful over time.
   </p>
-  <input id="email" type="email" autocomplete="email" placeholder="Email" />
-  <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
-  <button id="login-btn" onclick="login()">Login</button>
-  <button id="signup-btn" onclick="signup()">Sign Up</button>
+  <form id="auth-form" class="members-auth-form">
+    <input id="email" type="email" autocomplete="email" placeholder="Email" />
+    <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
+    <button id="login-btn" type="submit">Login</button>
+    <button id="signup-btn" type="button">Sign Up</button>
+  </form>
   <p id="status" aria-live="polite"></p>
 </section>
 
@@ -99,61 +102,132 @@
     return { email: email, password: password };
   }
 
-  async function signup() {
+  function setStatusMessage(message) {
     var status = document.getElementById("status");
+    if (status) status.innerText = message;
+  }
+
+  function getRedirectTarget() {
+    var params = new URLSearchParams(window.location.search);
+    var next = params.get("next");
+    if (!next) return "members.html";
+    if (next.indexOf("http://") === 0 || next.indexOf("https://") === 0) {
+      return "members.html";
+    }
+    if (next.indexOf("/") !== -1 || next.indexOf("\\") !== -1) {
+      return "members.html";
+    }
+    return next;
+  }
+
+  async function runAuthAction(action) {
+    try {
+      await action();
+    } catch (err) {
+      var isFetchFailure =
+        err &&
+        typeof err.message === "string" &&
+        err.message.toLowerCase().indexOf("failed to fetch") !== -1;
+      var isFileProtocol = window.location.protocol === "file:";
+      var fallbackMessage =
+        "Something went wrong while contacting login services. Please try again.";
+      if (isFetchFailure && isFileProtocol) {
+        fallbackMessage =
+          "Cannot reach member login from a file:// page. Run the site through a local web server (http://localhost) and try again.";
+      } else if (isFetchFailure) {
+        fallbackMessage =
+          "Cannot reach member login services right now. Check your connection, disable blockers for this site, and try again.";
+      }
+      setStatusMessage(
+        err && err.message ? err.message : fallbackMessage
+      );
+      if (isFetchFailure) {
+        setStatusMessage(fallbackMessage);
+      }
+      console.error("[SNH] Auth action failed:", err);
+    }
+  }
+
+  async function signup() {
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var creds = getCredentials();
     if (!creds.email || !creds.password) {
-      status.innerText = "Enter email and password.";
+      setStatusMessage("Enter email and password.");
       return;
     }
 
-    var result = await window.snhSupabase.auth.signUp({
-      email: creds.email,
-      password: creds.password,
+    await runAuthAction(async function () {
+      var result = await window.snhSupabase.auth.signUp({
+        email: creds.email,
+        password: creds.password,
+      });
+
+      if (result.error) {
+        setStatusMessage(result.error.message);
+        return;
+      }
+      if (result.data.session) {
+        window.location.href = getRedirectTarget();
+        return;
+      }
+      setStatusMessage(
+        "Check your email to confirm your account, then sign in here."
+      );
     });
-
-    if (result.error) {
-      status.innerText = result.error.message;
-      return;
-    }
-    if (result.data.session) {
-      window.location.href = "index.html";
-      return;
-    }
-    status.innerText =
-      "Check your email to confirm your account, then sign in here.";
   }
 
   async function login() {
-    var status = document.getElementById("status");
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var creds = getCredentials();
     if (!creds.email || !creds.password) {
-      status.innerText = "Enter email and password.";
+      setStatusMessage("Enter email and password.");
       return;
     }
 
-    var result = await window.snhSupabase.auth.signInWithPassword({
-      email: creds.email,
-      password: creds.password,
+    await runAuthAction(async function () {
+      var result = await window.snhSupabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+
+      if (result.error) {
+        setStatusMessage(result.error.message);
+        return;
+      }
+      window.location.href = getRedirectTarget();
     });
+  }
 
-    if (result.error) {
-      status.innerText = result.error.message;
-      return;
-    }
-    window.location.href = "index.html";
+  var authForm = document.getElementById("auth-form");
+  if (authForm) {
+    authForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      login();
+    });
+  }
+  var signupBtn = document.getElementById("signup-btn");
+  if (signupBtn) {
+    signupBtn.addEventListener("click", function () {
+      signup();
+    });
   }
 
   if (!window.snhSupabase) {
     setAuthEnabled(false, getUnavailableMessage());
+  } else if (window.SNHMemberPortal) {
+    window.SNHMemberPortal.applyAuthChrome({
+      membersLinkSelector: "[data-members-link]"
+    }).then(function (session) {
+      if (session && session.user) {
+        window.location.href = getRedirectTarget();
+      }
+    });
   }
 </script>
 
