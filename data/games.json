@@ -5,10 +5,18 @@
       "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
       "imageFilename": "jurassic-park-pro.jpg",
       "releaseDate": "2019-01-01",
-      "leftClubDate": "2026-03-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6573",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-03-24",
+          "leftClubDate": "2026-03-30",
+          "pinballMapMachineId": 3167
+        }
+      ]
     },
     {
       "title": "Alien Poker",
@@ -18,8 +26,14 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=48",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker",
-      "joinedClubDate": "2020-03-01",
-      "pinballMapMachineId": 878
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2020-03-01",
+          "pinballMapMachineId": 878
+        }
+      ]
     },
     {
       "title": "Avengers: Infinity Quest (Pro)",
@@ -29,8 +43,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest",
-      "joinedClubDate": "2022-05-07",
-      "pinballMapMachineId": 3267
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-05-07",
+          "pinballMapMachineId": 3267,
+          "leftClubDate": "2026-04-04"
+        }
+      ]
     },
     {
       "title": "Black Jack",
@@ -40,21 +61,33 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/black-jack",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4498",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack",
-      "joinedClubDate": "2017-12-06",
-      "leftClubDate": "2026-04-21",
-      "pinballMapMachineId": 833
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-12-06",
+          "leftClubDate": "2026-04-21",
+          "pinballMapMachineId": 833
+        }
+      ]
     },
     {
       "title": "Road Kings",
       "details": "1986 Williams System 11. Design by Mark Ritchie. 2 flippers, 4 pop bumpers, dual ramps, 2-ball multiball, post-apocalyptic biker and wasteland art.",
       "imageFilename": "road-kings.jpeg",
       "releaseDate": "1986-07-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/road-kings",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1970",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/road-kings",
-      "joinedClubDate": "2025-02-26",
-      "pinballMapMachineId": 827
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-02-26",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 827
+        }
+      ]
     },
     {
       "title": "Black Pyramid",
@@ -64,8 +97,14 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=312",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/black-pyramid",
-      "joinedClubDate": "2021-06-11",
-      "pinballMapMachineId": 1096
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "pinballMapMachineId": 1096
+        }
+      ]
     },
     {
       "title": "Embryon",
@@ -75,8 +114,14 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/embryon",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=783",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/embryon",
-      "joinedClubDate": "2025-04-28",
-      "pinballMapMachineId": 796
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-04-28",
+          "pinballMapMachineId": 796
+        }
+      ]
     },
     {
       "title": "Future Spa",
@@ -86,8 +131,14 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/future-spa",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=974",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/future-spa",
-      "joinedClubDate": "2025-11-03",
-      "pinballMapMachineId": 808
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-11-03",
+          "pinballMapMachineId": 808
+        }
+      ]
     },
     {
       "title": "Heavy Metal Meltdown",
@@ -97,9 +148,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1150",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/heavy-metal-meltdown",
-      "joinedClubDate": "2025-01-06",
-      "leftClubDate": "2026-04-21",
-      "pinballMapMachineId": 2137
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-01-06",
+          "leftClubDate": "2026-04-21",
+          "pinballMapMachineId": 2137
+        }
+      ]
     },
     {
       "title": "Hokus Pokus",
@@ -109,18 +166,32 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
       "releaseDate": "1975-04-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206",
-      "joinedClubDate": "2017-12-06",
-      "pinballMapMachineId": 794
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-12-06",
+          "pinballMapMachineId": 794
+        }
+      ]
     },
     {
       "title": "Deadpool (Pro)",
       "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.",
       "imageFilename": "deadpool-pro.jpg",
       "releaseDate": "2018-01-01",
-      "leftClubDate": "2026-03-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6558",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/deadpool"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/deadpool",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-01-20",
+          "leftClubDate": "2026-03-30",
+          "pinballMapMachineId": 3022
+        }
+      ]
     },
     {
       "title": "Mr. & Mrs. Pac-Man",
@@ -130,9 +201,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1639",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/mr-mrs-pac-man",
-      "joinedClubDate": "2023-01-09",
-      "leftClubDate": "2026-04-21",
-      "pinballMapMachineId": 1181
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2026-04-21",
+          "pinballMapMachineId": 1181
+        }
+      ]
     },
     {
       "title": "Starship Troopers",
@@ -142,8 +219,14 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4341",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/starship-troopers",
-      "joinedClubDate": "2023-10-03",
-      "pinballMapMachineId": 883
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-10-03",
+          "pinballMapMachineId": 883
+        }
+      ]
     },
     {
       "title": "Truck Stop",
@@ -153,83 +236,135 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2667",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/truck-stop",
-      "joinedClubDate": "2024-09-06",
-      "pinballMapMachineId": 826
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-06",
+          "pinballMapMachineId": 826
+        }
+      ]
     },
     {
       "title": "Godzilla (Pro)",
       "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "imageFilename": "godzilla-pro.jpg",
       "releaseDate": "2021-09-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6841",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/godzilla"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/godzilla",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-05",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 3415
+        }
+      ]
     },
     {
       "title": "Harley-Davidson (2nd Edition)",
       "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "2002-01-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4664",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/harley-davidson"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/harley-davidson",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-05",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 2054
+        }
+      ]
     },
     {
       "title": "Disco Fever",
       "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1978-08-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever",
-      "joinedClubDate": "2024-04-18",
-      "pinballMapMachineId": 1091
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1091
+        }
+      ]
     },
     {
       "title": "Mustang",
       "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1977-01-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang",
-      "joinedClubDate": "2024-12-14",
-      "pinballMapMachineId": 1462
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-12-14",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1462
+        }
+      ]
     },
     {
       "title": "Solar Ride",
       "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "1979-01-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride",
-      "joinedClubDate": "2025-03-24",
-      "pinballMapMachineId": 1381
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-03-24",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1381
+        }
+      ]
     },
     {
       "title": "Spider-Man",
       "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "releaseDate": "2007-01-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007",
-      "joinedClubDate": "2022-01-09",
-      "pinballMapMachineId": 663
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-01-09",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 663
+        }
+      ]
     },
     {
       "title": "Target Pool",
       "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.",
       "imageFilename": "target-pool.jpg",
       "releaseDate": "1969-06-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 1029
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1029
+        }
+      ]
     },
     {
       "title": "NBA Fastbreak",
@@ -238,22 +373,34 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
       "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
       "releaseDate": "1997-03-01",
-      "leftClubDate": "2026-04-04",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 657
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 657
+        }
+      ]
     },
     {
       "title": "Hot Line",
       "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.",
       "imageFilename": "hot-line.jpg",
       "releaseDate": "1966-09-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 974
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 974
+        }
+      ]
     },
     {
       "title": "Charlie's Angels",
@@ -262,21 +409,33 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
       "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
       "releaseDate": "1978-01-01",
-      "leftClubDate": "2026-04-04",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 1157
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1157
+        }
+      ]
     },
     {
       "title": "Monopoly",
       "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
       "releaseDate": "2001-09-01",
-      "leftClubDate": "2026-04-07",
       "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly",
-      "joinedClubDate": "2025-10-27",
-      "pinballMapMachineId": 698
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-10-27",
+          "leftClubDate": "2026-04-07",
+          "pinballMapMachineId": 698
+        }
+      ]
     },
     {
       "title": "Terminator 2: Judgment Day",
@@ -285,10 +444,16 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
       "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
       "releaseDate": "1991-07-01",
-      "leftClubDate": "2026-04-07",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524",
-      "joinedClubDate": "2018-09-23",
-      "pinballMapMachineId": 686
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-23",
+          "leftClubDate": "2026-04-07",
+          "pinballMapMachineId": 686
+        }
+      ]
     },
     {
       "title": "300",
@@ -298,20 +463,32 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
       "releaseDate": "1975-08-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 1387
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "pinballMapMachineId": 1387
+        }
+      ]
     },
     {
       "title": "Xenon",
       "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
       "imageFilename": "xenon.png",
       "releaseDate": "1979-01-01",
-      "leftClubDate": "2026-03-22",
       "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon",
-      "joinedClubDate": "2021-06-11",
-      "pinballMapMachineId": 726
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2026-03-22",
+          "pinballMapMachineId": 726
+        }
+      ]
     }
   ],
   "previousGames": [
@@ -323,9 +500,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
       "releaseDate": "1980-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887",
-      "joinedClubDate": "2023-01-09",
-      "leftClubDate": "2025-02-15",
-      "pinballMapMachineId": 937
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2025-02-15",
+          "pinballMapMachineId": 937
+        }
+      ]
     },
     {
       "title": "Space Shuttle",
@@ -335,9 +518,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle",
       "releaseDate": "1980-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2260",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2019-09-05",
-      "pinballMapMachineId": 1068
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 1068
+        }
+      ]
     },
     {
       "title": "High Speed",
@@ -347,9 +536,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/high-speed",
       "releaseDate": "1986-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1176",
-      "joinedClubDate": "2018-09-04",
-      "leftClubDate": "2021-07-23",
-      "pinballMapMachineId": 672
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2021-07-23",
+          "pinballMapMachineId": 672
+        }
+      ]
     },
     {
       "title": "The Getaway: High Speed II",
@@ -359,9 +554,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii",
       "releaseDate": "1992-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1000",
-      "joinedClubDate": "2018-09-04",
-      "leftClubDate": "2021-07-23",
-      "pinballMapMachineId": 660
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2021-07-23",
+          "pinballMapMachineId": 660
+        }
+      ]
     },
     {
       "title": "The Bally Game Show",
@@ -371,9 +572,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show",
       "releaseDate": "1990-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=985",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2024-09-26",
-      "pinballMapMachineId": 760
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2024-09-26",
+          "pinballMapMachineId": 760
+        }
+      ]
     },
     {
       "title": "Metallica (Pro)",
@@ -383,8 +590,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/metallica",
       "releaseDate": "2013-04-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6028",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 1591
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "pinballMapMachineId": 1591,
+          "leftClubDate": "2023-12-29"
+        }
+      ]
     },
     {
       "title": "KISS (Pro)",
@@ -393,17 +607,34 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss",
       "pinsideUrl": "https://pinside.com/pinball/machine/kiss",
       "releaseDate": "2015-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6265"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6265",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2353
+        }
+      ]
     },
     {
       "title": "Rush (Premium)",
-      "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration. Left the club in April 2025.",
+      "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration.",
       "imageFilename": "rush-premium.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
       "releaseDate": "2022-01-01",
-      "leftClubDate": "2025-04-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6845",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/rush"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/rush",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-06-24",
+          "leftClubDate": "2024-08-29",
+          "pinballMapMachineId": 3432
+        }
+      ]
     },
     {
       "title": "PIN-BOT",
@@ -413,9 +644,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/pinbot",
       "releaseDate": "1986-10-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1796",
-      "joinedClubDate": "2017-09-12",
-      "leftClubDate": "2021-07-23",
-      "pinballMapMachineId": 723
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-12",
+          "leftClubDate": "2021-07-23",
+          "pinballMapMachineId": 723
+        }
+      ]
     },
     {
       "title": "Doodle Bug",
@@ -425,9 +662,15 @@
       "releaseDate": "1971-03-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=703",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/dipsy-doodle-doodle-bug-love-bug",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2023-01-22",
-      "pinballMapMachineId": 2367
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2023-01-22",
+          "pinballMapMachineId": 2367
+        }
+      ]
     },
     {
       "title": "The Simpsons Pinball Party",
@@ -437,9 +680,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party",
       "releaseDate": "2003-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4674",
-      "joinedClubDate": "2018-04-22",
-      "leftClubDate": "2018-09-04",
-      "pinballMapMachineId": 682
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-04-22",
+          "leftClubDate": "2018-09-04",
+          "pinballMapMachineId": 682
+        }
+      ]
     },
     {
       "title": "Lost World",
@@ -449,9 +698,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/lost-world",
       "releaseDate": "1977-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1476",
-      "joinedClubDate": "2018-09-06",
-      "leftClubDate": "2019-09-05",
-      "pinballMapMachineId": 778
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-06",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 778
+        }
+      ]
     },
     {
       "title": "Argosy",
@@ -461,9 +716,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/argosy",
       "releaseDate": "1977-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84",
-      "joinedClubDate": "2021-06-11",
-      "leftClubDate": "2023-10-03",
-      "pinballMapMachineId": 1797
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2023-10-03",
+          "pinballMapMachineId": 1797
+        }
+      ]
     },
     {
       "title": "The Lost World Jurassic Park",
@@ -472,7 +733,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
       "releaseDate": "1997-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Target Alpha",
@@ -481,9 +748,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha",
       "releaseDate": "1976-11-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2500",
-      "joinedClubDate": "2018-09-04",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 892
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 892
+        }
+      ]
     },
     {
       "title": "Airborne",
@@ -493,9 +766,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/airborne",
       "releaseDate": "1996-03-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3783",
-      "joinedClubDate": "2018-09-04",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 1159
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 1159
+        }
+      ]
     },
     {
       "title": "Hot Shot",
@@ -505,9 +784,15 @@
       "releaseDate": "1973-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1247",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/big-shot-hot-shot-pro-pool",
-      "joinedClubDate": "2019-01-29",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 2315
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2315
+        }
+      ]
     },
     {
       "title": "2001",
@@ -517,9 +802,15 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/2001-dimension-galaxie",
       "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-2001",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697",
-      "joinedClubDate": "2018-09-16",
-      "leftClubDate": "2021-12-12",
-      "pinballMapMachineId": 1031
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-16",
+          "leftClubDate": "2021-12-12",
+          "pinballMapMachineId": 1031
+        }
+      ]
     },
     {
       "title": "Fun Land",
@@ -529,9 +820,15 @@
       "releaseDate": "1968-05-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=973",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/fun-land-fun-park",
-      "joinedClubDate": "2021-06-11",
-      "leftClubDate": "2023-12-29",
-      "pinballMapMachineId": 830
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 830
+        }
+      ]
     },
     {
       "title": "Major League",
@@ -539,7 +836,13 @@
       "imageFilename": "major-league.png",
       "releaseDate": "1963-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1526"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1526",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "The Lord of the Rings",
@@ -548,7 +851,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings",
       "pinsideUrl": "https://pinside.com/pinball/machine/lord-of-the-rings",
       "releaseDate": "2003-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4858"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4858",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "The Hobbit (Smaug)",
@@ -557,7 +866,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
       "releaseDate": "2016-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6224"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6224",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Robocop",
@@ -567,9 +882,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/robocop",
       "releaseDate": "1989-11-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1976",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2019-01-29",
-      "pinballMapMachineId": 916
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2019-01-29",
+          "pinballMapMachineId": 916
+        }
+      ]
     },
     {
       "title": "Time Warp",
@@ -578,7 +899,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/time-warp",
       "pinsideUrl": "https://pinside.com/pinball/machine/time-warp",
       "releaseDate": "1979-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2568"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2568",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Flash Gordon",
@@ -588,9 +915,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon",
       "releaseDate": "1981-02-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=874",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2017-09-13",
-      "pinballMapMachineId": 727
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2017-09-13",
+          "pinballMapMachineId": 727
+        }
+      ]
     },
     {
       "title": "Ice Fever",
@@ -599,7 +932,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever",
       "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever",
       "releaseDate": "1985-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1260"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1260",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Star Trek",
@@ -608,7 +947,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/star-trek",
       "pinsideUrl": "https://pinside.com/pinball/machine/star-trek",
       "releaseDate": "1991-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2356"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2356",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "X-Men Wolverine LE",
@@ -617,7 +962,13 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",
       "releaseDate": "2012-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5824",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/x-men"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/x-men",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Roy Clark The Entertainer",
@@ -626,7 +977,13 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/entertainer",
       "releaseDate": "1977-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=785",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/take-five-circa-1933-the-entertainer"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/take-five-circa-1933-the-entertainer",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Swords of Fury",
@@ -635,7 +992,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/swords-of-fury",
       "pinsideUrl": "https://pinside.com/pinball/machine/swords-of-fury",
       "releaseDate": "1988-06-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2486"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2486",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Baywatch",
@@ -644,7 +1007,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch",
       "pinsideUrl": "https://pinside.com/pinball/machine/baywatch",
       "releaseDate": "1995-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2848"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2848",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "WHO dunnit",
@@ -653,7 +1022,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/who-dunnit",
       "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit",
       "releaseDate": "1995-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3685"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3685",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Congo",
@@ -663,9 +1038,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/congo",
       "releaseDate": "1995-11-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3780",
-      "joinedClubDate": "2017-11-29",
-      "leftClubDate": "2018-05-25",
-      "pinballMapMachineId": 715
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-11-29",
+          "leftClubDate": "2018-05-25",
+          "pinballMapMachineId": 715
+        }
+      ]
     },
     {
       "title": "Time Machine",
@@ -673,7 +1054,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine",
       "pinsideUrl": "https://pinside.com/pinball/machine/time-machine",
       "releaseDate": "1988-12-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2565"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2565",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Aztec",
@@ -683,9 +1070,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/aztec",
       "releaseDate": "1976-02-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=119",
-      "joinedClubDate": "2017-10-31",
-      "leftClubDate": "2018-03-13",
-      "pinballMapMachineId": 823
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-10-31",
+          "leftClubDate": "2018-03-13",
+          "pinballMapMachineId": 823
+        }
+      ]
     },
     {
       "title": "Street Fighter II",
@@ -693,7 +1086,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii",
       "pinsideUrl": "https://pinside.com/pinball/machine/street-fighter-ii",
       "releaseDate": "1993-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2403"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2403",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Flash",
@@ -702,7 +1101,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/flash",
       "pinsideUrl": "https://pinside.com/pinball/machine/flash",
       "releaseDate": "1979-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=871"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=871",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Volley",
@@ -710,7 +1115,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/volley",
       "pinsideUrl": "https://pinside.com/pinball/machine/volley",
       "releaseDate": "1976-08-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2743"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2743",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Genesis",
@@ -719,7 +1130,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/genesis",
       "pinsideUrl": "https://pinside.com/pinball/machine/genesis",
       "releaseDate": "1993-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=996"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=996",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Evil Knievel",
@@ -727,7 +1144,13 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
       "releaseDate": "1976-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4499",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Strikes and Spares",
@@ -737,9 +1160,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares",
       "releaseDate": "1978-06-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2406",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2017-10-31",
-      "pinballMapMachineId": 847
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2017-10-31",
+          "pinballMapMachineId": 847
+        }
+      ]
     },
     {
       "title": "Ship Ahoy",
@@ -747,7 +1176,13 @@
       "releaseDate": "1976-06-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/ship-ahoy",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2119",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/buccaneer-ship-ahoy-high-seas"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/buccaneer-ship-ahoy-high-seas",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "The Flintstones",
@@ -757,9 +1192,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones",
       "releaseDate": "1994-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=888",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2018-04-11",
-      "pinballMapMachineId": 690
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2018-04-11",
+          "pinballMapMachineId": 690
+        }
+      ]
     },
     {
       "title": "Judge Dredd",
@@ -769,9 +1210,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd",
       "releaseDate": "1993-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1322",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2018-03-13",
-      "pinballMapMachineId": 815
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2018-03-13",
+          "pinballMapMachineId": 815
+        }
+      ]
     },
     {
       "title": "Firepower",
@@ -780,7 +1227,13 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/firepower",
       "pinsideUrl": "https://pinside.com/pinball/machine/firepower",
       "releaseDate": "1980-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=856"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=856",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908
+        }
+      ]
     },
     {
       "title": "Total Nuclear Annihilation",
@@ -790,9 +1243,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation",
       "releaseDate": "2017-07-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6444",
-      "joinedClubDate": "2018-03-13",
-      "leftClubDate": "2018-05-08",
-      "pinballMapMachineId": 2866
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-03-13",
+          "leftClubDate": "2018-05-08",
+          "pinballMapMachineId": 2866
+        }
+      ]
     },
     {
       "title": "Cleopatra",
@@ -802,9 +1261,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra",
       "releaseDate": "1977-12-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=532",
-      "joinedClubDate": "2018-04-03",
-      "leftClubDate": "2018-09-04",
-      "pinballMapMachineId": 1455
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-04-03",
+          "leftClubDate": "2018-09-04",
+          "pinballMapMachineId": 1455
+        }
+      ]
     },
     {
       "title": "F-14 Tomcat",
@@ -814,9 +1279,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
       "releaseDate": "1987-03-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=804",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 751
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 751
+        }
+      ]
     },
     {
       "title": "Old Chicago",
@@ -826,31 +1297,49 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago",
       "releaseDate": "1976-04-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704",
-      "joinedClubDate": "2017-09-12",
-      "leftClubDate": "2019-01-29",
-      "pinballMapMachineId": 1331
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-12",
+          "leftClubDate": "2019-01-29",
+          "pinballMapMachineId": 1331
+        }
+      ]
     },
     {
       "title": "Royal Flush",
       "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
       "releaseDate": "1976-01-01",
-      "leftClubDate": "2026-03-22",
       "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush",
-      "joinedClubDate": "2025-12-31",
-      "pinballMapMachineId": 822
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-12-31",
+          "leftClubDate": "2026-03-22",
+          "pinballMapMachineId": 822
+        }
+      ]
     },
     {
       "title": "Joust",
       "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.",
       "releaseDate": "1969-01-01",
-      "leftClubDate": "2025-12-31",
       "pinsideUrl": "https://pinside.com/pinball/machine/joust",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1317",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/joust",
-      "joinedClubDate": "2021-06-11",
-      "pinballMapMachineId": 2490
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2025-12-31",
+          "pinballMapMachineId": 2490
+        }
+      ]
     },
     {
       "title": "Grand Prix",
@@ -859,21 +1348,33 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/grand-prix",
       "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix",
       "releaseDate": "1976-01-01",
-      "leftClubDate": "2025-11-04",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1072",
-      "joinedClubDate": "2017-11-29",
-      "pinballMapMachineId": 793
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-11-29",
+          "leftClubDate": "2025-11-04",
+          "pinballMapMachineId": 793
+        }
+      ]
     },
     {
       "title": "Crescendo",
       "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.",
       "releaseDate": "1970-01-01",
-      "leftClubDate": "2025-11-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/crescendo",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=590",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo",
-      "joinedClubDate": "2022-01-09",
-      "pinballMapMachineId": 1969
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-01-09",
+          "leftClubDate": "2025-11-04",
+          "pinballMapMachineId": 1969
+        }
+      ]
     },
     {
       "title": "World Cup Soccer",
@@ -882,75 +1383,117 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/world-cup-soccer",
       "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer",
       "releaseDate": "1994-01-01",
-      "leftClubDate": "2025-10-29",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2811",
-      "joinedClubDate": "2017-09-08",
-      "pinballMapMachineId": 707
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2025-10-29",
+          "pinballMapMachineId": 707
+        }
+      ]
     },
     {
       "title": "Solar City",
       "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.",
       "releaseDate": "1977-01-01",
-      "leftClubDate": "2025-10-28",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-city",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237",
-      "joinedClubDate": "2022-01-09",
-      "pinballMapMachineId": 757
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-01-09",
+          "leftClubDate": "2025-10-28",
+          "pinballMapMachineId": 757
+        }
+      ]
     },
     {
       "title": "The Amazing Spider-Man",
       "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.",
       "releaseDate": "1980-01-01",
-      "leftClubDate": "2025-09-08",
       "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man",
-      "joinedClubDate": "2024-04-18",
-      "pinballMapMachineId": 1299
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2025-09-08",
+          "pinballMapMachineId": 1299
+        }
+      ]
     },
     {
       "title": "Kings of Steel",
       "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.",
       "releaseDate": "1984-01-01",
-      "leftClubDate": "2025-07-18",
       "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/kings-of-steel",
-      "joinedClubDate": "2023-01-09",
-      "pinballMapMachineId": 2283
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2025-07-18",
+          "pinballMapMachineId": 2283
+        }
+      ]
     },
     {
       "title": "Dogies",
       "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.",
       "releaseDate": "1968-01-01",
-      "leftClubDate": "2025-07-18",
       "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/dogies",
-      "joinedClubDate": "2025-04-13",
-      "pinballMapMachineId": 3292
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-04-13",
+          "leftClubDate": "2025-07-18",
+          "pinballMapMachineId": 3292
+        }
+      ]
     },
     {
       "title": "Rock",
       "details": "1985 Gottlieb. Former club machine; removed from the lineup on 2025-04-30.",
       "releaseDate": "1985-01-01",
-      "leftClubDate": "2025-04-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/rock",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1978",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/rock",
-      "joinedClubDate": "2024-04-21",
-      "pinballMapMachineId": 2197
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-21",
+          "leftClubDate": "2025-04-30",
+          "pinballMapMachineId": 2197
+        }
+      ]
     },
     {
       "title": "Amigo",
       "details": "1973 Bally. Former club machine; removed from the lineup on 2025-04-30.",
       "releaseDate": "1973-01-01",
-      "leftClubDate": "2025-04-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/amigo",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=71",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/amigo",
-      "joinedClubDate": "2021-06-11",
-      "pinballMapMachineId": 2805
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2025-04-30",
+          "pinballMapMachineId": 2805
+        }
+      ]
     },
     {
       "title": "Last Action Hero",
@@ -960,9 +1503,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero",
       "releaseDate": "1993-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1416",
-      "joinedClubDate": "2019-01-29",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 964
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 964
+        }
+      ]
     },
     {
       "title": "World Poker Tour",
@@ -972,9 +1521,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour",
       "releaseDate": "2006-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5134",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2024-04-18",
-      "pinballMapMachineId": 699
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 699
+        }
+      ]
     },
     {
       "title": "NASCAR",
@@ -984,9 +1539,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/nascar",
       "releaseDate": "2005-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5093",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 705
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 705
+        }
+      ]
     },
     {
       "title": "Johnny Mnemonic",
@@ -996,9 +1557,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic",
       "releaseDate": "1995-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3683",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2023-12-29",
-      "pinballMapMachineId": 646
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 646
+        }
+      ]
     },
     {
       "title": "Sorcerer",
@@ -1007,9 +1574,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer",
       "releaseDate": "1985-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2242",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2019-09-05",
-      "pinballMapMachineId": 966
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 966
+        }
+      ]
     },
     {
       "title": "Count-Down",
@@ -1019,9 +1592,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/count-down",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=573",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/count-down-space-walk",
-      "joinedClubDate": "2017-09-12",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 835
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-12",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 835
+        }
+      ]
     },
     {
       "title": "Genie",
@@ -1031,9 +1610,15 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/genie",
       "releaseDate": "1979-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=997",
-      "joinedClubDate": "2019-01-29",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 870
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 870
+        }
+      ]
     },
     {
       "title": "Jacks Open",
@@ -1043,9 +1628,15 @@
       "releaseDate": "1977-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1281",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/jacks-open-lucky-hand",
-      "joinedClubDate": "2021-06-11",
-      "leftClubDate": "2024-12-31",
-      "pinballMapMachineId": 2840
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2024-12-31",
+          "pinballMapMachineId": 2840
+        }
+      ]
     },
     {
       "title": "Apollo",
@@ -1055,263 +1646,427 @@
       "releaseDate": "1967-06-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=77",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/apollo-blast-off",
-      "joinedClubDate": "2021-06-11",
-      "leftClubDate": "2023-12-29",
-      "pinballMapMachineId": 2515
-    },
-    {
-      "title": "Godzilla",
-      "details": "2021 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2026-04-04.",
-      "releaseDate": "2021-01-01",
-      "joinedClubDate": "2024-09-05",
-      "leftClubDate": "2026-04-04",
-      "pinballMapMachineId": 3415
-    },
-    {
-      "title": "Harley-Davidson",
-      "details": "2002 2nd Edition) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2026-04-04.",
-      "releaseDate": "2002-01-01",
-      "joinedClubDate": "2024-09-05",
-      "leftClubDate": "2026-04-04",
-      "pinballMapMachineId": 2054
-    },
-    {
-      "title": "Avengers: Infinity Quest",
-      "details": "2020 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2025-04-13. Removed from the map on 2026-04-04.",
-      "releaseDate": "2020-01-01",
-      "joinedClubDate": "2025-04-13",
-      "leftClubDate": "2026-04-04",
-      "pinballMapMachineId": 3267
-    },
-    {
-      "title": "Jurassic Park",
-      "details": "2019 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-03-24. Removed from the map on 2026-03-30.",
-      "releaseDate": "2019-01-01",
-      "joinedClubDate": "2024-03-24",
-      "leftClubDate": "2026-03-30",
-      "pinballMapMachineId": 3167
-    },
-    {
-      "title": "Deadpool",
-      "details": "2018 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2025-01-20. Removed from the map on 2026-03-30.",
-      "releaseDate": "2018-01-01",
-      "joinedClubDate": "2025-01-20",
-      "leftClubDate": "2026-03-30",
-      "pinballMapMachineId": 3022
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 2515
+        }
+      ]
     },
     {
       "title": "Lord of the Rings",
       "details": "2003 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2025-02-26.",
       "releaseDate": "2003-01-01",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2025-02-26",
-      "pinballMapMachineId": 662
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2025-02-26",
+          "pinballMapMachineId": 662
+        }
+      ]
     },
     {
       "title": "Barb Wire",
       "details": "1996 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-11-30. Removed from the map on 2025-01-17.",
       "releaseDate": "1996-01-01",
-      "joinedClubDate": "2024-11-30",
-      "leftClubDate": "2025-01-17",
-      "pinballMapMachineId": 777
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-11-30",
+          "leftClubDate": "2025-01-17",
+          "pinballMapMachineId": 777
+        }
+      ]
     },
     {
       "title": "Guns N' Roses",
       "details": "2020 SE) (Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
       "releaseDate": "2020-01-01",
-      "joinedClubDate": "2024-09-20",
-      "leftClubDate": "2024-10-13",
-      "pinballMapMachineId": 3272
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-20",
+          "leftClubDate": "2024-10-13",
+          "pinballMapMachineId": 3272
+        }
+      ]
     },
     {
       "title": "High Hand",
       "details": "1973 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-23.",
       "releaseDate": "1973-01-01",
-      "joinedClubDate": "2024-05-11",
-      "leftClubDate": "2024-09-23",
-      "pinballMapMachineId": 795
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-05-11",
+          "leftClubDate": "2024-09-23",
+          "pinballMapMachineId": 795
+        }
+      ]
     },
     {
       "title": "Oktoberfest",
       "details": "2018 American. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2024-09-17.",
       "releaseDate": "2018-01-01",
-      "joinedClubDate": "2024-09-05",
-      "leftClubDate": "2024-09-17",
-      "pinballMapMachineId": 3079
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-05",
+          "leftClubDate": "2024-09-17",
+          "pinballMapMachineId": 3079
+        }
+      ]
     },
     {
       "title": "Led Zeppelin",
       "details": "2020 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
       "releaseDate": "2020-01-01",
-      "joinedClubDate": "2024-04-30",
-      "leftClubDate": "2024-09-05",
-      "pinballMapMachineId": 3279
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-30",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 3279
+        }
+      ]
     },
     {
       "title": "Lectronamo",
       "details": "1978 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-19. Removed from the map on 2024-09-05.",
       "releaseDate": "1978-01-01",
-      "joinedClubDate": "2024-01-19",
-      "leftClubDate": "2024-09-05",
-      "pinballMapMachineId": 2895
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-01-19",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 2895
+        }
+      ]
     },
     {
       "title": "Iron Maiden: Legacy of the Beast",
       "details": "2018 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
       "releaseDate": "2018-01-01",
-      "joinedClubDate": "2024-05-02",
-      "leftClubDate": "2024-09-05",
-      "pinballMapMachineId": 2923
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-05-02",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 2923
+        }
+      ]
     },
     {
       "title": "Freddy: A Nightmare on Elm Street",
       "details": "1994 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-05.",
       "releaseDate": "1994-01-01",
-      "joinedClubDate": "2024-05-11",
-      "leftClubDate": "2024-09-05",
-      "pinballMapMachineId": 887
-    },
-    {
-      "title": "Rush",
-      "details": "2022 Premium) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-06-24.",
-      "releaseDate": "2022-01-01",
-      "joinedClubDate": "2024-04-18",
-      "leftClubDate": "2024-06-24",
-      "pinballMapMachineId": 3432
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-05-11",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 887
+        }
+      ]
     },
     {
       "title": "Monte Carlo",
       "details": "1987 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2022-05-07. Removed from the map on 2024-05-11.",
       "releaseDate": "1987-01-01",
-      "joinedClubDate": "2022-05-07",
-      "leftClubDate": "2024-05-11",
-      "pinballMapMachineId": 1463
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-05-07",
+          "leftClubDate": "2024-05-11",
+          "pinballMapMachineId": 1463
+        }
+      ]
     },
     {
       "title": "Rollergames",
       "details": "1990 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-05-02.",
       "releaseDate": "1990-01-01",
-      "joinedClubDate": "2024-04-18",
-      "leftClubDate": "2024-05-02",
-      "pinballMapMachineId": 746
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2024-05-02",
+          "pinballMapMachineId": 746
+        }
+      ]
     },
     {
       "title": "Pool Sharks",
       "details": "1990 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-03-24. Removed from the map on 2024-04-18.",
       "releaseDate": "1990-01-01",
-      "joinedClubDate": "2024-03-24",
-      "leftClubDate": "2024-04-18",
-      "pinballMapMachineId": 780
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-03-24",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 780
+        }
+      ]
     },
     {
       "title": "Paragon",
       "details": "1979 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-04-18.",
       "releaseDate": "1979-01-01",
-      "joinedClubDate": "2024-01-18",
-      "leftClubDate": "2024-04-18",
-      "pinballMapMachineId": 897
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-01-18",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 897
+        }
+      ]
     },
     {
       "title": "Earthshaker",
       "details": "1989 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-07-13. Removed from the map on 2024-04-18.",
       "releaseDate": "1989-01-01",
-      "joinedClubDate": "2023-07-13",
-      "leftClubDate": "2024-04-18",
-      "pinballMapMachineId": 702
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-07-13",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 702
+        }
+      ]
     },
     {
       "title": "The Rolling Stones",
       "details": "2011 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-01-30.",
       "releaseDate": "2011-01-01",
-      "joinedClubDate": "2024-01-18",
-      "leftClubDate": "2024-01-30",
-      "pinballMapMachineId": 1089
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-01-18",
+          "leftClubDate": "2024-01-30",
+          "pinballMapMachineId": 1089
+        }
+      ]
     },
     {
       "title": "Diamond Lady",
       "details": "1988 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-10-03. Removed from the map on 2024-01-18.",
       "releaseDate": "1988-01-01",
-      "joinedClubDate": "2023-10-03",
-      "leftClubDate": "2024-01-18",
-      "pinballMapMachineId": 2349
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-10-03",
+          "leftClubDate": "2024-01-18",
+          "pinballMapMachineId": 2349
+        }
+      ]
     },
     {
       "title": "Metallica",
       "details": "2013 Pro) (Stern. From Pinball Map location activity (not on our site list before).",
       "releaseDate": "2013-01-01",
-      "pinballMapMachineId": 1591
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "pinballMapMachineId": 1591,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2023-12-29"
+        }
+      ]
     },
     {
       "title": "Lightning Ball",
       "details": "1959 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-16. Removed from the map on 2023-12-29.",
       "releaseDate": "1959-01-01",
-      "joinedClubDate": "2023-01-16",
-      "leftClubDate": "2023-12-29",
-      "pinballMapMachineId": 2362
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-16",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 2362
+        }
+      ]
     },
     {
       "title": "Evel Knievel",
       "details": "1977 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-09. Removed from the map on 2023-10-03.",
       "releaseDate": "1977-01-01",
-      "joinedClubDate": "2023-01-09",
-      "leftClubDate": "2023-10-03",
-      "pinballMapMachineId": 783
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2023-10-03",
+          "pinballMapMachineId": 783
+        }
+      ]
     },
     {
       "title": "Robo-War",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-07-23. Removed from the map on 2023-01-22.",
-      "joinedClubDate": "2021-07-23",
-      "leftClubDate": "2023-01-22",
-      "pinballMapMachineId": 2513
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-07-23",
+          "leftClubDate": "2023-01-22",
+          "pinballMapMachineId": 2513
+        }
+      ]
     },
     {
       "title": "Torpedo Alley",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-04. Removed from the map on 2022-05-07.",
-      "joinedClubDate": "2018-09-04",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 2647
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2647
+        }
+      ]
     },
     {
       "title": "Kiss",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2022-05-07.",
-      "joinedClubDate": "2017-09-08",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 2353
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2353
+        }
+      ]
     },
     {
       "title": "Aquarius",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-06-11. Removed from the map on 2022-05-07.",
-      "joinedClubDate": "2021-06-11",
-      "leftClubDate": "2022-05-07",
-      "pinballMapMachineId": 1962
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 1962
+        }
+      ]
     },
     {
       "title": "Time Fantasy",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-06. Removed from the map on 2019-09-05.",
-      "joinedClubDate": "2018-09-06",
-      "leftClubDate": "2019-09-05",
-      "pinballMapMachineId": 2597
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-06",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 2597
+        }
+      ]
     },
     {
       "title": "Lucky Seven (SS)",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2019-01-29. Removed from the map on 2019-09-05.",
-      "joinedClubDate": "2019-01-29",
-      "leftClubDate": "2019-09-05",
-      "pinballMapMachineId": 2399
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 2399
+        }
+      ]
     },
     {
       "title": "Black Knight",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2019-01-29. Removed from the map on 2019-09-05.",
-      "joinedClubDate": "2019-01-29",
-      "leftClubDate": "2019-09-05",
-      "pinballMapMachineId": 1055
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 1055
+        }
+      ]
     },
     {
       "title": "Space Invaders",
       "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-05-08. Removed from the map on 2018-09-04.",
-      "joinedClubDate": "2018-05-08",
-      "leftClubDate": "2018-09-04",
-      "pinballMapMachineId": 908
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-05-08",
+          "leftClubDate": "2018-09-04",
+          "pinballMapMachineId": 908
+        }
+      ]
+    },
+    {
+      "title": "Guns N' Roses (SE)",
+      "details": "2020 Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-20",
+          "leftClubDate": "2024-10-13",
+          "pinballMapMachineId": 3272
+        }
+      ],
+      "releaseDate": "2020-01-01"
+    },
+    {
+      "title": "Led Zeppelin (Pro)",
+      "details": "2020 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-30",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 3279
+        }
+      ],
+      "releaseDate": "2020-01-01"
+    },
+    {
+      "title": "Iron Maiden: Legacy of the Beast (Pro)",
+      "details": "2018 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-05-02",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 2923
+        }
+      ],
+      "releaseDate": "2018-01-01"
     }
   ]
 }

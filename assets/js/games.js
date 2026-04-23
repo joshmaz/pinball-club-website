@@ -5,6 +5,31 @@ const PINSIDE_ICON_PATH = "assets/images/pinside_logo-ball.png";
 const IPDB_ICON_PATH = "assets/images/ipdb-favicon.png";
 const GAMES_URL = "data/games.json";
 
+/**
+ * @param {{ address?: string, joinedClubDate?: string, leftClubDate?: string, pinballMapLocationId?: number }[]} stints
+ */
+function formatLocationStints(stints) {
+  if (!Array.isArray(stints) || stints.length === 0) {
+    return "";
+  }
+  const lines = [];
+  for (const s of stints) {
+    const where = (s.address && String(s.address).trim()) || "Club location";
+    const from = s.joinedClubDate ? String(s.joinedClubDate).trim() : "";
+    const through = s.leftClubDate ? String(s.leftClubDate).trim() : "";
+    let line = where;
+    if (from && through) {
+      line += `: ${from} – ${through}`;
+    } else if (from) {
+      line += `: from ${from}`;
+    } else if (through) {
+      line += `: through ${through}`;
+    }
+    lines.push(line);
+  }
+  return lines.join("\n");
+}
+
 function createGamesList(games) {
   const list = document.createElement("ul");
   list.className = "games-list";
@@ -32,6 +57,14 @@ function createGamesList(games) {
     details.className = "games-details";
     details.textContent = game.details;
     item.appendChild(details);
+
+    const stintsText = formatLocationStints(game.locationStints);
+    if (stintsText) {
+      const stintsEl = document.createElement("p");
+      stintsEl.className = "games-location-stints";
+      stintsEl.textContent = stintsText;
+      item.appendChild(stintsEl);
+    }
 
     const kineticistUrl = game.kineticistUrl;
     const pinsideUrl = game.pinsideUrl;
