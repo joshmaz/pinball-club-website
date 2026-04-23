@@ -17,17 +17,20 @@
       "releaseDate": "1980-10-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=48",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker",
+      "joinedClubDate": "2020-03-01",
+      "pinballMapMachineId": 878
     },
     {
       "title": "Avengers: Infinity Quest (Pro)",
       "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
       "imageFilename": "avengers-infinity-quest-pro.png",
       "releaseDate": "2020-01-01",
-      "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest",
+      "joinedClubDate": "2022-05-07",
+      "pinballMapMachineId": 3267
     },
     {
       "title": "Black Jack",
@@ -36,7 +39,10 @@
       "releaseDate": "1977-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/black-jack",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4498",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack",
+      "joinedClubDate": "2017-12-06",
+      "leftClubDate": "2026-04-21",
+      "pinballMapMachineId": 833
     },
     {
       "title": "Road Kings",
@@ -46,7 +52,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/road-kings",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1970",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/road-kings"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/road-kings",
+      "joinedClubDate": "2025-02-26",
+      "pinballMapMachineId": 827
     },
     {
       "title": "Black Pyramid",
@@ -55,7 +63,9 @@
       "releaseDate": "1984-07-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=312",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-pyramid"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-pyramid",
+      "joinedClubDate": "2021-06-11",
+      "pinballMapMachineId": 1096
     },
     {
       "title": "Embryon",
@@ -64,7 +74,9 @@
       "releaseDate": "1981-06-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/embryon",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=783",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/embryon"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/embryon",
+      "joinedClubDate": "2025-04-28",
+      "pinballMapMachineId": 796
     },
     {
       "title": "Future Spa",
@@ -73,7 +85,9 @@
       "releaseDate": "1979-10-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/future-spa",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=974",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/future-spa"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/future-spa",
+      "joinedClubDate": "2025-11-03",
+      "pinballMapMachineId": 808
     },
     {
       "title": "Heavy Metal Meltdown",
@@ -82,7 +96,10 @@
       "releaseDate": "1987-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1150",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/heavy-metal-meltdown"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/heavy-metal-meltdown",
+      "joinedClubDate": "2025-01-06",
+      "leftClubDate": "2026-04-21",
+      "pinballMapMachineId": 2137
     },
     {
       "title": "Hokus Pokus",
@@ -91,7 +108,9 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/hokus-pokus",
       "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
       "releaseDate": "1975-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206",
+      "joinedClubDate": "2017-12-06",
+      "pinballMapMachineId": 794
     },
     {
       "title": "Deadpool (Pro)",
@@ -110,7 +129,10 @@
       "releaseDate": "1982-05-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1639",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/mr-mrs-pac-man"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mr-mrs-pac-man",
+      "joinedClubDate": "2023-01-09",
+      "leftClubDate": "2026-04-21",
+      "pinballMapMachineId": 1181
     },
     {
       "title": "Starship Troopers",
@@ -119,7 +141,9 @@
       "releaseDate": "1997-12-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4341",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/starship-troopers"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/starship-troopers",
+      "joinedClubDate": "2023-10-03",
+      "pinballMapMachineId": 883
     },
     {
       "title": "Truck Stop",
@@ -128,7 +152,9 @@
       "releaseDate": "1988-11-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2667",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/truck-stop"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/truck-stop",
+      "joinedClubDate": "2024-09-06",
+      "pinballMapMachineId": 826
     },
     {
       "title": "Godzilla (Pro)",
@@ -156,7 +182,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever",
+      "joinedClubDate": "2024-04-18",
+      "pinballMapMachineId": 1091
     },
     {
       "title": "Mustang",
@@ -165,7 +193,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang",
+      "joinedClubDate": "2024-12-14",
+      "pinballMapMachineId": 1462
     },
     {
       "title": "Solar Ride",
@@ -174,7 +204,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride",
+      "joinedClubDate": "2025-03-24",
+      "pinballMapMachineId": 1381
     },
     {
       "title": "Spider-Man",
@@ -183,7 +215,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007",
+      "joinedClubDate": "2022-01-09",
+      "pinballMapMachineId": 663
     },
     {
       "title": "Target Pool",
@@ -193,7 +227,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 1029
     },
     {
       "title": "NBA Fastbreak",
@@ -203,7 +239,9 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
       "releaseDate": "1997-03-01",
       "leftClubDate": "2026-04-04",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 657
     },
     {
       "title": "Hot Line",
@@ -213,7 +251,9 @@
       "leftClubDate": "2026-04-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 974
     },
     {
       "title": "Charlie's Angels",
@@ -223,7 +263,9 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
       "releaseDate": "1978-01-01",
       "leftClubDate": "2026-04-04",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 1157
     },
     {
       "title": "Monopoly",
@@ -232,7 +274,9 @@
       "leftClubDate": "2026-04-07",
       "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly",
+      "joinedClubDate": "2025-10-27",
+      "pinballMapMachineId": 698
     },
     {
       "title": "Terminator 2: Judgment Day",
@@ -242,7 +286,9 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
       "releaseDate": "1991-07-01",
       "leftClubDate": "2026-04-07",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524",
+      "joinedClubDate": "2018-09-23",
+      "pinballMapMachineId": 686
     },
     {
       "title": "300",
@@ -251,7 +297,9 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/300-top-score",
       "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
       "releaseDate": "1975-08-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 1387
     },
     {
       "title": "Xenon",
@@ -261,7 +309,9 @@
       "leftClubDate": "2026-03-22",
       "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon",
+      "joinedClubDate": "2021-06-11",
+      "pinballMapMachineId": 726
     }
   ],
   "previousGames": [
@@ -272,7 +322,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
       "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
       "releaseDate": "1980-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887",
+      "joinedClubDate": "2023-01-09",
+      "leftClubDate": "2025-02-15",
+      "pinballMapMachineId": 937
     },
     {
       "title": "Space Shuttle",
@@ -281,7 +334,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/space-shuttle",
       "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle",
       "releaseDate": "1980-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2260"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2260",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2019-09-05",
+      "pinballMapMachineId": 1068
     },
     {
       "title": "High Speed",
@@ -290,7 +346,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/high-speed",
       "pinsideUrl": "https://pinside.com/pinball/machine/high-speed",
       "releaseDate": "1986-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1176"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1176",
+      "joinedClubDate": "2018-09-04",
+      "leftClubDate": "2021-07-23",
+      "pinballMapMachineId": 672
     },
     {
       "title": "The Getaway: High Speed II",
@@ -299,7 +358,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-getaway-high-speed-ii",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii",
       "releaseDate": "1992-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1000"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1000",
+      "joinedClubDate": "2018-09-04",
+      "leftClubDate": "2021-07-23",
+      "pinballMapMachineId": 660
     },
     {
       "title": "The Bally Game Show",
@@ -308,7 +370,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-bally-game-show",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show",
       "releaseDate": "1990-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=985"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=985",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2024-09-26",
+      "pinballMapMachineId": 760
     },
     {
       "title": "Metallica (Pro)",
@@ -317,7 +382,9 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica",
       "pinsideUrl": "https://pinside.com/pinball/machine/metallica",
       "releaseDate": "2013-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6028"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6028",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 1591
     },
     {
       "title": "KISS (Pro)",
@@ -345,7 +412,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/pinbot",
       "pinsideUrl": "https://pinside.com/pinball/machine/pinbot",
       "releaseDate": "1986-10-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1796"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1796",
+      "joinedClubDate": "2017-09-12",
+      "leftClubDate": "2021-07-23",
+      "pinballMapMachineId": 723
     },
     {
       "title": "Doodle Bug",
@@ -354,7 +424,10 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/doodle-bug",
       "releaseDate": "1971-03-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=703",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/dipsy-doodle-doodle-bug-love-bug"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/dipsy-doodle-doodle-bug-love-bug",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2023-01-22",
+      "pinballMapMachineId": 2367
     },
     {
       "title": "The Simpsons Pinball Party",
@@ -363,7 +436,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-simpsons-pinball-party",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party",
       "releaseDate": "2003-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4674"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4674",
+      "joinedClubDate": "2018-04-22",
+      "leftClubDate": "2018-09-04",
+      "pinballMapMachineId": 682
     },
     {
       "title": "Lost World",
@@ -372,7 +448,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/lost-world",
       "pinsideUrl": "https://pinside.com/pinball/machine/lost-world",
       "releaseDate": "1977-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1476"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1476",
+      "joinedClubDate": "2018-09-06",
+      "leftClubDate": "2019-09-05",
+      "pinballMapMachineId": 778
     },
     {
       "title": "Argosy",
@@ -381,7 +460,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/argosy",
       "pinsideUrl": "https://pinside.com/pinball/machine/argosy",
       "releaseDate": "1977-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84",
+      "joinedClubDate": "2021-06-11",
+      "leftClubDate": "2023-10-03",
+      "pinballMapMachineId": 1797
     },
     {
       "title": "The Lost World Jurassic Park",
@@ -398,7 +480,10 @@
       "imageFilename": "target-alpha.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha",
       "releaseDate": "1976-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2500"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2500",
+      "joinedClubDate": "2018-09-04",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 892
     },
     {
       "title": "Airborne",
@@ -407,7 +492,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/airborne",
       "pinsideUrl": "https://pinside.com/pinball/machine/airborne",
       "releaseDate": "1996-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3783"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3783",
+      "joinedClubDate": "2018-09-04",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 1159
     },
     {
       "title": "Hot Shot",
@@ -416,7 +504,10 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/hot-shot",
       "releaseDate": "1973-09-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1247",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/big-shot-hot-shot-pro-pool"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/big-shot-hot-shot-pro-pool",
+      "joinedClubDate": "2019-01-29",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 2315
     },
     {
       "title": "2001",
@@ -425,7 +516,10 @@
       "releaseDate": "1971-01-01",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/2001-dimension-galaxie",
       "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-2001",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697",
+      "joinedClubDate": "2018-09-16",
+      "leftClubDate": "2021-12-12",
+      "pinballMapMachineId": 1031
     },
     {
       "title": "Fun Land",
@@ -434,7 +528,10 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/fun-land",
       "releaseDate": "1968-05-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=973",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/fun-land-fun-park"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/fun-land-fun-park",
+      "joinedClubDate": "2021-06-11",
+      "leftClubDate": "2023-12-29",
+      "pinballMapMachineId": 830
     },
     {
       "title": "Major League",
@@ -469,7 +566,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/robocop",
       "pinsideUrl": "https://pinside.com/pinball/machine/robocop",
       "releaseDate": "1989-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1976"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1976",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2019-01-29",
+      "pinballMapMachineId": 916
     },
     {
       "title": "Time Warp",
@@ -487,7 +587,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/flash-gordon",
       "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon",
       "releaseDate": "1981-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=874"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=874",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2017-09-13",
+      "pinballMapMachineId": 727
     },
     {
       "title": "Ice Fever",
@@ -559,7 +662,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/congo",
       "pinsideUrl": "https://pinside.com/pinball/machine/congo",
       "releaseDate": "1995-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3780"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3780",
+      "joinedClubDate": "2017-11-29",
+      "leftClubDate": "2018-05-25",
+      "pinballMapMachineId": 715
     },
     {
       "title": "Time Machine",
@@ -576,7 +682,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/aztec",
       "pinsideUrl": "https://pinside.com/pinball/machine/aztec",
       "releaseDate": "1976-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=119"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=119",
+      "joinedClubDate": "2017-10-31",
+      "leftClubDate": "2018-03-13",
+      "pinballMapMachineId": 823
     },
     {
       "title": "Street Fighter II",
@@ -627,7 +736,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/strikes-and-spares",
       "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares",
       "releaseDate": "1978-06-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2406"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2406",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2017-10-31",
+      "pinballMapMachineId": 847
     },
     {
       "title": "Ship Ahoy",
@@ -644,7 +756,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/the-flintstones",
       "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones",
       "releaseDate": "1994-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=888"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=888",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2018-04-11",
+      "pinballMapMachineId": 690
     },
     {
       "title": "Judge Dredd",
@@ -653,7 +768,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/judge-dredd",
       "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd",
       "releaseDate": "1993-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1322"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1322",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2018-03-13",
+      "pinballMapMachineId": 815
     },
     {
       "title": "Firepower",
@@ -671,7 +789,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/total-nuclear-annihilation",
       "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation",
       "releaseDate": "2017-07-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6444"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6444",
+      "joinedClubDate": "2018-03-13",
+      "leftClubDate": "2018-05-08",
+      "pinballMapMachineId": 2866
     },
     {
       "title": "Cleopatra",
@@ -680,7 +801,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/cleopatra",
       "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra",
       "releaseDate": "1977-12-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=532"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=532",
+      "joinedClubDate": "2018-04-03",
+      "leftClubDate": "2018-09-04",
+      "pinballMapMachineId": 1455
     },
     {
       "title": "F-14 Tomcat",
@@ -689,7 +813,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat",
       "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
       "releaseDate": "1987-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=804"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=804",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 751
     },
     {
       "title": "Old Chicago",
@@ -698,7 +825,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/old-chicago",
       "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago",
       "releaseDate": "1976-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704",
+      "joinedClubDate": "2017-09-12",
+      "leftClubDate": "2019-01-29",
+      "pinballMapMachineId": 1331
     },
     {
       "title": "Royal Flush",
@@ -707,7 +837,9 @@
       "leftClubDate": "2026-03-22",
       "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush",
+      "joinedClubDate": "2025-12-31",
+      "pinballMapMachineId": 822
     },
     {
       "title": "Joust",
@@ -716,7 +848,9 @@
       "leftClubDate": "2025-12-31",
       "pinsideUrl": "https://pinside.com/pinball/machine/joust",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1317",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/joust"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/joust",
+      "joinedClubDate": "2021-06-11",
+      "pinballMapMachineId": 2490
     },
     {
       "title": "Grand Prix",
@@ -726,7 +860,9 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix",
       "releaseDate": "1976-01-01",
       "leftClubDate": "2025-11-04",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1072"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1072",
+      "joinedClubDate": "2017-11-29",
+      "pinballMapMachineId": 793
     },
     {
       "title": "Crescendo",
@@ -735,7 +871,9 @@
       "leftClubDate": "2025-11-04",
       "pinsideUrl": "https://pinside.com/pinball/machine/crescendo",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=590",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo",
+      "joinedClubDate": "2022-01-09",
+      "pinballMapMachineId": 1969
     },
     {
       "title": "World Cup Soccer",
@@ -745,7 +883,9 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer",
       "releaseDate": "1994-01-01",
       "leftClubDate": "2025-10-29",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2811"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2811",
+      "joinedClubDate": "2017-09-08",
+      "pinballMapMachineId": 707
     },
     {
       "title": "Solar City",
@@ -753,7 +893,9 @@
       "releaseDate": "1977-01-01",
       "leftClubDate": "2025-10-28",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-city",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237",
+      "joinedClubDate": "2022-01-09",
+      "pinballMapMachineId": 757
     },
     {
       "title": "The Amazing Spider-Man",
@@ -762,7 +904,9 @@
       "leftClubDate": "2025-09-08",
       "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man",
+      "joinedClubDate": "2024-04-18",
+      "pinballMapMachineId": 1299
     },
     {
       "title": "Kings of Steel",
@@ -771,7 +915,9 @@
       "leftClubDate": "2025-07-18",
       "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/kings-of-steel"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/kings-of-steel",
+      "joinedClubDate": "2023-01-09",
+      "pinballMapMachineId": 2283
     },
     {
       "title": "Dogies",
@@ -780,7 +926,9 @@
       "leftClubDate": "2025-07-18",
       "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/dogies"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/dogies",
+      "joinedClubDate": "2025-04-13",
+      "pinballMapMachineId": 3292
     },
     {
       "title": "Rock",
@@ -789,7 +937,9 @@
       "leftClubDate": "2025-04-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/rock",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1978",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/rock"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/rock",
+      "joinedClubDate": "2024-04-21",
+      "pinballMapMachineId": 2197
     },
     {
       "title": "Amigo",
@@ -798,7 +948,9 @@
       "leftClubDate": "2025-04-30",
       "pinsideUrl": "https://pinside.com/pinball/machine/amigo",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=71",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/amigo"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/amigo",
+      "joinedClubDate": "2021-06-11",
+      "pinballMapMachineId": 2805
     },
     {
       "title": "Last Action Hero",
@@ -807,7 +959,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/last-action-hero",
       "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero",
       "releaseDate": "1993-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1416"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1416",
+      "joinedClubDate": "2019-01-29",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 964
     },
     {
       "title": "World Poker Tour",
@@ -816,7 +971,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/world-poker-tour",
       "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour",
       "releaseDate": "2006-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5134"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5134",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2024-04-18",
+      "pinballMapMachineId": 699
     },
     {
       "title": "NASCAR",
@@ -825,7 +983,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/nascar",
       "pinsideUrl": "https://pinside.com/pinball/machine/nascar",
       "releaseDate": "2005-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5093"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5093",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 705
     },
     {
       "title": "Johnny Mnemonic",
@@ -834,7 +995,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/johnny-mnemonic",
       "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic",
       "releaseDate": "1995-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3683"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3683",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2023-12-29",
+      "pinballMapMachineId": 646
     },
     {
       "title": "Sorcerer",
@@ -842,7 +1006,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer",
       "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer",
       "releaseDate": "1985-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2242"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2242",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2019-09-05",
+      "pinballMapMachineId": 966
     },
     {
       "title": "Count-Down",
@@ -851,7 +1018,10 @@
       "releaseDate": "1979-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/count-down",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=573",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/count-down-space-walk"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/count-down-space-walk",
+      "joinedClubDate": "2017-09-12",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 835
     },
     {
       "title": "Genie",
@@ -860,7 +1030,10 @@
       "kineticistUrl": "https://www.kineticist.com/games/pinball/genie",
       "pinsideUrl": "https://pinside.com/pinball/machine/genie",
       "releaseDate": "1979-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=997"
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=997",
+      "joinedClubDate": "2019-01-29",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 870
     },
     {
       "title": "Jacks Open",
@@ -869,7 +1042,10 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/jacks-open",
       "releaseDate": "1977-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1281",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/jacks-open-lucky-hand"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jacks-open-lucky-hand",
+      "joinedClubDate": "2021-06-11",
+      "leftClubDate": "2024-12-31",
+      "pinballMapMachineId": 2840
     },
     {
       "title": "Apollo",
@@ -878,7 +1054,264 @@
       "pinsideUrl": "https://pinside.com/pinball/machine/apollo",
       "releaseDate": "1967-06-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=77",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/apollo-blast-off"
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/apollo-blast-off",
+      "joinedClubDate": "2021-06-11",
+      "leftClubDate": "2023-12-29",
+      "pinballMapMachineId": 2515
+    },
+    {
+      "title": "Godzilla",
+      "details": "2021 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2026-04-04.",
+      "releaseDate": "2021-01-01",
+      "joinedClubDate": "2024-09-05",
+      "leftClubDate": "2026-04-04",
+      "pinballMapMachineId": 3415
+    },
+    {
+      "title": "Harley-Davidson",
+      "details": "2002 2nd Edition) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2026-04-04.",
+      "releaseDate": "2002-01-01",
+      "joinedClubDate": "2024-09-05",
+      "leftClubDate": "2026-04-04",
+      "pinballMapMachineId": 2054
+    },
+    {
+      "title": "Avengers: Infinity Quest",
+      "details": "2020 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2025-04-13. Removed from the map on 2026-04-04.",
+      "releaseDate": "2020-01-01",
+      "joinedClubDate": "2025-04-13",
+      "leftClubDate": "2026-04-04",
+      "pinballMapMachineId": 3267
+    },
+    {
+      "title": "Jurassic Park",
+      "details": "2019 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-03-24. Removed from the map on 2026-03-30.",
+      "releaseDate": "2019-01-01",
+      "joinedClubDate": "2024-03-24",
+      "leftClubDate": "2026-03-30",
+      "pinballMapMachineId": 3167
+    },
+    {
+      "title": "Deadpool",
+      "details": "2018 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2025-01-20. Removed from the map on 2026-03-30.",
+      "releaseDate": "2018-01-01",
+      "joinedClubDate": "2025-01-20",
+      "leftClubDate": "2026-03-30",
+      "pinballMapMachineId": 3022
+    },
+    {
+      "title": "Lord of the Rings",
+      "details": "2003 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2025-02-26.",
+      "releaseDate": "2003-01-01",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2025-02-26",
+      "pinballMapMachineId": 662
+    },
+    {
+      "title": "Barb Wire",
+      "details": "1996 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-11-30. Removed from the map on 2025-01-17.",
+      "releaseDate": "1996-01-01",
+      "joinedClubDate": "2024-11-30",
+      "leftClubDate": "2025-01-17",
+      "pinballMapMachineId": 777
+    },
+    {
+      "title": "Guns N' Roses",
+      "details": "2020 SE) (Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
+      "releaseDate": "2020-01-01",
+      "joinedClubDate": "2024-09-20",
+      "leftClubDate": "2024-10-13",
+      "pinballMapMachineId": 3272
+    },
+    {
+      "title": "High Hand",
+      "details": "1973 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-23.",
+      "releaseDate": "1973-01-01",
+      "joinedClubDate": "2024-05-11",
+      "leftClubDate": "2024-09-23",
+      "pinballMapMachineId": 795
+    },
+    {
+      "title": "Oktoberfest",
+      "details": "2018 American. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2024-09-17.",
+      "releaseDate": "2018-01-01",
+      "joinedClubDate": "2024-09-05",
+      "leftClubDate": "2024-09-17",
+      "pinballMapMachineId": 3079
+    },
+    {
+      "title": "Led Zeppelin",
+      "details": "2020 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
+      "releaseDate": "2020-01-01",
+      "joinedClubDate": "2024-04-30",
+      "leftClubDate": "2024-09-05",
+      "pinballMapMachineId": 3279
+    },
+    {
+      "title": "Lectronamo",
+      "details": "1978 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-19. Removed from the map on 2024-09-05.",
+      "releaseDate": "1978-01-01",
+      "joinedClubDate": "2024-01-19",
+      "leftClubDate": "2024-09-05",
+      "pinballMapMachineId": 2895
+    },
+    {
+      "title": "Iron Maiden: Legacy of the Beast",
+      "details": "2018 Pro) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
+      "releaseDate": "2018-01-01",
+      "joinedClubDate": "2024-05-02",
+      "leftClubDate": "2024-09-05",
+      "pinballMapMachineId": 2923
+    },
+    {
+      "title": "Freddy: A Nightmare on Elm Street",
+      "details": "1994 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-05.",
+      "releaseDate": "1994-01-01",
+      "joinedClubDate": "2024-05-11",
+      "leftClubDate": "2024-09-05",
+      "pinballMapMachineId": 887
+    },
+    {
+      "title": "Rush",
+      "details": "2022 Premium) (Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-06-24.",
+      "releaseDate": "2022-01-01",
+      "joinedClubDate": "2024-04-18",
+      "leftClubDate": "2024-06-24",
+      "pinballMapMachineId": 3432
+    },
+    {
+      "title": "Monte Carlo",
+      "details": "1987 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2022-05-07. Removed from the map on 2024-05-11.",
+      "releaseDate": "1987-01-01",
+      "joinedClubDate": "2022-05-07",
+      "leftClubDate": "2024-05-11",
+      "pinballMapMachineId": 1463
+    },
+    {
+      "title": "Rollergames",
+      "details": "1990 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-05-02.",
+      "releaseDate": "1990-01-01",
+      "joinedClubDate": "2024-04-18",
+      "leftClubDate": "2024-05-02",
+      "pinballMapMachineId": 746
+    },
+    {
+      "title": "Pool Sharks",
+      "details": "1990 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-03-24. Removed from the map on 2024-04-18.",
+      "releaseDate": "1990-01-01",
+      "joinedClubDate": "2024-03-24",
+      "leftClubDate": "2024-04-18",
+      "pinballMapMachineId": 780
+    },
+    {
+      "title": "Paragon",
+      "details": "1979 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-04-18.",
+      "releaseDate": "1979-01-01",
+      "joinedClubDate": "2024-01-18",
+      "leftClubDate": "2024-04-18",
+      "pinballMapMachineId": 897
+    },
+    {
+      "title": "Earthshaker",
+      "details": "1989 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-07-13. Removed from the map on 2024-04-18.",
+      "releaseDate": "1989-01-01",
+      "joinedClubDate": "2023-07-13",
+      "leftClubDate": "2024-04-18",
+      "pinballMapMachineId": 702
+    },
+    {
+      "title": "The Rolling Stones",
+      "details": "2011 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-01-30.",
+      "releaseDate": "2011-01-01",
+      "joinedClubDate": "2024-01-18",
+      "leftClubDate": "2024-01-30",
+      "pinballMapMachineId": 1089
+    },
+    {
+      "title": "Diamond Lady",
+      "details": "1988 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-10-03. Removed from the map on 2024-01-18.",
+      "releaseDate": "1988-01-01",
+      "joinedClubDate": "2023-10-03",
+      "leftClubDate": "2024-01-18",
+      "pinballMapMachineId": 2349
+    },
+    {
+      "title": "Metallica",
+      "details": "2013 Pro) (Stern. From Pinball Map location activity (not on our site list before).",
+      "releaseDate": "2013-01-01",
+      "pinballMapMachineId": 1591
+    },
+    {
+      "title": "Lightning Ball",
+      "details": "1959 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-16. Removed from the map on 2023-12-29.",
+      "releaseDate": "1959-01-01",
+      "joinedClubDate": "2023-01-16",
+      "leftClubDate": "2023-12-29",
+      "pinballMapMachineId": 2362
+    },
+    {
+      "title": "Evel Knievel",
+      "details": "1977 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-09. Removed from the map on 2023-10-03.",
+      "releaseDate": "1977-01-01",
+      "joinedClubDate": "2023-01-09",
+      "leftClubDate": "2023-10-03",
+      "pinballMapMachineId": 783
+    },
+    {
+      "title": "Robo-War",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-07-23. Removed from the map on 2023-01-22.",
+      "joinedClubDate": "2021-07-23",
+      "leftClubDate": "2023-01-22",
+      "pinballMapMachineId": 2513
+    },
+    {
+      "title": "Torpedo Alley",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-04. Removed from the map on 2022-05-07.",
+      "joinedClubDate": "2018-09-04",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 2647
+    },
+    {
+      "title": "Kiss",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2022-05-07.",
+      "joinedClubDate": "2017-09-08",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 2353
+    },
+    {
+      "title": "Aquarius",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-06-11. Removed from the map on 2022-05-07.",
+      "joinedClubDate": "2021-06-11",
+      "leftClubDate": "2022-05-07",
+      "pinballMapMachineId": 1962
+    },
+    {
+      "title": "Time Fantasy",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-06. Removed from the map on 2019-09-05.",
+      "joinedClubDate": "2018-09-06",
+      "leftClubDate": "2019-09-05",
+      "pinballMapMachineId": 2597
+    },
+    {
+      "title": "Lucky Seven (SS)",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2019-01-29. Removed from the map on 2019-09-05.",
+      "joinedClubDate": "2019-01-29",
+      "leftClubDate": "2019-09-05",
+      "pinballMapMachineId": 2399
+    },
+    {
+      "title": "Black Knight",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2019-01-29. Removed from the map on 2019-09-05.",
+      "joinedClubDate": "2019-01-29",
+      "leftClubDate": "2019-09-05",
+      "pinballMapMachineId": 1055
+    },
+    {
+      "title": "Space Invaders",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-05-08. Removed from the map on 2018-09-04.",
+      "joinedClubDate": "2018-05-08",
+      "leftClubDate": "2018-09-04",
+      "pinballMapMachineId": 908
     }
   ]
 }
