@@ -215,20 +215,20 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
   nav.setAttribute('role', 'group');
   nav.setAttribute('aria-label', 'Browse past events by year');
 
-  const btnOlder = document.createElement('button');
-  btnOlder.type = 'button';
-  btnOlder.className = 'events-past-year-arrow';
-  btnOlder.setAttribute('aria-label', 'Show earlier years');
-  btnOlder.textContent = '◀';
+  const btnLeft = document.createElement('button');
+  btnLeft.type = 'button';
+  btnLeft.className = 'events-past-year-arrow';
+  btnLeft.setAttribute('aria-label', 'Show earlier years');
+  btnLeft.textContent = '◀';
 
   const tabsWrap = document.createElement('div');
   tabsWrap.className = 'events-past-year-tabs';
 
-  const btnNewer = document.createElement('button');
-  btnNewer.type = 'button';
-  btnNewer.className = 'events-past-year-arrow';
-  btnNewer.setAttribute('aria-label', 'Show more recent years');
-  btnNewer.textContent = '▶';
+  const btnRight = document.createElement('button');
+  btnRight.type = 'button';
+  btnRight.className = 'events-past-year-arrow';
+  btnRight.setAttribute('aria-label', 'Show more recent years');
+  btnRight.textContent = '▶';
 
   const panel = document.createElement('div');
   panel.className = 'events-past-year-panel';
@@ -263,8 +263,8 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
       }
     }
 
-    btnOlder.disabled = selectedIndex >= pastByYearList.length - 1;
-    btnNewer.disabled = selectedIndex <= 0;
+    btnLeft.disabled = selectedIndex <= 0;
+    btnRight.disabled = selectedIndex >= pastByYearList.length - 1;
   }
 
   for (let i = 0; i < pastByYearList.length; i++) {
@@ -283,23 +283,23 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
     tabsWrap.appendChild(tab);
   }
 
-  btnOlder.addEventListener('click', () => {
-    if (selectedIndex < pastByYearList.length - 1) {
-      selectedIndex += 1;
-      renderYearCards();
-    }
-  });
-
-  btnNewer.addEventListener('click', () => {
+  btnLeft.addEventListener('click', () => {
     if (selectedIndex > 0) {
       selectedIndex -= 1;
       renderYearCards();
     }
   });
 
-  nav.appendChild(btnOlder);
+  btnRight.addEventListener('click', () => {
+    if (selectedIndex < pastByYearList.length - 1) {
+      selectedIndex += 1;
+      renderYearCards();
+    }
+  });
+
+  nav.appendChild(btnLeft);
   nav.appendChild(tabsWrap);
-  nav.appendChild(btnNewer);
+  nav.appendChild(btnRight);
 
   region.appendChild(nav);
   region.appendChild(panel);
