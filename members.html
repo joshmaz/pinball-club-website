@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SNHPC member dashboard for account details and membership status.">
+  <meta name="description" content="SNHPC member dashboard: profile, membership, and role-based tools as they become available.">
   <title>SNHPC - My Account</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
@@ -43,63 +43,148 @@
   <div class="page-hero-backdrop" aria-hidden="true"></div>
   <div class="page-hero-inner">
     <h2 id="members-dashboard-title">Member dashboard</h2>
-    <p class="page-hero-lead">Your account home for profile details and membership status.</p>
-    <p class="page-hero-note">More member tools are coming soon as we keep building.</p>
+    <p class="page-hero-lead">Your account home for profile, membership, and member-only tools as we roll them out.</p>
+    <p class="page-hero-note">Use the sidebar to move between sections. Extra features will unlock based on your roles when those systems go live.</p>
   </div>
 </section>
 
 <main>
   <section class="content members-dashboard">
-    <h3>My profile</h3>
-    <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
-    <form id="profile-form" class="members-profile-form">
-      <label for="member-email">Email</label>
-      <input id="member-email" type="email" disabled>
+    <div class="members-layout">
+      <nav class="members-sidebar" aria-label="Member dashboard sections">
+        <p class="members-sidebar-title">Dashboard</p>
+        <ul class="members-sidebar-list">
+          <li>
+            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">
+              Profile
+            </button>
+          </li>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">
+              Membership
+            </button>
+          </li>
+          <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
+            <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
+              Events
+            </button>
+          </li>
+          <li data-member-rbac-nav data-rbac-roles="photos_editor,photos_admin,club_admin">
+            <button type="button" class="members-sidebar-link" data-member-panel="photos" id="member-nav-photos" aria-controls="member-panel-photos">
+              Photos
+            </button>
+          </li>
+          <li data-member-rbac-nav data-rbac-roles="games_editor,games_admin,club_admin">
+            <button type="button" class="members-sidebar-link" data-member-panel="games" id="member-nav-games" aria-controls="member-panel-games">
+              Games
+            </button>
+          </li>
+        </ul>
+      </nav>
 
-      <label for="member-display-name">Display name</label>
-      <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
+      <div class="members-panels">
+        <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
+          <h3>Profile</h3>
+          <p class="member-panel-intro">Account details, optional public links, and password security.</p>
+          <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
 
-      <button type="submit">Save profile</button>
-    </form>
+          <h3>Account</h3>
+          <form id="profile-form" class="members-profile-form">
+            <label for="member-email">Email</label>
+            <input id="member-email" type="email" disabled>
 
-    <h3>Password</h3>
-    <form id="password-form" class="members-profile-form">
-      <label id="current-password-label" for="current-password">Current password</label>
-      <input
-        id="current-password"
-        type="password"
-        autocomplete="current-password"
-        required
-      >
+            <label for="member-display-name">Display name</label>
+            <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
 
-      <label for="new-password">New password</label>
-      <input
-        id="new-password"
-        type="password"
-        autocomplete="new-password"
-        minlength="8"
-        required
-      >
+            <button type="submit">Save profile</button>
+          </form>
 
-      <label for="confirm-password">Confirm new password</label>
-      <input
-        id="confirm-password"
-        type="password"
-        autocomplete="new-password"
-        minlength="8"
-        required
-      >
+          <h3>Public &amp; competitive</h3>
+          <p class="member-panel-intro">Optional fields for the roster and website. Avatar image must be a direct HTTPS link to an image you have rights to use. IFPA number is the digits from your player profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
+          <form id="profile-extras-form" class="members-profile-form">
+            <label for="member-avatar-url">Avatar image URL (HTTPS)</label>
+            <input id="member-avatar-url" type="url" maxlength="500" placeholder="https://…" inputmode="url" autocomplete="photo">
+            <div class="members-avatar-preview-wrap">
+              <img id="member-avatar-preview" class="members-avatar-preview" src="" alt="" hidden width="72" height="72">
+            </div>
 
-      <button type="submit">Update password</button>
-    </form>
-    <p id="password-status" aria-live="polite" class="members-page-status"></p>
+            <label for="member-ifpa-number">IFPA player number</label>
+            <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
 
-    <h3>Membership</h3>
-    <div class="membership-card">
-      <p><strong>Status:</strong> <span id="membership-status">Loading...</span></p>
-      <p><strong>Tier:</strong> <span id="membership-tier">Loading...</span></p>
-      <p><strong>Renews / Ends:</strong> <span id="membership-period-end">Loading...</span></p>
-      <p class="membership-card-note">Need to update your membership? Contact the club and we will help right away.</p>
+            <p class="members-ifpa-preview" id="member-ifpa-link-wrap" hidden>
+              <span class="members-ifpa-preview-label">Your IFPA profile:</span>
+              <a id="member-ifpa-link" target="_blank" rel="noopener noreferrer"></a>
+            </p>
+
+            <button type="submit">Save public fields</button>
+          </form>
+
+          <h3>Password</h3>
+          <form id="password-form" class="members-profile-form">
+            <label id="current-password-label" for="current-password">Current password</label>
+            <input
+              id="current-password"
+              type="password"
+              autocomplete="current-password"
+              required
+            >
+
+            <label for="new-password">New password</label>
+            <input
+              id="new-password"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <label for="confirm-password">Confirm new password</label>
+            <input
+              id="confirm-password"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <button type="submit">Update password</button>
+          </form>
+          <p id="password-status" aria-live="polite" class="members-page-status"></p>
+        </div>
+
+        <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
+          <h3>Membership</h3>
+          <p class="member-panel-intro">Subscribe at different levels, manage billing, and add guest access when those flows are connected.</p>
+          <div class="membership-card">
+            <p><strong>Status:</strong> <span id="membership-status">Loading...</span></p>
+            <p><strong>Tier:</strong> <span id="membership-tier">Loading...</span></p>
+            <p><strong>Renews / Ends:</strong> <span id="membership-period-end">Loading...</span></p>
+            <p class="membership-card-note">Questions about your record? Email <a href="mailto:info@snhpinball.com">info@snhpinball.com</a> and we will help.</p>
+          </div>
+          <div class="membership-actions">
+            <p class="membership-actions-note">Checkout, plan changes, saved payment methods, and guest passes will appear here once Stripe billing is wired to your account.</p>
+            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Choose a membership level</button>
+            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Manage payment method</button>
+            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Cancel or change subscription</button>
+            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Buy guest passes</button>
+          </div>
+        </div>
+
+        <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
+          <h3>Events</h3>
+          <p class="member-panel-placeholder">Member-only event tools (scheduling, check-in, results) will open here for accounts with the right roles.</p>
+        </div>
+
+        <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
+          <h3>Photos</h3>
+          <p class="member-panel-placeholder">Photo uploads and gallery moderation will be available here for designated volunteers.</p>
+        </div>
+
+        <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
+          <h3>Games</h3>
+          <p class="member-panel-placeholder">Floor and tech tools for trusted members will appear in this section when RBAC is enabled.</p>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -116,6 +201,12 @@
     var emailInput = document.getElementById("member-email");
     var displayNameInput = document.getElementById("member-display-name");
     var profileForm = document.getElementById("profile-form");
+    var profileExtrasForm = document.getElementById("profile-extras-form");
+    var avatarUrlInput = document.getElementById("member-avatar-url");
+    var ifpaNumberInput = document.getElementById("member-ifpa-number");
+    var ifpaLinkWrap = document.getElementById("member-ifpa-link-wrap");
+    var ifpaLink = document.getElementById("member-ifpa-link");
+    var avatarPreview = document.getElementById("member-avatar-preview");
     var passwordForm = document.getElementById("password-form");
     var passwordStatus = document.getElementById("password-status");
     var currentPasswordLabel = document.getElementById("current-password-label");
@@ -126,6 +217,8 @@
     var membershipTier = document.getElementById("membership-tier");
     var membershipPeriodEnd = document.getElementById("membership-period-end");
     var logoutBtn = document.getElementById("logout-btn");
+    var panelButtons = document.querySelectorAll("[data-member-panel]");
+    var panels = document.querySelectorAll(".member-panel");
 
     function setPageStatus(message) {
       if (pageStatus) pageStatus.textContent = message;
@@ -133,6 +226,121 @@
 
     function setPasswordStatus(message) {
       if (passwordStatus) passwordStatus.textContent = message;
+    }
+
+    function isAllowedHttpUrl(value) {
+      if (!value || !String(value).trim()) return true;
+      try {
+        var u = new URL(String(value).trim());
+        return u.protocol === "https:" || u.protocol === "http:";
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function syncAvatarPreview() {
+      if (!avatarPreview || !avatarUrlInput) return;
+      var raw = avatarUrlInput.value.trim();
+      if (!raw || !isAllowedHttpUrl(raw)) {
+        avatarPreview.hidden = true;
+        avatarPreview.removeAttribute("src");
+        return;
+      }
+      avatarPreview.src = raw;
+      avatarPreview.alt = "Avatar preview";
+      avatarPreview.hidden = false;
+    }
+
+    function syncIfpaProfileLink() {
+      if (!ifpaLinkWrap || !ifpaLink || !ifpaNumberInput) return;
+      var build = window.SNHMemberPortal && window.SNHMemberPortal.buildIfpaPlayerProfileUrl;
+      var digits = String(ifpaNumberInput.value || "").replace(/\D/g, "").slice(0, 12);
+      if (digits !== ifpaNumberInput.value) {
+        ifpaNumberInput.value = digits;
+      }
+      var full = build ? build(digits) : "";
+      if (!full) {
+        ifpaLinkWrap.hidden = true;
+        ifpaLink.removeAttribute("href");
+        ifpaLink.textContent = "";
+        return;
+      }
+      ifpaLink.href = full;
+      ifpaLink.textContent = full;
+      ifpaLinkWrap.hidden = false;
+    }
+
+    function showMemberPanel(panelId, options) {
+      options = options || {};
+      var id = String(panelId || "profile");
+      if (!document.getElementById("member-panel-" + id)) id = "profile";
+
+      for (var i = 0; i < panelButtons.length; i += 1) {
+        var btn = panelButtons[i];
+        var match = btn.getAttribute("data-member-panel") === id;
+        btn.classList.toggle("is-active", match);
+        if (match) {
+          btn.setAttribute("aria-current", "page");
+        } else {
+          btn.removeAttribute("aria-current");
+        }
+      }
+
+      for (var j = 0; j < panels.length; j += 1) {
+        var panel = panels[j];
+        var on = panel.id === "member-panel-" + id;
+        panel.classList.toggle("is-active", on);
+        panel.setAttribute("aria-hidden", on ? "false" : "true");
+      }
+
+      if (!options.skipHash) {
+        try {
+          if (id === "profile") {
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
+          } else {
+            window.history.replaceState(null, "", window.location.pathname + window.location.search + "#" + id);
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+
+    function wirePanelNav() {
+      for (var i = 0; i < panelButtons.length; i += 1) {
+        panelButtons[i].addEventListener("click", function () {
+          var pid = this.getAttribute("data-member-panel");
+          showMemberPanel(pid, {});
+        });
+      }
+    }
+
+    function applyRbacNav(userRoles) {
+      var items = document.querySelectorAll("[data-member-rbac-nav]");
+      for (var i = 0; i < items.length; i += 1) {
+        var li = items[i];
+        var rolesCsv = li.getAttribute("data-rbac-roles") || "";
+        var show = window.SNHMemberPortal.memberHasAnyRole(userRoles, rolesCsv);
+        li.hidden = !show;
+      }
+    }
+
+    function initialPanelFromHash() {
+      var raw = window.location.hash || "";
+      if (raw.indexOf("type=recovery") !== -1) return "profile";
+      var h = raw.replace(/^#/, "").trim();
+      if (h === "membership" || h === "events" || h === "photos" || h === "games" || h === "profile") {
+        return h;
+      }
+      return "profile";
+    }
+
+    function isPanelNavAvailable(panelId) {
+      if (panelId === "profile" || panelId === "membership") return true;
+      var btn = document.querySelector('button[data-member-panel="' + panelId + '"]');
+      if (!btn) return false;
+      var li = btn.closest("li");
+      return !!(li && !li.hidden);
     }
 
     if (!window.SNHMemberPortal) {
@@ -177,10 +385,29 @@
       membersLinkSelector: "[data-members-link]"
     });
 
+    var userRoles = [];
+    if (window.SNHMemberPortal.fetchMemberRoles) {
+      try {
+        userRoles = await window.SNHMemberPortal.fetchMemberRoles(session.user.id);
+      } catch (e) {
+        userRoles = [];
+      }
+    }
+    applyRbacNav(userRoles);
+
+    wirePanelNav();
+    var startPanel = recoveryMode ? "profile" : initialPanelFromHash();
+    if (!isPanelNavAvailable(startPanel)) startPanel = "profile";
+    showMemberPanel(startPanel, { skipHash: true });
+
     try {
       var profile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);
       emailInput.value = profile.email || session.user.email || "";
       displayNameInput.value = profile.display_name || "";
+      if (avatarUrlInput) avatarUrlInput.value = profile.avatar_url || "";
+      if (ifpaNumberInput) ifpaNumberInput.value = profile.ifpa_player_id || "";
+      syncAvatarPreview();
+      syncIfpaProfileLink();
       if (recoveryMode) {
         setPageStatus("Finish resetting your password below.");
       } else {
@@ -189,11 +416,29 @@
     } catch (err) {
       emailInput.value = session.user.email || "";
       displayNameInput.value = "";
+      if (avatarUrlInput) avatarUrlInput.value = "";
+      if (ifpaNumberInput) ifpaNumberInput.value = "";
+      syncAvatarPreview();
+      syncIfpaProfileLink();
       if (recoveryMode) {
         setPageStatus("Finish resetting your password below.");
       } else {
         setPageStatus("Signed in. Profile syncing will be enabled once profile table access is configured.");
       }
+    }
+
+    if (avatarPreview) {
+      avatarPreview.addEventListener("error", function () {
+        avatarPreview.hidden = true;
+      });
+    }
+    if (avatarUrlInput) {
+      avatarUrlInput.addEventListener("input", syncAvatarPreview);
+      avatarUrlInput.addEventListener("change", syncAvatarPreview);
+    }
+    if (ifpaNumberInput) {
+      ifpaNumberInput.addEventListener("input", syncIfpaProfileLink);
+      ifpaNumberInput.addEventListener("change", syncIfpaProfileLink);
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
@@ -221,6 +466,31 @@
         setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
       }
     });
+
+    if (profileExtrasForm) {
+      profileExtrasForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        var avatarVal = avatarUrlInput ? avatarUrlInput.value.trim() : "";
+        if (!isAllowedHttpUrl(avatarVal)) {
+          setPageStatus("Please enter a valid http(s) avatar URL, or leave that field blank.");
+          return;
+        }
+        try {
+          await window.SNHMemberPortal.upsertProfile({
+            user_id: session.user.id,
+            email: session.user.email,
+            display_name: displayNameInput.value.trim(),
+            avatar_url: avatarVal,
+            ifpa_player_id: ifpaNumberInput ? ifpaNumberInput.value : ""
+          });
+          setPageStatus("Public fields saved.");
+          syncAvatarPreview();
+          syncIfpaProfileLink();
+        } catch (err) {
+          setPageStatus("Could not save public fields: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+        }
+      });
+    }
 
     passwordForm.addEventListener("submit", async function (event) {
       event.preventDefault();

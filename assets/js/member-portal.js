@@ -174,7 +174,9 @@
 
   async function fetchProfile(userId, email) {
     var client = getClient();
-    if (!client) return { user_id: userId, email: email || "", display_name: "" };
+    var base = { user_id: userId, email: email || "", display_name: "" };
+    if (!client) return base;
+
     var result = await client
       .from("members")
       .select("id,user_id,email,display_name,created_at")
@@ -184,20 +186,99 @@
     if (result.error) {
       throw result.error;
     }
-    if (result.data) return result.data;
-    return { user_id: userId, email: email || "", display_name: "" };
+    if (result.data) {
+      base = result.data;
+    }
+
+    var user = null;
+    var userResult = await client.auth.getUser();
+    if (userResult && userResult.data && userResult.data.user && !userResult.error) {
+      user = userResult.data.user;
+    }
+    var meta = (user && user.user_metadata) || {};
+    base.avatar_url = typeof meta.avatar_url === "string" ? meta.avatar_url : "";
+    base.ifpa_player_id = readIfpaPlayerIdFromMetadata(meta);
+    return base;
+  }
+
+  function readIfpaPlayerIdFromMetadata(meta) {
+    meta = meta || {};
+    if (meta.ifpa_player_id != null && String(meta.ifpa_player_id).trim() !== "") {
+      var id = String(meta.ifpa_player_id).replace(/\D/g, "").slice(0, 12);
+      if (id) return id;
+    }
+    if (typeof meta.ifpa_profile_url === "string") {
+      var m = meta.ifpa_profile_url.match(/[?&]p=(\d+)/i);
+      if (m && m[1]) return m[1].slice(0, 12);
+    }
+    return "";
+  }
+
+  /** Canonical IFPA web profile URL for a numeric player id (digits only, max 12). */
+  function buildIfpaPlayerProfileUrl(playerId) {
+    var id = playerId ? String(playerId).replace(/\D/g, "").slice(0, 12) : "";
+    if (!id) return "";
+    return "https://www.ifpapinball.com/player.php?p=" + id;
   }
 
   async function upsertProfile(profile) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
+
+    var row = {
+      user_id: profile.user_id,
+      email: profile.email,
+      display_name: profile.display_name
+    };
     var result = await client
       .from("members")
-      .upsert(profile, { onConflict: "user_id" })
+      .upsert(row, { onConflict: "user_id" })
       .select("id,user_id,email,display_name,created_at")
       .single();
     if (result.error) throw result.error;
+
+    var wantsMeta =
+      Object.prototype.hasOwnProperty.call(profile, "avatar_url") ||
+      Object.prototype.hasOwnProperty.call(profile, "ifpa_player_id");
+    if (wantsMeta) {
+      var sessionResult = await client.auth.getSession();
+      var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+      var existing = (session && session.user && session.user.user_metadata) || {};
+      var nextMeta = Object.assign({}, existing);
+      if (Object.prototype.hasOwnProperty.call(profile, "avatar_url")) {
+        nextMeta.avatar_url = profile.avatar_url ? String(profile.avatar_url).trim() : "";
+      }
+      if (Object.prototype.hasOwnProperty.call(profile, "ifpa_player_id")) {
+        var ifpaDigits = profile.ifpa_player_id ? String(profile.ifpa_player_id).replace(/\D/g, "").slice(0, 12) : "";
+        nextMeta.ifpa_player_id = ifpaDigits;
+        nextMeta.ifpa_profile_url = "";
+      }
+      var metaResult = await client.auth.updateUser({ data: nextMeta });
+      if (metaResult.error) throw metaResult.error;
+    }
+
     return result.data;
+  }
+
+  /** Returns role slugs for RBAC. Extend to query Supabase when roles exist. */
+  async function fetchMemberRoles(userId) {
+    if (!userId) return [];
+    return [];
+  }
+
+  function memberHasAnyRole(userRoles, rolesCsv) {
+    if (!rolesCsv || !String(rolesCsv).trim()) return true;
+    var req = String(rolesCsv)
+      .split(",")
+      .map(function (s) {
+        return s.trim();
+      })
+      .filter(Boolean);
+    if (!req.length) return true;
+    for (var i = 0; i < req.length; i += 1) {
+      if (userRoles.indexOf(req[i]) !== -1) return true;
+    }
+    return false;
   }
 
   async function fetchMembership(userId) {
@@ -243,6 +324,9 @@
     fetchProfile: fetchProfile,
     upsertProfile: upsertProfile,
     fetchMembership: fetchMembership,
+    fetchMemberRoles: fetchMemberRoles,
+    memberHasAnyRole: memberHasAnyRole,
+    buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,
     clearPasswordRecoveryIntent: clearPasswordRecoveryIntent,
