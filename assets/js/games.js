@@ -20,6 +20,35 @@ function hasNonemptyString(v) {
 }
 
 /**
+ * Normalizes an optional game owner string in-place.
+ * If owner is missing/blank, the field is removed.
+ * If owner is a non-string value, the field is removed and a warning is logged.
+ *
+ * @param {{ title?: string, owner?: unknown }} game
+ */
+function normalizeGameOwner(game) {
+  if (!("owner" in game)) {
+    return;
+  }
+  const owner = game.owner;
+  if (owner == null) {
+    delete game.owner;
+    return;
+  }
+  if (typeof owner !== "string") {
+    console.warn(`Game "${String(game.title || "unknown")}" has invalid owner value; expected string.`);
+    delete game.owner;
+    return;
+  }
+  const trimmed = owner.trim();
+  if (!trimmed) {
+    delete game.owner;
+    return;
+  }
+  game.owner = trimmed;
+}
+
+/**
  * Sets `dateUnknown`, `sortKeyJoined`, and `sortKeyLeft` on each stint for stable sorting.
  * `dateUnknown` is true when both real club dates are absent (legacy / pre–Pinball Map).
  * Sort keys are ISO date strings; they are editorial bounds for unknown tenure, not claims of fact.
@@ -73,6 +102,7 @@ function enrichGamesPayload(data) {
   }
   for (const g of games) {
     if (g && typeof g === "object") {
+      normalizeGameOwner(g);
       enrichGameLocationStints(g, g.atClub === true);
     }
   }
