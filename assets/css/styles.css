@@ -667,6 +667,127 @@ nav a {
   font-size: 0.95rem;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.members-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.65rem 1rem;
+  margin: 0.5rem 0 0;
+}
+
+.members-admin-stat {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #2f3f4f;
+  border-radius: 8px;
+  background: #141a1f;
+  font-size: 0.92rem;
+}
+
+.members-admin-stat strong {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #dff;
+  margin-bottom: 0.15rem;
+}
+
+.members-admin-toolbar {
+  margin: 0.75rem 0 0;
+}
+
+.members-admin-table-wrap {
+  overflow-x: auto;
+  margin: 0.5rem 0 0;
+  border: 1px solid #2a3540;
+  border-radius: 8px;
+}
+
+.members-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.members-admin-table th,
+.members-admin-table td {
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid #2a3540;
+  vertical-align: top;
+}
+
+.members-admin-table th {
+  background: #161c22;
+  color: #aebcd0;
+  font-weight: 600;
+}
+
+.members-admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.members-admin-role-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.members-admin-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: #1a2630;
+  border: 1px solid #334455;
+  font-size: 0.85rem;
+}
+
+.members-admin-revoke {
+  margin: 0;
+  padding: 0 0.25rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #f9a8a8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.members-admin-revoke:hover {
+  color: #fecaca;
+}
+
+.members-admin-revoke:focus-visible {
+  outline: 2px solid #4da3ff;
+  outline-offset: 2px;
+}
+
+.members-profile-form select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #3a3a3a;
+  background: #131313;
+  color: #f3f3f3;
+  max-width: 100%;
+}
+
 @media (max-width: 700px) {
   .members-layout {
     grid-template-columns: 1fr;

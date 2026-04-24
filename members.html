@@ -64,6 +64,11 @@
               Membership
             </button>
           </li>
+          <li data-member-rbac-nav data-rbac-roles="club_admin,members_manager">
+            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Members: statistics and role management">
+              Members
+            </button>
+          </li>
           <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
             <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
               Events
@@ -170,6 +175,47 @@
           </div>
         </div>
 
+        <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
+          <h3>Members</h3>
+          <p class="member-panel-intro">Overview of membership data, the member directory, and assigning RBAC roles. Requires <strong>club_admin</strong> or <strong>members_manager</strong> on your account. Database migrations must include the admin RPCs.</p>
+          <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
+
+          <h3>Overview</h3>
+          <div id="member-admin-stats" class="members-admin-stats" aria-live="polite"></div>
+          <p class="members-admin-toolbar">
+            <button type="button" class="members-sidebar-link" id="member-admin-refresh">Refresh data</button>
+          </p>
+
+          <h3>Directory &amp; roles</h3>
+          <div class="members-admin-table-wrap">
+            <table class="members-admin-table">
+              <caption class="visually-hidden">Club members and their RBAC roles</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Email</th>
+                  <th scope="col">Display name</th>
+                  <th scope="col">Roles</th>
+                  <th scope="col"><span class="visually-hidden">Revoke</span></th>
+                </tr>
+              </thead>
+              <tbody id="member-admin-table-body"></tbody>
+            </table>
+          </div>
+
+          <h3>Grant a role</h3>
+          <form id="member-admin-grant-form" class="members-profile-form">
+            <label for="member-admin-grant-member">Member</label>
+            <select id="member-admin-grant-member" required>
+              <option value="">Select a member…</option>
+            </select>
+            <label for="member-admin-grant-role">Role</label>
+            <select id="member-admin-grant-role" required>
+              <option value="">Select a role…</option>
+            </select>
+            <button type="submit">Grant role</button>
+          </form>
+        </div>
+
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h3>Events</h3>
           <p class="member-panel-placeholder">Member-only event tools (scheduling, check-in, results) will open here for accounts with the right roles.</p>
@@ -219,6 +265,14 @@
     var logoutBtn = document.getElementById("logout-btn");
     var panelButtons = document.querySelectorAll("[data-member-panel]");
     var panels = document.querySelectorAll(".member-panel");
+    var onMemberAdminPanelShown = null;
+    var memberAdminStatus = document.getElementById("member-admin-status");
+    var memberAdminStats = document.getElementById("member-admin-stats");
+    var memberAdminRefresh = document.getElementById("member-admin-refresh");
+    var memberAdminTableBody = document.getElementById("member-admin-table-body");
+    var memberAdminGrantForm = document.getElementById("member-admin-grant-form");
+    var memberAdminGrantMember = document.getElementById("member-admin-grant-member");
+    var memberAdminGrantRole = document.getElementById("member-admin-grant-role");
 
     function setPageStatus(message) {
       if (pageStatus) pageStatus.textContent = message;
@@ -304,6 +358,10 @@
           // ignore
         }
       }
+
+      if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
+        onMemberAdminPanelShown();
+      }
     }
 
     function wirePanelNav() {
@@ -329,7 +387,14 @@
       var raw = window.location.hash || "";
       if (raw.indexOf("type=recovery") !== -1) return "profile";
       var h = raw.replace(/^#/, "").trim();
-      if (h === "membership" || h === "events" || h === "photos" || h === "games" || h === "profile") {
+      if (
+        h === "membership" ||
+        h === "member-admin" ||
+        h === "events" ||
+        h === "photos" ||
+        h === "games" ||
+        h === "profile"
+      ) {
         return h;
       }
       return "profile";
@@ -394,6 +459,182 @@
       }
     }
     applyRbacNav(userRoles);
+
+    onMemberAdminPanelShown = async function () {
+      if (!window.SNHMemberPortal) return;
+      function setAdminStatus(msg) {
+        if (memberAdminStatus) memberAdminStatus.textContent = msg || "";
+      }
+      setAdminStatus("Loading…");
+      if (memberAdminStats) memberAdminStats.innerHTML = "";
+
+      var stats = await window.SNHMemberPortal.fetchMemberAdminStats();
+      if (!stats) {
+        setAdminStatus(
+          "Could not load admin data. Apply migrations (including member admin RPCs) and ensure your account has club_admin or members_manager."
+        );
+        if (memberAdminTableBody) memberAdminTableBody.innerHTML = "";
+        return;
+      }
+
+      setAdminStatus("");
+      if (memberAdminStats) {
+        function addStat(label, value) {
+          var p = document.createElement("p");
+          p.className = "members-admin-stat";
+          var strong = document.createElement("strong");
+          strong.textContent = String(value != null ? value : "—");
+          var span = document.createElement("span");
+          span.textContent = label;
+          p.appendChild(strong);
+          p.appendChild(span);
+          memberAdminStats.appendChild(p);
+        }
+        addStat("Members (rows)", stats.member_count);
+        addStat("Membership records", stats.membership_count);
+        addStat("Active memberships", stats.active_membership_count);
+        addStat("Role assignments", stats.member_roles_count);
+      }
+
+      var rows = await window.SNHMemberPortal.listMembersForAdmin();
+      if (rows == null) {
+        setAdminStatus(
+          "Summary loaded, but the member directory failed. Check snh_list_members_for_admin and database logs."
+        );
+        if (memberAdminTableBody) memberAdminTableBody.innerHTML = "";
+        if (memberAdminGrantMember) {
+          memberAdminGrantMember.innerHTML = "";
+          var optDead = document.createElement("option");
+          optDead.value = "";
+          optDead.textContent = "Select a member…";
+          memberAdminGrantMember.appendChild(optDead);
+        }
+        return;
+      }
+
+      if (memberAdminTableBody) {
+        memberAdminTableBody.innerHTML = "";
+        for (var r = 0; r < rows.length; r += 1) {
+          var row = rows[r];
+          var tr = document.createElement("tr");
+          var tdEmail = document.createElement("td");
+          tdEmail.textContent = row.email || "";
+          var tdName = document.createElement("td");
+          tdName.textContent = row.display_name || "";
+          var tdRoles = document.createElement("td");
+          var ul = document.createElement("ul");
+          ul.className = "members-admin-role-list";
+          var roleSlugs = Array.isArray(row.role_slugs) ? row.role_slugs : [];
+          if (roleSlugs.length === 0) {
+            var liEmpty = document.createElement("li");
+            liEmpty.textContent = "—";
+            ul.appendChild(liEmpty);
+          } else {
+            for (var j = 0; j < roleSlugs.length; j += 1) {
+              var slug = roleSlugs[j];
+              var li = document.createElement("li");
+              li.className = "members-admin-role-pill";
+              var spanSlug = document.createElement("span");
+              spanSlug.textContent = slug;
+              li.appendChild(spanSlug);
+              var revBtn = document.createElement("button");
+              revBtn.type = "button";
+              revBtn.className = "members-admin-revoke";
+              revBtn.textContent = "Remove";
+              revBtn.setAttribute("data-member-id", String(row.member_id));
+              revBtn.setAttribute("data-revoke-role", slug);
+              revBtn.setAttribute("aria-label", "Revoke role " + slug);
+              li.appendChild(revBtn);
+              ul.appendChild(li);
+            }
+          }
+          tdRoles.appendChild(ul);
+          var tdAct = document.createElement("td");
+          tr.appendChild(tdEmail);
+          tr.appendChild(tdName);
+          tr.appendChild(tdRoles);
+          tr.appendChild(tdAct);
+          memberAdminTableBody.appendChild(tr);
+        }
+      }
+
+      if (memberAdminGrantMember && memberAdminGrantRole) {
+        var currentMember = memberAdminGrantMember.value;
+        var currentRole = memberAdminGrantRole.value;
+        memberAdminGrantMember.innerHTML = "";
+        var optM0 = document.createElement("option");
+        optM0.value = "";
+        optM0.textContent = "Select a member…";
+        memberAdminGrantMember.appendChild(optM0);
+        for (var k = 0; k < rows.length; k += 1) {
+          var mr = rows[k];
+          var optM = document.createElement("option");
+          optM.value = String(mr.member_id);
+          optM.textContent = (mr.email || "(no email)") + (mr.display_name ? " — " + mr.display_name : "");
+          memberAdminGrantMember.appendChild(optM);
+        }
+        if (currentMember) memberAdminGrantMember.value = currentMember;
+
+        var rolesArr = window.SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES || [];
+        memberAdminGrantRole.innerHTML = "";
+        var optR0 = document.createElement("option");
+        optR0.value = "";
+        optR0.textContent = "Select a role…";
+        memberAdminGrantRole.appendChild(optR0);
+        for (var ri = 0; ri < rolesArr.length; ri += 1) {
+          var rs = rolesArr[ri];
+          var optR = document.createElement("option");
+          optR.value = rs;
+          optR.textContent = rs.replace(/_/g, " ");
+          memberAdminGrantRole.appendChild(optR);
+        }
+        if (currentRole) memberAdminGrantRole.value = currentRole;
+      }
+    };
+
+    if (memberAdminTableBody) {
+      memberAdminTableBody.addEventListener("click", async function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest("button[data-revoke-role]") : null;
+        if (!btn || !window.SNHMemberPortal || !onMemberAdminPanelShown) return;
+        var mid = btn.getAttribute("data-member-id");
+        var slug = btn.getAttribute("data-revoke-role");
+        if (!mid || !slug) return;
+        if (!window.confirm('Revoke role "' + slug + '" for this member?')) return;
+        try {
+          await window.SNHMemberPortal.revokeMemberRole(mid, slug);
+          await onMemberAdminPanelShown();
+        } catch (err) {
+          if (memberAdminStatus) {
+            memberAdminStatus.textContent = window.SNHMemberPortal.getFriendlyAuthErrorMessage(err);
+          }
+        }
+      });
+    }
+
+    if (memberAdminGrantForm) {
+      memberAdminGrantForm.addEventListener("submit", async function (ev) {
+        ev.preventDefault();
+        if (!window.SNHMemberPortal || !onMemberAdminPanelShown) return;
+        var mid = memberAdminGrantMember ? memberAdminGrantMember.value : "";
+        var slug = memberAdminGrantRole ? memberAdminGrantRole.value : "";
+        if (!mid || !slug) return;
+        try {
+          await window.SNHMemberPortal.grantMemberRole(mid, slug);
+          memberAdminGrantForm.reset();
+          await onMemberAdminPanelShown();
+        } catch (err) {
+          if (memberAdminStatus) {
+            memberAdminStatus.textContent = window.SNHMemberPortal.getFriendlyAuthErrorMessage(err);
+          }
+        }
+      });
+    }
+
+    if (memberAdminRefresh) {
+      memberAdminRefresh.addEventListener("click", function () {
+        if (onMemberAdminPanelShown) onMemberAdminPanelShown();
+      });
+    }
 
     wirePanelNav();
     var startPanel = recoveryMode ? "profile" : initialPanelFromHash();

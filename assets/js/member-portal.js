@@ -260,10 +260,33 @@
     return result.data;
   }
 
-  /** Returns role slugs for RBAC. Extend to query Supabase when roles exist. */
+  /**
+   * Role slugs from public.member_roles for this auth user (via members.id).
+   * Returns [] if no member row, table missing, or RLS/query error.
+   */
   async function fetchMemberRoles(userId) {
     if (!userId) return [];
-    return [];
+    var client = getClient();
+    if (!client) return [];
+
+    var memberResult = await client.from("members").select("id").eq("user_id", userId).maybeSingle();
+    if (memberResult.error || !memberResult.data || !memberResult.data.id) {
+      return [];
+    }
+
+    var rolesResult = await client
+      .from("member_roles")
+      .select("role_slug")
+      .eq("member_id", memberResult.data.id);
+    if (rolesResult.error) {
+      return [];
+    }
+    var rows = rolesResult.data || [];
+    var out = [];
+    for (var i = 0; i < rows.length; i += 1) {
+      if (rows[i] && rows[i].role_slug) out.push(String(rows[i].role_slug));
+    }
+    return out;
   }
 
   function memberHasAnyRole(userRoles, rolesCsv) {
@@ -313,6 +336,72 @@
     return parsed.toLocaleDateString();
   }
 
+  /** Role slugs assignable from the member admin panel (matches member_roles check + portal RBAC). */
+  var ASSIGNABLE_MEMBER_ROLES = Object.freeze([
+    "club_admin",
+    "members_manager",
+    "events_editor",
+    "events_admin",
+    "photos_editor",
+    "photos_admin",
+    "games_editor",
+    "games_admin"
+  ]);
+
+  async function fetchMemberAdminStats() {
+    var client = getClient();
+    if (!client) return null;
+    var result = await client.rpc("snh_get_member_admin_stats");
+    if (result.error) return null;
+    var data = result.data;
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        return null;
+      }
+    }
+    return data;
+  }
+
+  async function listMembersForAdmin() {
+    var client = getClient();
+    if (!client) return null;
+    var result = await client.rpc("snh_list_members_for_admin");
+    if (result.error) return null;
+    var data = result.data;
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        return null;
+      }
+    }
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === "object") return [data];
+    return [];
+  }
+
+  async function grantMemberRole(memberId, roleSlug) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_grant_member_role", {
+      p_member_id: memberId,
+      p_role_slug: roleSlug
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function revokeMemberRole(memberId, roleSlug) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_revoke_member_role", {
+      p_member_id: memberId,
+      p_role_slug: roleSlug
+    });
+    if (result.error) throw result.error;
+  }
+
   window.SNHMemberPortal = {
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
@@ -326,6 +415,11 @@
     fetchMembership: fetchMembership,
     fetchMemberRoles: fetchMemberRoles,
     memberHasAnyRole: memberHasAnyRole,
+    ASSIGNABLE_MEMBER_ROLES: ASSIGNABLE_MEMBER_ROLES,
+    fetchMemberAdminStats: fetchMemberAdminStats,
+    listMembersForAdmin: listMembersForAdmin,
+    grantMemberRole: grantMemberRole,
+    revokeMemberRole: revokeMemberRole,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,
