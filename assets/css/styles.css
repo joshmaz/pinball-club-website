@@ -1019,6 +1019,64 @@ footer {
   color: #ccc;
 }
 
+.games-timeline-controls {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem;
+  border: 1px solid #2f3e46;
+  border-radius: 10px;
+  background: #161b1f;
+}
+
+.games-timeline-label {
+  display: inline-block;
+  margin: 0 0 0.4rem;
+  color: #d6f6ff;
+  font-weight: 600;
+}
+
+.games-timeline-range {
+  width: 100%;
+}
+
+.games-timeline-axis-labels {
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #9ac4d3;
+}
+
+.games-timeline-date-input-row {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.games-timeline-date-input-row input,
+.games-timeline-date-input-row button {
+  background: #111;
+  color: #f0f8ff;
+  border: 1px solid #35515f;
+  border-radius: 6px;
+  padding: 0.35rem 0.55rem;
+}
+
+.games-timeline-date-input-row button {
+  cursor: pointer;
+}
+
+.games-timeline-date-input-row button:hover {
+  border-color: #4da3ff;
+}
+
+.games-timeline-status {
+  margin-top: 0.7rem;
+  margin-bottom: 0;
+  color: #a9d9e8;
+}
+
 .games-list {
   list-style: none;
   margin: 0;
