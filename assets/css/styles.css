@@ -603,22 +603,37 @@ nav a {
   display: none;
 }
 
+.members-inline-link-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+}
+
 .members-ifpa-preview {
-  margin: 0.35rem 0 0;
+  margin: 0;
   font-size: 0.9rem;
-  line-height: 1.45;
-  word-break: break-all;
+  line-height: 1.3;
+  word-break: normal;
+  white-space: nowrap;
 }
 
 .members-ifpa-preview-label {
-  display: block;
-  margin-bottom: 0.2rem;
+  display: inline;
+  margin: 0 0.35rem 0 0;
   color: #8a9aaa;
   font-size: 0.85rem;
 }
 
 .members-ifpa-preview a {
   color: #7dd3fc;
+}
+
+@media (max-width: 680px) {
+  .members-inline-link-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
 }
 
 .membership-card {

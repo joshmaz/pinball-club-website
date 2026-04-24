@@ -107,12 +107,9 @@
             <label for="member-display-name">Display name</label>
             <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
 
-            <button type="submit">Save profile</button>
-          </form>
+            <h3>Public &amp; competitive</h3>
+            <p class="member-panel-intro">Optional fields for the roster and website. Avatar image must be a direct HTTPS link to an image you have rights to use. IFPA number is the digits from your player profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
 
-          <h3>Public &amp; competitive</h3>
-          <p class="member-panel-intro">Optional fields for the roster and website. Avatar image must be a direct HTTPS link to an image you have rights to use. IFPA number is the digits from your player profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
-          <form id="profile-extras-form" class="members-profile-form">
             <label for="member-avatar-url">Avatar image URL (HTTPS)</label>
             <input id="member-avatar-url" type="url" maxlength="500" placeholder="https://…" inputmode="url" autocomplete="photo">
             <div class="members-avatar-preview-wrap">
@@ -120,17 +117,17 @@
             </div>
 
             <label for="member-ifpa-number">IFPA player number</label>
-            <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
+            <div class="members-inline-link-row">
+              <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
+              <p class="members-ifpa-preview" id="member-ifpa-link-wrap" hidden>
+                <a id="member-ifpa-link" target="_blank" rel="noopener noreferrer">View profile</a>
+              </p>
+            </div>
 
             <label for="member-stern-insider-username">Stern Insider username</label>
             <input id="member-stern-insider-username" type="text" maxlength="80" placeholder="e.g. player123" autocomplete="off" spellcheck="false">
 
-            <p class="members-ifpa-preview" id="member-ifpa-link-wrap" hidden>
-              <span class="members-ifpa-preview-label">Your IFPA profile:</span>
-              <a id="member-ifpa-link" target="_blank" rel="noopener noreferrer"></a>
-            </p>
-
-            <button type="submit">Save public fields</button>
+            <button type="submit">Save profile</button>
           </form>
 
           <h3>Password</h3>
@@ -261,7 +258,6 @@
     var lastNameInput = document.getElementById("member-last-name");
     var displayNameInput = document.getElementById("member-display-name");
     var profileForm = document.getElementById("profile-form");
-    var profileExtrasForm = document.getElementById("profile-extras-form");
     var avatarUrlInput = document.getElementById("member-avatar-url");
     var ifpaNumberInput = document.getElementById("member-ifpa-number");
     var sternInsiderUsernameInput = document.getElementById("member-stern-insider-username");
@@ -288,6 +284,9 @@
     var memberAdminGrantForm = document.getElementById("member-admin-grant-form");
     var memberAdminGrantMember = document.getElementById("member-admin-grant-member");
     var memberAdminGrantRole = document.getElementById("member-admin-grant-role");
+    var profileSubmitButton = profileForm ? profileForm.querySelector('button[type="submit"]') : null;
+    var profileFormBaseline = null;
+    var profileFormSaving = false;
 
     function setPageStatus(message) {
       if (pageStatus) pageStatus.textContent = message;
@@ -331,12 +330,42 @@
       if (!full) {
         ifpaLinkWrap.hidden = true;
         ifpaLink.removeAttribute("href");
-        ifpaLink.textContent = "";
+        ifpaLink.removeAttribute("title");
+        ifpaLink.textContent = "View profile";
         return;
       }
       ifpaLink.href = full;
-      ifpaLink.textContent = full;
+      ifpaLink.title = full;
+      ifpaLink.textContent = "View IFPA #" + digits;
       ifpaLinkWrap.hidden = false;
+    }
+
+    function readProfileFormState() {
+      return {
+        first_name: firstNameInput ? firstNameInput.value.trim() : "",
+        last_name: lastNameInput ? lastNameInput.value.trim() : "",
+        display_name: displayNameInput ? displayNameInput.value.trim() : "",
+        avatar_url: avatarUrlInput ? avatarUrlInput.value.trim() : "",
+        ifpa_player_id: ifpaNumberInput ? String(ifpaNumberInput.value || "").replace(/\D/g, "").slice(0, 12) : "",
+        stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : ""
+      };
+    }
+
+    function profileFormHasUnsavedChanges() {
+      if (!profileFormBaseline) return false;
+      return JSON.stringify(readProfileFormState()) !== JSON.stringify(profileFormBaseline);
+    }
+
+    function syncProfileSubmitButton() {
+      if (!profileSubmitButton) return;
+      var hasChanges = profileFormHasUnsavedChanges();
+      if (profileFormSaving) {
+        profileSubmitButton.disabled = true;
+        profileSubmitButton.textContent = "Saving...";
+        return;
+      }
+      profileSubmitButton.disabled = !hasChanges;
+      profileSubmitButton.textContent = hasChanges ? "Save profile (unsaved changes)" : "Save profile";
     }
 
     function showMemberPanel(panelId, options) {
@@ -685,6 +714,8 @@
       if (sternInsiderUsernameInput) sternInsiderUsernameInput.value = profile.stern_insider_username || "";
       syncAvatarPreview();
       syncIfpaProfileLink();
+      profileFormBaseline = readProfileFormState();
+      syncProfileSubmitButton();
       if (recoveryMode) {
         setPageStatus("Finish resetting your password below.");
       } else {
@@ -700,6 +731,8 @@
       if (sternInsiderUsernameInput) sternInsiderUsernameInput.value = "";
       syncAvatarPreview();
       syncIfpaProfileLink();
+      profileFormBaseline = readProfileFormState();
+      syncProfileSubmitButton();
       if (recoveryMode) {
         setPageStatus("Finish resetting your password below.");
       } else {
@@ -715,10 +748,30 @@
     if (avatarUrlInput) {
       avatarUrlInput.addEventListener("input", syncAvatarPreview);
       avatarUrlInput.addEventListener("change", syncAvatarPreview);
+      avatarUrlInput.addEventListener("input", syncProfileSubmitButton);
+      avatarUrlInput.addEventListener("change", syncProfileSubmitButton);
     }
     if (ifpaNumberInput) {
       ifpaNumberInput.addEventListener("input", syncIfpaProfileLink);
       ifpaNumberInput.addEventListener("change", syncIfpaProfileLink);
+      ifpaNumberInput.addEventListener("input", syncProfileSubmitButton);
+      ifpaNumberInput.addEventListener("change", syncProfileSubmitButton);
+    }
+    if (firstNameInput) {
+      firstNameInput.addEventListener("input", syncProfileSubmitButton);
+      firstNameInput.addEventListener("change", syncProfileSubmitButton);
+    }
+    if (lastNameInput) {
+      lastNameInput.addEventListener("input", syncProfileSubmitButton);
+      lastNameInput.addEventListener("change", syncProfileSubmitButton);
+    }
+    if (displayNameInput) {
+      displayNameInput.addEventListener("input", syncProfileSubmitButton);
+      displayNameInput.addEventListener("change", syncProfileSubmitButton);
+    }
+    if (sternInsiderUsernameInput) {
+      sternInsiderUsernameInput.addEventListener("input", syncProfileSubmitButton);
+      sternInsiderUsernameInput.addEventListener("change", syncProfileSubmitButton);
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
@@ -734,48 +787,41 @@
 
     profileForm.addEventListener("submit", async function (event) {
       event.preventDefault();
+      if (profileFormSaving) return;
+      if (!profileFormHasUnsavedChanges()) {
+        setPageStatus("No changes to save.");
+        return;
+      }
       var displayName = displayNameInput.value.trim();
+      var avatarVal = avatarUrlInput ? avatarUrlInput.value.trim() : "";
+      if (!isAllowedHttpUrl(avatarVal)) {
+        setPageStatus("Please enter a valid http(s) avatar URL, or leave that field blank.");
+        return;
+      }
       try {
+        profileFormSaving = true;
+        syncProfileSubmitButton();
         await window.SNHMemberPortal.upsertProfile({
           user_id: session.user.id,
           email: session.user.email,
           first_name: firstNameInput ? firstNameInput.value.trim() : "",
           last_name: lastNameInput ? lastNameInput.value.trim() : "",
-          display_name: displayName
+          display_name: displayName,
+          stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : "",
+          avatar_url: avatarVal,
+          ifpa_player_id: ifpaNumberInput ? ifpaNumberInput.value : ""
         });
+        profileFormBaseline = readProfileFormState();
         setPageStatus("Profile saved.");
+        syncAvatarPreview();
+        syncIfpaProfileLink();
       } catch (err) {
         setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+      } finally {
+        profileFormSaving = false;
+        syncProfileSubmitButton();
       }
     });
-
-    if (profileExtrasForm) {
-      profileExtrasForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        var avatarVal = avatarUrlInput ? avatarUrlInput.value.trim() : "";
-        if (!isAllowedHttpUrl(avatarVal)) {
-          setPageStatus("Please enter a valid http(s) avatar URL, or leave that field blank.");
-          return;
-        }
-        try {
-          await window.SNHMemberPortal.upsertProfile({
-            user_id: session.user.id,
-            email: session.user.email,
-            first_name: firstNameInput ? firstNameInput.value.trim() : "",
-            last_name: lastNameInput ? lastNameInput.value.trim() : "",
-            display_name: displayNameInput.value.trim(),
-            stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : "",
-            avatar_url: avatarVal,
-            ifpa_player_id: ifpaNumberInput ? ifpaNumberInput.value : ""
-          });
-          setPageStatus("Public fields saved.");
-          syncAvatarPreview();
-          syncIfpaProfileLink();
-        } catch (err) {
-          setPageStatus("Could not save public fields: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-        }
-      });
-    }
 
     passwordForm.addEventListener("submit", async function (event) {
       event.preventDefault();
