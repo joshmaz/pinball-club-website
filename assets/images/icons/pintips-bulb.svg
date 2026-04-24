@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bulbGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe48a" />
+      <stop offset="100%" stop-color="#ffb347" />
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="28" r="18" fill="url(#bulbGlow)" />
+  <path d="M32 8a20 20 0 0 0-12 36c2.5 1.9 4 4.8 4 8h16c0-3.2 1.5-6.1 4-8A20 20 0 0 0 32 8Z" fill="#ffd269" stroke="#9a6500" stroke-width="2" />
+  <rect x="24" y="49" width="16" height="5" rx="2" fill="#8a8f98" />
+  <rect x="24" y="55" width="16" height="5" rx="2" fill="#70757f" />
+  <path d="M26 33c2-6 10-9 15-6" fill="none" stroke="#fff7d1" stroke-linecap="round" stroke-width="3" />
+</svg>
