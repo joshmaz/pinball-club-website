@@ -62,6 +62,9 @@ snh-pinball-club-site/
 │   ├── auth.js
 │   ├── api.js
 │   └── main.js
+├── supabase/
+│   └── migrations/
+│       └── (Postgres DDL, e.g. member_roles)
 └── data/
     └── events.json
 
@@ -94,6 +97,55 @@ stripe_subscription_id TEXT
 
 current_period_end TIMESTAMP
 created_at TIMESTAMP
+
+---
+
+## member_roles
+
+RBAC for the **member portal** (`members.html`): which extra sidebar sections (Events, Photos, Games, **Members** admin, etc.) are shown. The browser loads slugs via `SNHMemberPortal.fetchMemberRoles(userId)` in `assets/js/member-portal.js`, which resolves `members.id` for the signed-in user and reads `member_roles` by `member_id`.
+
+**Columns**
+
+- `id` UUID PRIMARY KEY (default `gen_random_uuid()`)
+- `member_id` UUID NOT NULL REFERENCES `members(id)` ON DELETE CASCADE
+- `role_slug` TEXT NOT NULL — e.g. `events_editor`, `photos_admin`, `club_admin`, `members_manager` (lowercase `^[a-z][a-z0-9_]*$`)
+- `granted_at` TIMESTAMPTZ NOT NULL (default now())
+
+**Constraints**
+
+- UNIQUE (`member_id`, `role_slug`)
+
+**RLS**
+
+- `authenticated` may **SELECT** only rows where the linked `members.user_id` equals `auth.uid()`.
+- There is **no** direct INSERT/UPDATE/DELETE policy on `member_roles` for `authenticated` clients (writes go through **SECURITY DEFINER** RPCs below, or privileged SQL / service role for bootstrapping).
+
+**Migrations**
+
+- `supabase/migrations/20260423190000_create_member_roles.sql` — table + RLS.
+- `supabase/migrations/20260423203000_member_admin_rpcs.sql` — admin RPCs for the **Members** panel.
+
+**Member admin RPCs** (`members.html` → `SNHMemberPortal.*`)
+
+Callable by `authenticated` users who already have **`club_admin`** or **`members_manager`** on their own `member_roles` rows (checked inside each function).
+
+| RPC | Purpose |
+|-----|---------|
+| `snh_member_can_manage_roles()` | Returns boolean; used internally / for debugging. |
+| `snh_get_member_admin_stats()` | JSON: member count, membership row counts, active memberships, role-assignment count. |
+| `snh_list_members_for_admin()` | JSON array: each member `member_id`, `email`, `display_name`, `role_slugs[]`. |
+| `snh_grant_member_role(p_member_id, p_role_slug)` | Inserts role (idempotent on conflict). |
+| `snh_revoke_member_role(p_member_id, p_role_slug)` | Deletes role row. |
+
+Assignable slugs from the portal UI are listed in `SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES` in `member-portal.js` (must stay compatible with the `member_roles` check constraint).
+
+**Bootstrap first admin**
+
+- Still use SQL Editor (service role): `INSERT INTO member_roles …` for at least one `club_admin` or `members_manager` row for an initial operator.
+
+**Slug alignment**
+
+- Use the same slugs as `data-rbac-roles` on nav items in `members.html` (comma-separated = any match). UI gating is not a security boundary; protect sensitive data/APIs with RLS and server-side checks.
 
 ---
 
