@@ -328,14 +328,14 @@ function gameTitleSet(games) {
   );
 }
 
-function createGamesList(games, showCurrentStatus) {
+function createGamesList(games) {
   const list = document.createElement("ul");
   list.className = "games-list";
 
   for (const game of games) {
     const item = document.createElement("li");
     item.className = "games-list-item";
-    const isAtClub = showCurrentStatus && game && typeof game === "object" && game.atClub === true;
+    const isAtClub = game && typeof game === "object" && game.atClub === true;
     if (isAtClub) {
       item.classList.add("games-list-item--at-club");
     }
@@ -464,19 +464,21 @@ function showMessage(container, title, details) {
   container.appendChild(card);
 }
 
-function renderGamesList(games, showCurrentStatus) {
+function renderGamesList(games) {
   const container = document.getElementById("games-list");
   if (container) {
-    container.replaceChildren(createGamesList(games, showCurrentStatus));
+    container.replaceChildren(createGamesList(games));
   }
 }
 
 async function loadGames() {
   const container = document.getElementById("games-list");
+  const timelineControls = document.querySelector(".games-timeline-controls");
   const timelineRange = document.getElementById("games-timeline-range");
   const timelineStatus = document.getElementById("games-timeline-status");
   const dateInput = document.getElementById("games-date-input");
   const dateApplyButton = document.getElementById("games-date-apply");
+  const showAllCheckbox = document.getElementById("games-show-all");
   if (!container) {
     console.error("Games list container was not found.");
     return;
@@ -502,19 +504,29 @@ async function loadGames() {
     const todayIso = todayIsoDate();
     let priorGames = [];
     let hasRenderedSnapshot = false;
+    let showAllMode = false;
 
     /**
      * @param {string} selectedIso
      * @param {boolean} fromCustomDate
      */
     function renderSnapshot(selectedIso, fromCustomDate) {
+      if (showAllMode) {
+        renderGamesList(sorted);
+        if (timelineStatus) {
+          timelineStatus.textContent = `All history \u00b7 ${sorted.length} games`;
+        }
+        priorGames = sorted;
+        hasRenderedSnapshot = true;
+        return;
+      }
       const activeGames = sorted.filter((game) => isGameActiveOnDate(game, selectedIso));
       const previousTitles = gameTitleSet(priorGames);
       const activeTitles = gameTitleSet(activeGames);
       const added = activeGames.filter((game) => !previousTitles.has(String(game.title))).length;
       const removed = priorGames.filter((game) => !activeTitles.has(String(game.title))).length;
       priorGames = activeGames;
-      renderGamesList(activeGames, selectedIso === todayIso);
+      renderGamesList(activeGames);
 
       if (timelineStatus) {
         const lead = selectedIso === todayIso ? "Now" : formatDateLabel(selectedIso);
@@ -525,6 +537,21 @@ async function loadGames() {
         timelineStatus.textContent = `${lead}${via} \u00b7 ${activeGames.length} games${delta}`;
       }
       hasRenderedSnapshot = true;
+    }
+
+    function setTimelineControlsEnabled(enabled) {
+      if (timelineControls) {
+        timelineControls.classList.toggle("games-timeline-controls--disabled", !enabled);
+      }
+      if (timelineRange) {
+        timelineRange.disabled = !enabled;
+      }
+      if (dateInput) {
+        dateInput.disabled = !enabled;
+      }
+      if (dateApplyButton) {
+        dateApplyButton.disabled = !enabled;
+      }
     }
 
     if (timelineRange && timelineDates.length > 0) {
@@ -564,6 +591,20 @@ async function loadGames() {
       });
     }
 
+    if (showAllCheckbox) {
+      showAllCheckbox.addEventListener("change", () => {
+        showAllMode = showAllCheckbox.checked;
+        setTimelineControlsEnabled(!showAllMode);
+        if (showAllMode) {
+          renderSnapshot(todayIso, false);
+          return;
+        }
+        const selected = dateInput ? normalizeIsoDateOrEmpty(dateInput.value) : "";
+        renderSnapshot(selected || todayIso, false);
+      });
+    }
+
+    setTimelineControlsEnabled(true);
     renderSnapshot(todayIso, false);
   } catch (error) {
     console.error("Error loading games:", error);
