@@ -3,7 +3,9 @@ const KINETICIST_ICON_PATH = "assets/images/icons/kineticist-k.png";
 const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 /** Rasterized from the www.ipdb.org favicon for consistency with other provider PNGs. */
 const IPDB_ICON_PATH = "assets/images/icons/ipdb-favicon.png";
+const PINTIPS_ICON_PATH = "assets/images/icons/pintips-bulb.svg";
 const GAMES_URL = "data/games.json";
+const MATCHPLAY_OPDB_ENTRY_BASE_URL = "https://app.matchplay.events/opdb/entries";
 
 /** Club opened Jan 2016; Pinball Map coverage starts 2017 — legacy imports often lack stint dates. */
 const UNKNOWN_TENURE_SORT_JOIN = "2016-01-01";
@@ -195,7 +197,11 @@ function formatLocationStints(stints) {
  * @returns {string}
  */
 function todayIsoDate() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 /**
@@ -371,7 +377,8 @@ function createGamesList(games) {
     const kineticistUrl = game.kineticistUrl;
     const pinsideUrl = game.pinsideUrl;
     const ipdbUrl = game.ipdbUrl;
-    if (kineticistUrl || pinsideUrl || ipdbUrl || isAtClub) {
+    const pintipsUrl = getPinTipsUrl(game);
+    if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
 
@@ -442,6 +449,26 @@ function createGamesList(games) {
         linkRow.appendChild(ipdbLink);
       }
 
+      if (pintipsUrl) {
+        const pintipsLink = document.createElement("a");
+        pintipsLink.className = "games-provider-link games-pintips-link";
+        pintipsLink.href = pintipsUrl;
+        pintipsLink.target = "_blank";
+        pintipsLink.rel = "noopener";
+        pintipsLink.title = `View ${game.title} PinTips on Match Play Events`;
+        pintipsLink.setAttribute("aria-label", `View ${game.title} PinTips on Match Play Events`);
+
+        const pintipsIcon = document.createElement("img");
+        pintipsIcon.className = "games-provider-icon";
+        pintipsIcon.src = PINTIPS_ICON_PATH;
+        pintipsIcon.alt = "";
+        pintipsIcon.loading = "lazy";
+        pintipsIcon.decoding = "async";
+        pintipsLink.appendChild(pintipsIcon);
+
+        linkRow.appendChild(pintipsLink);
+      }
+
       item.appendChild(linkRow);
     }
 
@@ -449,6 +476,21 @@ function createGamesList(games) {
   }
 
   return list;
+}
+
+/**
+ * @param {{ opdbId?: unknown }} game
+ * @returns {string}
+ */
+function getPinTipsUrl(game) {
+  if (!game || typeof game !== "object") {
+    return "";
+  }
+  if (!hasNonemptyString(game.opdbId)) {
+    return "";
+  }
+  const opdbId = String(game.opdbId).trim();
+  return `${MATCHPLAY_OPDB_ENTRY_BASE_URL}/${encodeURIComponent(opdbId)}/pintips`;
 }
 
 function showMessage(container, title, details) {

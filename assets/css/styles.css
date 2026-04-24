@@ -1176,6 +1176,16 @@ footer {
   outline-offset: 2px;
 }
 
+.games-pintips-link {
+  border-color: #7a5a1c;
+  background: rgba(120, 85, 18, 0.3);
+}
+
+.games-pintips-link:hover {
+  border-color: #ffc85c;
+  background: rgba(255, 200, 92, 0.22);
+}
+
 .games-provider-icon {
   display: block;
   width: 100%;
