@@ -70,7 +70,10 @@ begin
       json_build_object(
         'member_id', m.id,
         'email', coalesce(m.email, ''),
+        'first_name', coalesce(m.first_name, ''),
+        'last_name', coalesce(m.last_name, ''),
         'display_name', coalesce(m.display_name, ''),
+        'stern_insider_username', coalesce(m.stern_insider_username, ''),
         'role_slugs', coalesce(
           (
             select array_agg(mr.role_slug order by mr.role_slug)

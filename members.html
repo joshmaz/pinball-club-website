@@ -98,6 +98,12 @@
             <label for="member-email">Email</label>
             <input id="member-email" type="email" disabled>
 
+            <label for="member-first-name">First name</label>
+            <input id="member-first-name" type="text" maxlength="80" placeholder="Your first name">
+
+            <label for="member-last-name">Last name</label>
+            <input id="member-last-name" type="text" maxlength="80" placeholder="Your last name">
+
             <label for="member-display-name">Display name</label>
             <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
 
@@ -115,6 +121,9 @@
 
             <label for="member-ifpa-number">IFPA player number</label>
             <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
+
+            <label for="member-stern-insider-username">Stern Insider username</label>
+            <input id="member-stern-insider-username" type="text" maxlength="80" placeholder="e.g. player123" autocomplete="off" spellcheck="false">
 
             <p class="members-ifpa-preview" id="member-ifpa-link-wrap" hidden>
               <span class="members-ifpa-preview-label">Your IFPA profile:</span>
@@ -193,7 +202,10 @@
               <thead>
                 <tr>
                   <th scope="col">Email</th>
+                  <th scope="col">First name</th>
+                  <th scope="col">Last name</th>
                   <th scope="col">Display name</th>
+                  <th scope="col">Stern Insider</th>
                   <th scope="col">Roles</th>
                   <th scope="col"><span class="visually-hidden">Revoke</span></th>
                 </tr>
@@ -245,11 +257,14 @@
   (async function () {
     var pageStatus = document.getElementById("member-page-status");
     var emailInput = document.getElementById("member-email");
+    var firstNameInput = document.getElementById("member-first-name");
+    var lastNameInput = document.getElementById("member-last-name");
     var displayNameInput = document.getElementById("member-display-name");
     var profileForm = document.getElementById("profile-form");
     var profileExtrasForm = document.getElementById("profile-extras-form");
     var avatarUrlInput = document.getElementById("member-avatar-url");
     var ifpaNumberInput = document.getElementById("member-ifpa-number");
+    var sternInsiderUsernameInput = document.getElementById("member-stern-insider-username");
     var ifpaLinkWrap = document.getElementById("member-ifpa-link-wrap");
     var ifpaLink = document.getElementById("member-ifpa-link");
     var avatarPreview = document.getElementById("member-avatar-preview");
@@ -519,8 +534,14 @@
           var tr = document.createElement("tr");
           var tdEmail = document.createElement("td");
           tdEmail.textContent = row.email || "";
+          var tdFirstName = document.createElement("td");
+          tdFirstName.textContent = row.first_name || "";
+          var tdLastName = document.createElement("td");
+          tdLastName.textContent = row.last_name || "";
           var tdName = document.createElement("td");
           tdName.textContent = row.display_name || "";
+          var tdStern = document.createElement("td");
+          tdStern.textContent = row.stern_insider_username || "";
           var tdRoles = document.createElement("td");
           var ul = document.createElement("ul");
           ul.className = "members-admin-role-list";
@@ -551,7 +572,10 @@
           tdRoles.appendChild(ul);
           var tdAct = document.createElement("td");
           tr.appendChild(tdEmail);
+          tr.appendChild(tdFirstName);
+          tr.appendChild(tdLastName);
           tr.appendChild(tdName);
+          tr.appendChild(tdStern);
           tr.appendChild(tdRoles);
           tr.appendChild(tdAct);
           memberAdminTableBody.appendChild(tr);
@@ -570,7 +594,16 @@
           var mr = rows[k];
           var optM = document.createElement("option");
           optM.value = String(mr.member_id);
-          optM.textContent = (mr.email || "(no email)") + (mr.display_name ? " — " + mr.display_name : "");
+          var memberLabelParts = [];
+          if (mr.first_name || mr.last_name) {
+            memberLabelParts.push((mr.first_name || "") + (mr.last_name ? " " + mr.last_name : ""));
+          } else if (mr.display_name) {
+            memberLabelParts.push(mr.display_name);
+          }
+          if (mr.stern_insider_username) {
+            memberLabelParts.push("Stern: " + mr.stern_insider_username);
+          }
+          optM.textContent = (mr.email || "(no email)") + (memberLabelParts.length ? " — " + memberLabelParts.join(" • ") : "");
           memberAdminGrantMember.appendChild(optM);
         }
         if (currentMember) memberAdminGrantMember.value = currentMember;
@@ -644,9 +677,12 @@
     try {
       var profile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);
       emailInput.value = profile.email || session.user.email || "";
+      if (firstNameInput) firstNameInput.value = profile.first_name || "";
+      if (lastNameInput) lastNameInput.value = profile.last_name || "";
       displayNameInput.value = profile.display_name || "";
       if (avatarUrlInput) avatarUrlInput.value = profile.avatar_url || "";
       if (ifpaNumberInput) ifpaNumberInput.value = profile.ifpa_player_id || "";
+      if (sternInsiderUsernameInput) sternInsiderUsernameInput.value = profile.stern_insider_username || "";
       syncAvatarPreview();
       syncIfpaProfileLink();
       if (recoveryMode) {
@@ -656,9 +692,12 @@
       }
     } catch (err) {
       emailInput.value = session.user.email || "";
+      if (firstNameInput) firstNameInput.value = "";
+      if (lastNameInput) lastNameInput.value = "";
       displayNameInput.value = "";
       if (avatarUrlInput) avatarUrlInput.value = "";
       if (ifpaNumberInput) ifpaNumberInput.value = "";
+      if (sternInsiderUsernameInput) sternInsiderUsernameInput.value = "";
       syncAvatarPreview();
       syncIfpaProfileLink();
       if (recoveryMode) {
@@ -700,6 +739,8 @@
         await window.SNHMemberPortal.upsertProfile({
           user_id: session.user.id,
           email: session.user.email,
+          first_name: firstNameInput ? firstNameInput.value.trim() : "",
+          last_name: lastNameInput ? lastNameInput.value.trim() : "",
           display_name: displayName
         });
         setPageStatus("Profile saved.");
@@ -720,7 +761,10 @@
           await window.SNHMemberPortal.upsertProfile({
             user_id: session.user.id,
             email: session.user.email,
+            first_name: firstNameInput ? firstNameInput.value.trim() : "",
+            last_name: lastNameInput ? lastNameInput.value.trim() : "",
             display_name: displayNameInput.value.trim(),
+            stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : "",
             avatar_url: avatarVal,
             ifpa_player_id: ifpaNumberInput ? ifpaNumberInput.value : ""
           });

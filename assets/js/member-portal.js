@@ -174,12 +174,19 @@
 
   async function fetchProfile(userId, email) {
     var client = getClient();
-    var base = { user_id: userId, email: email || "", display_name: "" };
+    var base = {
+      user_id: userId,
+      email: email || "",
+      first_name: "",
+      last_name: "",
+      display_name: "",
+      stern_insider_username: ""
+    };
     if (!client) return base;
 
     var result = await client
       .from("members")
-      .select("id,user_id,email,display_name,created_at")
+      .select("id,user_id,email,first_name,last_name,display_name,stern_insider_username,created_at")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -228,12 +235,17 @@
     var row = {
       user_id: profile.user_id,
       email: profile.email,
+      first_name: profile.first_name,
+      last_name: profile.last_name,
       display_name: profile.display_name
     };
+    if (Object.prototype.hasOwnProperty.call(profile, "stern_insider_username")) {
+      row.stern_insider_username = profile.stern_insider_username;
+    }
     var result = await client
       .from("members")
       .upsert(row, { onConflict: "user_id" })
-      .select("id,user_id,email,display_name,created_at")
+      .select("id,user_id,email,first_name,last_name,display_name,stern_insider_username,created_at")
       .single();
     if (result.error) throw result.error;
 
