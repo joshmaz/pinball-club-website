@@ -1034,6 +1034,21 @@ footer {
   color: #ccc;
 }
 
+.games-footnote {
+  margin: 1rem 0 0;
+  color: #9ba8b0;
+  font-size: 0.9rem;
+}
+
+.games-transition-banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #5f4b2a;
+  border-radius: 8px;
+  background: #201a12;
+  color: #f2e0bf;
+}
+
 .games-timeline-controls {
   margin: 0 0 1.25rem;
   padding: 0.85rem;
