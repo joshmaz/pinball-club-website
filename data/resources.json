@@ -89,6 +89,18 @@
       "sortOrder": 10
     },
     {
+      "id": "opdb",
+      "categoryId": "websites",
+      "title": "Open Pinball Database",
+      "shortLabel": "OPDB",
+      "summary": "Open machine database with standardized metadata for pinball games and manufacturers.",
+      "description": "Useful for developers, operators, and collectors who need consistent game identifiers and structured machine details across apps and tools.",
+      "links": [
+        { "label": "Open Pinball Database", "url": "https://opdb.org/" }
+      ],
+      "sortOrder": 12
+    },
+    {
       "id": "pinside",
       "categoryId": "websites",
       "title": "Pinside",
@@ -141,6 +153,17 @@
         { "label": "Tilt Forums", "url": "https://tiltforums.com/" }
       ],
       "sortOrder": 30
+    },
+    {
+      "id": "pinball-primer",
+      "categoryId": "websites",
+      "title": "Pinball Primer",
+      "summary": "Beginner-friendly guide to pinball basics, common terms, and how to improve your play.",
+      "description": "Great onboarding resource for new players who want a clear introduction to rules, strategy, and pinball culture.",
+      "links": [
+        { "label": "Pinball Primer", "url": "https://pinballprimer.github.io/" }
+      ],
+      "sortOrder": 31
     },
     {
       "id": "pinventory",

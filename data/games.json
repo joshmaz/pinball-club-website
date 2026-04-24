@@ -20,7 +20,16 @@
           "sortKeyLeft": "2026-03-22"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrEWx-MJNpE",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Royal Flush",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1976-04-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Future Spa",
@@ -41,10 +50,20 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "G5Dbo-M3dv6",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Future Spa",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1979-03-20",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Play Boy",
+      "owner": "J. Mazgelis",
       "details": "1947 Chicago Coin flipperless gambling machine with digital audio mods. A fun pre-flipper oddball with 10 passive bumpers, 4 kick-out holes, a time clock, projected replays, and 3- or 5-ball play. One bell for sound; art by Roy Parker.",
       "imageFilename": "play-boy.png",
       "releaseDate": "1947-05-26",
@@ -82,7 +101,16 @@
           "sortKeyLeft": "2026-04-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G48w3-Mq1Zk",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Monopoly",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2001-09-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Embryon",
@@ -103,7 +131,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "G4qk7-MNEjx",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Embryon",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1981-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Dogies",
@@ -125,7 +162,16 @@
           "sortKeyLeft": "2025-07-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4jZo-MLBbn",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Dogies",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1968-01-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Solar Ride",
@@ -147,7 +193,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRDqo-MDbPx",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Solar Ride",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1979-02-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Road Kings",
@@ -169,7 +224,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4NKJ-Mo1Xj",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Road Kings",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1986-07-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Deadpool (Pro)",
@@ -191,7 +255,16 @@
           "sortKeyLeft": "2026-03-30"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G6lnq-Mq1kv",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Deadpool (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2018-08-01",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Heavy Metal Meltdown",
@@ -213,7 +286,16 @@
           "sortKeyLeft": "2026-04-21"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRo3e-MQ7OW",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Heavy Metal Meltdown",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1987-01-08",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Mustang",
@@ -235,7 +317,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GR6bk-MDE6e",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Mustang",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1977-04-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 2
     },
     {
       "title": "Barb Wire",
@@ -257,7 +348,16 @@
           "sortKeyLeft": "2025-01-17"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRwyv-MQNwr",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Barb Wire",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1996-01-04",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Guns N' Roses (SE)",
@@ -282,7 +382,16 @@
           "sortKeyLeft": "2024-10-13"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GqZZ1-M1r5Y",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Guns N' Roses",
+      "manufacturer": "Jersey Jack Pinball",
+      "manufacturerFullName": "Jersey Jack Pinball",
+      "manufactureDate": "2020-10-05",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Truck Stop",
@@ -303,7 +412,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "G5Y6O-MLn90",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Truck Stop",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1988-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Godzilla (Pro)",
@@ -325,7 +443,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GweeP-MW95j",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Godzilla (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2021-09-14",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Harley-Davidson (2nd Edition)",
@@ -347,7 +474,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G56lO-MZeRq",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Harley-Davidson (2nd Edition)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2002-01-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 6
     },
     {
       "title": "Oktoberfest",
@@ -365,10 +501,21 @@
           "sortKeyLeft": "2024-09-17"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6576",
+      "opdbId": "GLWBV-Mz2El",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Oktoberfest",
+      "manufacturer": "American Pinball",
+      "manufacturerFullName": "American Pinball",
+      "manufactureDate": "2018-10-01",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Rush (Premium)",
+      "owner": "J. Mazgelis",
       "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration.",
       "imageFilename": "rush-premium.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
@@ -387,7 +534,13 @@
           "sortKeyLeft": "2024-08-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G2Lkd-M0ope-A9dNy",
+      "opdbMatchedVia": "alias",
+      "opdbCanonicalName": "Rush (Premium)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2022-01-01"
     },
     {
       "title": "Freddy: A Nightmare on Elm Street",
@@ -405,7 +558,17 @@
           "sortKeyLeft": "2024-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=948",
+      "opdbId": "GRzB7-MD8ld",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Freddy: A Nightmare On Elm Street",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1994-01-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "High Hand",
@@ -423,7 +586,17 @@
           "sortKeyLeft": "2024-09-23"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1173",
+      "opdbId": "GRYbJ-MnKex",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "High Hand",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1973-07-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Iron Maiden: Legacy of the Beast (Pro)",
@@ -444,7 +617,17 @@
           "sortKeyLeft": "2024-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6555",
+      "opdbId": "G4dOQ-MyNbb",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Iron Maiden: Legacy of the Beast",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2018-04-01",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Led Zeppelin (Pro)",
@@ -465,7 +648,17 @@
           "sortKeyLeft": "2024-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6760",
+      "opdbId": "Gweel-M9Rk0",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Led Zeppelin (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2020-12-15",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Rock",
@@ -487,7 +680,16 @@
           "sortKeyLeft": "2025-04-30"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grk62-MD1qe",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Rock",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1985-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Disco Fever",
@@ -509,7 +711,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5o9o-MQpN2",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Disco Fever",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1978-01-08",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Rollergames",
@@ -527,7 +738,17 @@
           "sortKeyLeft": "2024-05-02"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2006",
+      "opdbId": "Gr1Ko-MnKyx",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Rollergames",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1990-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Rush (LE)",
@@ -545,7 +766,14 @@
         }
       ],
       "releaseDate": "2022-01-01",
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6846",
+      "opdbId": "G2Lkd-M0ope-A97xV",
+      "opdbMatchedVia": "alias",
+      "opdbCanonicalName": "Rush (LE)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2022-01-01"
     },
     {
       "title": "The Amazing Spider-Man",
@@ -566,7 +794,16 @@
           "sortKeyLeft": "2025-09-08"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrXlr-MOEE2",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Amazing Spider-Man",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1980-05-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Jurassic Park (Pro)",
@@ -588,7 +825,16 @@
           "sortKeyLeft": "2026-03-30"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GK17D-MdEqz",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Jurassic Park (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2019-07-26",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Pool Sharks",
@@ -606,7 +852,17 @@
           "sortKeyLeft": "2024-04-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1848",
+      "opdbId": "GR68o-M0o2O",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Pool Sharks",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1990-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Lectronamo",
@@ -624,7 +880,17 @@
           "sortKeyLeft": "2024-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1429",
+      "opdbId": "GRWd2-MQ4Ye",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Lectronamo",
+      "manufacturer": "Stern Electronics",
+      "manufacturerFullName": "Stern Electronics",
+      "manufactureDate": "1978-01-08",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Paragon",
@@ -642,7 +908,17 @@
           "sortKeyLeft": "2024-04-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1755",
+      "opdbId": "GrXy3-ML0Ey",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Paragon",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1979-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "The Rolling Stones",
@@ -660,7 +936,17 @@
           "sortKeyLeft": "2024-01-30"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5668",
+      "opdbId": "GredR-MDE2K",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Rolling Stones",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2011-02-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Diamond Lady",
@@ -678,7 +964,17 @@
           "sortKeyLeft": "2024-01-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=678",
+      "opdbId": "G4jXW-MQdrN",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Diamond Lady",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1988-02-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Starship Troopers",
@@ -699,7 +995,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "G5we0-MDx6b",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Starship Troopers",
+      "manufacturer": "Sega",
+      "manufacturerFullName": "Sega Pinball, Inc. (US)",
+      "manufactureDate": "1997-01-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 6
     },
     {
       "title": "Earthshaker",
@@ -717,7 +1022,17 @@
           "sortKeyLeft": "2024-04-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=753",
+      "opdbId": "GRw0r-Mp42p",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Earthshaker",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1989-02-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Lightning Ball",
@@ -735,7 +1050,17 @@
           "sortKeyLeft": "2023-12-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1442",
+      "opdbId": "GR66d-M5Rw0",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Lightning Ball",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1959-10-01",
+      "type": "em",
+      "display": "lights",
+      "playerCount": 1
     },
     {
       "title": "Evel Knievel",
@@ -757,7 +1082,16 @@
           "sortKeyLeft": "2023-10-03"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G59wx-MLnZ3",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Evel Knievel",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1977-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Flight 2000",
@@ -779,7 +1113,16 @@
           "sortKeyLeft": "2025-02-15"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G48kY-MDxRV",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Flight 2000",
+      "manufacturer": "Stern Electronics",
+      "manufacturerFullName": "Stern Electronics",
+      "manufactureDate": "1980-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Kings of Steel",
@@ -801,7 +1144,16 @@
           "sortKeyLeft": "2025-07-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GR67j-M7ZYy",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Kings of Steel",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1984-03-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Mr. & Mrs. Pac-Man",
@@ -823,7 +1175,16 @@
           "sortKeyLeft": "2026-04-21"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Gr2Dk-MQNy7",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Mr. & Mrs. Pac-Man",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1982-05-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Avengers: Infinity Quest (Pro)",
@@ -845,7 +1206,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Gj66P-M3dxn",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Avengers: Infinity Quest (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2020-09-01",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Monte Carlo",
@@ -863,7 +1233,17 @@
           "sortKeyLeft": "2024-05-11"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1622",
+      "opdbId": "G578Y-MJNzE",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Monte Carlo",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1987-02-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Crescendo",
@@ -884,7 +1264,16 @@
           "sortKeyLeft": "2025-11-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRpKY-MJYo1",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Crescendo",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1970-05-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 2
     },
     {
       "title": "Solar City",
@@ -904,7 +1293,16 @@
           "sortKeyLeft": "2025-10-28"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrEZ5-MJ9y3",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Solar City",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1977-02-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 2
     },
     {
       "title": "Spider-Man",
@@ -925,7 +1323,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5D94-MLnXq",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Spider-Man",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2007-06-04",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Robo-War",
@@ -942,7 +1349,17 @@
           "sortKeyLeft": "2023-01-22"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1975",
+      "opdbId": "GryK3-MQrWk",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Robo-War",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1988-01-04",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Amigo",
@@ -963,7 +1380,16 @@
           "sortKeyLeft": "2025-04-30"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4ONX-MQY24",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Amigo",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1974-05-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Apollo",
@@ -985,7 +1411,16 @@
           "sortKeyLeft": "2023-12-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRBDj-MJ9x6",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Apollo",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1967-06-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Aquarius",
@@ -1002,7 +1437,17 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=79",
+      "opdbId": "GreKP-MLXzY",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Aquarius",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1970-10-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Argosy",
@@ -1024,7 +1469,16 @@
           "sortKeyLeft": "2023-10-03"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Gr31Y-MQ9bZ",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Argosy",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1977-09-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Black Pyramid",
@@ -1045,7 +1499,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "GRVnY-MDz0l",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Black Pyramid",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1984-07-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Fun Land",
@@ -1067,7 +1530,16 @@
           "sortKeyLeft": "2023-12-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRwqx-MNE6X",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Fun Land",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1968-05-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Jacks Open",
@@ -1089,7 +1561,16 @@
           "sortKeyLeft": "2024-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrPpb-ML3pn",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Jacks Open",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1977-02-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Joust",
@@ -1110,7 +1591,16 @@
           "sortKeyLeft": "2025-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grxk8-MJdwl",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Joust",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1969-09-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 2
     },
     {
       "title": "Xenon",
@@ -1132,7 +1622,16 @@
           "sortKeyLeft": "2026-03-22"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G42Pk-MZe2e",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Xenon",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1980-11-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Alien Poker",
@@ -1153,7 +1652,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "G4yen-MD12Y",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Alien Poker",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1980-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Black Knight",
@@ -1170,7 +1678,17 @@
           "sortKeyLeft": "2019-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=310",
+      "opdbId": "GrO7w-M9R03",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Black Knight",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1980-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Genie",
@@ -1192,7 +1710,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRBKZ-ML8Oe",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Genie",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1979-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Hot Shot",
@@ -1214,7 +1741,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5n1Q-MLvdY",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Hot Shot",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1973-09-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Last Action Hero",
@@ -1236,7 +1772,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRwyq-MW9lN",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Last Action Hero",
+      "manufacturer": "Data East",
+      "manufacturerFullName": "Data East USA, Inc.",
+      "manufactureDate": "1993-01-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Lucky Seven (SS)",
@@ -1253,7 +1798,17 @@
           "sortKeyLeft": "2019-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1491",
+      "opdbId": "G5D3O-MJKe0",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Lucky Seven",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1978-03-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Terminator 2: Judgment Day",
@@ -1275,7 +1830,16 @@
           "sortKeyLeft": "2026-04-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GR9Bx-MQkd5",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Terminator 2: Judgment Day",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1991-07-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "2001",
@@ -1297,7 +1861,16 @@
           "sortKeyLeft": "2021-12-12"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G48nw-M5RPZ",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "2001",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1971-02-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Lost World",
@@ -1319,7 +1892,16 @@
           "sortKeyLeft": "2019-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5pEk-MDWe4",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Lost World",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1978-08-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Time Fantasy",
@@ -1336,7 +1918,17 @@
           "sortKeyLeft": "2019-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2563",
+      "opdbId": "G42Nz-MNEpl",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Time Fantasy",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1983-03-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Airborne",
@@ -1358,7 +1950,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4EZe-MJ424",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Airborne",
+      "manufacturer": "Capcom",
+      "manufacturerFullName": "Capcom Coin-Op, Inc.",
+      "manufactureDate": "1996-03-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "High Speed",
@@ -1380,7 +1981,16 @@
           "sortKeyLeft": "2021-07-23"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRvzd-MLxV8",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "High Speed",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1986-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Target Alpha",
@@ -1401,7 +2011,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrEZ5-MDBY0",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Target Alpha",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1976-11-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "The Getaway: High Speed II",
@@ -1423,7 +2042,16 @@
           "sortKeyLeft": "2021-07-23"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grx8Y-MKNe9",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Getaway: High Speed II",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1992-02-02",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Torpedo Alley",
@@ -1440,7 +2068,17 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2603",
+      "opdbId": "G48on-ML8B9",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Torpedo Alley",
+      "manufacturer": "Data East",
+      "manufacturerFullName": "Data East USA, Inc.",
+      "manufactureDate": "1988-01-08",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Space Invaders",
@@ -1457,7 +2095,17 @@
           "sortKeyLeft": "2018-09-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2252",
+      "opdbId": "G42PX-MyNXo",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Space Invaders",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1980-04-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "The Simpsons Pinball Party",
@@ -1479,7 +2127,16 @@
           "sortKeyLeft": "2018-09-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRvBL-MP3Ev",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Simpsons Pinball Party",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2003-01-02",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Cleopatra",
@@ -1501,7 +2158,16 @@
           "sortKeyLeft": "2018-09-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrknN-MQrdv",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Cleopatra",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1977-11-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Total Nuclear Annihilation",
@@ -1523,7 +2189,16 @@
           "sortKeyLeft": "2018-05-08"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRD79-M0odk",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Total Nuclear Annihilation",
+      "manufacturer": "Spooky Pinball",
+      "manufacturerFullName": "Spooky Pinball LLC",
+      "manufactureDate": "2017-01-01",
+      "type": "ss",
+      "display": "lcd",
+      "playerCount": 4
     },
     {
       "title": "Black Jack",
@@ -1545,7 +2220,16 @@
           "sortKeyLeft": "2026-04-21"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5nbD-MDbBo",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Black Jack (EM)",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1976-05-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Hokus Pokus",
@@ -1566,7 +2250,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "GRwBN-MJ5ln",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Hokus Pokus",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1975-04-09",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 2
     },
     {
       "title": "Congo",
@@ -1588,7 +2281,16 @@
           "sortKeyLeft": "2018-05-25"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrNd0-MJNW1",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Congo",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1995-11-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Grand Prix",
@@ -1610,7 +2312,16 @@
           "sortKeyLeft": "2025-11-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4O1L-MDW47",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Grand Prix",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1976-12-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Aztec",
@@ -1632,7 +2343,16 @@
           "sortKeyLeft": "2018-03-13"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRpLk-MQdOY",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Aztec",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1976-07-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Count-Down",
@@ -1654,7 +2374,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G56zB-MLv9k",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Count-Down",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1979-05-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Old Chicago",
@@ -1676,7 +2405,16 @@
           "sortKeyLeft": "2019-01-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4dJE-MQKoo",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Old Chicago",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1976-04-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "PIN-BOT",
@@ -1698,7 +2436,16 @@
           "sortKeyLeft": "2021-07-23"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G41Z8-MJKvP",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Pinbot",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1986-10-06",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "300",
@@ -1719,7 +2466,16 @@
           "sortKeyLeft": "9999-12-31"
         }
       ],
-      "atClub": true
+      "atClub": true,
+      "opdbId": "G5W1w-MkPy7",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "\"300\"",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1975-08-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Charlie's Angels",
@@ -1741,7 +2497,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5Woz-MwNP3",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Charlie’s Angels (EM)",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1978-01-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 4
     },
     {
       "title": "Doodle Bug",
@@ -1763,7 +2528,16 @@
           "sortKeyLeft": "2023-01-22"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grx1z-Mx02z",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Doodle Bug",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1971-03-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "F-14 Tomcat",
@@ -1785,7 +2559,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRY2O-MLWdy",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "F-14 Tomcat",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1987-03-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Flash Gordon",
@@ -1807,7 +2590,16 @@
           "sortKeyLeft": "2017-09-13"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5728-MDbjD",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Flash Gordon",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1980-05-13",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Hot Line",
@@ -1829,7 +2621,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrZex-MLe41",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Hot Line",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1966-09-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Johnny Mnemonic",
@@ -1851,7 +2652,16 @@
           "sortKeyLeft": "2023-12-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GR6W8-Mb55B",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Johnny Mnemonic",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1995-01-08",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Judge Dredd",
@@ -1873,7 +2683,16 @@
           "sortKeyLeft": "2018-03-13"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRoZw-MLW3j",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Judge Dredd",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1993-01-09",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "KISS (Pro)",
@@ -1898,7 +2717,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4qX5-Mz2Pp",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "KISS (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2015-05-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Lord of the Rings",
@@ -1916,7 +2744,17 @@
         }
       ],
       "releaseDate": "2003-01-01",
-      "atClub": false
+      "atClub": false,
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4858",
+      "opdbId": "GrqZX-MD15w",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Lord of the Rings",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2003-11-13",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Metallica (Pro)",
@@ -1941,7 +2779,16 @@
           "sortKeyLeft": "2023-12-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRBE4-MQK1Z",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Metallica (Pro)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2013-04-12",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "NASCAR",
@@ -1963,7 +2810,16 @@
           "sortKeyLeft": "2022-05-07"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5YWX-MQ4VW",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Nascar",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2005-06-29",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "NBA Fastbreak",
@@ -1985,7 +2841,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrO0D-MQolo",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "NBA Fastbreak",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1997-03-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Robocop",
@@ -2007,7 +2872,16 @@
           "sortKeyLeft": "2019-01-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grlxe-MJ916",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Robocop",
+      "manufacturer": "Data East",
+      "manufacturerFullName": "Data East USA, Inc.",
+      "manufactureDate": "1989-11-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Sorcerer",
@@ -2028,7 +2902,16 @@
           "sortKeyLeft": "2019-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4qxv-MJPyv",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Sorcerer",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1985-03-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Space Shuttle",
@@ -2050,7 +2933,16 @@
           "sortKeyLeft": "2019-09-05"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4q3L-MKN50",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Space Shuttle",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1984-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Strikes and Spares",
@@ -2072,7 +2964,16 @@
           "sortKeyLeft": "2017-10-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrleW-MYeod",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Strikes and Spares",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1978-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Target Pool",
@@ -2094,7 +2995,16 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRbWj-MD3RJ",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Target Pool",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1969-06-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "The Bally Game Show",
@@ -2116,7 +3026,16 @@
           "sortKeyLeft": "2024-09-26"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5V92-MJ9XO",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Bally Game Show",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1990-01-04",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "The Flintstones",
@@ -2138,7 +3057,16 @@
           "sortKeyLeft": "2018-04-11"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GRK95-MQ674",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Flintstones",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1994-07-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "The Lord of the Rings",
@@ -2163,7 +3091,16 @@
           "sortKeyLeft": "2025-02-26"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrqZX-MD15w",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Lord of the Rings",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2003-11-13",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "World Cup Soccer",
@@ -2185,7 +3122,16 @@
           "sortKeyLeft": "2025-10-29"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G42E2-MQP9e",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "World Cup Soccer",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1994-02-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "World Poker Tour",
@@ -2207,7 +3153,16 @@
           "sortKeyLeft": "2024-04-18"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5poe-MQrb5",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "World Poker Tour",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2006-02-20",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Baywatch",
@@ -2226,7 +3181,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grxvy-M4oZj",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Baywatch",
+      "manufacturer": "Sega",
+      "manufacturerFullName": "Sega Pinball, Inc. (US)",
+      "manufactureDate": "1995-02-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 6
     },
     {
       "title": "Firepower",
@@ -2245,7 +3209,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5VDd-MJpqO",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Firepower",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1980-02-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Flash",
@@ -2264,7 +3237,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grypn-MQdbe",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Flash",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1979-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Genesis",
@@ -2283,7 +3265,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Gr2wz-MLBob",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Genesis",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1986-01-09",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Ice Fever",
@@ -2302,7 +3293,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G43DV-MQYKB",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Ice Fever",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1985-02-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Major League",
@@ -2339,7 +3339,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4XD3-M5Rlk",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Roy Clark 'The' Entertainer",
+      "manufacturer": "Fascination Game",
+      "manufacturerFullName": "Fascination Int., Inc.",
+      "manufactureDate": "1977-01-09",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 2
     },
     {
       "title": "Ship Ahoy",
@@ -2357,7 +3366,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4lNn-MkPZ8",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Ship Ahoy",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1976-06-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "Star Trek",
@@ -2376,7 +3394,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G42qQ-MLn3y",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Star Trek",
+      "manufacturer": "Data East",
+      "manufacturerFullName": "Data East USA, Inc.",
+      "manufactureDate": "1991-01-09",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Street Fighter II",
@@ -2394,7 +3421,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5BYQ-MQdBV",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Street Fighter II",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1993-03-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Swords of Fury",
@@ -2413,7 +3449,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GrPzV-MDxj7",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Swords of Fury",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1988-06-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "The Hobbit (Smaug)",
@@ -2432,7 +3477,13 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5bYr-MLezO-AO3J1",
+      "opdbMatchedVia": "alias",
+      "opdbCanonicalName": "The Hobbit (Smaug Gold)",
+      "manufacturer": "Jersey Jack Pinball",
+      "manufacturerFullName": "Jersey Jack Pinball",
+      "manufactureDate": "2015-12-01"
     },
     {
       "title": "The Lost World Jurassic Park",
@@ -2451,7 +3502,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G4kBL-MLndo",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "The Lost World Jurassic Park",
+      "manufacturer": "Sega",
+      "manufacturerFullName": "Sega Pinball, Inc. (US)",
+      "manufactureDate": "1997-06-01",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "Time Machine",
@@ -2469,7 +3529,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "GR99Y-MJ9Zy",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Time Machine",
+      "manufacturer": "Data East",
+      "manufacturerFullName": "Data East USA, Inc.",
+      "manufactureDate": "1988-01-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Time Warp",
@@ -2488,7 +3557,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5wJo-MQdvv",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Time Warp",
+      "manufacturer": "Williams",
+      "manufacturerFullName": "Williams Electronic Games, Inc.",
+      "manufactureDate": "1979-09-01",
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4
     },
     {
       "title": "Volley",
@@ -2506,7 +3584,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G5Q19-MLeEN",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "Volley",
+      "manufacturer": "Gottlieb",
+      "manufacturerFullName": "D. Gottlieb & Co.",
+      "manufactureDate": "1976-08-01",
+      "type": "em",
+      "display": "reels",
+      "playerCount": 1
     },
     {
       "title": "WHO dunnit",
@@ -2525,7 +3612,16 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "G50kj-MDqpv",
+      "opdbMatchedVia": "machine",
+      "opdbCanonicalName": "WHO dunnit",
+      "manufacturer": "Bally",
+      "manufacturerFullName": "Bally Manufacturing Co.",
+      "manufactureDate": "1995-01-09",
+      "type": "ss",
+      "display": "dmd",
+      "playerCount": 4
     },
     {
       "title": "X-Men Wolverine LE",
@@ -2544,7 +3640,13 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "opdbId": "Grj6X-MJNV1-AO209",
+      "opdbMatchedVia": "alias",
+      "opdbCanonicalName": "X-Men Wolverine (LE)",
+      "manufacturer": "Stern",
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "manufactureDate": "2012-06-01"
     }
   ]
 }
