@@ -1044,6 +1044,21 @@ footer {
   color: #0ff;
 }
 
+.games-status-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 auto 0 0;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid #2a8f6f;
+  border-radius: 999px;
+  color: #9ff1d8;
+  background: rgba(42, 143, 111, 0.2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
 .games-provider-link {
   display: inline-flex;
   align-items: center;

@@ -3,6 +3,7 @@
     {
       "title": "Royal Flush",
       "details": "1976 Gottlieb solid state. Design by Ed Krynski. Poker-themed game built around a diagonal nine-target bank (Ace through ten) used to complete card hands for specials and scoring, with joker graphics and top rollovers.",
+      "imageFilename": "royal-flush.png",
       "releaseDate": "1976-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush-gottlieb",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
@@ -64,6 +65,7 @@
     {
       "title": "Monopoly",
       "details": "2001 Stern. Real-estate theme built around Mr. Monopoly, with colorful city-property artwork, bright inserts, and mode progression tied to buying and developing properties.",
+      "imageFilename": "monopoly.png",
       "releaseDate": "2001-09-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
@@ -106,6 +108,7 @@
     {
       "title": "Dogies",
       "details": "1968 Bally. Western-themed electromechanical game with vivid desert artwork, horse-and-rider motifs, and classic rebound-heavy flow built around drop targets and standups.",
+      "imageFilename": "dogies.png",
       "releaseDate": "1968-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
@@ -127,6 +130,7 @@
     {
       "title": "Solar Ride",
       "details": "1979 Gottlieb. Cosmic-themed solid-state machine with bright starburst art, a prominent bonus-multiplier ladder, and satisfying drop-target and spinner shots that build controlled risk-reward scoring.",
+      "imageFilename": "solar-ride.png",
       "releaseDate": "1979-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
@@ -214,6 +218,7 @@
     {
       "title": "Mustang",
       "details": "1977 Gottlieb. Colorful late-70s layout with bonus-building lanes, central drop-target action, and a clear risk-reward flow focused on lighting and collecting multipliers.",
+      "imageFilename": "mustang.png",
       "releaseDate": "1977-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
@@ -235,6 +240,7 @@
     {
       "title": "Barb Wire",
       "details": "1996 Gottlieb. Fast, mode-driven 90s action game with cyberpunk comic-book art, steep ramps, and quick combo shooting built around aggressive risk-reward scoring.",
+      "imageFilename": "barb-wire.png",
       "releaseDate": "1996-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/barb-wire",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3795",
@@ -259,6 +265,7 @@
         "Guns N' Roses"
       ],
       "details": "2020 Jersey Jack. Music-driven modern widebody packed with concert visuals, flowing multiball-heavy shots, and rhythm-focused modes built around iconic Guns N' Roses tracks.",
+      "imageFilename": "guns-n-roses-se.png",
       "releaseDate": "2020-01-01",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/guns-n-roses-2020",
       "pinsideUrl": "https://pinside.com/pinball/machine/jjp-guns-n-roses-se",
@@ -323,6 +330,7 @@
     {
       "title": "Harley-Davidson (2nd Edition)",
       "details": "2002 Stern. Highway-cruising bike theme with Americana art, speed-building objectives, and straightforward combo shooting that ramps into multiball momentum.",
+      "imageFilename": "harley-davidson-2nd-edition.png",
       "releaseDate": "2002-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-stern",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4664",
@@ -462,6 +470,7 @@
     {
       "title": "Rock",
       "details": "1985 Gottlieb. High-energy rock-and-roll theme with bold neon art, central multiplier progression, and punchy short-shot geometry that emphasizes quick control and repeat scoring.",
+      "imageFilename": "rock.png",
       "releaseDate": "1985-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/rock",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1978",
@@ -483,6 +492,7 @@
     {
       "title": "Disco Fever",
       "details": "1978 Williams. Flashy disco-era theme with dance-floor colors, classic EM-style shot rhythm, and this copy features a great digital music mod that adds extra energy to every game.",
+      "imageFilename": "disco-fever.png",
       "releaseDate": "1978-08-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
@@ -730,6 +740,7 @@
     {
       "title": "Evel Knievel",
       "details": "1977 Bally. High-speed stunt theme with bold patriotic art, a satisfying five-bank drop target sequence, and spinner-heavy flow that rewards confident lane control.",
+      "imageFilename": "evel-knievel.png",
       "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
       "releaseDate": "1977-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4499",
@@ -773,6 +784,7 @@
     {
       "title": "Kings of Steel",
       "details": "1984 Bally. Fantasy sword-and-sorcery theme with dramatic hand-drawn art, satisfying lane-and-target progression, and classic early-80s flow that rewards steady accuracy.",
+      "imageFilename": "kings-of-steel.png",
       "releaseDate": "1984-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
