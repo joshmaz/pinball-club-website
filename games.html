@@ -29,9 +29,22 @@
             </div>
         </section>
         <section class="content" aria-label="Club machine lineup">
-            <p class="games-note">Games are sorted by first known listed date at the club. Machines still at the club are highlighted in the list.</p>
-            <p class="games-note">We&rsquo;ll add filtering and sorting options in the future. Let us know on <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a> what you&rsquo;d want to see: multiple sorting options, a game timeline, an on-this-day view, or more.</p>
-            <div id="games-list" aria-label="Club pinball machines, sorted by first listed date at the club (newest to oldest)"></div>
+            <p class="games-note">By default this page shows machines currently at SNHPC. Use the timeline to travel backward and see which games were on the floor at a point in club history.</p>
+            <div class="games-timeline-controls" aria-label="Games timeline controls">
+                <label class="games-timeline-label" for="games-timeline-range">Timeline</label>
+                <input id="games-timeline-range" class="games-timeline-range" type="range" min="0" max="0" step="1" value="0" aria-describedby="games-timeline-status">
+                <div class="games-timeline-axis-labels" aria-hidden="true">
+                    <span>Now</span>
+                    <span>Origins</span>
+                </div>
+                <div class="games-timeline-date-input-row">
+                    <label for="games-date-input">Jump to date</label>
+                    <input id="games-date-input" type="date">
+                    <button id="games-date-apply" type="button">Apply</button>
+                </div>
+                <p id="games-timeline-status" class="games-note games-timeline-status" aria-live="polite"></p>
+            </div>
+            <div id="games-list" aria-label="Club pinball machines active on the selected timeline date"></div>
         </section>
     </main>
 
