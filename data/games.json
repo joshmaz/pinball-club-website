@@ -2,11 +2,11 @@
   "games": [
     {
       "title": "Royal Flush",
-      "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
+      "details": "1976 Gottlieb solid state. Design by Ed Krynski. Poker-themed game built around a diagonal nine-target bank (Ace through ten) used to complete card hands for specials and scoring, with joker graphics and top rollovers.",
       "releaseDate": "1976-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush",
+      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush-gottlieb",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush-card-whiz",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -23,7 +23,7 @@
     },
     {
       "title": "Future Spa",
-      "details": "1979 Bally. Current club machine.",
+      "details": "1979 Bally. Classic widebody with colorful late-70s spa theme and a RetroPin Upgrade mod installed.",
       "imageFilename": "future-spa.jpg",
       "releaseDate": "1979-10-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/future-spa",
@@ -63,7 +63,7 @@
     },
     {
       "title": "Monopoly",
-      "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
+      "details": "2001 Stern. Real-estate theme built around Mr. Monopoly, with colorful city-property artwork, bright inserts, and mode progression tied to buying and developing properties.",
       "releaseDate": "2001-09-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
@@ -84,7 +84,7 @@
     },
     {
       "title": "Embryon",
-      "details": "1981 Bally. Current club machine.",
+      "details": "1981 Bally. Futuristic sci-fi game featuring asymmetrical playfield flow, eye-catching geometric art, and fast shot-making that rewards controlled nudging and precision.",
       "imageFilename": "embryon.jpg",
       "releaseDate": "1981-06-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/embryon",
@@ -105,7 +105,7 @@
     },
     {
       "title": "Dogies",
-      "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.",
+      "details": "1968 Bally. Western-themed electromechanical game with vivid desert artwork, horse-and-rider motifs, and classic rebound-heavy flow built around drop targets and standups.",
       "releaseDate": "1968-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
@@ -126,7 +126,7 @@
     },
     {
       "title": "Solar Ride",
-      "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "1979 Gottlieb. Cosmic-themed solid-state machine with bright starburst art, a prominent bonus-multiplier ladder, and satisfying drop-target and spinner shots that build controlled risk-reward scoring.",
       "releaseDate": "1979-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
@@ -169,7 +169,7 @@
     },
     {
       "title": "Deadpool (Pro)",
-      "details": "2018 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "details": "2018 Stern. Fast, combo-driven modern game with comic-book style art, katana ramp flow, and chaotic multiball action centered on quick reactions and shot chaining.",
       "imageFilename": "deadpool-pro.jpg",
       "releaseDate": "2018-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/deadpool-pro",
@@ -191,7 +191,7 @@
     },
     {
       "title": "Heavy Metal Meltdown",
-      "details": "1987 Bally. Current club machine.",
+      "details": "1987 Bally. Loud, high-energy rock theme with neon-heavy art, fast orbit-and-ramp flow, and aggressive shot geometry that rewards controlled speed and repeatable combos.",
       "imageFilename": "heavy-metal-meltdown.jpg",
       "releaseDate": "1987-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown",
@@ -213,7 +213,7 @@
     },
     {
       "title": "Mustang",
-      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "1977 Gottlieb. Colorful late-70s layout with bonus-building lanes, central drop-target action, and a clear risk-reward flow focused on lighting and collecting multipliers.",
       "releaseDate": "1977-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
@@ -234,8 +234,11 @@
     },
     {
       "title": "Barb Wire",
-      "details": "1996 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-11-30. Removed from the map on 2025-01-17.",
+      "details": "1996 Gottlieb. Fast, mode-driven 90s action game with cyberpunk comic-book art, steep ramps, and quick combo shooting built around aggressive risk-reward scoring.",
       "releaseDate": "1996-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/barb-wire",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3795",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/barb-wire",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -255,8 +258,11 @@
       "aka": [
         "Guns N' Roses"
       ],
-      "details": "2020 Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
+      "details": "2020 Jersey Jack. Music-driven modern widebody packed with concert visuals, flowing multiball-heavy shots, and rhythm-focused modes built around iconic Guns N' Roses tracks.",
       "releaseDate": "2020-01-01",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/guns-n-roses-2020",
+      "pinsideUrl": "https://pinside.com/pinball/machine/jjp-guns-n-roses-se",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6764",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -273,7 +279,7 @@
     },
     {
       "title": "Truck Stop",
-      "details": "1988 Bally. Current club machine.",
+      "details": "1988 Bally. Road-trip themed late-80s machine with bright diner-and-highway art, brisk orbit and ramp flow, and combo-friendly shooting that rewards clean control.",
       "imageFilename": "truck-stop.jpg",
       "releaseDate": "1988-11-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/truck-stop",
@@ -294,7 +300,7 @@
     },
     {
       "title": "Godzilla (Pro)",
-      "details": "2021 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "2021 Stern. Modern kaiju battle game with fast city-destruction flow, satisfying risk-reward shot progression, and explosive multiball moments built around monster battles.",
       "imageFilename": "godzilla-pro.jpg",
       "releaseDate": "2021-09-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/godzilla-pro",
@@ -316,9 +322,9 @@
     },
     {
       "title": "Harley-Davidson (2nd Edition)",
-      "details": "2002 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "2002 Stern. Highway-cruising bike theme with Americana art, speed-building objectives, and straightforward combo shooting that ramps into multiball momentum.",
       "releaseDate": "2002-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-2nd-edition",
+      "pinsideUrl": "https://pinside.com/pinball/machine/harley-davidson-stern",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4664",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/harley-davidson",
       "locationStints": [
@@ -455,7 +461,7 @@
     },
     {
       "title": "Rock",
-      "details": "1985 Gottlieb. Former club machine; removed from the lineup on 2025-04-30.",
+      "details": "1985 Gottlieb. High-energy rock-and-roll theme with bold neon art, central multiplier progression, and punchy short-shot geometry that emphasizes quick control and repeat scoring.",
       "releaseDate": "1985-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/rock",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1978",
@@ -476,7 +482,7 @@
     },
     {
       "title": "Disco Fever",
-      "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "1978 Williams. Flashy disco-era theme with dance-floor colors, classic EM-style shot rhythm, and this copy features a great digital music mod that adds extra energy to every game.",
       "releaseDate": "1978-08-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
@@ -533,7 +539,7 @@
     },
     {
       "title": "The Amazing Spider-Man",
-      "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.",
+      "details": "1980 Gottlieb.",
       "releaseDate": "1980-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
@@ -554,7 +560,7 @@
     },
     {
       "title": "Jurassic Park (Pro)",
-      "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "details": "2019 Stern.",
       "imageFilename": "jurassic-park-pro.jpg",
       "releaseDate": "2019-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
@@ -723,30 +729,9 @@
     },
     {
       "title": "Evel Knievel",
-      "details": "1977 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-09. Removed from the map on 2023-10-03.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-09",
-          "leftClubDate": "2023-10-03",
-          "pinballMapMachineId": 783,
-          "dateUnknown": false,
-          "sortKeyJoined": "2023-01-09",
-          "sortKeyLeft": "2023-10-03"
-        }
-      ],
-      "releaseDate": "1977-01-01",
-      "atClub": false
-    },
-    {
-      "title": "Evil Knievel",
-      "aka": [
-        "Evel Knievel"
-      ],
-      "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.",
+      "details": "1977 Bally. High-speed stunt theme with bold patriotic art, a satisfying five-bank drop target sequence, and spinner-heavy flow that rewards confident lane control.",
       "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
-      "releaseDate": "1976-01-01",
+      "releaseDate": "1977-01-01",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4499",
       "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel",
       "locationStints": [
@@ -787,7 +772,7 @@
     },
     {
       "title": "Kings of Steel",
-      "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.",
+      "details": "1984 Bally. Fantasy sword-and-sorcery theme with dramatic hand-drawn art, satisfying lane-and-target progression, and classic early-80s flow that rewards steady accuracy.",
       "releaseDate": "1984-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
@@ -830,7 +815,7 @@
     },
     {
       "title": "Avengers: Infinity Quest (Pro)",
-      "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "2020 Stern.",
       "imageFilename": "avengers-infinity-quest-pro.png",
       "releaseDate": "2020-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest",
@@ -870,7 +855,7 @@
     },
     {
       "title": "Crescendo",
-      "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.",
+      "details": "1970 Gottlieb.",
       "releaseDate": "1970-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/crescendo",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=590",
@@ -891,7 +876,7 @@
     },
     {
       "title": "Solar City",
-      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.",
+      "details": "1977 Gottlieb.",
       "releaseDate": "1977-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/solar-city",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237",
@@ -911,7 +896,7 @@
     },
     {
       "title": "Spider-Man",
-      "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "details": "2007 Stern.",
       "releaseDate": "2007-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
@@ -949,7 +934,7 @@
     },
     {
       "title": "Amigo",
-      "details": "1973 Bally. Former club machine; removed from the lineup on 2025-04-30.",
+      "details": "1973 Bally.",
       "releaseDate": "1973-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/amigo",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=71",
@@ -1096,7 +1081,7 @@
     },
     {
       "title": "Joust",
-      "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.",
+      "details": "1969 Bally.",
       "releaseDate": "1969-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/joust",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1317",
@@ -1117,7 +1102,7 @@
     },
     {
       "title": "Xenon",
-      "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
+      "details": "1979 Bally.",
       "imageFilename": "xenon.png",
       "releaseDate": "1979-01-01",
       "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
