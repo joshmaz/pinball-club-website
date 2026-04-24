@@ -167,7 +167,8 @@ function createGamesList(games) {
   for (const game of games) {
     const item = document.createElement("li");
     item.className = "games-list-item";
-    if (game && typeof game === "object" && game.atClub === true) {
+    const isAtClub = game && typeof game === "object" && game.atClub === true;
+    if (isAtClub) {
       item.classList.add("games-list-item--at-club");
     }
 
@@ -202,9 +203,16 @@ function createGamesList(games) {
     const kineticistUrl = game.kineticistUrl;
     const pinsideUrl = game.pinsideUrl;
     const ipdbUrl = game.ipdbUrl;
-    if (kineticistUrl || pinsideUrl || ipdbUrl) {
+    if (kineticistUrl || pinsideUrl || ipdbUrl || isAtClub) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
+
+      if (isAtClub) {
+        const badge = document.createElement("span");
+        badge.className = "games-status-badge";
+        badge.textContent = "At club";
+        linkRow.appendChild(badge);
+      }
 
       if (kineticistUrl) {
         const kineticistLink = document.createElement("a");
