@@ -47,10 +47,11 @@
           "pinballMapMachineId": 808,
           "dateUnknown": false,
           "sortKeyJoined": "2025-11-03",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "G5Dbo-M3dv6",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Future Spa",
@@ -128,10 +129,11 @@
           "pinballMapMachineId": 796,
           "dateUnknown": false,
           "sortKeyJoined": "2025-04-28",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "G4qk7-MNEjx",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Embryon",
@@ -409,10 +411,11 @@
           "pinballMapMachineId": 826,
           "dateUnknown": false,
           "sortKeyJoined": "2024-09-06",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "G5Y6O-MLn90",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Truck Stop",
@@ -992,10 +995,11 @@
           "pinballMapMachineId": 883,
           "dateUnknown": false,
           "sortKeyJoined": "2023-10-03",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "G5we0-MDx6b",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Starship Troopers",
@@ -1496,10 +1500,11 @@
           "pinballMapMachineId": 1096,
           "dateUnknown": false,
           "sortKeyJoined": "2021-06-11",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "GRVnY-MDz0l",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Black Pyramid",
@@ -1649,10 +1654,11 @@
           "pinballMapMachineId": 878,
           "dateUnknown": false,
           "sortKeyJoined": "2020-03-01",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "G4yen-MD12Y",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Alien Poker",
@@ -2247,10 +2253,11 @@
           "pinballMapMachineId": 794,
           "dateUnknown": false,
           "sortKeyJoined": "2017-12-06",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "GRwBN-MJ5ln",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "Hokus Pokus",
@@ -2463,10 +2470,11 @@
           "pinballMapMachineId": 1387,
           "dateUnknown": false,
           "sortKeyJoined": "2017-09-08",
-          "sortKeyLeft": "9999-12-31"
+          "sortKeyLeft": "2026-04-23",
+          "leftClubDate": "2026-04-23"
         }
       ],
-      "atClub": true,
+      "atClub": false,
       "opdbId": "G5W1w-MkPy7",
       "opdbMatchedVia": "machine",
       "opdbCanonicalName": "\"300\"",

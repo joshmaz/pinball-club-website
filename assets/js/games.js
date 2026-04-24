@@ -515,6 +515,7 @@ function renderGamesList(games) {
 
 async function loadGames() {
   const container = document.getElementById("games-list");
+  const transitionBanner = document.getElementById("games-transition-banner");
   const timelineControls = document.querySelector(".games-timeline-controls");
   const timelineRange = document.getElementById("games-timeline-range");
   const timelineStatus = document.getElementById("games-timeline-status");
@@ -542,11 +543,16 @@ async function loadGames() {
 
     enrichGamesPayload(data);
     const sorted = sortGamesNewestJoinFirst(data.games);
+    const hasAnyAtClub = sorted.some((game) => game && typeof game === "object" && game.atClub === true);
     const timelineDates = buildTimelineDates(sorted);
     const todayIso = todayIsoDate();
     let priorGames = [];
     let hasRenderedSnapshot = false;
-    let showAllMode = false;
+    let showAllMode = !hasAnyAtClub;
+
+    if (transitionBanner) {
+      transitionBanner.hidden = hasAnyAtClub;
+    }
 
     /**
      * @param {string} selectedIso
@@ -556,7 +562,9 @@ async function loadGames() {
       if (showAllMode) {
         renderGamesList(sorted);
         if (timelineStatus) {
-          timelineStatus.textContent = `All history \u00b7 ${sorted.length} games`;
+          timelineStatus.textContent = hasAnyAtClub
+            ? `All history \u00b7 ${sorted.length} games`
+            : `All history \u00b7 ${sorted.length} games \u00b7 currently between locations`;
         }
         priorGames = sorted;
         hasRenderedSnapshot = true;
@@ -568,7 +576,15 @@ async function loadGames() {
       const added = activeGames.filter((game) => !previousTitles.has(String(game.title))).length;
       const removed = priorGames.filter((game) => !activeTitles.has(String(game.title))).length;
       priorGames = activeGames;
-      renderGamesList(activeGames);
+      if (activeGames.length === 0) {
+        showMessage(
+          container,
+          "Between locations",
+          "No games were active at the club on this date."
+        );
+      } else {
+        renderGamesList(activeGames);
+      }
 
       if (timelineStatus) {
         const lead = selectedIso === todayIso ? "Now" : formatDateLabel(selectedIso);
@@ -634,6 +650,7 @@ async function loadGames() {
     }
 
     if (showAllCheckbox) {
+      showAllCheckbox.checked = showAllMode;
       showAllCheckbox.addEventListener("change", () => {
         showAllMode = showAllCheckbox.checked;
         setTimelineControlsEnabled(!showAllMode);
@@ -646,7 +663,7 @@ async function loadGames() {
       });
     }
 
-    setTimelineControlsEnabled(true);
+    setTimelineControlsEnabled(!showAllMode);
     renderSnapshot(todayIso, false);
   } catch (error) {
     console.error("Error loading games:", error);
