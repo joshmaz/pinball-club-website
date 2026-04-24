@@ -4,12 +4,19 @@ Merge Pinball Map location activity into data/games.json.
 Per-game club presence is stored in locationStints[] (one object per physical
 location / Pinball Map location id), for example:
   { "address": "...", "pinballMapLocationId": 8908,
-    "joinedClubDate", "leftClubDate", "pinballMapMachineId" }
+    "joinedClubDate", "leftClubDate", "pinballMapMachineId",
+    "dateUnknown", "sortKeyJoined", "sortKeyLeft" }
+
+The last three are written by this script for sorting (mirrors assets/js/games.js):
+dateUnknown = no joinedClubDate and no leftClubDate; sort keys use an editorial
+2016 band for unknown tenure, or 9999-12-31 for current games with no leave date.
 
 Legacy top-level joinedClubDate / leftClubDate / pinballMapMachineId are
 migrated into the first stint for 134 Haines on first run.
 
-Games only on the map file are appended to currentGames or previousGames.
+Games live in a single `games` array (sorted newest-first by first stint join).
+Each game may include `atClub` (still on the floor per Pinball Map). Unknown-tenure
+sort keys use `atClub` the same way the old current/previous split did.
 """
 
 from __future__ import annotations
@@ -32,6 +39,107 @@ _RE_PINBALLMAP_SUFFIX = re.compile(
 # Pinball Map location id 8908 — pre-move club home (extend when new locations exist).
 LEGACY_PINBALLMAP_LOCATION_ID = 8908
 LEGACY_CLUB_ADDRESS = "134 Haines Street, Nashua, NH"
+
+UNKNOWN_TENURE_SORT_JOIN = "2016-01-01"
+UNKNOWN_TENURE_SORT_LEFT_PREVIOUS = "2016-12-31"
+STILL_AT_CLUB_SORT_LEFT = "9999-12-31"
+
+
+def _has_nonempty_string(v: Any) -> bool:
+    if v is None:
+        return False
+    return str(v).strip() != ""
+
+
+def enrich_location_stint_sort_fields(
+    stint: dict[str, Any], *, is_current_game: bool
+) -> None:
+    """Set dateUnknown and ISO sortKey* on a stint (same rules as assets/js/games.js)."""
+    has_join = _has_nonempty_string(stint.get("joinedClubDate"))
+    has_leave = _has_nonempty_string(stint.get("leftClubDate"))
+    date_unknown = not has_join and not has_leave
+    stint["dateUnknown"] = date_unknown
+    if date_unknown:
+        stint["sortKeyJoined"] = UNKNOWN_TENURE_SORT_JOIN
+        stint["sortKeyLeft"] = (
+            STILL_AT_CLUB_SORT_LEFT
+            if is_current_game
+            else UNKNOWN_TENURE_SORT_LEFT_PREVIOUS
+        )
+        return
+    stint["sortKeyJoined"] = (
+        str(stint["joinedClubDate"]).strip()
+        if has_join
+        else UNKNOWN_TENURE_SORT_JOIN
+    )
+    if has_leave:
+        stint["sortKeyLeft"] = str(stint["leftClubDate"]).strip()
+    else:
+        stint["sortKeyLeft"] = (
+            STILL_AT_CLUB_SORT_LEFT
+            if is_current_game
+            else UNKNOWN_TENURE_SORT_LEFT_PREVIOUS
+        )
+
+
+def game_is_at_club(g: dict[str, Any]) -> bool:
+    """Pinball Map merge and migration set `atClub`; missing key defaults false."""
+    return bool(g.get("atClub"))
+
+
+def migrate_data_shape_in_place(data: dict[str, Any]) -> None:
+    """Normalize legacy { currentGames, previousGames } into { games }."""
+    if isinstance(data.get("games"), list) and not (
+        data.get("currentGames") or data.get("previousGames")
+    ):
+        data.pop("currentGames", None)
+        data.pop("previousGames", None)
+        return
+
+    cur = [g for g in (data.get("currentGames") or []) if isinstance(g, dict)]
+    prev = [g for g in (data.get("previousGames") or []) if isinstance(g, dict)]
+    for g in cur:
+        g.setdefault("atClub", True)
+    for g in prev:
+        g.setdefault("atClub", False)
+    data["games"] = cur + prev
+    data.pop("currentGames", None)
+    data.pop("previousGames", None)
+
+
+def primary_sort_key_joined(game: dict[str, Any]) -> str:
+    stints = game.get("locationStints") or []
+    if not isinstance(stints, list) or not stints:
+        return "9999-12-31"
+    best: str | None = None
+    for st in stints:
+        if not isinstance(st, dict):
+            continue
+        k = st.get("sortKeyJoined")
+        if not _has_nonempty_string(k):
+            continue
+        ks = str(k).strip()
+        if best is None or ks < best:
+            best = ks
+    return best if best is not None else "9999-12-31"
+
+
+def sort_games_newest_join_first_in_place(data: dict[str, Any]) -> None:
+    games = data.get("games") or []
+    if not isinstance(games, list):
+        return
+    games.sort(key=lambda g: str((g or {}).get("title") or "").lower())
+    games.sort(key=lambda g: primary_sort_key_joined(g), reverse=True)
+
+
+def enrich_all_games_sort_fields(data: dict[str, Any]) -> None:
+    for g in data.get("games") or []:
+        if not isinstance(g, dict):
+            continue
+        on_floor = game_is_at_club(g)
+        for st in g.get("locationStints") or []:
+            if isinstance(st, dict):
+                enrich_location_stint_sort_fields(st, is_current_game=on_floor)
 
 
 def normalize_map_title(machine_name: str) -> str:
@@ -155,7 +263,6 @@ def apply_pinball_to_stints(
     l: str | None,
     on: bool,
     mid: int | None,
-    arr_name: str,
 ) -> None:
     stints = game.setdefault("locationStints", [])
     if not isinstance(stints, list):
@@ -180,10 +287,11 @@ def apply_pinball_to_stints(
         st["joinedClubDate"] = j
     if l:
         st["leftClubDate"] = l
-    elif on and arr_name == "currentGames":
+    elif on:
         st.pop("leftClubDate", None)
     if mid is not None:
         st["pinballMapMachineId"] = mid
+    game["atClub"] = bool(on)
 
 
 def machine_id_from_game(game: dict[str, Any], location_id: int) -> int | None:
@@ -222,6 +330,8 @@ def main() -> None:
 
     with open(games_path, encoding="utf-8") as f:
         data = json.load(f)
+
+    migrate_data_shape_in_place(data)
 
     meta = activity.get("meta") or {}
     try:
@@ -272,12 +382,11 @@ def main() -> None:
         inferred[key] = (j, l, on, rep_id)
 
     all_keys: set[str] = set()
-    for arr_name in ("currentGames", "previousGames"):
-        for g in data.get(arr_name) or []:
-            migrate_legacy_pinball_fields(g)
-            t = (g.get("title") or "").strip()
-            if t:
-                all_keys.add(t)
+    for g in data.get("games") or []:
+        migrate_legacy_pinball_fields(g)
+        t = (g.get("title") or "").strip()
+        if t:
+            all_keys.add(t)
 
     inferred_lower: dict[str, str] = {}
     for k in inferred:
@@ -302,13 +411,12 @@ def main() -> None:
         if len(prefix_matches) == 1:
             return prefix_matches[0]
         if rep_machine_id is not None:
-            for arr in (data.get("currentGames") or [], data.get("previousGames") or []):
-                for g in arr:
-                    t = (g.get("title") or "").strip()
-                    if t not in prefix_matches:
-                        continue
-                    if machine_id_from_game(g, activity_location_id) == rep_machine_id:
-                        return t
+            for g in data.get("games") or []:
+                t = (g.get("title") or "").strip()
+                if t not in prefix_matches:
+                    continue
+                if machine_id_from_game(g, activity_location_id) == rep_machine_id:
+                    return t
         return max(prefix_matches, key=len)
 
     def resolve_inferred_key(title: str, game: dict[str, Any]) -> str | None:
@@ -332,23 +440,21 @@ def main() -> None:
             return mid_to_key[mid_g]
         return None
 
-    for arr_name in ("currentGames", "previousGames"):
-        for g in data.get(arr_name) or []:
-            title = (g.get("title") or "").strip()
-            map_key = resolve_inferred_key(title, g)
-            if map_key is None:
-                continue
-            j, l, on, mid = inferred[map_key]
-            apply_pinball_to_stints(
-                g,
-                location_id=activity_location_id,
-                location_address=location_address,
-                j=j,
-                l=l,
-                on=on,
-                mid=mid,
-                arr_name=arr_name,
-            )
+    for g in data.get("games") or []:
+        title = (g.get("title") or "").strip()
+        map_key = resolve_inferred_key(title, g)
+        if map_key is None:
+            continue
+        j, l, on, mid = inferred[map_key]
+        apply_pinball_to_stints(
+            g,
+            location_id=activity_location_id,
+            location_address=location_address,
+            j=j,
+            l=l,
+            on=on,
+            mid=mid,
+        )
 
     for key, (j, l, on, mid) in inferred.items():
         if key in all_keys:
@@ -385,15 +491,16 @@ def main() -> None:
             "title": key,
             "details": deets,
             "locationStints": [stint],
+            "atClub": bool(on),
         }
         if rel:
             entry["releaseDate"] = rel
 
-        if on:
-            data.setdefault("currentGames", []).append(entry)
-        else:
-            data.setdefault("previousGames", []).append(entry)
+        data.setdefault("games", []).append(entry)
         all_keys.add(key)
+
+    enrich_all_games_sort_fields(data)
+    sort_games_newest_join_first_in_place(data)
 
     with open(games_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

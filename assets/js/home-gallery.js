@@ -23,11 +23,9 @@
         throw new Error(`Request failed (${response.status})`);
       }
       const data = await response.json();
-      const all = []
-        .concat(data.currentGames || [], data.previousGames || [])
-        .filter(function (g) {
-          return g && g.imageFilename;
-        });
+      const all = (data.games || []).filter(function (g) {
+        return g && g.imageFilename;
+      });
       if (all.length === 0) return;
 
       shuffleInPlace(all);

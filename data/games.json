@@ -1,75 +1,149 @@
 {
-  "currentGames": [
+  "games": [
     {
-      "title": "Jurassic Park (Pro)",
-      "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
-      "imageFilename": "jurassic-park-pro.jpg",
-      "releaseDate": "2019-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6573",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park",
+      "title": "Royal Flush",
+      "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
+      "releaseDate": "1976-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-03-24",
-          "leftClubDate": "2026-03-30",
-          "pinballMapMachineId": 3167
+          "joinedClubDate": "2025-12-31",
+          "leftClubDate": "2026-03-22",
+          "pinballMapMachineId": 822,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-12-31",
+          "sortKeyLeft": "2026-03-22"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Alien Poker",
-      "details": "1980 Williams. Current club machine.",
-      "imageFilename": "alien-poker.jpg",
-      "releaseDate": "1980-10-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=48",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker",
+      "title": "Future Spa",
+      "details": "1979 Bally. Current club machine.",
+      "imageFilename": "future-spa.jpg",
+      "releaseDate": "1979-10-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/future-spa",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=974",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/future-spa",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2020-03-01",
-          "pinballMapMachineId": 878
+          "joinedClubDate": "2025-11-03",
+          "pinballMapMachineId": 808,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-11-03",
+          "sortKeyLeft": "9999-12-31"
         }
-      ]
+      ],
+      "atClub": true
     },
     {
-      "title": "Avengers: Infinity Quest (Pro)",
-      "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
-      "imageFilename": "avengers-infinity-quest-pro.png",
-      "releaseDate": "2020-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest",
+      "title": "Play Boy",
+      "details": "1947 Chicago Coin flipperless gambling machine with digital audio mods. A fun pre-flipper oddball with 10 passive bumpers, 4 kick-out holes, a time clock, projected replays, and 3- or 5-ball play. One bell for sound; art by Roy Parker.",
+      "imageFilename": "play-boy.png",
+      "releaseDate": "1947-05-26",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1824",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2022-05-07",
-          "pinballMapMachineId": 3267,
-          "leftClubDate": "2026-04-04"
+          "joinedClubDate": "2025-10-29",
+          "leftClubDate": "2026-04-04",
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-10-29",
+          "sortKeyLeft": "2026-04-04"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Black Jack",
-      "details": "1977 Bally. Current club machine.",
-      "imageFilename": "black-jack.jpg",
-      "releaseDate": "1977-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/black-jack",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4498",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack",
+      "title": "Monopoly",
+      "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
+      "releaseDate": "2001-09-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-12-06",
-          "leftClubDate": "2026-04-21",
-          "pinballMapMachineId": 833
+          "joinedClubDate": "2025-10-27",
+          "leftClubDate": "2026-04-07",
+          "pinballMapMachineId": 698,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-10-27",
+          "sortKeyLeft": "2026-04-07"
         }
-      ]
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Embryon",
+      "details": "1981 Bally. Current club machine.",
+      "imageFilename": "embryon.jpg",
+      "releaseDate": "1981-06-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/embryon",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=783",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/embryon",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-04-28",
+          "pinballMapMachineId": 796,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-04-28",
+          "sortKeyLeft": "9999-12-31"
+        }
+      ],
+      "atClub": true
+    },
+    {
+      "title": "Dogies",
+      "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.",
+      "releaseDate": "1968-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/dogies",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-04-13",
+          "leftClubDate": "2025-07-18",
+          "pinballMapMachineId": 3292,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-04-13",
+          "sortKeyLeft": "2025-07-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Solar Ride",
+      "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1979-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2025-03-24",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1381,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-03-24",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
     },
     {
       "title": "Road Kings",
@@ -85,95 +159,13 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2025-02-26",
           "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 827
+          "pinballMapMachineId": 827,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-02-26",
+          "sortKeyLeft": "2026-04-04"
         }
-      ]
-    },
-    {
-      "title": "Black Pyramid",
-      "details": "1984 Bally. Current club machine.",
-      "imageFilename": "black-pyramid.png",
-      "releaseDate": "1984-07-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=312",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-pyramid",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-06-11",
-          "pinballMapMachineId": 1096
-        }
-      ]
-    },
-    {
-      "title": "Embryon",
-      "details": "1981 Bally. Current club machine.",
-      "imageFilename": "embryon.jpg",
-      "releaseDate": "1981-06-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/embryon",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=783",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/embryon",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-04-28",
-          "pinballMapMachineId": 796
-        }
-      ]
-    },
-    {
-      "title": "Future Spa",
-      "details": "1979 Bally. Current club machine.",
-      "imageFilename": "future-spa.jpg",
-      "releaseDate": "1979-10-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/future-spa",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=974",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/future-spa",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-11-03",
-          "pinballMapMachineId": 808
-        }
-      ]
-    },
-    {
-      "title": "Heavy Metal Meltdown",
-      "details": "1987 Bally. Current club machine.",
-      "imageFilename": "heavy-metal-meltdown.jpg",
-      "releaseDate": "1987-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1150",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/heavy-metal-meltdown",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-01-06",
-          "leftClubDate": "2026-04-21",
-          "pinballMapMachineId": 2137
-        }
-      ]
-    },
-    {
-      "title": "Hokus Pokus",
-      "details": "1975 Bally. Current club machine.",
-      "imageFilename": "hokus-pokus.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/hokus-pokus",
-      "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
-      "releaseDate": "1975-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-12-06",
-          "pinballMapMachineId": 794
-        }
-      ]
+      ],
+      "atClub": false
     },
     {
       "title": "Deadpool (Pro)",
@@ -189,44 +181,95 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2025-01-20",
           "leftClubDate": "2026-03-30",
-          "pinballMapMachineId": 3022
+          "pinballMapMachineId": 3022,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-01-20",
+          "sortKeyLeft": "2026-03-30"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Mr. & Mrs. Pac-Man",
-      "details": "1982 Bally. Current club machine.",
-      "imageFilename": "mr-and-mrs-pac-man.jpg",
-      "releaseDate": "1982-05-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1639",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/mr-mrs-pac-man",
+      "title": "Heavy Metal Meltdown",
+      "details": "1987 Bally. Current club machine.",
+      "imageFilename": "heavy-metal-meltdown.jpg",
+      "releaseDate": "1987-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/heavy-metal-meltdown",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1150",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/heavy-metal-meltdown",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-09",
+          "joinedClubDate": "2025-01-06",
           "leftClubDate": "2026-04-21",
-          "pinballMapMachineId": 1181
+          "pinballMapMachineId": 2137,
+          "dateUnknown": false,
+          "sortKeyJoined": "2025-01-06",
+          "sortKeyLeft": "2026-04-21"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Starship Troopers",
-      "details": "1997 Sega. Current club machine.",
-      "imageFilename": "starship-troopers.jpg",
-      "releaseDate": "1997-12-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4341",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/starship-troopers",
+      "title": "Mustang",
+      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1977-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-10-03",
-          "pinballMapMachineId": 883
+          "joinedClubDate": "2024-12-14",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1462,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-12-14",
+          "sortKeyLeft": "2026-04-04"
         }
-      ]
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Barb Wire",
+      "details": "1996 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-11-30. Removed from the map on 2025-01-17.",
+      "releaseDate": "1996-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-11-30",
+          "leftClubDate": "2025-01-17",
+          "pinballMapMachineId": 777,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-11-30",
+          "sortKeyLeft": "2025-01-17"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Guns N' Roses (SE)",
+      "aka": [
+        "Guns N' Roses"
+      ],
+      "details": "2020 Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
+      "releaseDate": "2020-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-09-20",
+          "leftClubDate": "2024-10-13",
+          "pinballMapMachineId": 3272,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-09-20",
+          "sortKeyLeft": "2024-10-13"
+        }
+      ],
+      "atClub": false
     },
     {
       "title": "Truck Stop",
@@ -241,9 +284,13 @@
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2024-09-06",
-          "pinballMapMachineId": 826
+          "pinballMapMachineId": 826,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-09-06",
+          "sortKeyLeft": "9999-12-31"
         }
-      ]
+      ],
+      "atClub": true
     },
     {
       "title": "Godzilla (Pro)",
@@ -259,9 +306,13 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2024-09-05",
           "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 3415
+          "pinballMapMachineId": 3415,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-09-05",
+          "sortKeyLeft": "2026-04-04"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
       "title": "Harley-Davidson (2nd Edition)",
@@ -276,349 +327,31 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2024-09-05",
           "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 2054
+          "pinballMapMachineId": 2054,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-09-05",
+          "sortKeyLeft": "2026-04-04"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Disco Fever",
-      "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "1978-08-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever",
+      "title": "Oktoberfest",
+      "details": "2018 American. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2024-09-17.",
+      "releaseDate": "2018-01-01",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-04-18",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 1091
+          "joinedClubDate": "2024-09-05",
+          "leftClubDate": "2024-09-17",
+          "pinballMapMachineId": 3079,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-09-05",
+          "sortKeyLeft": "2024-09-17"
         }
-      ]
-    },
-    {
-      "title": "Mustang",
-      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "1977-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/mustang",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1645",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/mustang",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-12-14",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 1462
-        }
-      ]
-    },
-    {
-      "title": "Solar Ride",
-      "details": "1979 Gottlieb. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "1979-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/solar-ride",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2239",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/solar-ride",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-03-24",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 1381
-        }
-      ]
-    },
-    {
-      "title": "Spider-Man",
-      "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
-      "releaseDate": "2007-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2022-01-09",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 663
-        }
-      ]
-    },
-    {
-      "title": "Target Pool",
-      "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.",
-      "imageFilename": "target-pool.jpg",
-      "releaseDate": "1969-06-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 1029
-        }
-      ]
-    },
-    {
-      "title": "NBA Fastbreak",
-      "details": "1997 Bally DMD. Design by George Gomez. 3 flippers including one backbox flipper, 3 ramps, 4 up-kickers.",
-      "imageFilename": "nba-fastbreak.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
-      "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
-      "releaseDate": "1997-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 657
-        }
-      ]
-    },
-    {
-      "title": "Hot Line",
-      "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.",
-      "imageFilename": "hot-line.jpg",
-      "releaseDate": "1966-09-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 974
-        }
-      ]
-    },
-    {
-      "title": "Charlie's Angels",
-      "details": "1978 Gottlieb solid state. Design by Allen Edwall. 2 flippers, 2 pop bumpers, 8 drop targets.",
-      "imageFilename": "charlies-angles.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
-      "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
-      "releaseDate": "1978-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2026-04-04",
-          "pinballMapMachineId": 1157
-        }
-      ]
-    },
-    {
-      "title": "Monopoly",
-      "details": "2001 Stern. Former club machine; removed from the lineup on 2026-04-07.",
-      "releaseDate": "2001-09-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/monopoly",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4505",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/monopoly",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-10-27",
-          "leftClubDate": "2026-04-07",
-          "pinballMapMachineId": 698
-        }
-      ]
-    },
-    {
-      "title": "Terminator 2: Judgment Day",
-      "details": "1991 Williams DMD. Design by Steve Ritchie. 2 flippers, 3 pop bumpers, 2 ramps.",
-      "imageFilename": "terminator-2-judgment-day.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
-      "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
-      "releaseDate": "1991-07-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-23",
-          "leftClubDate": "2026-04-07",
-          "pinballMapMachineId": 686
-        }
-      ]
-    },
-    {
-      "title": "300",
-      "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
-      "imageFilename": "300.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/300-top-score",
-      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
-      "releaseDate": "1975-08-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "pinballMapMachineId": 1387
-        }
-      ]
-    },
-    {
-      "title": "Xenon",
-      "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
-      "imageFilename": "xenon.png",
-      "releaseDate": "1979-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-06-11",
-          "leftClubDate": "2026-03-22",
-          "pinballMapMachineId": 726
-        }
-      ]
-    }
-  ],
-  "previousGames": [
-    {
-      "title": "Flight 2000",
-      "details": "1980 Stern Electronics solid state. Design by Harry Williams. 2 flippers, 2 pop bumpers, 5 drop targets, 3-ball multiball.",
-      "imageFilename": "flight-2000.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
-      "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
-      "releaseDate": "1980-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-09",
-          "leftClubDate": "2025-02-15",
-          "pinballMapMachineId": 937
-        }
-      ]
-    },
-    {
-      "title": "Space Shuttle",
-      "details": "1980 Williams solid state. Design by Barry Oursler and Joe Kaminkow. 2 flippers, 4 pop bumpers, 1 ramp, multiball.",
-      "imageFilename": "space-shuttle.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/space-shuttle",
-      "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle",
-      "releaseDate": "1980-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2260",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2019-09-05",
-          "pinballMapMachineId": 1068
-        }
-      ]
-    },
-    {
-      "title": "High Speed",
-      "details": "1986 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 ramp, standup banks.",
-      "imageFilename": "high-speed.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/high-speed",
-      "pinsideUrl": "https://pinside.com/pinball/machine/high-speed",
-      "releaseDate": "1986-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1176",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-04",
-          "leftClubDate": "2021-07-23",
-          "pinballMapMachineId": 672
-        }
-      ]
-    },
-    {
-      "title": "The Getaway: High Speed II",
-      "details": "1992 Williams DMD. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 2 ramps, supercharger.",
-      "imageFilename": "the-getaway-high-speed-ii.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-getaway-high-speed-ii",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii",
-      "releaseDate": "1992-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1000",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-04",
-          "leftClubDate": "2021-07-23",
-          "pinballMapMachineId": 660
-        }
-      ]
-    },
-    {
-      "title": "The Bally Game Show",
-      "details": "1990 Bally solid state. Design by Dan Langlois and Peter Perry. 2 flippers, 2 ramps, 2-ball multiball.",
-      "imageFilename": "the-bally-game-show.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-bally-game-show",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show",
-      "releaseDate": "1990-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=985",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2024-09-26",
-          "pinballMapMachineId": 760
-        }
-      ]
-    },
-    {
-      "title": "Metallica (Pro)",
-      "aka": ["Metallica"],
-      "details": "2013 Stern DMD. Design by John Borg. 2 flippers, 2 ramps, in-line drop targets.",
-      "imageFilename": "metallica-pro.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica",
-      "pinsideUrl": "https://pinside.com/pinball/machine/metallica",
-      "releaseDate": "2013-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6028",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "pinballMapMachineId": 1591,
-          "leftClubDate": "2023-12-29"
-        }
-      ]
-    },
-    {
-      "title": "KISS (Pro)",
-      "aka": ["Kiss"],
-      "details": "2015 Stern DMD. Designed by John Borg. 2 flippers, 2 ramps, 4 pop bumpers, spinning disk.",
-      "imageFilename": "kiss-pro.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss",
-      "pinsideUrl": "https://pinside.com/pinball/machine/kiss",
-      "releaseDate": "2015-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6265",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 2353
-        }
-      ]
+      ],
+      "atClub": false
     },
     {
       "title": "Rush (Premium)",
@@ -634,857 +367,91 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2024-06-24",
           "leftClubDate": "2024-08-29",
-          "pinballMapMachineId": 3432
+          "pinballMapMachineId": 3432,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-06-24",
+          "sortKeyLeft": "2024-08-29"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "PIN-BOT",
-      "details": "1986 Williams solid state. Design by Barry Oursler and Python Anghelo. 2 flippers, 5-drop bank, 3 kickout holes, 2-ball multiball.",
-      "imageFilename": "pin-bot.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/pinbot",
-      "pinsideUrl": "https://pinside.com/pinball/machine/pinbot",
-      "releaseDate": "1986-10-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1796",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-12",
-          "leftClubDate": "2021-07-23",
-          "pinballMapMachineId": 723
-        }
-      ]
-    },
-    {
-      "title": "Doodle Bug",
-      "details": "1971 Williams EM. Design by Norm Clark. 2 flippers, 5 pop bumpers, 5 standup targets.",
-      "imageFilename": "doodle-bug.jpg",
-      "pinsideUrl": "https://pinside.com/pinball/machine/doodle-bug",
-      "releaseDate": "1971-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=703",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/dipsy-doodle-doodle-bug-love-bug",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2023-01-22",
-          "pinballMapMachineId": 2367
-        }
-      ]
-    },
-    {
-      "title": "The Simpsons Pinball Party",
-      "details": "2003 Stern DMD. Designed by Keith P. Johnson and Joe Balcer. 5 flippers, 4 ramps, custom callouts from the TV cast.",
-      "imageFilename": "the-simpsons-pinball-party.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-simpsons-pinball-party",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party",
-      "releaseDate": "2003-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4674",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-04-22",
-          "leftClubDate": "2018-09-04",
-          "pinballMapMachineId": 682
-        }
-      ]
-    },
-    {
-      "title": "Lost World",
-      "details": "1977 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 2 saucers, spinner.",
-      "imageFilename": "lost-world.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/lost-world",
-      "pinsideUrl": "https://pinside.com/pinball/machine/lost-world",
-      "releaseDate": "1977-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1476",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-06",
-          "leftClubDate": "2019-09-05",
-          "pinballMapMachineId": 778
-        }
-      ]
-    },
-    {
-      "title": "Argosy",
-      "details": "1977 Williams EM. Design by Chris Otis. 2 flippers, 1 spinner, 2 pop bumpers, 1 saucer.",
-      "imageFilename": "argosy.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/argosy",
-      "pinsideUrl": "https://pinside.com/pinball/machine/argosy",
-      "releaseDate": "1977-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-06-11",
-          "leftClubDate": "2023-10-03",
-          "pinballMapMachineId": 1797
-        }
-      ]
-    },
-    {
-      "title": "The Lost World Jurassic Park",
-      "details": "1997 Sega DMD. Design by John Borg. 2 flippers, 2 ramps.",
-      "imageFilename": "the-lost-world-jurassic-park.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
-      "releaseDate": "1997-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Target Alpha",
-      "details": "1976 Gottlieb EM. Design by Ed Krynski. 4 flippers, 2 pop bumpers, 15 drop targets.",
-      "imageFilename": "target-alpha.png",
-      "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha",
-      "releaseDate": "1976-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2500",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-04",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 892
-        }
-      ]
-    },
-    {
-      "title": "Airborne",
-      "details": "1996 Capcom solid state. Design by Claude Fernandez. 2 flippers and many ramps.",
-      "imageFilename": "airborne.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/airborne",
-      "pinsideUrl": "https://pinside.com/pinball/machine/airborne",
-      "releaseDate": "1996-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3783",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-04",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 1159
-        }
-      ]
-    },
-    {
-      "title": "Hot Shot",
-      "details": "1973 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 1 pop bumper, 14 drop targets, saucer.",
-      "imageFilename": "hot-shot.png",
-      "pinsideUrl": "https://pinside.com/pinball/machine/hot-shot",
-      "releaseDate": "1973-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1247",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/big-shot-hot-shot-pro-pool",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2019-01-29",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 2315
-        }
-      ]
-    },
-    {
-      "title": "2001",
-      "details": "1971 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 20 drop targets.",
-      "imageFilename": "2001.png",
-      "releaseDate": "1971-01-01",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/2001-dimension-galaxie",
-      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-2001",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-16",
-          "leftClubDate": "2021-12-12",
-          "pinballMapMachineId": 1031
-        }
-      ]
-    },
-    {
-      "title": "Fun Land",
-      "details": "1968 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 spinners.",
-      "imageFilename": "fun-land.jpg",
-      "pinsideUrl": "https://pinside.com/pinball/machine/fun-land",
-      "releaseDate": "1968-05-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=973",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/fun-land-fun-park",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-06-11",
-          "leftClubDate": "2023-12-29",
-          "pinballMapMachineId": 830
-        }
-      ]
-    },
-    {
-      "title": "Major League",
-      "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp.",
-      "imageFilename": "major-league.png",
-      "releaseDate": "1963-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1526",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "The Lord of the Rings",
-      "aka": ["Lord of the Rings"],
-      "details": "2003 Stern DMD. Designed by George Gomez, Keith P. Johnson, and Chris Granner. 2 flippers, 3 ramps, 3 pop bumpers, One Ring toy.",
-      "imageFilename": "the-lord-of-the-rings.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings",
-      "pinsideUrl": "https://pinside.com/pinball/machine/lord-of-the-rings",
-      "releaseDate": "2003-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4858",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2025-02-26",
-          "pinballMapMachineId": 662
-        }
-      ]
-    },
-    {
-      "title": "The Hobbit (Smaug)",
-      "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.",
-      "imageFilename": "the-hobbit.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
-      "releaseDate": "2016-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6224",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Robocop",
-      "details": "1989 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, jump ramp, spinner, 3-ball multiball.",
-      "imageFilename": "robocop.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/robocop",
-      "pinsideUrl": "https://pinside.com/pinball/machine/robocop",
-      "releaseDate": "1989-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1976",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2019-01-29",
-          "pinballMapMachineId": 916
-        }
-      ]
-    },
-    {
-      "title": "Time Warp",
-      "details": "1979 Williams EM. Design by Barry Oursler. 2 banana flippers, 5 pop bumpers.",
-      "imageFilename": "time-warp.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/time-warp",
-      "pinsideUrl": "https://pinside.com/pinball/machine/time-warp",
-      "releaseDate": "1979-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2568",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Flash Gordon",
-      "details": "1981 Bally solid state. Design by Claude Fernandez. 3 flippers, 3 pop bumpers, in-line targets.",
-      "imageFilename": "flash-gordon.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/flash-gordon",
-      "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon",
-      "releaseDate": "1981-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=874",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2017-09-13",
-          "pinballMapMachineId": 727
-        }
-      ]
-    },
-    {
-      "title": "Ice Fever",
-      "details": "1985 Gottlieb solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, captive ball behind drop targets.",
-      "imageFilename": "ice-fever.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever",
-      "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever",
-      "releaseDate": "1985-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1260",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Star Trek",
-      "details": "1991 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3-ball multiball.",
-      "imageFilename": "star-trek.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/star-trek",
-      "pinsideUrl": "https://pinside.com/pinball/machine/star-trek",
-      "releaseDate": "1991-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2356",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "X-Men Wolverine LE",
-      "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.",
-      "imageFilename": "x-men-wolverine-le.png",
-      "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",
-      "releaseDate": "2012-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5824",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/x-men",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Roy Clark The Entertainer",
-      "details": "1977 Fascination solid state cocktail table. 2 flippers, 3 pop bumpers, 4 drop targets.",
-      "imageFilename": "roy-clark-the-entertainer.png",
-      "pinsideUrl": "https://pinside.com/pinball/machine/entertainer",
-      "releaseDate": "1977-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=785",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/take-five-circa-1933-the-entertainer",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Swords of Fury",
-      "details": "1988 Williams solid state. 4 flippers, no pop bumpers, mini-playfield, 5-bank drop targets.",
-      "imageFilename": "swords-of-fury.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/swords-of-fury",
-      "pinsideUrl": "https://pinside.com/pinball/machine/swords-of-fury",
-      "releaseDate": "1988-06-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2486",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Baywatch",
-      "details": "1995 Sega DMD. Design by Joe Kaminkow and Joe Balcer. 3 flippers plus shark flipper, 3 ramps, 5-ball multiball.",
-      "imageFilename": "baywatch.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch",
-      "pinsideUrl": "https://pinside.com/pinball/machine/baywatch",
-      "releaseDate": "1995-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2848",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "WHO dunnit",
-      "details": "1995 Williams DMD. Design by Dwight Sullivan and Barry Oursler. 2 flippers, 2 ramps.",
-      "imageFilename": "who-dunnit.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/who-dunnit",
-      "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit",
-      "releaseDate": "1995-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3685",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Congo",
-      "details": "1995 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, gorilla sub-playfield.",
-      "imageFilename": "congo.gif",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/congo",
-      "pinsideUrl": "https://pinside.com/pinball/machine/congo",
-      "releaseDate": "1995-11-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3780",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-11-29",
-          "leftClubDate": "2018-05-25",
-          "pinballMapMachineId": 715
-        }
-      ]
-    },
-    {
-      "title": "Time Machine",
-      "details": "1988 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3 ramps, chime box.",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine",
-      "pinsideUrl": "https://pinside.com/pinball/machine/time-machine",
-      "releaseDate": "1988-12-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2565",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Aztec",
-      "details": "1976 Williams EM. 2 flippers, 2 pop bumpers, 6 standup targets, spinner.",
-      "imageFilename": "aztec.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/aztec",
-      "pinsideUrl": "https://pinside.com/pinball/machine/aztec",
-      "releaseDate": "1976-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=119",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-10-31",
-          "leftClubDate": "2018-03-13",
-          "pinballMapMachineId": 823
-        }
-      ]
-    },
-    {
-      "title": "Street Fighter II",
-      "details": "1993 Gottlieb Premier solid state. 5 flippers, three-level playfield, bash car.",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii",
-      "pinsideUrl": "https://pinside.com/pinball/machine/street-fighter-ii",
-      "releaseDate": "1993-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2403",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Flash",
-      "details": "1979 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 spinner.",
-      "imageFilename": "flash.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/flash",
-      "pinsideUrl": "https://pinside.com/pinball/machine/flash",
-      "releaseDate": "1979-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=871",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Volley",
-      "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 15 drop targets.",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/volley",
-      "pinsideUrl": "https://pinside.com/pinball/machine/volley",
-      "releaseDate": "1976-08-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2743",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Genesis",
-      "details": "1993 Gottlieb Premier solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, 2 ramps.",
-      "imageFilename": "genesis.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/genesis",
-      "pinsideUrl": "https://pinside.com/pinball/machine/genesis",
-      "releaseDate": "1993-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=996",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Evil Knievel",
-      "aka": ["Evel Knievel"],
-      "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.",
-      "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
-      "releaseDate": "1976-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4499",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-09",
-          "leftClubDate": "2023-10-03",
-          "pinballMapMachineId": 783
-        }
-      ]
-    },
-    {
-      "title": "Strikes and Spares",
-      "details": "1978 Bally solid state. 2 flippers, 3 pop bumpers, 10 star rollover buttons.",
-      "imageFilename": "strikes-and-spares.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/strikes-and-spares",
-      "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares",
-      "releaseDate": "1978-06-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2406",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2017-10-31",
-          "pinballMapMachineId": 847
-        }
-      ]
-    },
-    {
-      "title": "Ship Ahoy",
-      "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 stand-up targets, spinner.",
-      "releaseDate": "1976-06-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/ship-ahoy",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2119",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/buccaneer-ship-ahoy-high-seas",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "The Flintstones",
-      "details": "1994 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, bowling alley toy.",
-      "imageFilename": "the-flintstones.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-flintstones",
-      "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones",
+      "title": "Freddy: A Nightmare on Elm Street",
+      "details": "1994 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-05.",
       "releaseDate": "1994-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=888",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2018-04-11",
-          "pinballMapMachineId": 690
+          "joinedClubDate": "2024-05-11",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 887,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-05-11",
+          "sortKeyLeft": "2024-09-05"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Judge Dredd",
-      "details": "1993 Williams DMD widebody. Design by John Trudeau. 4 flippers, 2 ramps, 6-ball multiball.",
-      "imageFilename": "judge-dredd.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/judge-dredd",
-      "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd",
-      "releaseDate": "1993-09-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1322",
+      "title": "High Hand",
+      "details": "1973 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-23.",
+      "releaseDate": "1973-01-01",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2018-03-13",
-          "pinballMapMachineId": 815
+          "joinedClubDate": "2024-05-11",
+          "leftClubDate": "2024-09-23",
+          "pinballMapMachineId": 795,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-05-11",
+          "sortKeyLeft": "2024-09-23"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Firepower",
-      "details": "1980 Williams solid state. Design by Steve Ritchie. 2 flippers, 4 pop bumpers, 3-ball multiball.",
-      "imageFilename": "firepower.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/firepower",
-      "pinsideUrl": "https://pinside.com/pinball/machine/firepower",
-      "releaseDate": "1980-02-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=856",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908
-        }
-      ]
-    },
-    {
-      "title": "Total Nuclear Annihilation",
-      "details": "2017 Spooky Pinball. Designed by Scott Danesi. 3 flippers, 1 pop bumper, in-line drop targets.",
-      "imageFilename": "total-nuclear-annihilation.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/total-nuclear-annihilation",
-      "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation",
-      "releaseDate": "2017-07-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6444",
+      "title": "Iron Maiden: Legacy of the Beast (Pro)",
+      "aka": [
+        "Iron Maiden: Legacy of the Beast"
+      ],
+      "details": "2018 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
+      "releaseDate": "2018-01-01",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-03-13",
-          "leftClubDate": "2018-05-08",
-          "pinballMapMachineId": 2866
+          "joinedClubDate": "2024-05-02",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 2923,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-05-02",
+          "sortKeyLeft": "2024-09-05"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Cleopatra",
-      "details": "1977 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 5 drop targets, 2 saucers.",
-      "imageFilename": "cleopatra.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/cleopatra",
-      "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra",
-      "releaseDate": "1977-12-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=532",
+      "title": "Led Zeppelin (Pro)",
+      "aka": [
+        "Led Zeppelin"
+      ],
+      "details": "2020 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
+      "releaseDate": "2020-01-01",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-04-03",
-          "leftClubDate": "2018-09-04",
-          "pinballMapMachineId": 1455
+          "joinedClubDate": "2024-04-30",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 3279,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-04-30",
+          "sortKeyLeft": "2024-09-05"
         }
-      ]
-    },
-    {
-      "title": "F-14 Tomcat",
-      "details": "1987 Williams solid state. Design by Steve Ritchie. 4 flippers, 1 pop bumper, 4-ball multiball.",
-      "imageFilename": "f-14-tomcat.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat",
-      "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
-      "releaseDate": "1987-03-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=804",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 751
-        }
-      ]
-    },
-    {
-      "title": "Old Chicago",
-      "details": "1976 Bally EM. Design by Greg Kmiec. 2 flippers, 5 pop bumpers, standup targets, drop targets, spinner.",
-      "imageFilename": "old-chicago.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/old-chicago",
-      "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago",
-      "releaseDate": "1976-04-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-12",
-          "leftClubDate": "2019-01-29",
-          "pinballMapMachineId": 1331
-        }
-      ]
-    },
-    {
-      "title": "Royal Flush",
-      "details": "1976 Gottlieb. Former club machine; removed from the lineup on 2026-03-22.",
-      "releaseDate": "1976-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/royal-flush",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2035",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/royal-flush",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-12-31",
-          "leftClubDate": "2026-03-22",
-          "pinballMapMachineId": 822
-        }
-      ]
-    },
-    {
-      "title": "Play Boy",
-      "details": "1947 Chicago Coin flipperless gambling machine with digital audio mods. A fun pre-flipper oddball with 10 passive bumpers, 4 kick-out holes, a time clock, projected replays, and 3- or 5-ball play. One bell for sound; art by Roy Parker.",
-      "imageFilename": "play-boy.png",
-      "releaseDate": "1947-05-26",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1824",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-10-29",
-          "leftClubDate": "2026-04-04"
-        }
-      ]
-    },
-    {
-      "title": "Joust",
-      "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.",
-      "releaseDate": "1969-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/joust",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1317",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/joust",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-06-11",
-          "leftClubDate": "2025-12-31",
-          "pinballMapMachineId": 2490
-        }
-      ]
-    },
-    {
-      "title": "Grand Prix",
-      "details": "1976 Williams EM. Design by Steve Kordek. 2 flippers, 2 spinners, 2 pop bumpers.",
-      "imageFilename": "grand-prix.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/grand-prix",
-      "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix",
-      "releaseDate": "1976-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1072",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-11-29",
-          "leftClubDate": "2025-11-04",
-          "pinballMapMachineId": 793
-        }
-      ]
-    },
-    {
-      "title": "Crescendo",
-      "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.",
-      "releaseDate": "1970-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/crescendo",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=590",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2022-01-09",
-          "leftClubDate": "2025-11-04",
-          "pinballMapMachineId": 1969
-        }
-      ]
-    },
-    {
-      "title": "World Cup Soccer",
-      "details": "1994 Williams DMD. Design by John Popadiuk and Larry DeMar. 2 flippers, 2 ramps, spinning soccer ball, goalie target.",
-      "imageFilename": "world-cup-soccer.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/world-cup-soccer",
-      "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer",
-      "releaseDate": "1994-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2811",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2025-10-29",
-          "pinballMapMachineId": 707
-        }
-      ]
-    },
-    {
-      "title": "Solar City",
-      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.",
-      "releaseDate": "1977-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/solar-city",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2022-01-09",
-          "leftClubDate": "2025-10-28",
-          "pinballMapMachineId": 757
-        }
-      ]
-    },
-    {
-      "title": "The Amazing Spider-Man",
-      "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.",
-      "releaseDate": "1980-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-04-18",
-          "leftClubDate": "2025-09-08",
-          "pinballMapMachineId": 1299
-        }
-      ]
-    },
-    {
-      "title": "Kings of Steel",
-      "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.",
-      "releaseDate": "1984-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/kings-of-steel",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-09",
-          "leftClubDate": "2025-07-18",
-          "pinballMapMachineId": 2283
-        }
-      ]
-    },
-    {
-      "title": "Dogies",
-      "details": "1968 Bally. Former club machine; removed from the lineup on 2025-07-18.",
-      "releaseDate": "1968-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/dogies",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=696",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/dogies",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2025-04-13",
-          "leftClubDate": "2025-07-18",
-          "pinballMapMachineId": 3292
-        }
-      ]
+      ],
+      "atClub": false
     },
     {
       "title": "Rock",
@@ -1499,9 +466,486 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2024-04-21",
           "leftClubDate": "2025-04-30",
-          "pinballMapMachineId": 2197
+          "pinballMapMachineId": 2197,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-04-21",
+          "sortKeyLeft": "2025-04-30"
         }
-      ]
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Disco Fever",
+      "details": "1978 Williams. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "1978-08-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/disco-fever",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=686",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/disco-fever",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1091,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-04-18",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Rollergames",
+      "details": "1990 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-05-02.",
+      "releaseDate": "1990-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2024-05-02",
+          "pinballMapMachineId": 746,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-04-18",
+          "sortKeyLeft": "2024-05-02"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Rush (LE)",
+      "details": "2022 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-05-02.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2024-05-02",
+          "pinballMapMachineId": 3433,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-04-18",
+          "sortKeyLeft": "2024-05-02"
+        }
+      ],
+      "releaseDate": "2022-01-01",
+      "atClub": false
+    },
+    {
+      "title": "The Amazing Spider-Man",
+      "details": "1980 Gottlieb. Former club machine; removed from the lineup on 2025-09-08.",
+      "releaseDate": "1980-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/amazing-spider-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-04-18",
+          "leftClubDate": "2025-09-08",
+          "pinballMapMachineId": 1299,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-04-18",
+          "sortKeyLeft": "2025-09-08"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Jurassic Park (Pro)",
+      "details": "2019 Stern. Former club machine; removed from the lineup on 2026-03-30.",
+      "imageFilename": "jurassic-park-pro.jpg",
+      "releaseDate": "2019-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/jurassic-park-pro",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6573",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jurassic-park",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-03-24",
+          "leftClubDate": "2026-03-30",
+          "pinballMapMachineId": 3167,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-03-24",
+          "sortKeyLeft": "2026-03-30"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Pool Sharks",
+      "details": "1990 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-03-24. Removed from the map on 2024-04-18.",
+      "releaseDate": "1990-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-03-24",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 780,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-03-24",
+          "sortKeyLeft": "2024-04-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Lectronamo",
+      "details": "1978 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-19. Removed from the map on 2024-09-05.",
+      "releaseDate": "1978-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-01-19",
+          "leftClubDate": "2024-09-05",
+          "pinballMapMachineId": 2895,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-01-19",
+          "sortKeyLeft": "2024-09-05"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Paragon",
+      "details": "1979 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-04-18.",
+      "releaseDate": "1979-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-01-18",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 897,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-01-18",
+          "sortKeyLeft": "2024-04-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Rolling Stones",
+      "details": "2011 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-01-30.",
+      "releaseDate": "2011-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2024-01-18",
+          "leftClubDate": "2024-01-30",
+          "pinballMapMachineId": 1089,
+          "dateUnknown": false,
+          "sortKeyJoined": "2024-01-18",
+          "sortKeyLeft": "2024-01-30"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Diamond Lady",
+      "details": "1988 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-10-03. Removed from the map on 2024-01-18.",
+      "releaseDate": "1988-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-10-03",
+          "leftClubDate": "2024-01-18",
+          "pinballMapMachineId": 2349,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-10-03",
+          "sortKeyLeft": "2024-01-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Starship Troopers",
+      "details": "1997 Sega. Current club machine.",
+      "imageFilename": "starship-troopers.jpg",
+      "releaseDate": "1997-12-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/starship-troopers",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4341",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/starship-troopers",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-10-03",
+          "pinballMapMachineId": 883,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-10-03",
+          "sortKeyLeft": "9999-12-31"
+        }
+      ],
+      "atClub": true
+    },
+    {
+      "title": "Earthshaker",
+      "details": "1989 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-07-13. Removed from the map on 2024-04-18.",
+      "releaseDate": "1989-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-07-13",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 702,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-07-13",
+          "sortKeyLeft": "2024-04-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Lightning Ball",
+      "details": "1959 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-16. Removed from the map on 2023-12-29.",
+      "releaseDate": "1959-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-16",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 2362,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-01-16",
+          "sortKeyLeft": "2023-12-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Evel Knievel",
+      "details": "1977 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-09. Removed from the map on 2023-10-03.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2023-10-03",
+          "pinballMapMachineId": 783,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-01-09",
+          "sortKeyLeft": "2023-10-03"
+        }
+      ],
+      "releaseDate": "1977-01-01",
+      "atClub": false
+    },
+    {
+      "title": "Evil Knievel",
+      "aka": [
+        "Evel Knievel"
+      ],
+      "details": "1976 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 5-bank drop targets, 2 spinners.",
+      "pinsideUrl": "https://pinside.com/pinball/machine/evel-knievel",
+      "releaseDate": "1976-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4499",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2023-10-03",
+          "pinballMapMachineId": 783,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-01-09",
+          "sortKeyLeft": "2023-10-03"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Flight 2000",
+      "details": "1980 Stern Electronics solid state. Design by Harry Williams. 2 flippers, 2 pop bumpers, 5 drop targets, 3-ball multiball.",
+      "imageFilename": "flight-2000.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flight-2000",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flight-2000",
+      "releaseDate": "1980-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=887",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2025-02-15",
+          "pinballMapMachineId": 937,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-01-09",
+          "sortKeyLeft": "2025-02-15"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Kings of Steel",
+      "details": "1984 Bally. Former club machine; removed from the lineup on 2025-07-18.",
+      "releaseDate": "1984-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/kings-of-steel",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1382",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/kings-of-steel",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2025-07-18",
+          "pinballMapMachineId": 2283,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-01-09",
+          "sortKeyLeft": "2025-07-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Mr. & Mrs. Pac-Man",
+      "details": "1982 Bally. Current club machine.",
+      "imageFilename": "mr-and-mrs-pac-man.jpg",
+      "releaseDate": "1982-05-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/mr-and-mrs-pac-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1639",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/mr-mrs-pac-man",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2023-01-09",
+          "leftClubDate": "2026-04-21",
+          "pinballMapMachineId": 1181,
+          "dateUnknown": false,
+          "sortKeyJoined": "2023-01-09",
+          "sortKeyLeft": "2026-04-21"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Avengers: Infinity Quest (Pro)",
+      "details": "2020 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "imageFilename": "avengers-infinity-quest-pro.png",
+      "releaseDate": "2020-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/avengers-infinity-quest",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6754",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/avengers-infinity-quest",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-05-07",
+          "pinballMapMachineId": 3267,
+          "leftClubDate": "2026-04-04",
+          "dateUnknown": false,
+          "sortKeyJoined": "2022-05-07",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Monte Carlo",
+      "details": "1987 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2022-05-07. Removed from the map on 2024-05-11.",
+      "releaseDate": "1987-01-01",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-05-07",
+          "leftClubDate": "2024-05-11",
+          "pinballMapMachineId": 1463,
+          "dateUnknown": false,
+          "sortKeyJoined": "2022-05-07",
+          "sortKeyLeft": "2024-05-11"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Crescendo",
+      "details": "1970 Gottlieb. Former club machine; removed from the lineup on 2025-11-04.",
+      "releaseDate": "1970-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/crescendo",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=590",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-01-09",
+          "leftClubDate": "2025-11-04",
+          "pinballMapMachineId": 1969,
+          "dateUnknown": false,
+          "sortKeyJoined": "2022-01-09",
+          "sortKeyLeft": "2025-11-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Solar City",
+      "details": "1977 Gottlieb. Former club machine; removed from the lineup on 2025-10-28.",
+      "releaseDate": "1977-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/solar-city",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2237",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-01-09",
+          "leftClubDate": "2025-10-28",
+          "pinballMapMachineId": 757,
+          "dateUnknown": false,
+          "sortKeyJoined": "2022-01-09",
+          "sortKeyLeft": "2025-10-28"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Spider-Man",
+      "details": "2007 Stern. Former club machine; removed from the lineup on 2026-04-04.",
+      "releaseDate": "2007-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/spider-man",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5237",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2022-01-09",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 663,
+          "dateUnknown": false,
+          "sortKeyJoined": "2022-01-09",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Robo-War",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-07-23. Removed from the map on 2023-01-22.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-07-23",
+          "leftClubDate": "2023-01-22",
+          "pinballMapMachineId": 2513,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-07-23",
+          "sortKeyLeft": "2023-01-22"
+        }
+      ],
+      "atClub": false
     },
     {
       "title": "Amigo",
@@ -1516,152 +960,13 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2021-06-11",
           "leftClubDate": "2025-04-30",
-          "pinballMapMachineId": 2805
+          "pinballMapMachineId": 2805,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2025-04-30"
         }
-      ]
-    },
-    {
-      "title": "Last Action Hero",
-      "details": "1993 Data East solid state. Design by Tim Seckel, Joe Kaminkow, Ed Cebula, and John Borg. 2 flippers, 3 pop bumpers, 1 ramp, 6-ball multiball.",
-      "imageFilename": "last-action-hero.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/last-action-hero",
-      "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero",
-      "releaseDate": "1993-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1416",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2019-01-29",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 964
-        }
-      ]
-    },
-    {
-      "title": "World Poker Tour",
-      "details": "2006 Stern DMD. Designed by Steve Ritchie and Keith P. Johnson. 4 flippers, 3 pop bumpers, 16 drop targets, ace hole.",
-      "imageFilename": "world-poker-tour.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/world-poker-tour",
-      "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour",
-      "releaseDate": "2006-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5134",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2024-04-18",
-          "pinballMapMachineId": 699
-        }
-      ]
-    },
-    {
-      "title": "NASCAR",
-      "details": "2005 Stern DMD. Designed by Pat Lawlor. 2 flippers, 2 ramps, 3 pop bumpers, motor speedway.",
-      "imageFilename": "nascar.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/nascar",
-      "pinsideUrl": "https://pinside.com/pinball/machine/nascar",
-      "releaseDate": "2005-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5093",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 705
-        }
-      ]
-    },
-    {
-      "title": "Johnny Mnemonic",
-      "details": "1995 Williams DMD. Design by George Gomez. 2 flippers, 2 ramps, magnetic glove toy.",
-      "imageFilename": "johnny-mnemonic.jpg",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/johnny-mnemonic",
-      "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic",
-      "releaseDate": "1995-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3683",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2023-12-29",
-          "pinballMapMachineId": 646
-        }
-      ]
-    },
-    {
-      "title": "Sorcerer",
-      "details": "1985 Williams solid state. Design by Mark Ritchie. 2 flippers, 3 pop bumpers, 1 ramp, 2-ball multiball.",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer",
-      "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer",
-      "releaseDate": "1985-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2242",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-08",
-          "leftClubDate": "2019-09-05",
-          "pinballMapMachineId": 966
-        }
-      ]
-    },
-    {
-      "title": "Count-Down",
-      "details": "1979 Gottlieb solid state. Design by Ed Krynski. 4 flippers, 1 pop bumper, drop target banks.",
-      "imageFilename": "count-down.jpg",
-      "releaseDate": "1979-01-01",
-      "pinsideUrl": "https://pinside.com/pinball/machine/count-down",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=573",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/count-down-space-walk",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2017-09-12",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 835
-        }
-      ]
-    },
-    {
-      "title": "Genie",
-      "details": "1979 Gottlieb solid state. Design by Ed Krynski. 5 flippers, 3 pop bumpers, 11 drop targets.",
-      "imageFilename": "genie.png",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/genie",
-      "pinsideUrl": "https://pinside.com/pinball/machine/genie",
-      "releaseDate": "1979-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=997",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2019-01-29",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 870
-        }
-      ]
-    },
-    {
-      "title": "Jacks Open",
-      "details": "1977 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 9 drop targets, no slingshots.",
-      "imageFilename": "jacks-open.png",
-      "pinsideUrl": "https://pinside.com/pinball/machine/jacks-open",
-      "releaseDate": "1977-01-01",
-      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1281",
-      "kineticistUrl": "https://www.kineticist.com/games/pinball/jacks-open-lucky-hand",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-06-11",
-          "leftClubDate": "2024-12-31",
-          "pinballMapMachineId": 2840
-        }
-      ]
+      ],
+      "atClub": false
     },
     {
       "title": "Apollo",
@@ -1677,262 +982,13 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2021-06-11",
           "leftClubDate": "2023-12-29",
-          "pinballMapMachineId": 2515
+          "pinballMapMachineId": 2515,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2023-12-29"
         }
-      ]
-    },
-    {
-      "title": "Barb Wire",
-      "details": "1996 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-11-30. Removed from the map on 2025-01-17.",
-      "releaseDate": "1996-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-11-30",
-          "leftClubDate": "2025-01-17",
-          "pinballMapMachineId": 777
-        }
-      ]
-    },
-    {
-      "title": "Guns N' Roses (SE)",
-      "aka": ["Guns N' Roses"],
-      "details": "2020 Jersey Jack. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-20. Removed from the map on 2024-10-13.",
-      "releaseDate": "2020-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-09-20",
-          "leftClubDate": "2024-10-13",
-          "pinballMapMachineId": 3272
-        }
-      ]
-    },
-    {
-      "title": "High Hand",
-      "details": "1973 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-23.",
-      "releaseDate": "1973-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-05-11",
-          "leftClubDate": "2024-09-23",
-          "pinballMapMachineId": 795
-        }
-      ]
-    },
-    {
-      "title": "Oktoberfest",
-      "details": "2018 American. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-09-05. Removed from the map on 2024-09-17.",
-      "releaseDate": "2018-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-09-05",
-          "leftClubDate": "2024-09-17",
-          "pinballMapMachineId": 3079
-        }
-      ]
-    },
-    {
-      "title": "Led Zeppelin (Pro)",
-      "aka": ["Led Zeppelin"],
-      "details": "2020 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-30. Removed from the map on 2024-09-05.",
-      "releaseDate": "2020-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-04-30",
-          "leftClubDate": "2024-09-05",
-          "pinballMapMachineId": 3279
-        }
-      ]
-    },
-    {
-      "title": "Lectronamo",
-      "details": "1978 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-19. Removed from the map on 2024-09-05.",
-      "releaseDate": "1978-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-01-19",
-          "leftClubDate": "2024-09-05",
-          "pinballMapMachineId": 2895
-        }
-      ]
-    },
-    {
-      "title": "Iron Maiden: Legacy of the Beast (Pro)",
-      "aka": ["Iron Maiden: Legacy of the Beast"],
-      "details": "2018 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-02. Removed from the map on 2024-09-05.",
-      "releaseDate": "2018-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-05-02",
-          "leftClubDate": "2024-09-05",
-          "pinballMapMachineId": 2923
-        }
-      ]
-    },
-    {
-      "title": "Freddy: A Nightmare on Elm Street",
-      "details": "1994 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-05-11. Removed from the map on 2024-09-05.",
-      "releaseDate": "1994-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-05-11",
-          "leftClubDate": "2024-09-05",
-          "pinballMapMachineId": 887
-        }
-      ]
-    },
-    {
-      "title": "Monte Carlo",
-      "details": "1987 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2022-05-07. Removed from the map on 2024-05-11.",
-      "releaseDate": "1987-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2022-05-07",
-          "leftClubDate": "2024-05-11",
-          "pinballMapMachineId": 1463
-        }
-      ]
-    },
-    {
-      "title": "Rollergames",
-      "details": "1990 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-05-02.",
-      "releaseDate": "1990-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-04-18",
-          "leftClubDate": "2024-05-02",
-          "pinballMapMachineId": 746
-        }
-      ]
-    },
-    {
-      "title": "Pool Sharks",
-      "details": "1990 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-03-24. Removed from the map on 2024-04-18.",
-      "releaseDate": "1990-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-03-24",
-          "leftClubDate": "2024-04-18",
-          "pinballMapMachineId": 780
-        }
-      ]
-    },
-    {
-      "title": "Paragon",
-      "details": "1979 Bally. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-04-18.",
-      "releaseDate": "1979-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-01-18",
-          "leftClubDate": "2024-04-18",
-          "pinballMapMachineId": 897
-        }
-      ]
-    },
-    {
-      "title": "Earthshaker",
-      "details": "1989 Williams. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-07-13. Removed from the map on 2024-04-18.",
-      "releaseDate": "1989-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-07-13",
-          "leftClubDate": "2024-04-18",
-          "pinballMapMachineId": 702
-        }
-      ]
-    },
-    {
-      "title": "The Rolling Stones",
-      "details": "2011 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-01-18. Removed from the map on 2024-01-30.",
-      "releaseDate": "2011-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2024-01-18",
-          "leftClubDate": "2024-01-30",
-          "pinballMapMachineId": 1089
-        }
-      ]
-    },
-    {
-      "title": "Diamond Lady",
-      "details": "1988 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-10-03. Removed from the map on 2024-01-18.",
-      "releaseDate": "1988-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-10-03",
-          "leftClubDate": "2024-01-18",
-          "pinballMapMachineId": 2349
-        }
-      ]
-    },
-    {
-      "title": "Lightning Ball",
-      "details": "1959 Gottlieb. From Pinball Map location activity (not on our site list before). First listed on the map on 2023-01-16. Removed from the map on 2023-12-29.",
-      "releaseDate": "1959-01-01",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2023-01-16",
-          "leftClubDate": "2023-12-29",
-          "pinballMapMachineId": 2362
-        }
-      ]
-    },
-    {
-      "title": "Robo-War",
-      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-07-23. Removed from the map on 2023-01-22.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2021-07-23",
-          "leftClubDate": "2023-01-22",
-          "pinballMapMachineId": 2513
-        }
-      ]
-    },
-    {
-      "title": "Torpedo Alley",
-      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-04. Removed from the map on 2022-05-07.",
-      "locationStints": [
-        {
-          "address": "134 Haines Street, Nashua, NH",
-          "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-04",
-          "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 2647
-        }
-      ]
+      ],
+      "atClub": false
     },
     {
       "title": "Aquarius",
@@ -1943,35 +999,164 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2021-06-11",
           "leftClubDate": "2022-05-07",
-          "pinballMapMachineId": 1962
+          "pinballMapMachineId": 1962,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2022-05-07"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Time Fantasy",
-      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-06. Removed from the map on 2019-09-05.",
+      "title": "Argosy",
+      "details": "1977 Williams EM. Design by Chris Otis. 2 flippers, 1 spinner, 2 pop bumpers, 1 saucer.",
+      "imageFilename": "argosy.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/argosy",
+      "pinsideUrl": "https://pinside.com/pinball/machine/argosy",
+      "releaseDate": "1977-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=84",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2018-09-06",
-          "leftClubDate": "2019-09-05",
-          "pinballMapMachineId": 2597
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2023-10-03",
+          "pinballMapMachineId": 1797,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2023-10-03"
         }
-      ]
+      ],
+      "atClub": false
     },
     {
-      "title": "Lucky Seven (SS)",
-      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2019-01-29. Removed from the map on 2019-09-05.",
+      "title": "Black Pyramid",
+      "details": "1984 Bally. Current club machine.",
+      "imageFilename": "black-pyramid.png",
+      "releaseDate": "1984-07-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/black-pyramid",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=312",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-pyramid",
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
           "pinballMapLocationId": 8908,
-          "joinedClubDate": "2019-01-29",
-          "leftClubDate": "2019-09-05",
-          "pinballMapMachineId": 2399
+          "joinedClubDate": "2021-06-11",
+          "pinballMapMachineId": 1096,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "9999-12-31"
         }
-      ]
+      ],
+      "atClub": true
+    },
+    {
+      "title": "Fun Land",
+      "details": "1968 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 spinners.",
+      "imageFilename": "fun-land.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/fun-land",
+      "releaseDate": "1968-05-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=973",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/fun-land-fun-park",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 830,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2023-12-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Jacks Open",
+      "details": "1977 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 9 drop targets, no slingshots.",
+      "imageFilename": "jacks-open.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/jacks-open",
+      "releaseDate": "1977-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1281",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/jacks-open-lucky-hand",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2024-12-31",
+          "pinballMapMachineId": 2840,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2024-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Joust",
+      "details": "1969 Bally. Former club machine; removed from the lineup on 2025-12-31.",
+      "releaseDate": "1969-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/joust",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1317",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/joust",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2025-12-31",
+          "pinballMapMachineId": 2490,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2025-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Xenon",
+      "details": "1979 Bally. Former club machine; removed from the lineup on 2026-03-22.",
+      "imageFilename": "xenon.png",
+      "releaseDate": "1979-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/xenon",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2821",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/xenon",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2021-06-11",
+          "leftClubDate": "2026-03-22",
+          "pinballMapMachineId": 726,
+          "dateUnknown": false,
+          "sortKeyJoined": "2021-06-11",
+          "sortKeyLeft": "2026-03-22"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Alien Poker",
+      "details": "1980 Williams. Current club machine.",
+      "imageFilename": "alien-poker.jpg",
+      "releaseDate": "1980-10-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/alien-poker",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=48",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/alien-poker",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2020-03-01",
+          "pinballMapMachineId": 878,
+          "dateUnknown": false,
+          "sortKeyJoined": "2020-03-01",
+          "sortKeyLeft": "9999-12-31"
+        }
+      ],
+      "atClub": true
     },
     {
       "title": "Black Knight",
@@ -1982,9 +1167,283 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2019-01-29",
           "leftClubDate": "2019-09-05",
-          "pinballMapMachineId": 1055
+          "pinballMapMachineId": 1055,
+          "dateUnknown": false,
+          "sortKeyJoined": "2019-01-29",
+          "sortKeyLeft": "2019-09-05"
         }
-      ]
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Genie",
+      "details": "1979 Gottlieb solid state. Design by Ed Krynski. 5 flippers, 3 pop bumpers, 11 drop targets.",
+      "imageFilename": "genie.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/genie",
+      "pinsideUrl": "https://pinside.com/pinball/machine/genie",
+      "releaseDate": "1979-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=997",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 870,
+          "dateUnknown": false,
+          "sortKeyJoined": "2019-01-29",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Hot Shot",
+      "details": "1973 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 1 pop bumper, 14 drop targets, saucer.",
+      "imageFilename": "hot-shot.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hot-shot",
+      "releaseDate": "1973-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1247",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/big-shot-hot-shot-pro-pool",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2315,
+          "dateUnknown": false,
+          "sortKeyJoined": "2019-01-29",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Last Action Hero",
+      "details": "1993 Data East solid state. Design by Tim Seckel, Joe Kaminkow, Ed Cebula, and John Borg. 2 flippers, 3 pop bumpers, 1 ramp, 6-ball multiball.",
+      "imageFilename": "last-action-hero.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/last-action-hero",
+      "pinsideUrl": "https://pinside.com/pinball/machine/last-action-hero",
+      "releaseDate": "1993-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1416",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 964,
+          "dateUnknown": false,
+          "sortKeyJoined": "2019-01-29",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Lucky Seven (SS)",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2019-01-29. Removed from the map on 2019-09-05.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2019-01-29",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 2399,
+          "dateUnknown": false,
+          "sortKeyJoined": "2019-01-29",
+          "sortKeyLeft": "2019-09-05"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Terminator 2: Judgment Day",
+      "details": "1991 Williams DMD. Design by Steve Ritchie. 2 flippers, 3 pop bumpers, 2 ramps.",
+      "imageFilename": "terminator-2-judgment-day.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/terminator-2-judgment-day",
+      "pinsideUrl": "https://pinside.com/pinball/machine/terminator-2-judgment-day",
+      "releaseDate": "1991-07-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2524",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-23",
+          "leftClubDate": "2026-04-07",
+          "pinballMapMachineId": 686,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-23",
+          "sortKeyLeft": "2026-04-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "2001",
+      "details": "1971 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 20 drop targets.",
+      "imageFilename": "2001.png",
+      "releaseDate": "1971-01-01",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/2001-dimension-galaxie",
+      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-2001",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2697",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-16",
+          "leftClubDate": "2021-12-12",
+          "pinballMapMachineId": 1031,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-16",
+          "sortKeyLeft": "2021-12-12"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Lost World",
+      "details": "1977 Bally solid state. Design by Gary Gayton. 2 flippers, 3 pop bumpers, 2 saucers, spinner.",
+      "imageFilename": "lost-world.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/lost-world",
+      "pinsideUrl": "https://pinside.com/pinball/machine/lost-world",
+      "releaseDate": "1977-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1476",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-06",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 778,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-06",
+          "sortKeyLeft": "2019-09-05"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Time Fantasy",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-06. Removed from the map on 2019-09-05.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-06",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 2597,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-06",
+          "sortKeyLeft": "2019-09-05"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Airborne",
+      "details": "1996 Capcom solid state. Design by Claude Fernandez. 2 flippers and many ramps.",
+      "imageFilename": "airborne.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/airborne",
+      "pinsideUrl": "https://pinside.com/pinball/machine/airborne",
+      "releaseDate": "1996-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3783",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 1159,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-04",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "High Speed",
+      "details": "1986 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 ramp, standup banks.",
+      "imageFilename": "high-speed.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/high-speed",
+      "pinsideUrl": "https://pinside.com/pinball/machine/high-speed",
+      "releaseDate": "1986-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1176",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2021-07-23",
+          "pinballMapMachineId": 672,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-04",
+          "sortKeyLeft": "2021-07-23"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Target Alpha",
+      "details": "1976 Gottlieb EM. Design by Ed Krynski. 4 flippers, 2 pop bumpers, 15 drop targets.",
+      "imageFilename": "target-alpha.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/target-alpha",
+      "releaseDate": "1976-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2500",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 892,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-04",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Getaway: High Speed II",
+      "details": "1992 Williams DMD. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 2 ramps, supercharger.",
+      "imageFilename": "the-getaway-high-speed-ii.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-getaway-high-speed-ii",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-getaway-high-speed-ii",
+      "releaseDate": "1992-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1000",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2021-07-23",
+          "pinballMapMachineId": 660,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-04",
+          "sortKeyLeft": "2021-07-23"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Torpedo Alley",
+      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2018-09-04. Removed from the map on 2022-05-07.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-09-04",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2647,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-09-04",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
     },
     {
       "title": "Space Invaders",
@@ -1995,9 +1454,1100 @@
           "pinballMapLocationId": 8908,
           "joinedClubDate": "2018-05-08",
           "leftClubDate": "2018-09-04",
-          "pinballMapMachineId": 908
+          "pinballMapMachineId": 908,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-05-08",
+          "sortKeyLeft": "2018-09-04"
         }
-      ]
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Simpsons Pinball Party",
+      "details": "2003 Stern DMD. Designed by Keith P. Johnson and Joe Balcer. 5 flippers, 4 ramps, custom callouts from the TV cast.",
+      "imageFilename": "the-simpsons-pinball-party.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-simpsons-pinball-party",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-simpsons-pinball-party",
+      "releaseDate": "2003-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4674",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-04-22",
+          "leftClubDate": "2018-09-04",
+          "pinballMapMachineId": 682,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-04-22",
+          "sortKeyLeft": "2018-09-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Cleopatra",
+      "details": "1977 Gottlieb solid state. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 5 drop targets, 2 saucers.",
+      "imageFilename": "cleopatra.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/cleopatra",
+      "pinsideUrl": "https://pinside.com/pinball/machine/cleopatra",
+      "releaseDate": "1977-12-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=532",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-04-03",
+          "leftClubDate": "2018-09-04",
+          "pinballMapMachineId": 1455,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-04-03",
+          "sortKeyLeft": "2018-09-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Total Nuclear Annihilation",
+      "details": "2017 Spooky Pinball. Designed by Scott Danesi. 3 flippers, 1 pop bumper, in-line drop targets.",
+      "imageFilename": "total-nuclear-annihilation.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/total-nuclear-annihilation",
+      "pinsideUrl": "https://pinside.com/pinball/machine/total-nuclear-annihilation",
+      "releaseDate": "2017-07-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6444",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2018-03-13",
+          "leftClubDate": "2018-05-08",
+          "pinballMapMachineId": 2866,
+          "dateUnknown": false,
+          "sortKeyJoined": "2018-03-13",
+          "sortKeyLeft": "2018-05-08"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Black Jack",
+      "details": "1977 Bally. Current club machine.",
+      "imageFilename": "black-jack.jpg",
+      "releaseDate": "1977-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/black-jack",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4498",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/black-jack",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-12-06",
+          "leftClubDate": "2026-04-21",
+          "pinballMapMachineId": 833,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-12-06",
+          "sortKeyLeft": "2026-04-21"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Hokus Pokus",
+      "details": "1975 Bally. Current club machine.",
+      "imageFilename": "hokus-pokus.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/hokus-pokus",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hokus-pokus",
+      "releaseDate": "1975-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1206",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-12-06",
+          "pinballMapMachineId": 794,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-12-06",
+          "sortKeyLeft": "9999-12-31"
+        }
+      ],
+      "atClub": true
+    },
+    {
+      "title": "Congo",
+      "details": "1995 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, gorilla sub-playfield.",
+      "imageFilename": "congo.gif",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/congo",
+      "pinsideUrl": "https://pinside.com/pinball/machine/congo",
+      "releaseDate": "1995-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3780",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-11-29",
+          "leftClubDate": "2018-05-25",
+          "pinballMapMachineId": 715,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-11-29",
+          "sortKeyLeft": "2018-05-25"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Grand Prix",
+      "details": "1976 Williams EM. Design by Steve Kordek. 2 flippers, 2 spinners, 2 pop bumpers.",
+      "imageFilename": "grand-prix.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/grand-prix",
+      "pinsideUrl": "https://pinside.com/pinball/machine/grand-prix",
+      "releaseDate": "1976-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1072",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-11-29",
+          "leftClubDate": "2025-11-04",
+          "pinballMapMachineId": 793,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-11-29",
+          "sortKeyLeft": "2025-11-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Aztec",
+      "details": "1976 Williams EM. 2 flippers, 2 pop bumpers, 6 standup targets, spinner.",
+      "imageFilename": "aztec.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/aztec",
+      "pinsideUrl": "https://pinside.com/pinball/machine/aztec",
+      "releaseDate": "1976-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=119",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-10-31",
+          "leftClubDate": "2018-03-13",
+          "pinballMapMachineId": 823,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-10-31",
+          "sortKeyLeft": "2018-03-13"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Count-Down",
+      "details": "1979 Gottlieb solid state. Design by Ed Krynski. 4 flippers, 1 pop bumper, drop target banks.",
+      "imageFilename": "count-down.jpg",
+      "releaseDate": "1979-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/count-down",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=573",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/count-down-space-walk",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-12",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 835,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-12",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Old Chicago",
+      "details": "1976 Bally EM. Design by Greg Kmiec. 2 flippers, 5 pop bumpers, standup targets, drop targets, spinner.",
+      "imageFilename": "old-chicago.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/old-chicago",
+      "pinsideUrl": "https://pinside.com/pinball/machine/old-chicago",
+      "releaseDate": "1976-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1704",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-12",
+          "leftClubDate": "2019-01-29",
+          "pinballMapMachineId": 1331,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-12",
+          "sortKeyLeft": "2019-01-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "PIN-BOT",
+      "details": "1986 Williams solid state. Design by Barry Oursler and Python Anghelo. 2 flippers, 5-drop bank, 3 kickout holes, 2-ball multiball.",
+      "imageFilename": "pin-bot.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/pinbot",
+      "pinsideUrl": "https://pinside.com/pinball/machine/pinbot",
+      "releaseDate": "1986-10-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1796",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-12",
+          "leftClubDate": "2021-07-23",
+          "pinballMapMachineId": 723,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-12",
+          "sortKeyLeft": "2021-07-23"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "300",
+      "details": "1975 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 standup targets, mechanical backbox animation.",
+      "imageFilename": "300.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/300-top-score",
+      "pinsideUrl": "https://pinside.com/pinball/machine/gottlieb-300",
+      "releaseDate": "1975-08-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2539",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "pinballMapMachineId": 1387,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "9999-12-31"
+        }
+      ],
+      "atClub": true
+    },
+    {
+      "title": "Charlie's Angels",
+      "details": "1978 Gottlieb solid state. Design by Allen Edwall. 2 flippers, 2 pop bumpers, 8 drop targets.",
+      "imageFilename": "charlies-angles.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/charlies-angels",
+      "pinsideUrl": "https://pinside.com/pinball/machine/charlies-angels",
+      "releaseDate": "1978-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5007",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1157,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Doodle Bug",
+      "details": "1971 Williams EM. Design by Norm Clark. 2 flippers, 5 pop bumpers, 5 standup targets.",
+      "imageFilename": "doodle-bug.jpg",
+      "pinsideUrl": "https://pinside.com/pinball/machine/doodle-bug",
+      "releaseDate": "1971-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=703",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/dipsy-doodle-doodle-bug-love-bug",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2023-01-22",
+          "pinballMapMachineId": 2367,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2023-01-22"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "F-14 Tomcat",
+      "details": "1987 Williams solid state. Design by Steve Ritchie. 4 flippers, 1 pop bumper, 4-ball multiball.",
+      "imageFilename": "f-14-tomcat.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/f-14-tomcat",
+      "pinsideUrl": "https://pinside.com/pinball/machine/f-14-tomcat",
+      "releaseDate": "1987-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=804",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 751,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Flash Gordon",
+      "details": "1981 Bally solid state. Design by Claude Fernandez. 3 flippers, 3 pop bumpers, in-line targets.",
+      "imageFilename": "flash-gordon.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flash-gordon",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flash-gordon",
+      "releaseDate": "1981-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=874",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2017-09-13",
+          "pinballMapMachineId": 727,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2017-09-13"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Hot Line",
+      "details": "1966 Williams EM. Design by Steve Kordek. 2 flippers, 5 pop bumpers, 17 rollover buttons.",
+      "imageFilename": "hot-line.jpg",
+      "releaseDate": "1966-09-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/hot-line",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1245",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/hot-line-big-strike",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 974,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Johnny Mnemonic",
+      "details": "1995 Williams DMD. Design by George Gomez. 2 flippers, 2 ramps, magnetic glove toy.",
+      "imageFilename": "johnny-mnemonic.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/johnny-mnemonic",
+      "pinsideUrl": "https://pinside.com/pinball/machine/johnny-mnemonic",
+      "releaseDate": "1995-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3683",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2023-12-29",
+          "pinballMapMachineId": 646,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2023-12-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Judge Dredd",
+      "details": "1993 Williams DMD widebody. Design by John Trudeau. 4 flippers, 2 ramps, 6-ball multiball.",
+      "imageFilename": "judge-dredd.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/judge-dredd",
+      "pinsideUrl": "https://pinside.com/pinball/machine/judge-dredd",
+      "releaseDate": "1993-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1322",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2018-03-13",
+          "pinballMapMachineId": 815,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2018-03-13"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "KISS (Pro)",
+      "aka": [
+        "Kiss"
+      ],
+      "details": "2015 Stern DMD. Designed by John Borg. 2 flippers, 2 ramps, 4 pop bumpers, spinning disk.",
+      "imageFilename": "kiss-pro.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/kiss",
+      "pinsideUrl": "https://pinside.com/pinball/machine/kiss",
+      "releaseDate": "2015-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6265",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 2353,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Lord of the Rings",
+      "details": "2003 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2017-09-08. Removed from the map on 2025-02-26.",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2025-02-26",
+          "pinballMapMachineId": 662,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2025-02-26"
+        }
+      ],
+      "releaseDate": "2003-01-01",
+      "atClub": false
+    },
+    {
+      "title": "Metallica (Pro)",
+      "aka": [
+        "Metallica"
+      ],
+      "details": "2013 Stern DMD. Design by John Borg. 2 flippers, 2 ramps, in-line drop targets.",
+      "imageFilename": "metallica-pro.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/metallica",
+      "pinsideUrl": "https://pinside.com/pinball/machine/metallica",
+      "releaseDate": "2013-04-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6028",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "pinballMapMachineId": 1591,
+          "leftClubDate": "2023-12-29",
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2023-12-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "NASCAR",
+      "details": "2005 Stern DMD. Designed by Pat Lawlor. 2 flippers, 2 ramps, 3 pop bumpers, motor speedway.",
+      "imageFilename": "nascar.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/nascar",
+      "pinsideUrl": "https://pinside.com/pinball/machine/nascar",
+      "releaseDate": "2005-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5093",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2022-05-07",
+          "pinballMapMachineId": 705,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2022-05-07"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "NBA Fastbreak",
+      "details": "1997 Bally DMD. Design by George Gomez. 3 flippers including one backbox flipper, 3 ramps, 4 up-kickers.",
+      "imageFilename": "nba-fastbreak.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/nba-fastbreak",
+      "pinsideUrl": "https://pinside.com/pinball/machine/nba-fastbreak",
+      "releaseDate": "1997-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4023",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 657,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Robocop",
+      "details": "1989 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, jump ramp, spinner, 3-ball multiball.",
+      "imageFilename": "robocop.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/robocop",
+      "pinsideUrl": "https://pinside.com/pinball/machine/robocop",
+      "releaseDate": "1989-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1976",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2019-01-29",
+          "pinballMapMachineId": 916,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2019-01-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Sorcerer",
+      "details": "1985 Williams solid state. Design by Mark Ritchie. 2 flippers, 3 pop bumpers, 1 ramp, 2-ball multiball.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer",
+      "pinsideUrl": "https://pinside.com/pinball/machine/sorcerer",
+      "releaseDate": "1985-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2242",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 966,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2019-09-05"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Space Shuttle",
+      "details": "1980 Williams solid state. Design by Barry Oursler and Joe Kaminkow. 2 flippers, 4 pop bumpers, 1 ramp, multiball.",
+      "imageFilename": "space-shuttle.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/space-shuttle",
+      "pinsideUrl": "https://pinside.com/pinball/machine/space-shuttle",
+      "releaseDate": "1980-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2260",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2019-09-05",
+          "pinballMapMachineId": 1068,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2019-09-05"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Strikes and Spares",
+      "details": "1978 Bally solid state. 2 flippers, 3 pop bumpers, 10 star rollover buttons.",
+      "imageFilename": "strikes-and-spares.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/strikes-and-spares",
+      "pinsideUrl": "https://pinside.com/pinball/machine/strikes-and-spares",
+      "releaseDate": "1978-06-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2406",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2017-10-31",
+          "pinballMapMachineId": 847,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2017-10-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Target Pool",
+      "details": "1969 Gottlieb EM. Design by Ed Krynski. 2 flippers, 1 pop bumper, 27 standup targets.",
+      "imageFilename": "target-pool.jpg",
+      "releaseDate": "1969-06-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/target-pool",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2502",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/target-pool-mini-pool",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2026-04-04",
+          "pinballMapMachineId": 1029,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2026-04-04"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Bally Game Show",
+      "details": "1990 Bally solid state. Design by Dan Langlois and Peter Perry. 2 flippers, 2 ramps, 2-ball multiball.",
+      "imageFilename": "the-bally-game-show.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-bally-game-show",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-bally-game-show",
+      "releaseDate": "1990-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=985",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2024-09-26",
+          "pinballMapMachineId": 760,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2024-09-26"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Flintstones",
+      "details": "1994 Williams DMD. Design by John Trudeau. 3 flippers, 2 ramps, bowling alley toy.",
+      "imageFilename": "the-flintstones.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-flintstones",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-flintstones",
+      "releaseDate": "1994-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=888",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2018-04-11",
+          "pinballMapMachineId": 690,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2018-04-11"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Lord of the Rings",
+      "aka": [
+        "Lord of the Rings"
+      ],
+      "details": "2003 Stern DMD. Designed by George Gomez, Keith P. Johnson, and Chris Granner. 2 flippers, 3 ramps, 3 pop bumpers, One Ring toy.",
+      "imageFilename": "the-lord-of-the-rings.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/lord-of-the-rings",
+      "pinsideUrl": "https://pinside.com/pinball/machine/lord-of-the-rings",
+      "releaseDate": "2003-11-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4858",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2025-02-26",
+          "pinballMapMachineId": 662,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2025-02-26"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "World Cup Soccer",
+      "details": "1994 Williams DMD. Design by John Popadiuk and Larry DeMar. 2 flippers, 2 ramps, spinning soccer ball, goalie target.",
+      "imageFilename": "world-cup-soccer.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/world-cup-soccer",
+      "pinsideUrl": "https://pinside.com/pinball/machine/world-cup-soccer",
+      "releaseDate": "1994-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2811",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2025-10-29",
+          "pinballMapMachineId": 707,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2025-10-29"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "World Poker Tour",
+      "details": "2006 Stern DMD. Designed by Steve Ritchie and Keith P. Johnson. 4 flippers, 3 pop bumpers, 16 drop targets, ace hole.",
+      "imageFilename": "world-poker-tour.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/world-poker-tour",
+      "pinsideUrl": "https://pinside.com/pinball/machine/world-poker-tour",
+      "releaseDate": "2006-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5134",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "joinedClubDate": "2017-09-08",
+          "leftClubDate": "2024-04-18",
+          "pinballMapMachineId": 699,
+          "dateUnknown": false,
+          "sortKeyJoined": "2017-09-08",
+          "sortKeyLeft": "2024-04-18"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Baywatch",
+      "details": "1995 Sega DMD. Design by Joe Kaminkow and Joe Balcer. 3 flippers plus shark flipper, 3 ramps, 5-ball multiball.",
+      "imageFilename": "baywatch.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/baywatch",
+      "pinsideUrl": "https://pinside.com/pinball/machine/baywatch",
+      "releaseDate": "1995-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2848",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Firepower",
+      "details": "1980 Williams solid state. Design by Steve Ritchie. 2 flippers, 4 pop bumpers, 3-ball multiball.",
+      "imageFilename": "firepower.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/firepower",
+      "pinsideUrl": "https://pinside.com/pinball/machine/firepower",
+      "releaseDate": "1980-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=856",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Flash",
+      "details": "1979 Williams solid state. Design by Steve Ritchie. 3 flippers, 3 pop bumpers, 1 spinner.",
+      "imageFilename": "flash.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/flash",
+      "pinsideUrl": "https://pinside.com/pinball/machine/flash",
+      "releaseDate": "1979-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=871",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Genesis",
+      "details": "1993 Gottlieb Premier solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, 2 ramps.",
+      "imageFilename": "genesis.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/genesis",
+      "pinsideUrl": "https://pinside.com/pinball/machine/genesis",
+      "releaseDate": "1993-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=996",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Ice Fever",
+      "details": "1985 Gottlieb solid state. Design by John Trudeau. 2 flippers, 4 pop bumpers, captive ball behind drop targets.",
+      "imageFilename": "ice-fever.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/ice-fever",
+      "pinsideUrl": "https://pinside.com/pinball/machine/ice-fever",
+      "releaseDate": "1985-02-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1260",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Major League",
+      "details": "1963 Williams EM. 1 bat flipper, 7 hanging targets, 1 ramp.",
+      "imageFilename": "major-league.png",
+      "releaseDate": "1963-01-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/major-league-williams",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=1526",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Roy Clark The Entertainer",
+      "details": "1977 Fascination solid state cocktail table. 2 flippers, 3 pop bumpers, 4 drop targets.",
+      "imageFilename": "roy-clark-the-entertainer.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/entertainer",
+      "releaseDate": "1977-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=785",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/take-five-circa-1933-the-entertainer",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Ship Ahoy",
+      "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 2 pop bumpers, 2 stand-up targets, spinner.",
+      "releaseDate": "1976-06-01",
+      "pinsideUrl": "https://pinside.com/pinball/machine/ship-ahoy",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2119",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/buccaneer-ship-ahoy-high-seas",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Star Trek",
+      "details": "1991 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3-ball multiball.",
+      "imageFilename": "star-trek.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/star-trek",
+      "pinsideUrl": "https://pinside.com/pinball/machine/star-trek",
+      "releaseDate": "1991-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2356",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Street Fighter II",
+      "details": "1993 Gottlieb Premier solid state. 5 flippers, three-level playfield, bash car.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii",
+      "pinsideUrl": "https://pinside.com/pinball/machine/street-fighter-ii",
+      "releaseDate": "1993-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2403",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Swords of Fury",
+      "details": "1988 Williams solid state. 4 flippers, no pop bumpers, mini-playfield, 5-bank drop targets.",
+      "imageFilename": "swords-of-fury.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/swords-of-fury",
+      "pinsideUrl": "https://pinside.com/pinball/machine/swords-of-fury",
+      "releaseDate": "1988-06-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2486",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Hobbit (Smaug)",
+      "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.",
+      "imageFilename": "the-hobbit.png",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-hobbit",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
+      "releaseDate": "2016-03-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6224",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "The Lost World Jurassic Park",
+      "details": "1997 Sega DMD. Design by John Borg. 2 flippers, 2 ramps.",
+      "imageFilename": "the-lost-world-jurassic-park.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/the-lost-world-jurassic-park",
+      "pinsideUrl": "https://pinside.com/pinball/machine/the-lost-world-jurassic-park",
+      "releaseDate": "1997-01-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4136",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Time Machine",
+      "details": "1988 Data East solid state. Design by Joe Kaminkow and Ed Cebula. 2 flippers, 3 pop bumpers, 3 ramps, chime box.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine",
+      "pinsideUrl": "https://pinside.com/pinball/machine/time-machine",
+      "releaseDate": "1988-12-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2565",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Time Warp",
+      "details": "1979 Williams EM. Design by Barry Oursler. 2 banana flippers, 5 pop bumpers.",
+      "imageFilename": "time-warp.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/time-warp",
+      "pinsideUrl": "https://pinside.com/pinball/machine/time-warp",
+      "releaseDate": "1979-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2568",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "Volley",
+      "details": "1976 Gottlieb EM. Design by Ed Krynski. 2 flippers, 3 pop bumpers, 15 drop targets.",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/volley",
+      "pinsideUrl": "https://pinside.com/pinball/machine/volley",
+      "releaseDate": "1976-08-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2743",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "WHO dunnit",
+      "details": "1995 Williams DMD. Design by Dwight Sullivan and Barry Oursler. 2 flippers, 2 ramps.",
+      "imageFilename": "who-dunnit.jpg",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/who-dunnit",
+      "pinsideUrl": "https://pinside.com/pinball/machine/who-dunnit",
+      "releaseDate": "1995-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=3685",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
+    },
+    {
+      "title": "X-Men Wolverine LE",
+      "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.",
+      "imageFilename": "x-men-wolverine-le.png",
+      "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",
+      "releaseDate": "2012-09-01",
+      "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5824",
+      "kineticistUrl": "https://www.kineticist.com/games/pinball/x-men",
+      "locationStints": [
+        {
+          "address": "134 Haines Street, Nashua, NH",
+          "pinballMapLocationId": 8908,
+          "dateUnknown": true,
+          "sortKeyJoined": "2016-01-01",
+          "sortKeyLeft": "2016-12-31"
+        }
+      ],
+      "atClub": false
     }
   ]
 }

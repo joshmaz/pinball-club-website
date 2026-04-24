@@ -1035,6 +1035,10 @@ footer {
   background: #171717;
 }
 
+.games-list-item--at-club {
+  border-left: 3px solid #2a8f6f;
+}
+
 .games-list-item strong {
   display: block;
   color: #0ff;

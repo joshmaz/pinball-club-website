@@ -5,8 +5,135 @@ const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 const IPDB_ICON_PATH = "assets/images/icons/ipdb-favicon.png";
 const GAMES_URL = "data/games.json";
 
+/** Club opened Jan 2016; Pinball Map coverage starts 2017 — legacy imports often lack stint dates. */
+const UNKNOWN_TENURE_SORT_JOIN = "2016-01-01";
+const UNKNOWN_TENURE_SORT_LEFT_PREVIOUS = "2016-12-31";
+/** Sort value for machines still on the floor (no leave date). */
+const STILL_AT_CLUB_SORT_LEFT = "9999-12-31";
+
 /**
- * @param {{ address?: string, joinedClubDate?: string, leftClubDate?: string, pinballMapLocationId?: number }[]} stints
+ * @param {unknown} v
+ * @returns {boolean}
+ */
+function hasNonemptyString(v) {
+  return v != null && String(v).trim() !== "";
+}
+
+/**
+ * Sets `dateUnknown`, `sortKeyJoined`, and `sortKeyLeft` on each stint for stable sorting.
+ * `dateUnknown` is true when both real club dates are absent (legacy / pre–Pinball Map).
+ * Sort keys are ISO date strings; they are editorial bounds for unknown tenure, not claims of fact.
+ *
+ * @param {{ joinedClubDate?: string, leftClubDate?: string, dateUnknown?: boolean, sortKeyJoined?: string, sortKeyLeft?: string }} stint
+ * @param {boolean} stillAtClub from game `atClub` (Pinball Map); drives unknown-tenure sort bounds.
+ */
+function enrichLocationStint(stint, stillAtClub) {
+  const hasJoin = hasNonemptyString(stint.joinedClubDate);
+  const hasLeave = hasNonemptyString(stint.leftClubDate);
+  const dateUnknown = !hasJoin && !hasLeave;
+  stint.dateUnknown = dateUnknown;
+
+  if (dateUnknown) {
+    stint.sortKeyJoined = UNKNOWN_TENURE_SORT_JOIN;
+    stint.sortKeyLeft = stillAtClub ? STILL_AT_CLUB_SORT_LEFT : UNKNOWN_TENURE_SORT_LEFT_PREVIOUS;
+    return;
+  }
+
+  stint.sortKeyJoined = hasJoin ? String(stint.joinedClubDate).trim() : UNKNOWN_TENURE_SORT_JOIN;
+  if (hasLeave) {
+    stint.sortKeyLeft = String(stint.leftClubDate).trim();
+  } else {
+    stint.sortKeyLeft = stillAtClub ? STILL_AT_CLUB_SORT_LEFT : UNKNOWN_TENURE_SORT_LEFT_PREVIOUS;
+  }
+}
+
+/**
+ * @param {{ locationStints?: unknown[], atClub?: boolean }} game
+ * @param {boolean} stillAtClub
+ */
+function enrichGameLocationStints(game, stillAtClub) {
+  const stints = game.locationStints;
+  if (!Array.isArray(stints)) {
+    return;
+  }
+  for (const s of stints) {
+    if (s && typeof s === "object") {
+      enrichLocationStint(s, stillAtClub);
+    }
+  }
+}
+
+/**
+ * @param {{ games?: unknown[] }} data
+ */
+function enrichGamesPayload(data) {
+  const games = data.games;
+  if (!Array.isArray(games)) {
+    return;
+  }
+  for (const g of games) {
+    if (g && typeof g === "object") {
+      enrichGameLocationStints(g, g.atClub === true);
+    }
+  }
+}
+
+/**
+ * Earliest stint start for this game (ISO), for chronological ordering.
+ * @param {{ title?: string, locationStints?: { sortKeyJoined?: string }[] }} game
+ * @returns {string}
+ */
+function gamePrimarySortKeyJoined(game) {
+  const stints = game.locationStints;
+  if (!Array.isArray(stints) || stints.length === 0) {
+    return "9999-12-31";
+  }
+  let min = /** @type {string | null} */ (null);
+  for (const s of stints) {
+    if (s && typeof s === "object" && hasNonemptyString(s.sortKeyJoined)) {
+      const k = String(s.sortKeyJoined).trim();
+      if (min === null || k < min) {
+        min = k;
+      }
+    }
+  }
+  return min != null ? min : "9999-12-31";
+}
+
+/**
+ * Newest first by earliest stint `sortKeyJoined`, then title A–Z (stable).
+ * @param {unknown[]} games
+ * @returns {unknown[]}
+ */
+function sortGamesNewestJoinFirst(games) {
+  if (!Array.isArray(games)) {
+    return [];
+  }
+  const out = [...games];
+  out.sort((a, b) => {
+    if (!a || typeof a !== "object" || !b || typeof b !== "object") {
+      return 0;
+    }
+    return String(a.title || "")
+      .toLowerCase()
+      .localeCompare(String(b.title || "").toLowerCase());
+  });
+  out.sort((a, b) => {
+    if (!a || typeof a !== "object" || !b || typeof b !== "object") {
+      return 0;
+    }
+    const ka = gamePrimarySortKeyJoined(a);
+    const kb = gamePrimarySortKeyJoined(b);
+    if (ka !== kb) {
+      return ka < kb ? 1 : -1;
+    }
+    return 0;
+  });
+  return out;
+}
+
+/**
+ * @param {{ address?: string, joinedClubDate?: string, leftClubDate?: string, pinballMapLocationId?: number, dateUnknown?: boolean }[]} stints
  */
 function formatLocationStints(stints) {
   if (!Array.isArray(stints) || stints.length === 0) {
@@ -25,6 +152,9 @@ function formatLocationStints(stints) {
     } else if (through) {
       line += `: through ${through}`;
     }
+    if (s.dateUnknown) {
+      line += line === where ? " — tenure dates unknown" : " (tenure dates unknown)";
+    }
     lines.push(line);
   }
   return lines.join("\n");
@@ -37,6 +167,9 @@ function createGamesList(games) {
   for (const game of games) {
     const item = document.createElement("li");
     item.className = "games-list-item";
+    if (game && typeof game === "object" && game.atClub === true) {
+      item.classList.add("games-list-item--at-club");
+    }
 
     const title = document.createElement("strong");
     title.textContent = game.title;
@@ -155,23 +288,17 @@ function showMessage(container, title, details) {
   container.appendChild(card);
 }
 
-function renderGames(currentGames, previousGames) {
-  const currentContainer = document.getElementById("games-current");
-  const previousContainer = document.getElementById("games-previous");
-
-  if (currentContainer) {
-    currentContainer.replaceChildren(createGamesList(currentGames));
-  }
-  if (previousContainer) {
-    previousContainer.replaceChildren(createGamesList(previousGames));
+function renderGamesList(games) {
+  const container = document.getElementById("games-list");
+  if (container) {
+    container.replaceChildren(createGamesList(games));
   }
 }
 
 async function loadGames() {
-  const currentContainer = document.getElementById("games-current");
-  const previousContainer = document.getElementById("games-previous");
-  if (!currentContainer || !previousContainer) {
-    console.error("Games containers were not found.");
+  const container = document.getElementById("games-list");
+  if (!container) {
+    console.error("Games list container was not found.");
     return;
   }
 
@@ -185,19 +312,20 @@ async function loadGames() {
     if (!data || typeof data !== "object") {
       throw new Error(`Invalid data in ${GAMES_URL}`);
     }
-    if (!Array.isArray(data.currentGames) || !Array.isArray(data.previousGames)) {
-      throw new Error(`Invalid data format in ${GAMES_URL}: expected currentGames and previousGames arrays.`);
+    if (!Array.isArray(data.games)) {
+      throw new Error(`Invalid data format in ${GAMES_URL}: expected a games array.`);
     }
 
-    renderGames(data.currentGames, data.previousGames);
+    enrichGamesPayload(data);
+    const sorted = sortGamesNewestJoinFirst(data.games);
+    renderGamesList(sorted);
   } catch (error) {
     console.error("Error loading games:", error);
     showMessage(
-      currentContainer,
+      container,
       "Unable to load games",
       `We could not load the games list right now. Details: ${error.message}`
     );
-    showMessage(previousContainer, "Unable to load previous titles", "Please try again in a moment.");
   }
 }
 
