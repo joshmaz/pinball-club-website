@@ -1034,6 +1034,18 @@ footer {
   font-weight: 600;
 }
 
+.games-show-all-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: 0.2rem;
+  color: #d8edf4;
+}
+
+.games-show-all-toggle input {
+  accent-color: #4da3ff;
+}
+
 .games-timeline-range {
   width: 100%;
 }
@@ -1075,6 +1087,13 @@ footer {
   margin-top: 0.7rem;
   margin-bottom: 0;
   color: #a9d9e8;
+}
+
+.games-timeline-controls--disabled .games-timeline-label,
+.games-timeline-controls--disabled .games-timeline-range,
+.games-timeline-controls--disabled .games-timeline-axis-labels,
+.games-timeline-controls--disabled .games-timeline-date-input-row {
+  opacity: 0.55;
 }
 
 .games-list {
