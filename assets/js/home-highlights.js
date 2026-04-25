@@ -1,0 +1,183 @@
+(function () {
+  const DESKTOP_MAX_VISIBLE = 9;
+  const MOBILE_MAX_VISIBLE = 5;
+  const MOBILE_MEDIA_QUERY = "(max-width: 700px)";
+  const HIGHLIGHTS_URL = "data/highlights.json";
+
+  function shuffleInPlace(array) {
+    for (let i = array.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  function createCard(item) {
+    const figure = document.createElement("figure");
+    figure.className = "home-highlight-card";
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "home-highlight-trigger";
+    trigger.setAttribute("aria-label", "Open photo: " + item.caption);
+    trigger.dataset.imageSrc = "assets/images/highlights/processed/" + item.filename;
+    trigger.dataset.imageAlt = item.alt;
+
+    const image = document.createElement("img");
+    image.src = trigger.dataset.imageSrc;
+    image.alt = item.alt;
+    image.loading = "lazy";
+    image.decoding = "async";
+
+    const caption = document.createElement("figcaption");
+    caption.textContent = item.caption;
+
+    trigger.appendChild(image);
+    figure.appendChild(trigger);
+    figure.appendChild(caption);
+    return figure;
+  }
+
+  function createLightbox() {
+    const overlay = document.createElement("div");
+    overlay.className = "home-lightbox";
+    overlay.hidden = true;
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Expanded highlight photo");
+
+    const panel = document.createElement("div");
+    panel.className = "home-lightbox-panel";
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "home-lightbox-close";
+    closeButton.setAttribute("aria-label", "Close photo");
+    closeButton.textContent = "Close";
+
+    const image = document.createElement("img");
+    image.className = "home-lightbox-image";
+    image.alt = "";
+
+    panel.appendChild(image);
+    panel.appendChild(closeButton);
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    return { overlay, panel, closeButton, image };
+  }
+
+  function setupLightbox(grid) {
+    const lightbox = createLightbox();
+    let lastTrigger = null;
+
+    function closeLightbox() {
+      lightbox.overlay.hidden = true;
+      lightbox.image.src = "";
+      if (lastTrigger) {
+        lastTrigger.focus();
+      }
+    }
+
+    function openLightbox(trigger) {
+      const src = trigger.dataset.imageSrc;
+      const alt = trigger.dataset.imageAlt || "";
+      if (!src) return;
+      lastTrigger = trigger;
+      lightbox.image.src = src;
+      lightbox.image.alt = alt;
+      lightbox.overlay.hidden = false;
+      lightbox.closeButton.focus();
+    }
+
+    grid.addEventListener("click", function (event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const trigger = target.closest(".home-highlight-trigger");
+      if (!trigger) return;
+      openLightbox(trigger);
+    });
+
+    lightbox.closeButton.addEventListener("click", closeLightbox);
+    lightbox.overlay.addEventListener("click", function (event) {
+      if (event.target === lightbox.overlay) {
+        closeLightbox();
+      }
+    });
+    document.addEventListener("keydown", function (event) {
+      if (!lightbox.overlay.hidden && event.key === "Escape") {
+        closeLightbox();
+      }
+    });
+  }
+
+  function sanitizeHighlights(input) {
+    if (!Array.isArray(input)) return [];
+    return input.filter(function (item) {
+      return (
+        item &&
+        typeof item.filename === "string" &&
+        item.filename &&
+        typeof item.alt === "string" &&
+        item.alt &&
+        typeof item.caption === "string" &&
+        item.caption
+      );
+    });
+  }
+
+  function renderHighlightsMessage(grid, message) {
+    grid.textContent = "";
+    const msg = document.createElement("p");
+    msg.className = "home-highlights-message";
+    msg.textContent = message;
+    grid.appendChild(msg);
+  }
+
+  async function loadHighlights() {
+    const response = await fetch(HIGHLIGHTS_URL, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Highlights request failed (" + response.status + ")");
+    }
+    const payload = await response.json();
+    return sanitizeHighlights(payload.highlights);
+  }
+
+  async function initHighlights() {
+    const grid = document.getElementById("home-highlights-grid");
+    if (!grid) return;
+
+    let highlights;
+    try {
+      highlights = await loadHighlights();
+    } catch (err) {
+      console.error("Highlights data:", err);
+      renderHighlightsMessage(grid, "Highlights are temporarily unavailable.");
+      return;
+    }
+
+    if (highlights.length === 0) {
+      renderHighlightsMessage(grid, "No highlight photos published yet.");
+      return;
+    }
+
+    const maxVisible = window.matchMedia(MOBILE_MEDIA_QUERY).matches
+      ? MOBILE_MAX_VISIBLE
+      : DESKTOP_MAX_VISIBLE;
+    const randomized = shuffleInPlace(highlights.slice());
+    const selection = randomized.slice(0, Math.min(maxVisible, randomized.length));
+
+    const fragment = document.createDocumentFragment();
+    selection.forEach(function (item) {
+      fragment.appendChild(createCard(item));
+    });
+
+    grid.textContent = "";
+    grid.appendChild(fragment);
+    setupLightbox(grid);
+  }
+
+  initHighlights();
+})();
