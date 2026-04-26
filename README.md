@@ -1,60 +1,84 @@
-# Pinball Club Website
+# Southern New Hampshire Pinball Club Website
 
-Official site for the Southern New Hampshire Pinball Club, including public pages and an in-progress member portal.
+Public website and member portal for SNHPC. The site is static-first (GitHub Pages), with Supabase for auth/member data and Stripe planned for subscription billing lifecycle.
 
-## What is live now
+## Current status
 
-- Public club pages (`index.html`, `events.html`, `games.html`, `about.html`, etc.)
-- Supabase-backed sign up and sign in
-- Member dashboard (`members.html`) with:
-  - basic profile updates
-  - current membership status display
-  - password change for signed-in users
-- Password recovery from `signin.html` ("Forgot Password" email flow)
+- Public pages are live: `index.html`, `events.html`, `games.html`, `about.html`, `resources.html`, `donate.html`, and `merch.html`.
+- Member access is live through `signin.html` and `members.html` with Supabase Auth.
+- Member portal includes:
+  - sign up / sign in / sign out
+  - profile editing (`first_name`, `last_name`, `display_name`, IFPA/Stern fields)
+  - password reset and recovery flow
+  - role-aware navigation and member admin tools for authorized roles
+- Home page media is data-driven (highlights/gallery JSON + image assets).
 
-## Membership roadmap (working notes)
+## Architecture
 
-- **Billing:** Stripe Checkout + webhooks will be the source of truth for paid membership state.
-- **Tiering:** support free web users who can upgrade into paid/on-prem access tiers.
-- **Admin roles:** introduce site admins who can edit content safely.
-- **RBAC expansion:** evaluate scoped permissions for areas like events, machines, and membership management.
+Frontend (static HTML/CSS/vanilla JS)
+-> Supabase (Auth + Postgres with RLS)
+-> Stripe (billing/subscription source of truth, integration in progress)
 
-Keep auth and billing concerns separated:
+Keep concerns separate:
+- Supabase Auth: identity, sessions, and user metadata
+- Supabase DB: member profile and role/membership state used by the UI
+- Stripe: payment events and recurring billing lifecycle
 
-- Supabase Auth handles identity and sessions.
-- Stripe handles payment and subscription lifecycle.
-- Supabase database stores derived membership state (status/tier/period end) for app logic.
+## Repository layout
 
-## Project layout
+- `index.html`, `events.html`, `games.html`, `about.html`, `resources.html`, `donate.html`, `merch.html` - public-facing pages
+- `signin.html` - sign in / sign up / password reset entry point
+- `members.html` - authenticated member portal
+- `assets/css/styles.css` - shared site styling
+- `assets/js/supabase-init.js` - Supabase client bootstrap from runtime config
+- `assets/js/member-portal.js` - auth/session, profile, membership, and role management logic
+- `assets/js/home-gallery.js` + `assets/js/home-highlights.js` - homepage media rendering
+- `assets/js/events.js`, `assets/js/games.js`, `assets/js/resources.js` - page-specific data rendering
+- `data/events.json`, `data/games.json`, `data/resources.json`, `data/highlights.json` - content/data sources
+- `supabase/migrations/` - schema + RPC migrations
+- `scripts/` - helper scripts for config generation and content sync/build tasks
 
-- `assets/css/styles.css` - shared site styles
-- `assets/js/supabase-init.js` - creates Supabase client from runtime config
-- `assets/js/member-portal.js` - auth/session helpers, profile/membership helpers
-- `signin.html` - sign up/sign in experience
-- `members.html` - authenticated account page
+## Local development
 
-## Deployment
+No build step is required for the static site itself; pages can be opened directly or served with any local static server.
 
-The site deploys to GitHub Pages via `.github/workflows/deploy.yml`.
+Supabase-backed pages require a generated runtime config file:
 
-## Secrets and local configuration
+1. Copy `.env.example` to `.env`.
+2. Set:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+3. Generate config:
 
-Supabase URL and anon key are not committed. They are generated into `assets/js/config.js` by `scripts/write-config.mjs`.
+```bash
+node --env-file=.env scripts/write-config.mjs
+```
 
-1. In GitHub, add Actions secrets:
-   - `SUPABASE_URL` (example: `https://xxxx.supabase.co`)
-   - `SUPABASE_ANON_KEY` (Supabase Project Settings -> API)
-2. On push to `main`, deploy writes `assets/js/config.js` from those secrets.
-3. For local development, copy `.env.example` to `.env`, set the same values, then run:
+This writes `assets/js/config.js` (gitignored). Without it, auth/member features gracefully fail as unavailable.
 
-   ```bash
-   node --env-file=.env scripts/write-config.mjs
-   ```
+## Deployment (GitHub Pages)
 
-`assets/js/config.js` is gitignored. If missing, Supabase-backed pages will show unavailable auth behavior.
+Deploy is handled by `.github/workflows/deploy.yml` on pushes to `main`.
 
-## Security notes
+Workflow steps:
+- checkout repository
+- setup Node 20
+- run `node scripts/write-config.mjs` using GitHub Actions secrets
+- publish the repository root to GitHub Pages
 
-- The Supabase anon key is expected to be public in browser code.
-- Protect sensitive data with Row Level Security policies.
-- Never expose the Supabase service role key in frontend code or GitHub Pages secrets.
+Required repository secrets:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+## Supabase notes
+
+- Browser code uses the Supabase anon key (expected/public).
+- Never expose service role keys in frontend code or Actions secrets intended for static deploys.
+- Use Row Level Security for all sensitive tables.
+- Member role management is implemented via `member_roles` + admin RPCs in `supabase/migrations/`.
+
+## Content and data workflows
+
+- Events and games are primarily data-driven from JSON in `data/`.
+- Helper scripts in `scripts/` support external sync/enrichment workflows (for example Facebook or PinballMap sync).
+- Home highlights are controlled by `data/highlights.json` and corresponding files under `assets/images/highlights/`.
