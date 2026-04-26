@@ -207,6 +207,24 @@ JS:
 
 ---
 
+# 🗃️ Supabase Migration Workflow (CLI)
+
+- Use Supabase CLI + `supabase/migrations/*.sql` as the source of truth for schema changes.
+- Run CLI from repo root and ensure project is linked:
+  - `supabase login`
+  - `supabase link --project-ref <project-ref>`
+- Apply hosted schema changes with:
+  - `supabase db push`
+- Validate parity with:
+  - `supabase migration list --linked`
+
+Guardrails:
+- Never edit an already-applied migration; add a new forward migration.
+- Do not rely on ad-hoc SQL as normal workflow.
+- Use `supabase migration repair --linked --status applied ...` only to reconcile migration history after manual/out-of-band applies; do not use it to perform schema changes.
+
+---
+
 # 🔐 Environment Variables
 
 SUPABASE_URL=
