@@ -2,6 +2,7 @@
 // Upcoming (today onward) events are shown first; past events stay behind a toggle.
 // If loading fails, an on-page error message is shown with debug details.
 const EVENTS_URL = 'data/events.json';
+const EVENTS_TABLE = 'events';
 
 function showMessage(container, title, details) {
   container.replaceChildren();
@@ -14,6 +15,24 @@ function showMessage(container, title, details) {
   card.appendChild(h3);
   card.appendChild(p);
   container.appendChild(card);
+}
+
+function setDataSourceNote(container, source, detail = '') {
+  if (!container) return;
+  let note = document.getElementById('events-data-source-note');
+  if (!note) {
+    note = document.createElement('p');
+    note.id = 'events-data-source-note';
+    note.className = 'events-data-source-note';
+    container.parentNode.insertBefore(note, container);
+  }
+  if (source === 'supabase') {
+    note.textContent = 'Data source: Supabase';
+    return;
+  }
+  note.textContent = detail
+    ? `Data source: JSON fallback (${detail})`
+    : 'Data source: JSON fallback';
 }
 
 function startOfToday() {
@@ -380,16 +399,70 @@ async function loadEvents() {
   }
 
   try {
-    const response = await fetch(EVENTS_URL, { cache: 'no-store' });
+    let events = [];
+    let usedSupabase = false;
+    let fallbackReason = '';
 
-    if (!response.ok) {
-      throw new Error(`Request failed (${response.status} ${response.statusText}) for ${EVENTS_URL}`);
+    if (window.snhSupabase) {
+      const { data, error } = await window.snhSupabase
+        .from(EVENTS_TABLE)
+        .select('title,description,location,starts_at,external_url,source')
+        .or('published.eq.true,published.is.null')
+        .order('starts_at', { ascending: true, nullsFirst: false });
+
+      if (error) {
+        fallbackReason = `Supabase query error: ${error.message}`;
+        console.warn('[SNH] Could not load events from Supabase, falling back to JSON:', error.message);
+      } else if (Array.isArray(data)) {
+        usedSupabase = true;
+        events = data.map((row) => {
+          let date = 'TBD';
+          if (row.starts_at) {
+            const d = new Date(row.starts_at);
+            if (!Number.isNaN(d.getTime())) {
+              const y = d.getUTCFullYear();
+              const mo = String(d.getUTCMonth() + 1).padStart(2, '0');
+              const day = String(d.getUTCDate()).padStart(2, '0');
+              date = `${y}-${mo}-${day}`;
+            }
+          }
+          return {
+            title: row.title || 'Untitled Event',
+            date,
+            location: row.location || 'TBD',
+            description: row.description || '',
+            url: row.external_url || '',
+            source: row.source || 'supabase',
+          };
+        });
+        if (events.length === 0) {
+          fallbackReason = 'Supabase returned 0 rows';
+        }
+      }
+    } else if (window.snhSupabaseError === 'missing_config') {
+      fallbackReason = 'Missing Supabase config';
+    } else if (window.snhSupabaseError === 'missing_client') {
+      fallbackReason = 'Supabase client failed to load';
+    } else {
+      fallbackReason = 'Supabase not initialized';
     }
 
-    const events = await response.json();
+    if (!usedSupabase || events.length === 0) {
+      const response = await fetch(EVENTS_URL, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status} ${response.statusText}) for ${EVENTS_URL}`);
+      }
 
-    if (!Array.isArray(events)) {
-      throw new Error(`Invalid data format in ${EVENTS_URL}: expected an array.`);
+      events = await response.json();
+      if (!Array.isArray(events)) {
+        throw new Error(`Invalid data format in ${EVENTS_URL}: expected an array.`);
+      }
+      if (!fallbackReason && window.location.protocol === 'file:') {
+        fallbackReason = 'Opened via file:// (serve over http://localhost)';
+      }
+      setDataSourceNote(container, 'json', fallbackReason);
+    } else {
+      setDataSourceNote(container, 'supabase');
     }
 
     renderEventsList(container, events);

@@ -102,3 +102,30 @@ Rules:
 - Events and games are primarily data-driven from JSON in `data/`.
 - Helper scripts in `scripts/` support external sync/enrichment workflows (for example Facebook or PinballMap sync).
 - Home highlights are controlled by `data/highlights.json` and corresponding files under `assets/images/highlights/`.
+
+### Events migration to Supabase
+
+The public `events.html` page now prefers reading from `public.events` in Supabase and falls back to `data/events.json` if Supabase is unavailable.
+
+To backfill historical events from `data/events.json` into Supabase:
+
+1. Apply migrations (`supabase db push`) so `public.events` includes `legacy_import_key` and related columns.
+2. Run the import script with service-role credentials:
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/import-events-json-to-supabase.mjs
+```
+
+Optional dry run:
+
+```bash
+DRY_RUN=true SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/import-events-json-to-supabase.mjs
+```
+
+To prevent duplicate legacy entries from being reintroduced into `data/events.json`, run:
+
+```bash
+node scripts/check-events-duplicates.mjs
+```
+
+This check also runs in the GitHub Pages deploy workflow and fails deploy if duplicates are found (duplicate key = `title/name + date`).

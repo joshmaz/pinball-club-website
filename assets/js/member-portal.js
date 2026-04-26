@@ -463,6 +463,50 @@
     if (result.error) throw result.error;
   }
 
+  async function listEventsForAdmin() {
+    var client = getClient();
+    if (!client) return null;
+    var result = await client
+      .from("events")
+      .select("id,title,description,location,starts_at,external_url,source,published,is_historical,updated_at")
+      .order("starts_at", { ascending: false, nullsFirst: false })
+      .limit(500);
+    if (result.error) return null;
+    return Array.isArray(result.data) ? result.data : [];
+  }
+
+  async function saveEventForAdmin(eventInput) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var payload = {
+      title: eventInput.title,
+      description: eventInput.description || null,
+      location: eventInput.location || null,
+      starts_at: eventInput.starts_at || null,
+      external_url: eventInput.external_url || null,
+      source: eventInput.source || "manual",
+      published: !!eventInput.published,
+      is_historical: !!eventInput.is_historical
+    };
+    if (eventInput.id) {
+      payload.id = eventInput.id;
+    }
+    var result = await client
+      .from("events")
+      .upsert(payload, { onConflict: "id" })
+      .select("id")
+      .single();
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function deleteEventForAdmin(eventId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.from("events").delete().eq("id", eventId);
+    if (result.error) throw result.error;
+  }
+
   window.SNHMemberPortal = {
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
@@ -481,6 +525,9 @@
     listMembersForAdmin: listMembersForAdmin,
     grantMemberRole: grantMemberRole,
     revokeMemberRole: revokeMemberRole,
+    listEventsForAdmin: listEventsForAdmin,
+    saveEventForAdmin: saveEventForAdmin,
+    deleteEventForAdmin: deleteEventForAdmin,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,

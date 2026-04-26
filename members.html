@@ -227,7 +227,79 @@
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h3>Events</h3>
-          <p class="member-panel-placeholder">Member-only event tools (scheduling, check-in, results) will open here for accounts with the right roles.</p>
+          <p class="member-panel-intro">Create and manage events that appear on the public Events page. Requires <strong>events_editor</strong>, <strong>events_admin</strong>, or <strong>club_admin</strong>.</p>
+          <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
+          <p class="members-admin-toolbar">
+            <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
+          </p>
+
+          <h3>Create / edit event</h3>
+          <form id="member-events-form" class="members-profile-form">
+            <input id="member-events-id" type="hidden">
+
+            <label for="member-events-title">Title</label>
+            <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
+
+            <label for="member-events-starts-at">Starts at (local)</label>
+            <input id="member-events-starts-at" type="datetime-local">
+
+            <label for="member-events-location">Location</label>
+            <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
+
+            <label for="member-events-url">External URL</label>
+            <input id="member-events-url" type="url" maxlength="1000" placeholder="https://...">
+
+            <label for="member-events-source">Source</label>
+            <input id="member-events-source" type="text" maxlength="80" placeholder="manual">
+
+            <label for="member-events-description">Description</label>
+            <textarea id="member-events-description" rows="4" maxlength="4000" placeholder="Optional details"></textarea>
+
+            <label class="members-checkbox-label">
+              <input id="member-events-published" type="checkbox" checked>
+              Published (visible on public Events page)
+            </label>
+
+            <label class="members-checkbox-label">
+              <input id="member-events-historical" type="checkbox">
+              Historical event
+            </label>
+
+            <p class="members-admin-toolbar">
+              <button type="submit" class="members-events-form-action">Save event</button>
+              <button type="button" class="members-events-form-action" id="member-events-reset">Clear form</button>
+            </p>
+          </form>
+
+          <h3>Event list</h3>
+          <div class="members-admin-table-wrap">
+            <table class="members-admin-table">
+              <caption class="visually-hidden">Events management table</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Location</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">Published</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="member-events-table-body"></tbody>
+            </table>
+          </div>
+          <p class="members-admin-toolbar">
+            <label for="member-events-page-size">Rows per page</label>
+            <select id="member-events-page-size" class="members-page-size-select">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <button type="button" class="members-sidebar-link" id="member-events-prev-page">Previous</button>
+            <span id="member-events-page-meta" class="members-page-status">Page 1 of 1</span>
+            <button type="button" class="members-sidebar-link" id="member-events-next-page">Next</button>
+          </p>
         </div>
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
@@ -277,6 +349,7 @@
     var panelButtons = document.querySelectorAll("[data-member-panel]");
     var panels = document.querySelectorAll(".member-panel");
     var onMemberAdminPanelShown = null;
+    var onEventsPanelShown = null;
     var memberAdminStatus = document.getElementById("member-admin-status");
     var memberAdminStats = document.getElementById("member-admin-stats");
     var memberAdminRefresh = document.getElementById("member-admin-refresh");
@@ -284,6 +357,29 @@
     var memberAdminGrantForm = document.getElementById("member-admin-grant-form");
     var memberAdminGrantMember = document.getElementById("member-admin-grant-member");
     var memberAdminGrantRole = document.getElementById("member-admin-grant-role");
+    var memberEventsStatus = document.getElementById("member-events-status");
+    var memberEventsRefresh = document.getElementById("member-events-refresh");
+    var memberEventsForm = document.getElementById("member-events-form");
+    var memberEventsId = document.getElementById("member-events-id");
+    var memberEventsTitle = document.getElementById("member-events-title");
+    var memberEventsStartsAt = document.getElementById("member-events-starts-at");
+    var memberEventsLocation = document.getElementById("member-events-location");
+    var memberEventsUrl = document.getElementById("member-events-url");
+    var memberEventsSource = document.getElementById("member-events-source");
+    var memberEventsDescription = document.getElementById("member-events-description");
+    var memberEventsPublished = document.getElementById("member-events-published");
+    var memberEventsHistorical = document.getElementById("member-events-historical");
+    var memberEventsReset = document.getElementById("member-events-reset");
+    var memberEventsTableBody = document.getElementById("member-events-table-body");
+    var memberEventsPrevPage = document.getElementById("member-events-prev-page");
+    var memberEventsNextPage = document.getElementById("member-events-next-page");
+    var memberEventsPageMeta = document.getElementById("member-events-page-meta");
+    var memberEventsPageSizeSelect = document.getElementById("member-events-page-size");
+    var memberEventsCache = {};
+    var memberEventsFormHighlightTimer = null;
+    var memberEventsAllRows = [];
+    var memberEventsPage = 1;
+    var memberEventsPageSize = 10;
     var profileSubmitButton = profileForm ? profileForm.querySelector('button[type="submit"]') : null;
     var profileFormBaseline = null;
     var profileFormSaving = false;
@@ -294,6 +390,34 @@
 
     function setPasswordStatus(message) {
       if (passwordStatus) passwordStatus.textContent = message;
+    }
+
+    function setEventsStatus(message) {
+      if (memberEventsStatus) memberEventsStatus.textContent = message || "";
+    }
+
+    function trimOrEmpty(value) {
+      return String(value || "").trim();
+    }
+
+    function toLocalDateTimeInputValue(iso) {
+      if (!iso) return "";
+      var parsed = new Date(iso);
+      if (Number.isNaN(parsed.getTime())) return "";
+      var y = parsed.getFullYear();
+      var m = String(parsed.getMonth() + 1).padStart(2, "0");
+      var d = String(parsed.getDate()).padStart(2, "0");
+      var hh = String(parsed.getHours()).padStart(2, "0");
+      var mm = String(parsed.getMinutes()).padStart(2, "0");
+      return y + "-" + m + "-" + d + "T" + hh + ":" + mm;
+    }
+
+    function toIsoOrNull(localValue) {
+      var v = trimOrEmpty(localValue);
+      if (!v) return null;
+      var parsed = new Date(v);
+      if (Number.isNaN(parsed.getTime())) return null;
+      return parsed.toISOString();
     }
 
     function isAllowedHttpUrl(value) {
@@ -405,6 +529,9 @@
 
       if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
         onMemberAdminPanelShown();
+      }
+      if (id === "events" && typeof onEventsPanelShown === "function") {
+        onEventsPanelShown();
       }
     }
 
@@ -695,6 +822,290 @@
     if (memberAdminRefresh) {
       memberAdminRefresh.addEventListener("click", function () {
         if (onMemberAdminPanelShown) onMemberAdminPanelShown();
+      });
+    }
+
+    function resetEventsForm() {
+      if (!memberEventsForm) return;
+      memberEventsForm.reset();
+      if (memberEventsId) memberEventsId.value = "";
+      if (memberEventsPublished) memberEventsPublished.checked = true;
+      if (memberEventsHistorical) memberEventsHistorical.checked = false;
+    }
+
+    function setEventsFormFromRow(row) {
+      if (!row || !memberEventsForm) return;
+      if (memberEventsId) memberEventsId.value = String(row.id || "");
+      if (memberEventsTitle) memberEventsTitle.value = row.title || "";
+      if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(row.starts_at);
+      if (memberEventsLocation) memberEventsLocation.value = row.location || "";
+      if (memberEventsUrl) memberEventsUrl.value = row.external_url || "";
+      if (memberEventsSource) memberEventsSource.value = row.source || "";
+      if (memberEventsDescription) memberEventsDescription.value = row.description || "";
+      if (memberEventsPublished) memberEventsPublished.checked = !!row.published;
+      if (memberEventsHistorical) memberEventsHistorical.checked = !!row.is_historical;
+    }
+
+    function focusAndHighlightEventsEditor() {
+      if (!memberEventsForm) return;
+      memberEventsForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      memberEventsForm.classList.remove("members-profile-form-edit-target");
+      // Force reflow so repeated edit clicks retrigger the highlight animation.
+      void memberEventsForm.offsetWidth;
+      memberEventsForm.classList.add("members-profile-form-edit-target");
+      if (memberEventsFormHighlightTimer) {
+        window.clearTimeout(memberEventsFormHighlightTimer);
+      }
+      memberEventsFormHighlightTimer = window.setTimeout(function () {
+        memberEventsForm.classList.remove("members-profile-form-edit-target");
+        memberEventsFormHighlightTimer = null;
+      }, 2000);
+      if (memberEventsTitle) {
+        memberEventsTitle.focus({ preventScroll: true });
+      }
+    }
+
+    function highlightEventTableRow(eventId) {
+      if (!memberEventsTableBody || !eventId) return;
+      var rowEl = memberEventsTableBody.querySelector('tr[data-event-row-id="' + String(eventId) + '"]');
+      if (!rowEl) return;
+      rowEl.classList.remove("members-events-row-edit-target");
+      // Force reflow so repeated edit clicks retrigger highlight.
+      void rowEl.offsetWidth;
+      rowEl.classList.add("members-events-row-edit-target");
+      window.setTimeout(function () {
+        rowEl.classList.remove("members-events-row-edit-target");
+      }, 1800);
+    }
+
+    function renderEventsRows(rows) {
+      if (!memberEventsTableBody) return;
+      memberEventsTableBody.innerHTML = "";
+      memberEventsCache = {};
+      for (var i = 0; i < rows.length; i += 1) {
+        var row = rows[i] || {};
+        if (!row.id) continue;
+        memberEventsCache[String(row.id)] = row;
+
+        var tr = document.createElement("tr");
+        tr.setAttribute("data-event-row-id", String(row.id));
+        var tdTitle = document.createElement("td");
+        tdTitle.textContent = row.title || "(untitled)";
+
+        var tdDate = document.createElement("td");
+        tdDate.textContent = window.SNHMemberPortal.formatDate(row.starts_at);
+
+        var tdLoc = document.createElement("td");
+        tdLoc.textContent = row.location || "—";
+
+        var tdSource = document.createElement("td");
+        tdSource.textContent = row.source || "manual";
+
+        var tdPub = document.createElement("td");
+        tdPub.textContent = row.published ? "Yes" : "No";
+
+        var tdActions = document.createElement("td");
+
+        var editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "members-admin-revoke";
+        editBtn.textContent = "Edit";
+        editBtn.setAttribute("data-event-action", "edit");
+        editBtn.setAttribute("data-event-id", String(row.id));
+        tdActions.appendChild(editBtn);
+
+        var publishBtn = document.createElement("button");
+        publishBtn.type = "button";
+        publishBtn.className = "members-admin-revoke";
+        publishBtn.textContent = row.published ? "Unpublish" : "Publish";
+        publishBtn.setAttribute("data-event-action", "toggle-publish");
+        publishBtn.setAttribute("data-event-id", String(row.id));
+        tdActions.appendChild(publishBtn);
+
+        var deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "members-admin-revoke";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.setAttribute("data-event-action", "delete");
+        deleteBtn.setAttribute("data-event-id", String(row.id));
+        tdActions.appendChild(deleteBtn);
+
+        tr.appendChild(tdTitle);
+        tr.appendChild(tdDate);
+        tr.appendChild(tdLoc);
+        tr.appendChild(tdSource);
+        tr.appendChild(tdPub);
+        tr.appendChild(tdActions);
+        memberEventsTableBody.appendChild(tr);
+      }
+    }
+
+    function getEventsTotalPages() {
+      if (!memberEventsAllRows.length) return 1;
+      return Math.max(1, Math.ceil(memberEventsAllRows.length / memberEventsPageSize));
+    }
+
+    function renderEventsPaginationMeta() {
+      var totalPages = getEventsTotalPages();
+      if (memberEventsPage > totalPages) memberEventsPage = totalPages;
+      if (memberEventsPage < 1) memberEventsPage = 1;
+      if (memberEventsPageMeta) {
+        memberEventsPageMeta.textContent = "Page " + memberEventsPage + " of " + totalPages;
+      }
+      if (memberEventsPrevPage) memberEventsPrevPage.disabled = memberEventsPage <= 1;
+      if (memberEventsNextPage) memberEventsNextPage.disabled = memberEventsPage >= totalPages;
+    }
+
+    function renderEventsPage() {
+      var totalPages = getEventsTotalPages();
+      if (memberEventsPage > totalPages) memberEventsPage = totalPages;
+      if (memberEventsPage < 1) memberEventsPage = 1;
+      var start = (memberEventsPage - 1) * memberEventsPageSize;
+      var end = start + memberEventsPageSize;
+      var pageRows = memberEventsAllRows.slice(start, end);
+      renderEventsRows(pageRows);
+      renderEventsPaginationMeta();
+    }
+
+    onEventsPanelShown = async function () {
+      if (!window.SNHMemberPortal || !window.SNHMemberPortal.listEventsForAdmin) return;
+      setEventsStatus("Loading events…");
+      var rows = await window.SNHMemberPortal.listEventsForAdmin();
+      if (rows == null) {
+        setEventsStatus("Could not load events. Verify events table access and RLS policies.");
+        memberEventsAllRows = [];
+        memberEventsPage = 1;
+        renderEventsPage();
+        return;
+      }
+      memberEventsAllRows = rows;
+      memberEventsPage = 1;
+      renderEventsPage();
+      setEventsStatus("Loaded " + rows.length + " events.");
+    };
+
+    if (memberEventsRefresh) {
+      memberEventsRefresh.addEventListener("click", function () {
+        if (onEventsPanelShown) onEventsPanelShown();
+      });
+    }
+
+    if (memberEventsReset) {
+      memberEventsReset.addEventListener("click", function () {
+        resetEventsForm();
+        setEventsStatus("Form cleared.");
+      });
+    }
+
+    if (memberEventsPrevPage) {
+      memberEventsPrevPage.addEventListener("click", function () {
+        if (memberEventsPage <= 1) return;
+        memberEventsPage -= 1;
+        renderEventsPage();
+      });
+    }
+
+    if (memberEventsNextPage) {
+      memberEventsNextPage.addEventListener("click", function () {
+        if (memberEventsPage >= getEventsTotalPages()) return;
+        memberEventsPage += 1;
+        renderEventsPage();
+      });
+    }
+
+    if (memberEventsPageSizeSelect) {
+      memberEventsPageSizeSelect.addEventListener("change", function () {
+        var parsed = Number(memberEventsPageSizeSelect.value);
+        if (!Number.isFinite(parsed) || parsed <= 0) return;
+        memberEventsPageSize = parsed;
+        memberEventsPage = 1;
+        renderEventsPage();
+      });
+    }
+
+    if (memberEventsForm) {
+      memberEventsForm.addEventListener("submit", async function (ev) {
+        ev.preventDefault();
+        if (!window.SNHMemberPortal || !window.SNHMemberPortal.saveEventForAdmin) return;
+        var title = trimOrEmpty(memberEventsTitle ? memberEventsTitle.value : "");
+        if (!title) {
+          setEventsStatus("Title is required.");
+          return;
+        }
+        var payload = {
+          id: trimOrEmpty(memberEventsId ? memberEventsId.value : ""),
+          title: title,
+          starts_at: toIsoOrNull(memberEventsStartsAt ? memberEventsStartsAt.value : ""),
+          location: trimOrEmpty(memberEventsLocation ? memberEventsLocation.value : ""),
+          external_url: trimOrEmpty(memberEventsUrl ? memberEventsUrl.value : ""),
+          source: trimOrEmpty(memberEventsSource ? memberEventsSource.value : "") || "manual",
+          description: trimOrEmpty(memberEventsDescription ? memberEventsDescription.value : ""),
+          published: !!(memberEventsPublished && memberEventsPublished.checked),
+          is_historical: !!(memberEventsHistorical && memberEventsHistorical.checked)
+        };
+        try {
+          setEventsStatus("Saving event…");
+          await window.SNHMemberPortal.saveEventForAdmin(payload);
+          resetEventsForm();
+          if (onEventsPanelShown) await onEventsPanelShown();
+          setEventsStatus("Event saved.");
+        } catch (err) {
+          setEventsStatus("Could not save event: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+        }
+      });
+    }
+
+    if (memberEventsTableBody) {
+      memberEventsTableBody.addEventListener("click", async function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest("button[data-event-action]") : null;
+        if (!btn || !window.SNHMemberPortal) return;
+        var action = btn.getAttribute("data-event-action");
+        var eventId = btn.getAttribute("data-event-id");
+        if (!action || !eventId) return;
+        var row = memberEventsCache[String(eventId)];
+        if (!row) return;
+
+        if (action === "edit") {
+          setEventsFormFromRow(row);
+          highlightEventTableRow(row.id);
+          focusAndHighlightEventsEditor();
+          setEventsStatus("Editing: " + (row.title || "(untitled)"));
+          return;
+        }
+
+        if (action === "toggle-publish") {
+          try {
+            setEventsStatus("Updating publish state…");
+            await window.SNHMemberPortal.saveEventForAdmin({
+              id: row.id,
+              title: row.title || "Untitled Event",
+              starts_at: row.starts_at || null,
+              location: row.location || "",
+              external_url: row.external_url || "",
+              source: row.source || "manual",
+              description: row.description || "",
+              published: !row.published,
+              is_historical: !!row.is_historical
+            });
+            if (onEventsPanelShown) await onEventsPanelShown();
+            setEventsStatus("Publish state updated.");
+          } catch (errToggle) {
+            setEventsStatus("Could not update publish state: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(errToggle));
+          }
+          return;
+        }
+
+        if (action === "delete") {
+          if (!window.confirm('Delete event "' + (row.title || "(untitled)") + '"?')) return;
+          try {
+            setEventsStatus("Deleting event…");
+            await window.SNHMemberPortal.deleteEventForAdmin(row.id);
+            if (onEventsPanelShown) await onEventsPanelShown();
+            setEventsStatus("Event deleted.");
+          } catch (errDelete) {
+            setEventsStatus("Could not delete event: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(errDelete));
+          }
+        }
       });
     }
 
