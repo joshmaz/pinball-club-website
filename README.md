@@ -77,6 +77,26 @@ Required repository secrets:
 - Use Row Level Security for all sensitive tables.
 - Member role management is implemented via `member_roles` + admin RPCs in `supabase/migrations/`.
 
+## Supabase CLI workflow (hosted)
+
+Use migration files as the source of truth across all workstations.
+
+1. Install CLI and authenticate once:
+   - `supabase login`
+2. Link this repo to the hosted project (run from repo root):
+   - `supabase link --project-ref <project-ref>`
+3. For schema changes:
+   - add SQL migration files under `supabase/migrations/`
+   - apply to hosted with `supabase db push`
+4. Verify migration parity:
+   - `supabase migration list --linked`
+
+Rules:
+- Do not edit migration files that were already applied; create a new forward migration.
+- If schema was applied manually and history drift occurs, reconcile ledger only:
+  - `supabase migration repair --linked --status applied <versions...>`
+- Use `migration repair` only for migration history reconciliation, not for making schema changes.
+
 ## Content and data workflows
 
 - Events and games are primarily data-driven from JSON in `data/`.
