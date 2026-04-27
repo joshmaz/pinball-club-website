@@ -14,6 +14,8 @@ as $$
       'membership_admin',
       'events_editor',
       'events_admin',
+      'photos_editor',
+      'photos_admin',
       'games_editor',
       'games_admin'
     ]::text[]
