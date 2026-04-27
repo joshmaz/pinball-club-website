@@ -66,6 +66,21 @@ Workflow steps:
 - run `node scripts/write-config.mjs` using GitHub Actions secrets
 - publish the repository root to GitHub Pages
 
+## Events JSON refresh from Supabase
+
+Use Supabase as the editable source of truth for events, then periodically export a fresh fallback/backup JSON file:
+
+```bash
+node --env-file=.env scripts/export-events-json-from-supabase.mjs
+```
+
+This writes the latest `public.events` rows to `data/events.json`.
+
+Required env vars for this export:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
 Required repository secrets:
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
