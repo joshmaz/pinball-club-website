@@ -126,7 +126,6 @@ async function main() {
       external_url: safeUrl(row.url || row.external_url),
       source: cleanText(row.source, 80) || "json_backfill",
       published: true,
-      is_historical: true,
     };
     event.legacy_import_key = makeLegacyImportKey(event);
     normalized.push(event);
