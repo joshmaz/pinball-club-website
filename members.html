@@ -260,11 +260,6 @@
               Published (visible on public Events page)
             </label>
 
-            <label class="members-checkbox-label">
-              <input id="member-events-historical" type="checkbox">
-              Historical event
-            </label>
-
             <p class="members-admin-toolbar">
               <button type="submit" class="members-events-form-action">Save event</button>
               <button type="button" class="members-events-form-action" id="member-events-reset">Clear form</button>
@@ -368,7 +363,6 @@
     var memberEventsSource = document.getElementById("member-events-source");
     var memberEventsDescription = document.getElementById("member-events-description");
     var memberEventsPublished = document.getElementById("member-events-published");
-    var memberEventsHistorical = document.getElementById("member-events-historical");
     var memberEventsReset = document.getElementById("member-events-reset");
     var memberEventsTableBody = document.getElementById("member-events-table-body");
     var memberEventsPrevPage = document.getElementById("member-events-prev-page");
@@ -830,7 +824,6 @@
       memberEventsForm.reset();
       if (memberEventsId) memberEventsId.value = "";
       if (memberEventsPublished) memberEventsPublished.checked = true;
-      if (memberEventsHistorical) memberEventsHistorical.checked = false;
     }
 
     function setEventsFormFromRow(row) {
@@ -843,7 +836,6 @@
       if (memberEventsSource) memberEventsSource.value = row.source || "";
       if (memberEventsDescription) memberEventsDescription.value = row.description || "";
       if (memberEventsPublished) memberEventsPublished.checked = !!row.published;
-      if (memberEventsHistorical) memberEventsHistorical.checked = !!row.is_historical;
     }
 
     function focusAndHighlightEventsEditor() {
@@ -1040,8 +1032,7 @@
           external_url: trimOrEmpty(memberEventsUrl ? memberEventsUrl.value : ""),
           source: trimOrEmpty(memberEventsSource ? memberEventsSource.value : "") || "manual",
           description: trimOrEmpty(memberEventsDescription ? memberEventsDescription.value : ""),
-          published: !!(memberEventsPublished && memberEventsPublished.checked),
-          is_historical: !!(memberEventsHistorical && memberEventsHistorical.checked)
+          published: !!(memberEventsPublished && memberEventsPublished.checked)
         };
         try {
           setEventsStatus("Saving event…");
@@ -1084,8 +1075,7 @@
               external_url: row.external_url || "",
               source: row.source || "manual",
               description: row.description || "",
-              published: !row.published,
-              is_historical: !!row.is_historical
+              published: !row.published
             });
             if (onEventsPanelShown) await onEventsPanelShown();
             setEventsStatus("Publish state updated.");

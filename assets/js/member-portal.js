@@ -468,7 +468,7 @@
     if (!client) return null;
     var result = await client
       .from("events")
-      .select("id,title,description,location,starts_at,external_url,source,published,is_historical,updated_at")
+      .select("id,title,description,location,starts_at,external_url,source,published,updated_at")
       .order("starts_at", { ascending: false, nullsFirst: false })
       .limit(500);
     if (result.error) return null;
@@ -485,8 +485,7 @@
       starts_at: eventInput.starts_at || null,
       external_url: eventInput.external_url || null,
       source: eventInput.source || "manual",
-      published: !!eventInput.published,
-      is_historical: !!eventInput.is_historical
+      published: !!eventInput.published
     };
     if (eventInput.id) {
       payload.id = eventInput.id;
