@@ -227,7 +227,7 @@
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h3>Events</h3>
-          <p class="member-panel-intro">Create and manage events that appear on the public Events page. Requires <strong>events_editor</strong>, <strong>events_admin</strong>, or <strong>club_admin</strong>.</p>
+          <p id="member-events-intro" class="member-panel-intro">Create and manage events that appear on the public Events page. Requires <strong>events_editor</strong>, <strong>events_admin</strong>, or <strong>club_admin</strong>.</p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
@@ -352,6 +352,7 @@
     var memberAdminGrantForm = document.getElementById("member-admin-grant-form");
     var memberAdminGrantMember = document.getElementById("member-admin-grant-member");
     var memberAdminGrantRole = document.getElementById("member-admin-grant-role");
+    var memberEventsIntro = document.getElementById("member-events-intro");
     var memberEventsStatus = document.getElementById("member-events-status");
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
@@ -548,6 +549,31 @@
       }
     }
 
+    function setEventsPanelIntro(userRolesList) {
+      if (!memberEventsIntro) return;
+      var allowedRoles = ["events_editor", "events_admin", "club_admin"];
+      var grantingRole = "";
+      for (var i = 0; i < allowedRoles.length; i += 1) {
+        if ((userRolesList || []).indexOf(allowedRoles[i]) !== -1) {
+          grantingRole = allowedRoles[i];
+          break;
+        }
+      }
+      var baseCopy =
+        'Create and manage events that appear on the public Events page. Requires <strong>events_editor</strong>, <strong>events_admin</strong>, or <strong>club_admin</strong>.';
+      if (grantingRole) {
+        baseCopy += ' Your access is granted by <strong>' + grantingRole + "</strong>.";
+      }
+      memberEventsIntro.innerHTML = baseCopy;
+    }
+
+    function userCanDeleteEvents(userRolesList) {
+      return window.SNHMemberPortal.memberHasAnyRole(
+        userRolesList || [],
+        "events_admin,club_admin"
+      );
+    }
+
     function initialPanelFromHash() {
       var raw = window.location.hash || "";
       if (raw.indexOf("type=recovery") !== -1) return "profile";
@@ -624,6 +650,7 @@
       }
     }
     applyRbacNav(userRoles);
+    setEventsPanelIntro(userRoles);
 
     onMemberAdminPanelShown = async function () {
       if (!window.SNHMemberPortal) return;
@@ -914,13 +941,15 @@
         publishBtn.setAttribute("data-event-id", String(row.id));
         tdActions.appendChild(publishBtn);
 
-        var deleteBtn = document.createElement("button");
-        deleteBtn.type = "button";
-        deleteBtn.className = "members-admin-revoke";
-        deleteBtn.textContent = "Delete";
-        deleteBtn.setAttribute("data-event-action", "delete");
-        deleteBtn.setAttribute("data-event-id", String(row.id));
-        tdActions.appendChild(deleteBtn);
+        if (userCanDeleteEvents(userRoles)) {
+          var deleteBtn = document.createElement("button");
+          deleteBtn.type = "button";
+          deleteBtn.className = "members-admin-revoke";
+          deleteBtn.textContent = "Delete";
+          deleteBtn.setAttribute("data-event-action", "delete");
+          deleteBtn.setAttribute("data-event-id", String(row.id));
+          tdActions.appendChild(deleteBtn);
+        }
 
         tr.appendChild(tdTitle);
         tr.appendChild(tdDate);
@@ -1086,6 +1115,10 @@
         }
 
         if (action === "delete") {
+          if (!userCanDeleteEvents(userRoles)) {
+            setEventsStatus("Only events_admin or club_admin can delete events.");
+            return;
+          }
           if (!window.confirm('Delete event "' + (row.title || "(untitled)") + '"?')) return;
           try {
             setEventsStatus("Deleting event…");
