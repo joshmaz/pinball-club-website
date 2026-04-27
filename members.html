@@ -64,7 +64,7 @@
               Membership
             </button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="club_admin,members_manager">
+          <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
             <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Members: statistics and role management">
               Members
             </button>
@@ -74,7 +74,7 @@
               Events
             </button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="photos_editor,photos_admin,club_admin">
+          <li data-member-rbac-nav data-rbac-roles="club_admin">
             <button type="button" class="members-sidebar-link" data-member-panel="photos" id="member-nav-photos" aria-controls="member-panel-photos">
               Photos
             </button>
@@ -183,7 +183,7 @@
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
           <h3>Members</h3>
-          <p class="member-panel-intro">Overview of membership data, the member directory, and assigning RBAC roles. Requires <strong>club_admin</strong> or <strong>members_manager</strong> on your account. Database migrations must include the admin RPCs.</p>
+          <p class="member-panel-intro">Overview of membership data, the member directory, and assigning RBAC roles. Requires <strong>membership_editor</strong>, <strong>membership_admin</strong>, or <strong>club_admin</strong> on your account. Database migrations must include the admin RPCs.</p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
 
           <h3>Overview</h3>
@@ -549,9 +549,43 @@
       }
     }
 
+    function roleListToDisplay(rolesList) {
+      var out = [];
+      for (var i = 0; i < (rolesList || []).length; i += 1) {
+        out.push("<strong>" + String(rolesList[i]) + "</strong>");
+      }
+      if (out.length <= 1) return out[0] || "";
+      if (out.length === 2) return out[0] + " or " + out[1];
+      return out.slice(0, out.length - 1).join(", ") + ", or " + out[out.length - 1];
+    }
+
+    function syncRbacRoleDatasets() {
+      var portal = window.SNHMemberPortal || {};
+      var groups = portal.ROLE_GROUPS || {};
+      var toCsv = portal.rolesToCsv || function (arr) { return (arr || []).join(","); };
+      var panelRoleMap = {
+        "member-admin": groups.MEMBERSHIP_MANAGE_ACCESS || ["membership_editor", "membership_admin", "club_admin"],
+        events: groups.EVENTS_MANAGE_ACCESS || ["events_editor", "events_admin", "club_admin"],
+        photos: groups.PHOTOS_ACCESS || ["club_admin"],
+        games: groups.GAMES_ACCESS || ["games_editor", "games_admin", "club_admin"]
+      };
+      for (var panelId in panelRoleMap) {
+        if (!Object.prototype.hasOwnProperty.call(panelRoleMap, panelId)) continue;
+        var btn = document.querySelector('button[data-member-panel="' + panelId + '"]');
+        var li = btn && btn.closest ? btn.closest("li") : null;
+        if (li && li.hasAttribute("data-member-rbac-nav")) {
+          li.setAttribute("data-rbac-roles", toCsv(panelRoleMap[panelId]));
+        }
+      }
+    }
+
     function setEventsPanelIntro(userRolesList) {
       if (!memberEventsIntro) return;
-      var allowedRoles = ["events_editor", "events_admin", "club_admin"];
+      var allowedRoles =
+        (window.SNHMemberPortal &&
+          window.SNHMemberPortal.ROLE_GROUPS &&
+          window.SNHMemberPortal.ROLE_GROUPS.EVENTS_MANAGE_ACCESS) ||
+        ["events_editor", "events_admin", "club_admin"];
       var grantingRole = "";
       for (var i = 0; i < allowedRoles.length; i += 1) {
         if ((userRolesList || []).indexOf(allowedRoles[i]) !== -1) {
@@ -559,8 +593,7 @@
           break;
         }
       }
-      var baseCopy =
-        'Create and manage events that appear on the public Events page. Requires <strong>events_editor</strong>, <strong>events_admin</strong>, or <strong>club_admin</strong>.';
+      var baseCopy = "Create and manage events that appear on the public Events page. Requires " + roleListToDisplay(allowedRoles) + ".";
       if (grantingRole) {
         baseCopy += ' Your access is granted by <strong>' + grantingRole + "</strong>.";
       }
@@ -568,9 +601,17 @@
     }
 
     function userCanDeleteEvents(userRolesList) {
+      var deleteRoles =
+        (window.SNHMemberPortal &&
+          window.SNHMemberPortal.ROLE_GROUPS &&
+          window.SNHMemberPortal.ROLE_GROUPS.EVENTS_DELETE_ACCESS) ||
+        ["events_admin", "club_admin"];
+      var roleCsv =
+        (window.SNHMemberPortal && window.SNHMemberPortal.rolesToCsv && window.SNHMemberPortal.rolesToCsv(deleteRoles)) ||
+        "events_admin,club_admin";
       return window.SNHMemberPortal.memberHasAnyRole(
         userRolesList || [],
-        "events_admin,club_admin"
+        roleCsv
       );
     }
 
@@ -603,6 +644,8 @@
       setPageStatus("Member tools are temporarily unavailable. Please refresh and try again.");
       return;
     }
+
+    syncRbacRoleDatasets();
 
     if (window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation) {
       window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation();
@@ -662,8 +705,15 @@
 
       var stats = await window.SNHMemberPortal.fetchMemberAdminStats();
       if (!stats) {
+        var memberAdminRoles =
+          (window.SNHMemberPortal &&
+            window.SNHMemberPortal.ROLE_GROUPS &&
+            window.SNHMemberPortal.ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS) ||
+          ["membership_editor", "membership_admin", "club_admin"];
         setAdminStatus(
-          "Could not load admin data. Apply migrations (including member admin RPCs) and ensure your account has club_admin or members_manager."
+          "Could not load admin data. Apply migrations (including member admin RPCs) and ensure your account has " +
+            memberAdminRoles.join(" or ") +
+            "."
         );
         if (memberAdminTableBody) memberAdminTableBody.innerHTML = "";
         return;
@@ -1115,8 +1165,13 @@
         }
 
         if (action === "delete") {
+          var deleteRolesForMessage =
+            (window.SNHMemberPortal &&
+              window.SNHMemberPortal.ROLE_GROUPS &&
+              window.SNHMemberPortal.ROLE_GROUPS.EVENTS_DELETE_ACCESS) ||
+            ["events_admin", "club_admin"];
           if (!userCanDeleteEvents(userRoles)) {
-            setEventsStatus("Only events_admin or club_admin can delete events.");
+            setEventsStatus("Only " + deleteRolesForMessage.join(" or ") + " can delete events.");
             return;
           }
           if (!window.confirm('Delete event "' + (row.title || "(untitled)") + '"?')) return;

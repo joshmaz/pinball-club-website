@@ -397,17 +397,38 @@
     return parsed.toLocaleDateString();
   }
 
-  /** Role slugs assignable from the member admin panel (matches member_roles check + portal RBAC). */
-  var ASSIGNABLE_MEMBER_ROLES = Object.freeze([
-    "club_admin",
-    "members_manager",
-    "events_editor",
-    "events_admin",
-    "photos_editor",
-    "photos_admin",
-    "games_editor",
-    "games_admin"
-  ]);
+  /** Canonical role groups used by members UI + Supabase policy assumptions. */
+  var ROLE_GROUPS = Object.freeze({
+    MEMBERSHIP_MANAGE_ACCESS: Object.freeze(["membership_editor", "membership_admin", "club_admin"]),
+    EVENTS_MANAGE_ACCESS: Object.freeze(["events_editor", "events_admin", "club_admin"]),
+    EVENTS_DELETE_ACCESS: Object.freeze(["events_admin", "club_admin"]),
+    PHOTOS_ACCESS: Object.freeze(["club_admin"]),
+    GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"])
+  });
+
+  function uniqueRoleList(roleArrays) {
+    var out = [];
+    for (var i = 0; i < roleArrays.length; i += 1) {
+      var arr = roleArrays[i] || [];
+      for (var j = 0; j < arr.length; j += 1) {
+        if (out.indexOf(arr[j]) === -1) out.push(arr[j]);
+      }
+    }
+    return out;
+  }
+
+  function rolesToCsv(rolesList) {
+    return (rolesList || []).join(",");
+  }
+
+  /** Role slugs assignable from the member admin panel (matches portal RBAC groups). */
+  var ASSIGNABLE_MEMBER_ROLES = Object.freeze(
+    uniqueRoleList([
+      ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS,
+      ROLE_GROUPS.EVENTS_MANAGE_ACCESS,
+      ROLE_GROUPS.GAMES_ACCESS
+    ])
+  );
 
   async function fetchMemberAdminStats() {
     var client = getClient();
@@ -519,6 +540,8 @@
     fetchMembership: fetchMembership,
     fetchMemberRoles: fetchMemberRoles,
     memberHasAnyRole: memberHasAnyRole,
+    ROLE_GROUPS: ROLE_GROUPS,
+    rolesToCsv: rolesToCsv,
     ASSIGNABLE_MEMBER_ROLES: ASSIGNABLE_MEMBER_ROLES,
     fetchMemberAdminStats: fetchMemberAdminStats,
     listMembersForAdmin: listMembersForAdmin,

@@ -92,6 +92,31 @@ Required repository secrets:
 - Use Row Level Security for all sensitive tables.
 - Member role management is implemented via `member_roles` + admin RPCs in `supabase/migrations/`.
 
+## Role vocabulary
+
+Use these canonical `member_roles.role_slug` values in UI checks, RPC checks, and SQL policies:
+
+- `membership_editor` - can access member directory/role-management tools.
+- `membership_admin` - can access member directory/role-management tools.
+- `events_editor` - can create and update events.
+- `events_admin` - can create, update, and delete events.
+- `games_editor` - games tools/editor scope.
+- `games_admin` - games tools/admin scope.
+- `club_admin` - global override across member portal admin areas.
+
+Role model conventions:
+
+- Membership, Events, and Games each use `*_editor` + `*_admin`.
+- `club_admin` is the cross-domain super-role.
+- Add new role slugs only through forward migrations and keep frontend constants/messages in sync.
+
+Quick mapping (where to update):
+
+- Frontend role groups and assignable role list: `assets/js/member-portal.js` (`ROLE_GROUPS`, `ASSIGNABLE_MEMBER_ROLES`).
+- Member portal role-gated navigation/copy: `members.html`.
+- DB allowlist enforcement for role grants: `supabase/migrations/20260427201536_member_role_slug_allowlist.sql`.
+- DB authorization for member admin RPC access: `supabase/migrations/20260427202201_membership_role_manager_access.sql`.
+
 ## Supabase CLI workflow (hosted)
 
 Use migration files as the source of truth across all workstations.
