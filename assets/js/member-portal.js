@@ -402,7 +402,7 @@
     MEMBERSHIP_MANAGE_ACCESS: Object.freeze(["membership_editor", "membership_admin", "club_admin"]),
     EVENTS_MANAGE_ACCESS: Object.freeze(["events_editor", "events_admin", "club_admin"]),
     EVENTS_DELETE_ACCESS: Object.freeze(["events_admin", "club_admin"]),
-    PHOTOS_ACCESS: Object.freeze(["club_admin"]),
+    PHOTOS_ACCESS: Object.freeze(["photos_editor", "photos_admin", "club_admin"]),
     GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"])
   });
 
@@ -426,6 +426,7 @@
     uniqueRoleList([
       ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS,
       ROLE_GROUPS.EVENTS_MANAGE_ACCESS,
+      ROLE_GROUPS.PHOTOS_ACCESS,
       ROLE_GROUPS.GAMES_ACCESS
     ])
   );
