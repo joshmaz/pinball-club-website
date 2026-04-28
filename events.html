@@ -6,6 +6,9 @@
     <meta name="description" content="Southern New Hampshire Pinball Club event calendar and archives: tournaments, leagues, open houses, and past seasons. Updates while we move to a new home.">
     <title>SNHPC - Events</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
     <header>
@@ -32,8 +35,40 @@
         <section class="content">
             <p>For more than a decade we&rsquo;ve hosted pinball at the club—including a <a href="resources.html#nepl">New England Pinball League</a> location since 2016—plus open houses, tournaments, and more. While we&rsquo;re between spaces, full in-club programming is on hold; <strong>event announcements</strong> still go to <a href="https://www.facebook.com/snhpinball/events" target="_blank" rel="noopener noreferrer">Facebook events</a> first.</p>
             <p>Browse <strong>upcoming</strong> and <strong>past events</strong> below. For ten years of history, explore past seasons by year.</p>
+
             <!-- Dynamic event content will be injected here by events.js -->
             <div id="events-container"></div>
+
+            <section class="event-spotlight event-spotlight--after-calendar" aria-labelledby="apw-spotlight-title">
+                <div class="event-spotlight-head">
+                    <img src="assets/images/american_pinball_warrior.jpg" alt="American Pinball Warrior tournament" class="event-spotlight-logo" loading="lazy" decoding="async">
+                    <div class="event-spotlight-intro">
+                        <h3 id="apw-spotlight-title">American Pinball Warrior at Pintastic</h3>
+                        <p>SNHPC helped host this American Pinball tournament during <a href="https://www.pintasticnewengland.com" target="_blank" rel="noopener noreferrer">Pintastic New England</a> in the club rooms. A few photos from the floor.</p>
+                    </div>
+                </div>
+                <div class="event-spotlight-grid" aria-label="American Pinball Warrior at Pintastic photos">
+                    <figure class="event-spotlight-card">
+                        <img src="assets/images/events/2026/pintastic_american_pinball_warrior/IMG_7415.jpg" alt="Tournament play on the American Pinball Warrior floor" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="event-spotlight-card">
+                        <img src="assets/images/events/2026/pintastic_american_pinball_warrior/IMG_7444.jpg" alt="Players and machines during the Warrior event" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="event-spotlight-card">
+                        <img src="assets/images/events/2026/pintastic_american_pinball_warrior/IMG_7446.jpg" alt="Pinball machines lined up for competition" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="event-spotlight-card">
+                        <img src="assets/images/events/2026/pintastic_american_pinball_warrior/IMG_7457.jpg" alt="Competitors at the American Pinball Warrior tournament" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="event-spotlight-card">
+                        <img src="assets/images/events/2026/pintastic_american_pinball_warrior/IMG_7462.jpg" alt="Tournament crowd and games in the club rooms" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="event-spotlight-card">
+                        <img src="assets/images/events/2026/pintastic_american_pinball_warrior/IMG_7472.jpg" alt="American Pinball Warrior event at Pintastic" loading="lazy" decoding="async">
+                    </figure>
+                </div>
+            </section>
+
             <p>Day-to-day chat is moving to <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>. We still monitor <a href="https://snhpc.slack.com/" target="_blank" rel="noopener noreferrer">Slack</a> during the transition. General updates: <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">Facebook</a>.</p>
         </section>
     </main>

@@ -80,6 +80,9 @@
     return err.message;
   }
 
+  var EXTERNAL_PROVIDER_IFPA = "ifpa";
+  var EXTERNAL_PROVIDER_STERN = "stern_insider";
+
   async function getSession() {
     var client = getClient();
     if (!client) return null;
@@ -180,13 +183,15 @@
       first_name: "",
       last_name: "",
       display_name: "",
+      avatar_url: "",
+      ifpa_player_id: "",
       stern_insider_username: ""
     };
     if (!client) return base;
 
     var result = await client
       .from("members")
-      .select("id,user_id,email,first_name,last_name,display_name,stern_insider_username,created_at")
+      .select("id,user_id,email,first_name,last_name,display_name,avatar_url,created_at")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -197,28 +202,54 @@
       base = result.data;
     }
 
-    var user = null;
-    var userResult = await client.auth.getUser();
-    if (userResult && userResult.data && userResult.data.user && !userResult.error) {
-      user = userResult.data.user;
+    var externalRows = [];
+    var externalRpc = await client.rpc("snh_get_my_external_accounts");
+    if (!externalRpc.error) {
+      var rpcData = externalRpc.data;
+      if (typeof rpcData === "string") {
+        try {
+          rpcData = JSON.parse(rpcData);
+        } catch (e) {
+          rpcData = [];
+        }
+      }
+      if (Array.isArray(rpcData)) {
+        externalRows = rpcData;
+      } else if (rpcData && typeof rpcData === "object") {
+        externalRows = [rpcData];
+      }
+    } else if (base.id) {
+      var externalResult = await client
+        .from("external_accounts")
+        .select("provider_slug,account_handle,account_url")
+        .eq("member_id", base.id);
+      if (!externalResult.error && Array.isArray(externalResult.data)) {
+        externalRows = externalResult.data;
+      }
     }
-    var meta = (user && user.user_metadata) || {};
-    base.avatar_url = typeof meta.avatar_url === "string" ? meta.avatar_url : "";
-    base.ifpa_player_id = readIfpaPlayerIdFromMetadata(meta);
-    return base;
-  }
 
-  function readIfpaPlayerIdFromMetadata(meta) {
-    meta = meta || {};
-    if (meta.ifpa_player_id != null && String(meta.ifpa_player_id).trim() !== "") {
-      var id = String(meta.ifpa_player_id).replace(/\D/g, "").slice(0, 12);
-      if (id) return id;
+    for (var i = 0; i < externalRows.length; i += 1) {
+      var ext = externalRows[i] || {};
+      var slug = String(ext.provider_slug || "").toLowerCase();
+      if (slug === EXTERNAL_PROVIDER_IFPA || slug === "ifpa_player" || slug === "ifpa_profile") {
+        var ifpaDigits = String(ext.account_handle || "").replace(/\D/g, "").slice(0, 12);
+        if (ifpaDigits) {
+          base.ifpa_player_id = ifpaDigits;
+        }
+      } else if (
+        slug === EXTERNAL_PROVIDER_STERN ||
+        slug === "stern" ||
+        slug === "sterninsider" ||
+        slug === "stern_insider_username"
+      ) {
+        var sternHandle = String(ext.account_handle || "").trim();
+        if (sternHandle) {
+          base.stern_insider_username = sternHandle;
+        }
+      }
     }
-    if (typeof meta.ifpa_profile_url === "string") {
-      var m = meta.ifpa_profile_url.match(/[?&]p=(\d+)/i);
-      if (m && m[1]) return m[1].slice(0, 12);
-    }
-    return "";
+
+    return base;
   }
 
   /** Canonical IFPA web profile URL for a numeric player id (digits only, max 12). */
@@ -226,6 +257,27 @@
     var id = playerId ? String(playerId).replace(/\D/g, "").slice(0, 12) : "";
     if (!id) return "";
     return "https://www.ifpapinball.com/player.php?p=" + id;
+  }
+
+  async function upsertExternalAccount(memberId, providerSlug, accountHandle, accountUrl) {
+    var client = getClient();
+    if (!client || !memberId || !providerSlug) return;
+    var handle = accountHandle ? String(accountHandle).trim() : "";
+    var url = accountUrl ? String(accountUrl).trim() : "";
+    if (!handle && !url) {
+      await client.from("external_accounts").delete().eq("member_id", memberId).eq("provider_slug", providerSlug);
+      return;
+    }
+    var result = await client.from("external_accounts").upsert(
+      {
+        member_id: memberId,
+        provider_slug: providerSlug,
+        account_handle: handle,
+        account_url: url
+      },
+      { onConflict: "member_id,provider_slug" }
+    );
+    if (result.error) throw result.error;
   }
 
   async function upsertProfile(profile) {
@@ -239,34 +291,31 @@
       last_name: profile.last_name,
       display_name: profile.display_name
     };
-    if (Object.prototype.hasOwnProperty.call(profile, "stern_insider_username")) {
-      row.stern_insider_username = profile.stern_insider_username;
+    if (Object.prototype.hasOwnProperty.call(profile, "avatar_url")) {
+      row.avatar_url = profile.avatar_url ? String(profile.avatar_url).trim() : "";
     }
     var result = await client
       .from("members")
       .upsert(row, { onConflict: "user_id" })
-      .select("id,user_id,email,first_name,last_name,display_name,stern_insider_username,created_at")
+      .select("id,user_id,email,first_name,last_name,display_name,avatar_url,created_at")
       .single();
     if (result.error) throw result.error;
 
-    var wantsMeta =
-      Object.prototype.hasOwnProperty.call(profile, "avatar_url") ||
-      Object.prototype.hasOwnProperty.call(profile, "ifpa_player_id");
-    if (wantsMeta) {
-      var sessionResult = await client.auth.getSession();
-      var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
-      var existing = (session && session.user && session.user.user_metadata) || {};
-      var nextMeta = Object.assign({}, existing);
-      if (Object.prototype.hasOwnProperty.call(profile, "avatar_url")) {
-        nextMeta.avatar_url = profile.avatar_url ? String(profile.avatar_url).trim() : "";
-      }
-      if (Object.prototype.hasOwnProperty.call(profile, "ifpa_player_id")) {
-        var ifpaDigits = profile.ifpa_player_id ? String(profile.ifpa_player_id).replace(/\D/g, "").slice(0, 12) : "";
-        nextMeta.ifpa_player_id = ifpaDigits;
-        nextMeta.ifpa_profile_url = "";
-      }
-      var metaResult = await client.auth.updateUser({ data: nextMeta });
-      if (metaResult.error) throw metaResult.error;
+    var memberId = result && result.data && result.data.id ? result.data.id : "";
+    if (memberId) {
+      var ifpaDigitsForExternal = Object.prototype.hasOwnProperty.call(profile, "ifpa_player_id")
+        ? String(profile.ifpa_player_id || "").replace(/\D/g, "").slice(0, 12)
+        : "";
+      var sternHandleForExternal = Object.prototype.hasOwnProperty.call(profile, "stern_insider_username")
+        ? String(profile.stern_insider_username || "").trim()
+        : "";
+      await upsertExternalAccount(
+        memberId,
+        EXTERNAL_PROVIDER_IFPA,
+        ifpaDigitsForExternal,
+        buildIfpaPlayerProfileUrl(ifpaDigitsForExternal)
+      );
+      await upsertExternalAccount(memberId, EXTERNAL_PROVIDER_STERN, sternHandleForExternal, "");
     }
 
     return result.data;
@@ -348,17 +397,39 @@
     return parsed.toLocaleDateString();
   }
 
-  /** Role slugs assignable from the member admin panel (matches member_roles check + portal RBAC). */
-  var ASSIGNABLE_MEMBER_ROLES = Object.freeze([
-    "club_admin",
-    "members_manager",
-    "events_editor",
-    "events_admin",
-    "photos_editor",
-    "photos_admin",
-    "games_editor",
-    "games_admin"
-  ]);
+  /** Canonical role groups used by members UI + Supabase policy assumptions. */
+  var ROLE_GROUPS = Object.freeze({
+    MEMBERSHIP_MANAGE_ACCESS: Object.freeze(["membership_editor", "membership_admin", "club_admin"]),
+    EVENTS_MANAGE_ACCESS: Object.freeze(["events_editor", "events_admin", "club_admin"]),
+    EVENTS_DELETE_ACCESS: Object.freeze(["events_admin", "club_admin"]),
+    PHOTOS_ACCESS: Object.freeze(["photos_editor", "photos_admin", "club_admin"]),
+    GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"])
+  });
+
+  function uniqueRoleList(roleArrays) {
+    var out = [];
+    for (var i = 0; i < roleArrays.length; i += 1) {
+      var arr = roleArrays[i] || [];
+      for (var j = 0; j < arr.length; j += 1) {
+        if (out.indexOf(arr[j]) === -1) out.push(arr[j]);
+      }
+    }
+    return out;
+  }
+
+  function rolesToCsv(rolesList) {
+    return (rolesList || []).join(",");
+  }
+
+  /** Role slugs assignable from the member admin panel (matches portal RBAC groups). */
+  var ASSIGNABLE_MEMBER_ROLES = Object.freeze(
+    uniqueRoleList([
+      ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS,
+      ROLE_GROUPS.EVENTS_MANAGE_ACCESS,
+      ROLE_GROUPS.PHOTOS_ACCESS,
+      ROLE_GROUPS.GAMES_ACCESS
+    ])
+  );
 
   async function fetchMemberAdminStats() {
     var client = getClient();
@@ -414,6 +485,49 @@
     if (result.error) throw result.error;
   }
 
+  async function listEventsForAdmin() {
+    var client = getClient();
+    if (!client) return null;
+    var result = await client
+      .from("events")
+      .select("id,title,description,location,starts_at,external_url,source,published,updated_at")
+      .order("starts_at", { ascending: false, nullsFirst: false })
+      .limit(500);
+    if (result.error) return null;
+    return Array.isArray(result.data) ? result.data : [];
+  }
+
+  async function saveEventForAdmin(eventInput) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var payload = {
+      title: eventInput.title,
+      description: eventInput.description || null,
+      location: eventInput.location || null,
+      starts_at: eventInput.starts_at || null,
+      external_url: eventInput.external_url || null,
+      source: eventInput.source || "manual",
+      published: !!eventInput.published
+    };
+    if (eventInput.id) {
+      payload.id = eventInput.id;
+    }
+    var result = await client
+      .from("events")
+      .upsert(payload, { onConflict: "id" })
+      .select("id")
+      .single();
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function deleteEventForAdmin(eventId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.from("events").delete().eq("id", eventId);
+    if (result.error) throw result.error;
+  }
+
   window.SNHMemberPortal = {
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
@@ -427,11 +541,16 @@
     fetchMembership: fetchMembership,
     fetchMemberRoles: fetchMemberRoles,
     memberHasAnyRole: memberHasAnyRole,
+    ROLE_GROUPS: ROLE_GROUPS,
+    rolesToCsv: rolesToCsv,
     ASSIGNABLE_MEMBER_ROLES: ASSIGNABLE_MEMBER_ROLES,
     fetchMemberAdminStats: fetchMemberAdminStats,
     listMembersForAdmin: listMembersForAdmin,
     grantMemberRole: grantMemberRole,
     revokeMemberRole: revokeMemberRole,
+    listEventsForAdmin: listEventsForAdmin,
+    saveEventForAdmin: saveEventForAdmin,
+    deleteEventForAdmin: deleteEventForAdmin,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,

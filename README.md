@@ -78,4 +78,3 @@ Supabase URL and anon key are not committed. They are generated into `assets/js/
 - The Supabase anon key is expected to be public in browser code.
 - Protect sensitive data with Row Level Security policies.
 - Never expose the Supabase service role key in frontend code or GitHub Pages secrets.
-

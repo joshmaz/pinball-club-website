@@ -108,7 +108,7 @@ RBAC for the **member portal** (`members.html`): which extra sidebar sections (E
 
 - `id` UUID PRIMARY KEY (default `gen_random_uuid()`)
 - `member_id` UUID NOT NULL REFERENCES `members(id)` ON DELETE CASCADE
-- `role_slug` TEXT NOT NULL — e.g. `events_editor`, `photos_admin`, `club_admin`, `members_manager` (lowercase `^[a-z][a-z0-9_]*$`)
+- `role_slug` TEXT NOT NULL — e.g. `membership_editor`, `membership_admin`, `events_editor`, `events_admin`, `games_editor`, `games_admin`, `club_admin` (lowercase `^[a-z][a-z0-9_]*$`)
 - `granted_at` TIMESTAMPTZ NOT NULL (default now())
 
 **Constraints**
@@ -127,7 +127,7 @@ RBAC for the **member portal** (`members.html`): which extra sidebar sections (E
 
 **Member admin RPCs** (`members.html` → `SNHMemberPortal.*`)
 
-Callable by `authenticated` users who already have **`club_admin`** or **`members_manager`** on their own `member_roles` rows (checked inside each function).
+Callable by `authenticated` users who already have **`membership_editor`**, **`membership_admin`**, or **`club_admin`** on their own `member_roles` rows (checked inside each function).
 
 | RPC | Purpose |
 |-----|---------|
@@ -141,7 +141,7 @@ Assignable slugs from the portal UI are listed in `SNHMemberPortal.ASSIGNABLE_ME
 
 **Bootstrap first admin**
 
-- Still use SQL Editor (service role): `INSERT INTO member_roles …` for at least one `club_admin` or `members_manager` row for an initial operator.
+- Still use SQL Editor (service role): `INSERT INTO member_roles …` for at least one `club_admin` (or a temporary `membership_admin`) row for an initial operator.
 
 **Slug alignment**
 
@@ -175,11 +175,13 @@ DO NOT:
 - Build custom billing
 - Store payment data
 - Overengineer backend
+- Commit directly to `main`
 
 DO:
 - Keep logic simple
 - Use Supabase for membership state
 - Use Stripe for billing
+- Create/use a feature branch for all work, then open a PR before merging to `main`
 
 ---
 
@@ -199,11 +201,31 @@ JS:
 
 # 🔄 Development Workflow
 
-1. Edit locally
-2. Commit
-3. Push
-4. Verify
-5. Iterate
+1. Create or switch to a feature branch (never commit on `main`)
+2. Edit locally
+3. Commit
+4. Push branch
+5. Open PR and review
+6. Verify
+7. Iterate
+
+---
+
+# 🗃️ Supabase Migration Workflow (CLI)
+
+- Use Supabase CLI + `supabase/migrations/*.sql` as the source of truth for schema changes.
+- Run CLI from repo root and ensure project is linked:
+  - `supabase login`
+  - `supabase link --project-ref <project-ref>`
+- Apply hosted schema changes with:
+  - `supabase db push`
+- Validate parity with:
+  - `supabase migration list --linked`
+
+Guardrails:
+- Never edit an already-applied migration; add a new forward migration.
+- Do not rely on ad-hoc SQL as normal workflow.
+- Use `supabase migration repair --linked --status applied ...` only to reconcile migration history after manual/out-of-band applies; do not use it to perform schema changes.
 
 ---
 

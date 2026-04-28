@@ -18,6 +18,9 @@ jobs:
       with:
         node-version: '20'
 
+    - name: Check events JSON for duplicates
+      run: node scripts/check-events-duplicates.mjs
+
     - name: Write public site config
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
