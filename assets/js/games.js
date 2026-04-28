@@ -548,7 +548,7 @@ async function loadGames() {
     const todayIso = todayIsoDate();
     let priorGames = [];
     let hasRenderedSnapshot = false;
-    let showAllMode = !hasAnyAtClub;
+    let showAllMode = false;
 
     if (transitionBanner) {
       transitionBanner.hidden = hasAnyAtClub;

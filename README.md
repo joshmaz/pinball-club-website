@@ -1,171 +1,80 @@
-# Southern New Hampshire Pinball Club Website
+# Pinball Club Website
 
-Public website and member portal for SNHPC. The site is static-first (GitHub Pages), with Supabase for auth/member data and Stripe planned for subscription billing lifecycle.
+Official site for the Southern New Hampshire Pinball Club, including public pages and an in-progress member portal.
 
-## Current status
+## What is live now
 
-- Public pages are live: `index.html`, `events.html`, `games.html`, `about.html`, `resources.html`, `donate.html`, and `merch.html`.
-- Member access is live through `signin.html` and `members.html` with Supabase Auth.
-- Member portal includes:
-  - sign up / sign in / sign out
-  - profile editing (`first_name`, `last_name`, `display_name`, IFPA/Stern fields)
-  - password reset and recovery flow
-  - role-aware navigation and member admin tools for authorized roles
-- Home page media is data-driven (highlights/gallery JSON + image assets).
+- Public club pages (`index.html`, `events.html`, `games.html`, `about.html`, etc.)
+- Home page "Right now" transition messaging (new venue lease update + Slack to Discord migration note)
+- Games page history explorer with:
+  - timeline slider (`Now` -> `Origins`)
+  - date jump input for custom snapshots
+  - show-all mode for full historical lineup
+  - between-locations messaging when no current lineup exists
+  - per-machine PinTips links to Match Play Events when available
+- Supabase-backed sign up and sign in
+- Member dashboard (`members.html`) with:
+  - expanded profile updates (`first_name`, `last_name`, `display_name`, `avatar_url`, `ifpa_player_id`, `stern_insider_username`)
+  - live IFPA profile link preview based on entered IFPA player number
+  - current membership status display
+  - password change for signed-in users
+  - role-gated Members admin panel backed by Supabase RPCs
+- Password recovery from `signin.html` ("Forgot Password" email flow)
 
-## Architecture
+## Membership roadmap (working notes)
 
-Frontend (static HTML/CSS/vanilla JS)
--> Supabase (Auth + Postgres with RLS)
--> Stripe (billing/subscription source of truth, integration in progress)
+- **Billing:** Stripe Checkout + webhooks will be the source of truth for paid membership state.
+- **Tiering:** support free web users who can upgrade into paid/on-prem access tiers.
+- **Admin roles:** continue iterating on admin tooling and auditing around existing role-based controls.
+- **RBAC expansion:** continue evaluating scoped permissions for areas like events, machines, and membership management.
 
-Keep concerns separate:
-- Supabase Auth: identity, sessions, and user metadata
-- Supabase DB: member profile and role/membership state used by the UI
-- Stripe: payment events and recurring billing lifecycle
+Keep auth and billing concerns separated:
 
-## Repository layout
+- Supabase Auth handles identity and sessions.
+- Stripe handles payment and subscription lifecycle.
+- Supabase database stores derived membership state (status/tier/period end) for app logic.
 
-- `index.html`, `events.html`, `games.html`, `about.html`, `resources.html`, `donate.html`, `merch.html` - public-facing pages
-- `signin.html` - sign in / sign up / password reset entry point
-- `members.html` - authenticated member portal
-- `assets/css/styles.css` - shared site styling
-- `assets/js/supabase-init.js` - Supabase client bootstrap from runtime config
-- `assets/js/member-portal.js` - auth/session, profile, membership, and role management logic
-- `assets/js/home-gallery.js` + `assets/js/home-highlights.js` - homepage media rendering
-- `assets/js/events.js`, `assets/js/games.js`, `assets/js/resources.js` - page-specific data rendering
-- `data/events.json`, `data/games.json`, `data/resources.json`, `data/highlights.json` - content/data sources
-- `supabase/migrations/` - schema + RPC migrations
-- `scripts/` - helper scripts for config generation and content sync/build tasks
+## Project layout
 
-## Local development
+- `assets/css/styles.css` - shared site styles
+- `assets/js/supabase-init.js` - creates Supabase client from runtime config
+- `assets/js/games.js` - games catalog rendering, timeline/date travel, and enrichment link behavior
+- `assets/js/member-portal.js` - auth/session helpers, profile/membership helpers, member-role/RPC helpers
+- `signin.html` - sign up/sign in experience
+- `members.html` - authenticated account page
 
-No build step is required for the static site itself; pages can be opened directly or served with any local static server.
+## Supabase notes (current implementation)
 
-Supabase-backed pages require a generated runtime config file:
+- `public.members` now stores `first_name`, `last_name`, and `stern_insider_username` alongside `display_name`.
+- Avatar URL and IFPA player id are stored in Supabase Auth `user_metadata` and synchronized through the member portal profile save flow.
+- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`) gated by `club_admin`/`members_manager`.
 
-1. Copy `.env.example` to `.env`.
-2. Set:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-3. Generate config:
+## Deployment
 
-```bash
-node --env-file=.env scripts/write-config.mjs
-```
+The site deploys to GitHub Pages via `.github/workflows/deploy.yml`.
 
-This writes `assets/js/config.js` (gitignored). Without it, auth/member features gracefully fail as unavailable.
+## Architecture notes
 
-## Deployment (GitHub Pages)
+- Audit logging design: `docs/audit-logging-design.md`
+- Website task agents planning: `docs/website-task-agents.md`
 
-Deploy is handled by `.github/workflows/deploy.yml` on pushes to `main`.
+## Secrets and local configuration
 
-Workflow steps:
-- checkout repository
-- setup Node 20
-- run `node scripts/write-config.mjs` using GitHub Actions secrets
-- publish the repository root to GitHub Pages
+Supabase URL and anon key are not committed. They are generated into `assets/js/config.js` by `scripts/write-config.mjs`.
 
-## Events JSON refresh from Supabase
+1. In GitHub, add Actions secrets:
+  - `SUPABASE_URL` (example: `https://xxxx.supabase.co`)
+  - `SUPABASE_ANON_KEY` (Supabase Project Settings -> API)
+2. On push to `main`, deploy writes `assets/js/config.js` from those secrets.
+3. For local development, copy `.env.example` to `.env`, set the same values, then run:
+  ```bash
+   node --env-file=.env scripts/write-config.mjs
+  ```
 
-Use Supabase as the editable source of truth for events, then periodically export a fresh fallback/backup JSON file:
+`assets/js/config.js` is gitignored. If missing, Supabase-backed pages will show unavailable auth behavior.
 
-```bash
-node --env-file=.env scripts/export-events-json-from-supabase.mjs
-```
+## Security notes
 
-This writes the latest `public.events` rows to `data/events.json`.
-
-Required env vars for this export:
-
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-Required repository secrets:
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-
-## Supabase notes
-
-- Browser code uses the Supabase anon key (expected/public).
-- Never expose service role keys in frontend code or Actions secrets intended for static deploys.
-- Use Row Level Security for all sensitive tables.
-- Member role management is implemented via `member_roles` + admin RPCs in `supabase/migrations/`.
-
-## Role vocabulary
-
-Use these canonical `member_roles.role_slug` values in UI checks, RPC checks, and SQL policies:
-
-- `membership_editor` - can access member directory/role-management tools.
-- `membership_admin` - can access member directory/role-management tools.
-- `events_editor` - can create and update events.
-- `events_admin` - can create, update, and delete events.
-- `games_editor` - games tools/editor scope.
-- `games_admin` - games tools/admin scope.
-- `club_admin` - global override across member portal admin areas.
-
-Role model conventions:
-
-- Membership, Events, and Games each use `*_editor` + `*_admin`.
-- `club_admin` is the cross-domain super-role.
-- Add new role slugs only through forward migrations and keep frontend constants/messages in sync.
-
-Quick mapping (where to update):
-
-- Frontend role groups and assignable role list: `assets/js/member-portal.js` (`ROLE_GROUPS`, `ASSIGNABLE_MEMBER_ROLES`).
-- Member portal role-gated navigation/copy: `members.html`.
-- DB allowlist enforcement for role grants: `supabase/migrations/20260427201536_member_role_slug_allowlist.sql`.
-- DB authorization for member admin RPC access: `supabase/migrations/20260427202201_membership_role_manager_access.sql`.
-
-## Supabase CLI workflow (hosted)
-
-Use migration files as the source of truth across all workstations.
-
-1. Install CLI and authenticate once:
-   - `supabase login`
-2. Link this repo to the hosted project (run from repo root):
-   - `supabase link --project-ref <project-ref>`
-3. For schema changes:
-   - add SQL migration files under `supabase/migrations/`
-   - apply to hosted with `supabase db push`
-4. Verify migration parity:
-   - `supabase migration list --linked`
-
-Rules:
-- Do not edit migration files that were already applied; create a new forward migration.
-- If schema was applied manually and history drift occurs, reconcile ledger only:
-  - `supabase migration repair --linked --status applied <versions...>`
-- Use `migration repair` only for migration history reconciliation, not for making schema changes.
-
-## Content and data workflows
-
-- Events and games are primarily data-driven from JSON in `data/`.
-- Helper scripts in `scripts/` support external sync/enrichment workflows (for example Facebook or PinballMap sync).
-- Home highlights are controlled by `data/highlights.json` and corresponding files under `assets/images/highlights/`.
-
-### Events migration to Supabase
-
-The public `events.html` page now prefers reading from `public.events` in Supabase and falls back to `data/events.json` if Supabase is unavailable.
-
-To backfill historical events from `data/events.json` into Supabase:
-
-1. Apply migrations (`supabase db push`) so `public.events` includes `legacy_import_key` and related columns.
-2. Run the import script with service-role credentials:
-
-```bash
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/import-events-json-to-supabase.mjs
-```
-
-Optional dry run:
-
-```bash
-DRY_RUN=true SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/import-events-json-to-supabase.mjs
-```
-
-To prevent duplicate legacy entries from being reintroduced into `data/events.json`, run:
-
-```bash
-node scripts/check-events-duplicates.mjs
-```
-
-This check also runs in the GitHub Pages deploy workflow and fails deploy if duplicates are found (duplicate key = `title/name + date`).
+- The Supabase anon key is expected to be public in browser code.
+- Protect sensitive data with Row Level Security policies.
+- Never expose the Supabase service role key in frontend code or GitHub Pages secrets.
