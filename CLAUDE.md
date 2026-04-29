@@ -37,7 +37,7 @@ Stripe (Subscriptions + Billing)
 
 - HTML / CSS / Vanilla JavaScript
 - GitHub (source control)
-- GitHub Pages (primary hosting)
+- AWS S3 + CloudFront (primary hosting)
 - Supabase (auth + database)
 - Stripe (payments)
 
