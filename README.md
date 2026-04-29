@@ -51,7 +51,7 @@ Keep auth and billing concerns separated:
 
 ## Deployment
 
-The site deploys to GitHub Pages via `.github/workflows/deploy.yml`.
+The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional CloudFront cache invalidation.
 
 ## Architecture notes
 
@@ -65,6 +65,10 @@ Supabase URL and anon key are not committed. They are generated into `assets/js/
 1. In GitHub, add Actions secrets:
   - `SUPABASE_URL` (example: `https://xxxx.supabase.co`)
   - `SUPABASE_ANON_KEY` (Supabase Project Settings -> API)
+  - `AWS_ROLE_ARN` (IAM role to assume via GitHub OIDC)
+  - `AWS_REGION` (example: `us-east-1`)
+  - `S3_BUCKET` (target static site bucket name)
+  - `CLOUDFRONT_DISTRIBUTION_ID` (optional, to invalidate CDN cache after deploy)
 2. On push to `main`, deploy writes `assets/js/config.js` from those secrets.
 3. For local development, copy `.env.example` to `.env`, set the same values, then run:
   ```bash
@@ -77,4 +81,4 @@ Supabase URL and anon key are not committed. They are generated into `assets/js/
 
 - The Supabase anon key is expected to be public in browser code.
 - Protect sensitive data with Row Level Security policies.
-- Never expose the Supabase service role key in frontend code or GitHub Pages secrets.
+- Never expose the Supabase service role key in frontend code or GitHub Actions secrets.
