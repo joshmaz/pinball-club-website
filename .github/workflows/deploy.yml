@@ -1,12 +1,13 @@
-name: Deploy to GitHub Pages
+name: Deploy to AWS S3
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  pages: write
+  id-token: write
+  contents: read
   
 jobs:
   build-and-deploy:
@@ -27,9 +28,33 @@ jobs:
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       run: node scripts/write-config.mjs
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
-        exclude_assets: '.github,.gitignore'
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Deploy to S3
+      run: |
+        aws s3 sync . s3://${{ secrets.S3_BUCKET }} \
+          --delete \
+          --exclude ".env" \
+          --exclude ".env.*" \
+          --exclude ".git/*" \
+          --exclude ".gitignore" \
+          --exclude ".github/*" \
+          --exclude ".cursor/*" \
+          --exclude "supabase/*" \
+          --exclude "scripts/*" \
+          --exclude "docs/*" \
+          --exclude "temp/*" \
+          --exclude "CLAUDE.md" \
+          --exclude "CONTENT_GUIDE.md" \
+          --exclude "README.md"
+
+    - name: Invalidate CloudFront cache
+      if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" \
+          --paths "/*"
