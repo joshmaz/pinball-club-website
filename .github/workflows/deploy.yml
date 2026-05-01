@@ -54,6 +54,13 @@ jobs:
           --exclude "CLAUDE.md" \
           --exclude "CONTENT_GUIDE.md" \
           --exclude "README.md"
+        aws s3 cp donate.html s3://${{ secrets.S3_BUCKET }}/donate \
+          --content-type "text/html; charset=utf-8"
+        aws s3api put-object \
+          --bucket "${{ secrets.S3_BUCKET }}" \
+          --key "donate/" \
+          --body donate.html \
+          --content-type "text/html; charset=utf-8"
 
     - name: Invalidate CloudFront cache
       if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
