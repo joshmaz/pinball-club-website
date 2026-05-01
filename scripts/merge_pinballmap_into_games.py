@@ -15,8 +15,11 @@ Legacy top-level joinedClubDate / leftClubDate / pinballMapMachineId are
 migrated into the first stint for 134 Haines on first run.
 
 Games live in a single `games` array (sorted newest-first by first stint join).
-Each game may include `atClub` (still on the floor per Pinball Map). Unknown-tenure
-sort keys use `atClub` the same way the old current/previous split did.
+`mapAtClub` tracks floor status inferred from Pinball Map; editors may set
+`manualAtClubOverride` (true/false) when map coverage is incomplete. `atClub`
+is the resolved effective value (manual override when present, else map value).
+Unknown-tenure sort keys use effective `atClub` the same way the old
+current/previous split did.
 """
 
 from __future__ import annotations
@@ -51,6 +54,32 @@ def _has_nonempty_string(v: Any) -> bool:
     return str(v).strip() != ""
 
 
+def _is_bool(v: Any) -> bool:
+    return isinstance(v, bool)
+
+
+def _manual_at_club_override(game: dict[str, Any]) -> bool | None:
+    val = game.get("manualAtClubOverride")
+    return val if _is_bool(val) else None
+
+
+def resolve_game_at_club(game: dict[str, Any]) -> bool:
+    manual = _manual_at_club_override(game)
+    if manual is not None:
+        return manual
+    map_at_club = game.get("mapAtClub")
+    if _is_bool(map_at_club):
+        return map_at_club
+    return bool(game.get("atClub"))
+
+
+def sync_game_at_club_fields(game: dict[str, Any]) -> None:
+    """Keep map/manual/effective fields aligned and backward-compatible."""
+    if not _is_bool(game.get("mapAtClub")):
+        game["mapAtClub"] = bool(game.get("atClub"))
+    game["atClub"] = resolve_game_at_club(game)
+
+
 def enrich_location_stint_sort_fields(
     stint: dict[str, Any], *, is_current_game: bool
 ) -> None:
@@ -83,8 +112,8 @@ def enrich_location_stint_sort_fields(
 
 
 def game_is_at_club(g: dict[str, Any]) -> bool:
-    """Pinball Map merge and migration set `atClub`; missing key defaults false."""
-    return bool(g.get("atClub"))
+    """Return effective floor status (manual override first, then map-derived)."""
+    return resolve_game_at_club(g)
 
 
 def migrate_data_shape_in_place(data: dict[str, Any]) -> None:
@@ -100,8 +129,10 @@ def migrate_data_shape_in_place(data: dict[str, Any]) -> None:
     prev = [g for g in (data.get("previousGames") or []) if isinstance(g, dict)]
     for g in cur:
         g.setdefault("atClub", True)
+        g.setdefault("mapAtClub", True)
     for g in prev:
         g.setdefault("atClub", False)
+        g.setdefault("mapAtClub", False)
     data["games"] = cur + prev
     data.pop("currentGames", None)
     data.pop("previousGames", None)
@@ -136,6 +167,7 @@ def enrich_all_games_sort_fields(data: dict[str, Any]) -> None:
     for g in data.get("games") or []:
         if not isinstance(g, dict):
             continue
+        sync_game_at_club_fields(g)
         on_floor = game_is_at_club(g)
         for st in g.get("locationStints") or []:
             if isinstance(st, dict):
@@ -291,7 +323,8 @@ def apply_pinball_to_stints(
         st.pop("leftClubDate", None)
     if mid is not None:
         st["pinballMapMachineId"] = mid
-    game["atClub"] = bool(on)
+    game["mapAtClub"] = bool(on)
+    game["atClub"] = resolve_game_at_club(game)
 
 
 def machine_id_from_game(game: dict[str, Any], location_id: int) -> int | None:
@@ -491,6 +524,7 @@ def main() -> None:
             "title": key,
             "details": deets,
             "locationStints": [stint],
+            "mapAtClub": bool(on),
             "atClub": bool(on),
         }
         if rel:

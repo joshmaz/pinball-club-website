@@ -23,32 +23,28 @@ function hasNonemptyString(v) {
 }
 
 /**
- * Normalizes an optional game owner string in-place.
- * If owner is missing/blank, the field is removed.
- * If owner is a non-string value, the field is removed and a warning is logged.
- *
- * @param {{ title?: string, owner?: unknown }} game
+ * @param {unknown} v
+ * @returns {boolean | null}
  */
-function normalizeGameOwner(game) {
-  if (!("owner" in game)) {
-    return;
+function normalizeOptionalBoolean(v) {
+  return typeof v === "boolean" ? v : null;
+}
+
+/**
+ * Manual overrides win over map-derived status; fallback keeps legacy payloads working.
+ * @param {{ manualAtClubOverride?: unknown, mapAtClub?: unknown, atClub?: unknown }} game
+ * @returns {boolean}
+ */
+function resolveGameAtClub(game) {
+  const manual = normalizeOptionalBoolean(game.manualAtClubOverride);
+  if (manual !== null) {
+    return manual;
   }
-  const owner = game.owner;
-  if (owner == null) {
-    delete game.owner;
-    return;
+  const mapAtClub = normalizeOptionalBoolean(game.mapAtClub);
+  if (mapAtClub !== null) {
+    return mapAtClub;
   }
-  if (typeof owner !== "string") {
-    console.warn(`Game "${String(game.title || "unknown")}" has invalid owner value; expected string.`);
-    delete game.owner;
-    return;
-  }
-  const trimmed = owner.trim();
-  if (!trimmed) {
-    delete game.owner;
-    return;
-  }
-  game.owner = trimmed;
+  return game.atClub === true;
 }
 
 /**
@@ -105,7 +101,8 @@ function enrichGamesPayload(data) {
   }
   for (const g of games) {
     if (g && typeof g === "object") {
-      normalizeGameOwner(g);
+      // Preserve legacy consumers while supporting map + manual override fields.
+      g.atClub = resolveGameAtClub(g);
       enrichGameLocationStints(g, g.atClub === true);
     }
   }
