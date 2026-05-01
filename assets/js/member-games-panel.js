@@ -11,7 +11,6 @@
   var comboboxPanelEl = null;
   var comboboxOptionsEl = null;
   var comboboxEmptyEl = null;
-  var newButtonEl = null;
   var reviewScaffoldsEl = null;
   var formEl = null;
   var stintsEl = null;
@@ -25,6 +24,7 @@
   var suppressDirtyTracking = false;
   var comboboxOpen = false;
   var comboboxActiveIndex = -1;
+  var catalogLoaded = false;
   var inited = false;
   var lastUserRoles = [];
   var comboboxListboxId = "member-games-combobox-listbox";
@@ -341,9 +341,6 @@
           ? 'Creating game manually (secondary path). Prefer Pinball Map for standard machine additions.'
           : "";
     }
-    if (newButtonEl) {
-      newButtonEl.textContent = mode === "new" ? "New Game (active)" : "New Game";
-    }
     if (manualWrapEl) manualWrapEl.hidden = mode !== "edit";
     if (saleEl) saleEl.hidden = mode !== "edit";
     if (stintsEl) stintsEl.hidden = mode !== "edit";
@@ -456,7 +453,8 @@
       "aria-controls": comboboxListboxId,
       "aria-autocomplete": "list",
       autocomplete: "off",
-      placeholder: "Search by title to edit an existing game…"
+      placeholder: "Loading games catalog…",
+      disabled: "disabled"
     });
     comboboxPanelEl = el("div", { className: "member-games-combobox-panel", hidden: "hidden" });
     comboboxOptionsEl = el("div", { className: "member-games-options", id: comboboxListboxId, role: "listbox" });
@@ -482,16 +480,19 @@
     comboWrap.appendChild(comboboxInputEl);
     comboWrap.appendChild(comboboxPanelEl);
     row.appendChild(comboWrap);
-    newButtonEl = el("button", { type: "button", className: "members-sidebar-link member-games-new-btn" });
-    newButtonEl.textContent = "New Game";
-    newButtonEl.addEventListener("click", beginNewGameMode);
-    row.appendChild(newButtonEl);
     wrap.appendChild(row);
     comboboxInputEl.addEventListener("focus", function () {
+      if (!catalogLoaded) return;
+      setComboboxOpen(true);
+      renderComboboxOptions();
+    });
+    comboboxInputEl.addEventListener("click", function () {
+      if (!catalogLoaded) return;
       setComboboxOpen(true);
       renderComboboxOptions();
     });
     comboboxInputEl.addEventListener("input", function () {
+      if (!catalogLoaded) return;
       setComboboxOpen(true);
       comboboxActiveIndex = -1;
       renderComboboxOptions();
@@ -806,9 +807,19 @@
     try {
       var data = await window.SNHMemberPortal.gamesEditorLoad();
       gamesCache = (data && data.games) || [];
+      catalogLoaded = true;
       populateCombobox();
+      if (comboboxInputEl) {
+        comboboxInputEl.removeAttribute("disabled");
+        comboboxInputEl.placeholder = "Search by title to edit an existing game…";
+        if (document.activeElement === comboboxInputEl) {
+          setComboboxOpen(true);
+          renderComboboxOptions();
+        }
+      }
       enterIdleMode("Loaded " + gamesCache.length + " games.");
     } catch (err) {
+      catalogLoaded = false;
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     }
   }

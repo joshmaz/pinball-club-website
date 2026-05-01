@@ -1924,6 +1924,12 @@ footer {
   gap: 0.65rem;
 }
 
+.member-games-form[hidden],
+.member-games-review-scaffolds[hidden],
+.member-games-combobox-panel[hidden] {
+  display: none;
+}
+
 .member-games-field {
   display: flex;
   flex-direction: column;
