@@ -551,6 +551,14 @@
     if (result.error) throw result.error;
   }
 
+  async function gamesCreate(fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_create", { p_fields: fields });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
   async function gamesUpsertStint(gameId, stint) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -623,6 +631,7 @@
     saveEventForAdmin: saveEventForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
     gamesEditorLoad: gamesEditorLoad,
+    gamesCreate: gamesCreate,
     gamesUpsert: gamesUpsert,
     gamesUpsertStint: gamesUpsertStint,
     gamesDeleteStint: gamesDeleteStint,
