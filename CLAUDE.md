@@ -38,7 +38,7 @@ Stripe (Subscriptions + Billing)
 - HTML / CSS / Vanilla JavaScript
 - GitHub (source control)
 - AWS S3 + CloudFront (primary hosting)
-- Supabase (auth + database)
+- Supabase (auth + database; games catalog tables + `games_catalog_v1` when using DB mode — see `docs/games-relational-migration-plan.md`)
 - Stripe (payments)
 
 Optional:

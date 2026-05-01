@@ -1,0 +1,5 @@
+# Supabase project config (partial). See https://supabase.com/docs/guides/cli/config
+
+[functions.pinballmap-ingest]
+# Invoked on a schedule with the service role from Supabase (no end-user JWT).
+verify_jwt = false

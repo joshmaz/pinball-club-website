@@ -22,6 +22,7 @@
   </script>
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/member-portal.js"></script>
+  <script src="assets/js/member-games-panel.js"></script>
 </head>
 <body>
 
@@ -305,6 +306,7 @@
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
           <h3>Games</h3>
           <p id="member-games-intro" class="member-panel-intro">Floor and tech tools for trusted members will appear in this section when RBAC is enabled. Requires <strong>games_editor</strong>, <strong>games_admin</strong>, or <strong>club_admin</strong>.</p>
+          <div id="member-games-app" class="member-games-app" aria-live="polite"></div>
         </div>
       </div>
     </div>
@@ -1165,6 +1167,9 @@
 
     onGamesPanelShown = function () {
       setGamesPanelIntro(userRoles);
+      if (window.SNHMemberGamesPanel && typeof window.SNHMemberGamesPanel.onPanelShown === "function") {
+        window.SNHMemberGamesPanel.onPanelShown(userRoles);
+      }
     };
 
     if (memberEventsRefresh) {

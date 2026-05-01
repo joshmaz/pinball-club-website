@@ -528,6 +528,77 @@
     if (result.error) throw result.error;
   }
 
+  async function gamesEditorLoad() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_editor_load");
+    if (result.error) throw result.error;
+    var data = result.data;
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        data = null;
+      }
+    }
+    return data;
+  }
+
+  async function gamesUpsert(gameId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_upsert", { p_game_id: gameId, p_fields: fields });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesUpsertStint(gameId, stint) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_upsert_stint", { p_game_id: gameId, p_stint: stint });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function gamesDeleteStint(stintId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_delete_stint", { p_stint_id: stintId });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesSetManualAtClub(gameId, overrideBool, note) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_set_manual_at_club", {
+      p_game_id: gameId,
+      p_override: overrideBool,
+      p_note: note || null
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesClearManualAtClub(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_clear_manual_at_club", { p_game_id: gameId });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesGetSaleListing(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_get_sale_listing", { p_game_id: gameId });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function gamesSetSaleListing(gameId, listing) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_set_sale_listing", { p_game_id: gameId, p_listing: listing });
+    if (result.error) throw result.error;
+  }
+
   window.SNHMemberPortal = {
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
@@ -551,6 +622,14 @@
     listEventsForAdmin: listEventsForAdmin,
     saveEventForAdmin: saveEventForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
+    gamesEditorLoad: gamesEditorLoad,
+    gamesUpsert: gamesUpsert,
+    gamesUpsertStint: gamesUpsertStint,
+    gamesDeleteStint: gamesDeleteStint,
+    gamesSetManualAtClub: gamesSetManualAtClub,
+    gamesClearManualAtClub: gamesClearManualAtClub,
+    gamesGetSaleListing: gamesGetSaleListing,
+    gamesSetSaleListing: gamesSetSaleListing,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,
