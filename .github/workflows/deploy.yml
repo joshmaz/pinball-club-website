@@ -28,6 +28,7 @@ jobs:
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        GAMES_CATALOG_SOURCE: ${{ secrets.GAMES_CATALOG_SOURCE }}
       run: node scripts/write-config.mjs
 
     - name: Configure AWS credentials (OIDC)

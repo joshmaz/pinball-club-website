@@ -29,7 +29,8 @@
       "manufactureDate": "1976-04-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Future Spa",
@@ -60,11 +61,11 @@
       "manufactureDate": "1979-03-20",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Play Boy",
-      "owner": "J. Mazgelis",
       "details": "1947 Chicago Coin flipperless gambling machine with digital audio mods. A fun pre-flipper oddball with 10 passive bumpers, 4 kick-out holes, a time clock, projected replays, and 3- or 5-ball play. One bell for sound; art by Roy Parker.",
       "imageFilename": "play-boy.png",
       "releaseDate": "1947-05-26",
@@ -80,7 +81,8 @@
           "sortKeyLeft": "2026-04-04"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "mapAtClub": false
     },
     {
       "title": "Monopoly",
@@ -111,7 +113,8 @@
       "manufactureDate": "2001-09-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Embryon",
@@ -142,7 +145,8 @@
       "manufactureDate": "1981-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Dogies",
@@ -173,7 +177,8 @@
       "manufactureDate": "1968-01-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Solar Ride",
@@ -204,7 +209,8 @@
       "manufactureDate": "1979-02-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Road Kings",
@@ -235,7 +241,8 @@
       "manufactureDate": "1986-07-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Deadpool (Pro)",
@@ -266,7 +273,8 @@
       "manufactureDate": "2018-08-01",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Heavy Metal Meltdown",
@@ -297,7 +305,8 @@
       "manufactureDate": "1987-01-08",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Mustang",
@@ -328,7 +337,8 @@
       "manufactureDate": "1977-04-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 2
+      "playerCount": 2,
+      "mapAtClub": false
     },
     {
       "title": "Barb Wire",
@@ -359,7 +369,8 @@
       "manufactureDate": "1996-01-04",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Guns N' Roses (SE)",
@@ -393,7 +404,8 @@
       "manufactureDate": "2020-10-05",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Truck Stop",
@@ -424,7 +436,8 @@
       "manufactureDate": "1988-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Godzilla (Pro)",
@@ -455,7 +468,8 @@
       "manufactureDate": "2021-09-14",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Harley-Davidson (2nd Edition)",
@@ -486,7 +500,8 @@
       "manufactureDate": "2002-01-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 6
+      "playerCount": 6,
+      "mapAtClub": false
     },
     {
       "title": "Oktoberfest",
@@ -514,11 +529,11 @@
       "manufactureDate": "2018-10-01",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Rush (Premium)",
-      "owner": "J. Mazgelis",
       "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration.",
       "imageFilename": "rush-premium.jpg",
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
@@ -543,7 +558,8 @@
       "opdbCanonicalName": "Rush (Premium)",
       "manufacturer": "Stern",
       "manufacturerFullName": "Stern Pinball, Inc.",
-      "manufactureDate": "2022-01-01"
+      "manufactureDate": "2022-01-01",
+      "mapAtClub": false
     },
     {
       "title": "Freddy: A Nightmare on Elm Street",
@@ -571,7 +587,8 @@
       "manufactureDate": "1994-01-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "High Hand",
@@ -599,7 +616,8 @@
       "manufactureDate": "1973-07-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Iron Maiden: Legacy of the Beast (Pro)",
@@ -630,7 +648,8 @@
       "manufactureDate": "2018-04-01",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Led Zeppelin (Pro)",
@@ -661,7 +680,8 @@
       "manufactureDate": "2020-12-15",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Rock",
@@ -692,7 +712,8 @@
       "manufactureDate": "1985-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Disco Fever",
@@ -723,7 +744,8 @@
       "manufactureDate": "1978-01-08",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Rollergames",
@@ -751,7 +773,8 @@
       "manufactureDate": "1990-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Rush (LE)",
@@ -776,7 +799,8 @@
       "opdbCanonicalName": "Rush (LE)",
       "manufacturer": "Stern",
       "manufacturerFullName": "Stern Pinball, Inc.",
-      "manufactureDate": "2022-01-01"
+      "manufactureDate": "2022-01-01",
+      "mapAtClub": false
     },
     {
       "title": "The Amazing Spider-Man",
@@ -806,7 +830,8 @@
       "manufactureDate": "1980-05-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Jurassic Park (Pro)",
@@ -837,7 +862,8 @@
       "manufactureDate": "2019-07-26",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Pool Sharks",
@@ -865,7 +891,8 @@
       "manufactureDate": "1990-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Lectronamo",
@@ -893,7 +920,8 @@
       "manufactureDate": "1978-01-08",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Paragon",
@@ -921,7 +949,8 @@
       "manufactureDate": "1979-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "The Rolling Stones",
@@ -949,7 +978,8 @@
       "manufactureDate": "2011-02-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Diamond Lady",
@@ -977,7 +1007,8 @@
       "manufactureDate": "1988-02-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Starship Troopers",
@@ -1008,7 +1039,8 @@
       "manufactureDate": "1997-01-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 6
+      "playerCount": 6,
+      "mapAtClub": false
     },
     {
       "title": "Earthshaker",
@@ -1036,7 +1068,8 @@
       "manufactureDate": "1989-02-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Lightning Ball",
@@ -1064,7 +1097,8 @@
       "manufactureDate": "1959-10-01",
       "type": "em",
       "display": "lights",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Evel Knievel",
@@ -1095,7 +1129,8 @@
       "manufactureDate": "1977-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Flight 2000",
@@ -1126,7 +1161,8 @@
       "manufactureDate": "1980-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Kings of Steel",
@@ -1157,7 +1193,8 @@
       "manufactureDate": "1984-03-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Mr. & Mrs. Pac-Man",
@@ -1188,7 +1225,8 @@
       "manufactureDate": "1982-05-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Avengers: Infinity Quest (Pro)",
@@ -1219,7 +1257,8 @@
       "manufactureDate": "2020-09-01",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Monte Carlo",
@@ -1247,7 +1286,8 @@
       "manufactureDate": "1987-02-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Crescendo",
@@ -1277,7 +1317,8 @@
       "manufactureDate": "1970-05-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 2
+      "playerCount": 2,
+      "mapAtClub": false
     },
     {
       "title": "Solar City",
@@ -1306,7 +1347,8 @@
       "manufactureDate": "1977-02-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 2
+      "playerCount": 2,
+      "mapAtClub": false
     },
     {
       "title": "Spider-Man",
@@ -1336,7 +1378,8 @@
       "manufactureDate": "2007-06-04",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Robo-War",
@@ -1363,7 +1406,8 @@
       "manufactureDate": "1988-01-04",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Amigo",
@@ -1393,7 +1437,8 @@
       "manufactureDate": "1974-05-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Apollo",
@@ -1424,7 +1469,8 @@
       "manufactureDate": "1967-06-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Aquarius",
@@ -1451,7 +1497,8 @@
       "manufactureDate": "1970-10-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Argosy",
@@ -1482,7 +1529,8 @@
       "manufactureDate": "1977-09-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Black Pyramid",
@@ -1513,7 +1561,8 @@
       "manufactureDate": "1984-07-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Fun Land",
@@ -1544,7 +1593,8 @@
       "manufactureDate": "1968-05-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Jacks Open",
@@ -1575,7 +1625,8 @@
       "manufactureDate": "1977-02-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Joust",
@@ -1605,7 +1656,8 @@
       "manufactureDate": "1969-09-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 2
+      "playerCount": 2,
+      "mapAtClub": false
     },
     {
       "title": "Xenon",
@@ -1636,7 +1688,8 @@
       "manufactureDate": "1980-11-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Alien Poker",
@@ -1667,7 +1720,8 @@
       "manufactureDate": "1980-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Black Knight",
@@ -1694,7 +1748,8 @@
       "manufactureDate": "1980-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Genie",
@@ -1725,7 +1780,8 @@
       "manufactureDate": "1979-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Hot Shot",
@@ -1756,7 +1812,8 @@
       "manufactureDate": "1973-09-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Last Action Hero",
@@ -1787,7 +1844,8 @@
       "manufactureDate": "1993-01-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Lucky Seven (SS)",
@@ -1814,7 +1872,8 @@
       "manufactureDate": "1978-03-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Terminator 2: Judgment Day",
@@ -1845,7 +1904,8 @@
       "manufactureDate": "1991-07-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "2001",
@@ -1876,7 +1936,8 @@
       "manufactureDate": "1971-02-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Lost World",
@@ -1907,7 +1968,8 @@
       "manufactureDate": "1978-08-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Time Fantasy",
@@ -1934,7 +1996,8 @@
       "manufactureDate": "1983-03-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Airborne",
@@ -1965,7 +2028,8 @@
       "manufactureDate": "1996-03-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "High Speed",
@@ -1996,7 +2060,8 @@
       "manufactureDate": "1986-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Target Alpha",
@@ -2026,7 +2091,8 @@
       "manufactureDate": "1976-11-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "The Getaway: High Speed II",
@@ -2057,7 +2123,8 @@
       "manufactureDate": "1992-02-02",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Torpedo Alley",
@@ -2084,7 +2151,8 @@
       "manufactureDate": "1988-01-08",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Space Invaders",
@@ -2111,7 +2179,8 @@
       "manufactureDate": "1980-04-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "The Simpsons Pinball Party",
@@ -2142,7 +2211,8 @@
       "manufactureDate": "2003-01-02",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Cleopatra",
@@ -2173,7 +2243,8 @@
       "manufactureDate": "1977-11-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Total Nuclear Annihilation",
@@ -2204,7 +2275,8 @@
       "manufactureDate": "2017-01-01",
       "type": "ss",
       "display": "lcd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Black Jack",
@@ -2235,7 +2307,8 @@
       "manufactureDate": "1976-05-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Hokus Pokus",
@@ -2266,7 +2339,8 @@
       "manufactureDate": "1975-04-09",
       "type": "em",
       "display": "reels",
-      "playerCount": 2
+      "playerCount": 2,
+      "mapAtClub": false
     },
     {
       "title": "Congo",
@@ -2297,7 +2371,8 @@
       "manufactureDate": "1995-11-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Grand Prix",
@@ -2328,7 +2403,8 @@
       "manufactureDate": "1976-12-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Aztec",
@@ -2359,7 +2435,8 @@
       "manufactureDate": "1976-07-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Count-Down",
@@ -2390,7 +2467,8 @@
       "manufactureDate": "1979-05-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Old Chicago",
@@ -2421,7 +2499,8 @@
       "manufactureDate": "1976-04-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "PIN-BOT",
@@ -2452,7 +2531,8 @@
       "manufactureDate": "1986-10-06",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "300",
@@ -2483,7 +2563,8 @@
       "manufactureDate": "1975-08-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Charlie's Angels",
@@ -2514,7 +2595,8 @@
       "manufactureDate": "1978-01-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Doodle Bug",
@@ -2545,7 +2627,8 @@
       "manufactureDate": "1971-03-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "F-14 Tomcat",
@@ -2576,7 +2659,8 @@
       "manufactureDate": "1987-03-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Flash Gordon",
@@ -2607,7 +2691,8 @@
       "manufactureDate": "1980-05-13",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Hot Line",
@@ -2638,7 +2723,8 @@
       "manufactureDate": "1966-09-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Johnny Mnemonic",
@@ -2669,7 +2755,8 @@
       "manufactureDate": "1995-01-08",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Judge Dredd",
@@ -2700,7 +2787,8 @@
       "manufactureDate": "1993-01-09",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "KISS (Pro)",
@@ -2734,7 +2822,8 @@
       "manufactureDate": "2015-05-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Lord of the Rings",
@@ -2762,7 +2851,8 @@
       "manufactureDate": "2003-11-13",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Metallica (Pro)",
@@ -2796,7 +2886,8 @@
       "manufactureDate": "2013-04-12",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "NASCAR",
@@ -2827,7 +2918,8 @@
       "manufactureDate": "2005-06-29",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "NBA Fastbreak",
@@ -2858,7 +2950,8 @@
       "manufactureDate": "1997-03-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Robocop",
@@ -2889,7 +2982,8 @@
       "manufactureDate": "1989-11-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Sorcerer",
@@ -2919,7 +3013,8 @@
       "manufactureDate": "1985-03-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Space Shuttle",
@@ -2950,7 +3045,8 @@
       "manufactureDate": "1984-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Strikes and Spares",
@@ -2981,7 +3077,8 @@
       "manufactureDate": "1978-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Target Pool",
@@ -3012,7 +3109,8 @@
       "manufactureDate": "1969-06-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "The Bally Game Show",
@@ -3043,7 +3141,8 @@
       "manufactureDate": "1990-01-04",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "The Flintstones",
@@ -3074,7 +3173,8 @@
       "manufactureDate": "1994-07-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "The Lord of the Rings",
@@ -3108,7 +3208,8 @@
       "manufactureDate": "2003-11-13",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "World Cup Soccer",
@@ -3139,7 +3240,8 @@
       "manufactureDate": "1994-02-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "World Poker Tour",
@@ -3170,7 +3272,8 @@
       "manufactureDate": "2006-02-20",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Baywatch",
@@ -3198,7 +3301,8 @@
       "manufactureDate": "1995-02-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 6
+      "playerCount": 6,
+      "mapAtClub": false
     },
     {
       "title": "Firepower",
@@ -3226,7 +3330,8 @@
       "manufactureDate": "1980-02-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Flash",
@@ -3254,7 +3359,8 @@
       "manufactureDate": "1979-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Genesis",
@@ -3282,7 +3388,8 @@
       "manufactureDate": "1986-01-09",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Ice Fever",
@@ -3310,7 +3417,8 @@
       "manufactureDate": "1985-02-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Major League",
@@ -3328,7 +3436,8 @@
           "sortKeyLeft": "2016-12-31"
         }
       ],
-      "atClub": false
+      "atClub": false,
+      "mapAtClub": false
     },
     {
       "title": "Roy Clark The Entertainer",
@@ -3356,7 +3465,8 @@
       "manufactureDate": "1977-01-09",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 2
+      "playerCount": 2,
+      "mapAtClub": false
     },
     {
       "title": "Ship Ahoy",
@@ -3383,7 +3493,8 @@
       "manufactureDate": "1976-06-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "Star Trek",
@@ -3411,7 +3522,8 @@
       "manufactureDate": "1991-01-09",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Street Fighter II",
@@ -3438,7 +3550,8 @@
       "manufactureDate": "1993-03-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Swords of Fury",
@@ -3466,7 +3579,8 @@
       "manufactureDate": "1988-06-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "The Hobbit (Smaug)",
@@ -3491,7 +3605,8 @@
       "opdbCanonicalName": "The Hobbit (Smaug Gold)",
       "manufacturer": "Jersey Jack Pinball",
       "manufacturerFullName": "Jersey Jack Pinball",
-      "manufactureDate": "2015-12-01"
+      "manufactureDate": "2015-12-01",
+      "mapAtClub": false
     },
     {
       "title": "The Lost World Jurassic Park",
@@ -3519,7 +3634,8 @@
       "manufactureDate": "1997-06-01",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Time Machine",
@@ -3546,7 +3662,8 @@
       "manufactureDate": "1988-01-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Time Warp",
@@ -3574,7 +3691,8 @@
       "manufactureDate": "1979-09-01",
       "type": "ss",
       "display": "alphanumeric",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "Volley",
@@ -3601,7 +3719,8 @@
       "manufactureDate": "1976-08-01",
       "type": "em",
       "display": "reels",
-      "playerCount": 1
+      "playerCount": 1,
+      "mapAtClub": false
     },
     {
       "title": "WHO dunnit",
@@ -3629,7 +3748,8 @@
       "manufactureDate": "1995-01-09",
       "type": "ss",
       "display": "dmd",
-      "playerCount": 4
+      "playerCount": 4,
+      "mapAtClub": false
     },
     {
       "title": "X-Men Wolverine LE",
@@ -3654,7 +3774,8 @@
       "opdbCanonicalName": "X-Men Wolverine (LE)",
       "manufacturer": "Stern",
       "manufacturerFullName": "Stern Pinball, Inc.",
-      "manufactureDate": "2012-06-01"
+      "manufactureDate": "2012-06-01",
+      "mapAtClub": false
     }
   ]
 }

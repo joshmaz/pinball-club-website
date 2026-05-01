@@ -1787,3 +1787,101 @@ footer {
     border-color: #2d2d2d;
   }
 }
+
+/* Member portal — games catalog editor */
+.member-games-app {
+  margin-top: 1rem;
+  max-width: 52rem;
+}
+
+.member-games-status {
+  font-size: 0.9rem;
+  color: #b8c5d6;
+  margin: 0 0 0.75rem;
+}
+
+.member-games-select {
+  width: 100%;
+  max-width: 32rem;
+  margin-bottom: 1rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #3d4a5c;
+  background: #1a1f28;
+  color: #e8eef5;
+}
+
+.member-games-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.member-games-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.member-games-label {
+  font-size: 0.85rem;
+  color: #9aa8b8;
+}
+
+.member-games-input,
+.member-games-textarea {
+  width: 100%;
+  max-width: 40rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #3d4a5c;
+  background: #141a22;
+  color: #e8eef5;
+  font: inherit;
+}
+
+.member-games-textarea {
+  resize: vertical;
+}
+
+.member-games-meta,
+.member-games-help {
+  font-size: 0.88rem;
+  color: #9aa8b8;
+  margin: 0.25rem 0;
+}
+
+.member-games-stints,
+.member-games-sale {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d3540;
+}
+
+.member-games-stints h4,
+.member-games-sale h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.member-games-stint-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.member-games-stint-title {
+  flex: 0 0 100%;
+  font-size: 0.82rem;
+  color: #7d8fa3;
+}
+
+.member-games-stint-row .member-games-input {
+  max-width: 10rem;
+}
+
+.member-games-stint-row .mg-st-addr {
+  max-width: 18rem;
+}

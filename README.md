@@ -49,6 +49,22 @@ Keep auth and billing concerns separated:
 - Avatar URL and IFPA player id are stored in Supabase Auth `user_metadata` and synchronized through the member portal profile save flow.
 - Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`) gated by `club_admin`/`members_manager`.
 
+## Games catalog (relational)
+
+After applying migrations, bulk-load from the repo JSON (requires **service role** in `.env` as `SUPABASE_SERVICE_ROLE_KEY` — local only, never in CI for public builds):
+
+```bash
+node --env-file=.env scripts/import-games-json.mjs
+```
+
+To refresh the static fallback from DB (`games_catalog_v1` -> `data/games.json`):
+
+```bash
+node --env-file=.env scripts/export-games-json-from-supabase.mjs
+```
+
+Pinball Map activity ingest runs in the Edge Function `supabase/functions/pinballmap-ingest` (see `docs/games-relational-migration-plan.md` for secrets and scheduling).
+
 ## Deployment
 
 The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional CloudFront cache invalidation.
@@ -57,6 +73,7 @@ The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional Clo
 
 - Audit logging design: `docs/audit-logging-design.md`
 - Website task agents planning: `docs/website-task-agents.md`
+- Games catalog (Supabase + optional DB-backed public page): `docs/games-relational-migration-plan.md`
 
 ## Secrets and local configuration
 
@@ -69,6 +86,7 @@ Supabase URL and anon key are not committed. They are generated into `assets/js/
   - `AWS_REGION` (example: `us-east-1`)
   - `S3_BUCKET` (target static site bucket name)
   - `CLOUDFRONT_DISTRIBUTION_ID` (optional, to invalidate CDN cache after deploy)
+  - `GAMES_CATALOG_SOURCE` (optional: `json` default, or `db` to load games from Supabase view `games_catalog_v1` on the public games page)
 2. On push to `main`, deploy writes `assets/js/config.js` from those secrets.
 3. For local development, copy `.env.example` to `.env`, set the same values, then run:
   ```bash
