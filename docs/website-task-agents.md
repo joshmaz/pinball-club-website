@@ -21,16 +21,30 @@ Each agent should run a consistent flow:
 4. Write through a controlled path (RPC/backend job), not arbitrary client-side edits.
 5. Emit audit records using the shared audit log model.
 
+### Morning quick-win implementation slice
+
+Start with one operationally safe milestone today:
+
+- [ ] Keep both agents in **propose-only** mode (no auto-apply writes).
+- [ ] Standardize one diff output format for human review (`before`, `after`, `reason`).
+- [ ] Require explicit approval before apply path is invoked.
+- [ ] Store a run identifier in audit metadata for every proposed change.
+- [ ] Capture and document one end-to-end dry run per agent.
+
+Done means each agent can generate reviewable proposals with deterministic audit metadata and zero direct table writes.
+
 ## Agent 1: Game Listing Content Agent
 
 Purpose:
 
 - maintain and normalize records in the games catalog (title/details/images/links/stints)
 
+**Source of truth today:** production can read the catalog from Supabase (`games_catalog_v1`) when `GAMES_CATALOG_SOURCE=db`, or from `data/games.json` when `json`. Agents should target the same write path as humans: SECURITY DEFINER RPCs (see `docs/games-relational-migration-plan.md`), not ad-hoc table edits.
+
 Inputs:
 
 - operator request (manual edit intent) or scheduled quality checks
-- current `data/games.json`
+- current catalog snapshot: `data/games.json` **or** exported via `scripts/export-games-json-from-supabase.mjs`, or editor/RPC load for structured fields
 - enrichment references (`data/latest-opdb.json`, known provider URL patterns)
 
 Outputs:
