@@ -23,6 +23,7 @@
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/member-portal.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
+  <script src="assets/js/member-club-issues-panel.js"></script>
 </head>
 <body>
 
@@ -63,6 +64,11 @@
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">
               Membership
+            </button>
+          </li>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">
+              Club issues
             </button>
           </li>
           <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
@@ -308,6 +314,12 @@
           <p id="member-games-intro" class="member-panel-intro">Floor and tech tools for trusted members will appear in this section when RBAC is enabled. Requires <strong>games_editor</strong>, <strong>games_admin</strong>, or <strong>club_admin</strong>.</p>
           <div id="member-games-app" class="member-games-app" aria-live="polite"></div>
         </div>
+
+        <div id="member-panel-club-issues" class="member-panel" role="region" aria-labelledby="member-nav-club-issues" tabindex="-1" aria-hidden="true">
+          <h3>Club issues</h3>
+          <p class="member-panel-intro">Operator notes for machines or club-wide topics. All signed-in members can read the list. Adding or editing requires <strong>games_editor</strong>, <strong>games_admin</strong>, or <strong>club_admin</strong>.</p>
+          <div id="member-club-issues-app" class="member-club-issues-app" aria-live="polite"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -349,6 +361,7 @@
     var onEventsPanelShown = null;
     var onPhotosPanelShown = null;
     var onGamesPanelShown = null;
+    var onClubIssuesPanelShown = null;
     var memberAdminIntro = document.getElementById("member-admin-intro");
     var memberAdminStatus = document.getElementById("member-admin-status");
     var memberAdminStats = document.getElementById("member-admin-stats");
@@ -541,6 +554,9 @@
       if (id === "games" && typeof onGamesPanelShown === "function") {
         onGamesPanelShown();
       }
+      if (id === "club-issues" && typeof onClubIssuesPanelShown === "function") {
+        onClubIssuesPanelShown();
+      }
     }
 
     function wirePanelNav() {
@@ -726,6 +742,7 @@
         h === "events" ||
         h === "photos" ||
         h === "games" ||
+        h === "club-issues" ||
         h === "profile"
       ) {
         return h;
@@ -1169,6 +1186,12 @@
       setGamesPanelIntro(userRoles);
       if (window.SNHMemberGamesPanel && typeof window.SNHMemberGamesPanel.onPanelShown === "function") {
         window.SNHMemberGamesPanel.onPanelShown(userRoles);
+      }
+    };
+
+    onClubIssuesPanelShown = function () {
+      if (window.SNHMemberClubIssuesPanel && typeof window.SNHMemberClubIssuesPanel.onPanelShown === "function") {
+        window.SNHMemberClubIssuesPanel.onPanelShown(userRoles);
       }
     };
 
