@@ -1454,8 +1454,122 @@ footer {
 .games-actions {
   margin-top: 0.5rem;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.35rem;
   justify-content: flex-end;
+}
+
+.games-more-info-btn {
+  margin-left: 0.15rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #3d6a8a;
+  background: rgba(40, 90, 120, 0.45);
+  color: #cfe9ff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.games-more-info-btn:hover {
+  border-color: #4da3ff;
+  background: rgba(77, 163, 255, 0.25);
+}
+
+.games-more-info-btn:focus-visible {
+  outline: 2px solid #4da3ff;
+  outline-offset: 2px;
+}
+
+.games-more-info-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+}
+
+.games-more-info-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+.games-more-info-dialog {
+  position: relative;
+  z-index: 1;
+  margin: 6vh auto;
+  max-width: 32rem;
+  max-height: 82vh;
+  overflow: auto;
+  padding: 1rem 1.1rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid #2a4a5c;
+  background: #121a22;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.games-more-info-close {
+  float: right;
+  margin: -0.25rem -0.25rem 0.5rem 0.5rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #3d6a8a;
+  background: rgba(40, 90, 120, 0.35);
+  color: #e8f4ff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.games-more-info-title {
+  margin: 0 2.5rem 0.75rem 0;
+  font-size: 1.15rem;
+  clear: right;
+}
+
+.games-more-info-body {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #d8dee6;
+}
+
+.games-more-info-section {
+  margin-top: 1rem;
+}
+
+.games-more-info-section:first-child {
+  margin-top: 0;
+}
+
+.games-more-info-section h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: #9fd4ff;
+}
+
+.games-more-info-list {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.games-more-info-loading,
+.games-more-info-empty,
+.games-more-info-error {
+  margin: 0;
+}
+
+.games-more-info-error {
+  color: #ffb4b4;
+}
+
+.games-more-info-sale-notes {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: #c9d2dc;
 }
 
 .game-card-image {
@@ -1817,6 +1931,16 @@ footer {
   max-width: 40rem;
 }
 
+/* Stacked-field layout (column flex): combobox lives inside `.member-games-field`.
+   Avoid flex-grow here — otherwise the wrapper stretches tall and `top: 100%`
+   anchors the dropdown far below the input. */
+.member-games-field > .member-games-combobox {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+  max-width: 40rem;
+}
+
 .member-games-combobox-input {
   width: 100%;
 }
@@ -1903,12 +2027,36 @@ footer {
   font-size: 0.88rem;
 }
 
+.member-games-section-heading {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.12rem;
+  font-weight: 650;
+  color: #e8eef5;
+  letter-spacing: 0.02em;
+}
+
+.member-games-parties-block-heading {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c9d7e8;
+}
+
 .member-games-mode-note {
   margin: 0;
   border-left: 3px solid #4da3ff;
   padding: 0.45rem 0.65rem;
   background: rgba(77, 163, 255, 0.08);
   color: #d4e8ff;
+  font-size: 0.9rem;
+}
+
+.member-games-delete-status {
+  margin: 0;
+  border-left: 3px solid #e6a700;
+  padding: 0.45rem 0.65rem;
+  background: rgba(230, 167, 0, 0.08);
+  color: #ffe5a4;
   font-size: 0.9rem;
 }
 
@@ -1997,4 +2145,106 @@ footer {
 
 .member-games-stint-row .mg-st-addr {
   max-width: 18rem;
+}
+
+.member-games-parties-dir,
+.member-games-parties-block,
+.member-games-party-link {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d3540;
+}
+
+.member-games-party-fields-shell {
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #394453;
+  background: rgba(20, 26, 34, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.member-games-party-fields-shell[hidden] {
+  display: none;
+}
+
+.member-games-party-link {
+  border-top: 0;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #394453;
+}
+
+.member-games-parties-dir h4:first-of-type,
+.member-games-parties-block-heading:first-of-type {
+  margin-top: 0;
+}
+
+.member-games-extended,
+.member-games-pingolf-admin {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d3540;
+}
+
+.member-games-extended h4,
+.member-games-pingolf-admin h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.member-games-sublist {
+  margin: 0 0 0.5rem;
+  min-height: 0.5rem;
+}
+
+.member-games-sublist-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  margin-bottom: 0.35rem;
+}
+
+.member-games-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.member-games-checkbox-row label {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.member-club-issues-list {
+  margin: 0.75rem 0 1rem;
+}
+
+.member-club-issues-card {
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #2d3540;
+  background: rgba(20, 26, 34, 0.65);
+}
+
+.member-club-issues-card h4 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.member-club-issues-meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  color: #8fa0b3;
+}
+
+.member-club-issues-form h4 {
+  margin: 0 0 0.5rem;
 }

@@ -574,6 +574,23 @@
     if (result.error) throw result.error;
   }
 
+  async function gamesSoftDelete(gameId, note) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_soft_delete", {
+      p_game_id: gameId,
+      p_note: note || null
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesRestore(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_restore", { p_game_id: gameId });
+    if (result.error) throw result.error;
+  }
+
   async function gamesSetManualAtClub(gameId, overrideBool, note) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -607,6 +624,180 @@
     if (result.error) throw result.error;
   }
 
+  async function parseRpcJson(data) {
+    if (data == null) return null;
+    if (typeof data === "string") {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        return null;
+      }
+    }
+    return data;
+  }
+
+  async function gameHighScoresList(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_high_scores_list", { p_game_id: gameId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function gameHighScoresUpsert(scoreId, gameId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_high_scores_upsert", {
+      p_id: scoreId || null,
+      p_game_id: gameId,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function gameHighScoresDelete(scoreId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_high_scores_delete", { p_id: scoreId });
+    if (result.error) throw result.error;
+  }
+
+  async function pingolfSessionsListEditor() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_pingolf_sessions_list_editor");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function pingolfSessionUpsert(sessionId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_pingolf_session_upsert", {
+      p_id: sessionId || null,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function pingolfTargetsListEditor(sessionId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_pingolf_targets_list_editor", { p_session_id: sessionId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function pingolfTargetUpsert(targetId, sessionId, gameId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_pingolf_target_upsert", {
+      p_id: targetId || null,
+      p_session_id: sessionId,
+      p_game_id: gameId,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function pingolfTargetDelete(targetId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_pingolf_target_delete", { p_id: targetId });
+    if (result.error) throw result.error;
+  }
+
+  async function gameCustomModsList(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_custom_mods_list", { p_game_id: gameId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function gameCustomModsUpsert(modId, gameId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_custom_mods_upsert", {
+      p_id: modId || null,
+      p_game_id: gameId,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function gameCustomModsDelete(modId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_custom_mods_delete", { p_id: modId });
+    if (result.error) throw result.error;
+  }
+
+  async function clubIssuesList() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_club_issues_list");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function clubIssuesUpsert(issueId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_club_issues_upsert", {
+      p_id: issueId || null,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function publicGameMoreInfo(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_public_game_more_info", { p_game_id: gameId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function ownerPartiesList() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_owner_parties_list");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function ownerPartiesUpsert(partyId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_owner_parties_upsert", {
+      p_id: partyId || null,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function ownerPartiesDelete(partyId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_owner_parties_delete", { p_id: partyId });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesSetPartyLink(gameId, partyId, relationshipPublic, hideOwnerPublic) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_set_party_link", {
+      p_game_id: gameId,
+      p_party_id: partyId != null ? partyId : null,
+      p_party_relationship_public: relationshipPublic != null && relationshipPublic !== "" ? relationshipPublic : null,
+      p_hide_owner_public: hideOwnerPublic != null ? hideOwnerPublic : null
+    });
+    if (result.error) throw result.error;
+  }
+
   window.SNHMemberPortal = {
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
@@ -635,10 +826,30 @@
     gamesUpsert: gamesUpsert,
     gamesUpsertStint: gamesUpsertStint,
     gamesDeleteStint: gamesDeleteStint,
+    gamesSoftDelete: gamesSoftDelete,
+    gamesRestore: gamesRestore,
     gamesSetManualAtClub: gamesSetManualAtClub,
     gamesClearManualAtClub: gamesClearManualAtClub,
     gamesGetSaleListing: gamesGetSaleListing,
     gamesSetSaleListing: gamesSetSaleListing,
+    gameHighScoresList: gameHighScoresList,
+    gameHighScoresUpsert: gameHighScoresUpsert,
+    gameHighScoresDelete: gameHighScoresDelete,
+    pingolfSessionsListEditor: pingolfSessionsListEditor,
+    pingolfSessionUpsert: pingolfSessionUpsert,
+    pingolfTargetsListEditor: pingolfTargetsListEditor,
+    pingolfTargetUpsert: pingolfTargetUpsert,
+    pingolfTargetDelete: pingolfTargetDelete,
+    gameCustomModsList: gameCustomModsList,
+    gameCustomModsUpsert: gameCustomModsUpsert,
+    gameCustomModsDelete: gameCustomModsDelete,
+    clubIssuesList: clubIssuesList,
+    clubIssuesUpsert: clubIssuesUpsert,
+    ownerPartiesList: ownerPartiesList,
+    ownerPartiesUpsert: ownerPartiesUpsert,
+    ownerPartiesDelete: ownerPartiesDelete,
+    gamesSetPartyLink: gamesSetPartyLink,
+    publicGameMoreInfo: publicGameMoreInfo,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,

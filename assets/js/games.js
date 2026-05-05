@@ -151,6 +151,19 @@ function enrichGamesPayload(data) {
 }
 
 /**
+ * Keep soft-deleted games hidden in all public views.
+ * @param {unknown} game
+ * @returns {boolean}
+ */
+function isSoftDeletedGame(game) {
+  if (!game || typeof game !== "object") {
+    return false;
+  }
+  const deletedAt = game.deletedAt ?? game.deleted_at;
+  return hasNonemptyString(deletedAt);
+}
+
+/**
  * Earliest stint start for this game (ISO), for chronological ordering.
  * @param {{ title?: string, locationStints?: { sortKeyJoined?: string }[] }} game
  * @returns {string}
@@ -362,6 +375,18 @@ function formatDateLabel(isoDate) {
 }
 
 /**
+ * Thousands separators for display (pinball scores are integers).
+ * @param {unknown} score
+ * @returns {string}
+ */
+function formatHighScoreDisplay(score) {
+  if (score == null) return "";
+  const n = typeof score === "number" ? score : Number(String(score).replace(/,/g, ""));
+  if (Number.isNaN(n)) return String(score);
+  return n.toLocaleString(undefined);
+}
+
+/**
  * @param {unknown[]} games
  * @returns {Set<string>}
  */
@@ -371,6 +396,324 @@ function gameTitleSet(games) {
       .filter((game) => game && typeof game === "object" && hasNonemptyString(game.title))
       .map((game) => String(game.title))
   );
+}
+
+/** Stable catalog id from DB export or games_catalog_v1 (uuid string). */
+const GAME_UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function getPublicSupabaseClient() {
+  const client = window.snhSupabase;
+  if (!client || typeof client.rpc !== "function") {
+    return null;
+  }
+  return client;
+}
+
+/**
+ * @param {{ id?: unknown }} game
+ * @returns {boolean}
+ */
+function gameHasCatalogUuid(game) {
+  if (!game || typeof game !== "object") {
+    return false;
+  }
+  const raw = game.id;
+  if (typeof raw !== "string") {
+    return false;
+  }
+  return GAME_UUID_RE.test(raw.trim());
+}
+
+const gameMoreInfoUi = {
+  root: /** @type {HTMLElement | null} */ (null),
+  dialog: /** @type {HTMLElement | null} */ (null),
+  titleEl: /** @type {HTMLElement | null} */ (null),
+  bodyEl: /** @type {HTMLElement | null} */ (null),
+  lastFocus: /** @type {HTMLElement | null} */ (null),
+  onKeyDown: /** @type {((e: KeyboardEvent) => void) | null} */ (null),
+};
+
+function ensureGameMoreInfoModal() {
+  if (gameMoreInfoUi.root) {
+    return;
+  }
+  const root = document.createElement("div");
+  root.id = "games-more-info-root";
+  root.className = "games-more-info-root";
+  root.hidden = true;
+
+  const backdrop = document.createElement("button");
+  backdrop.type = "button";
+  backdrop.className = "games-more-info-backdrop";
+  backdrop.setAttribute("aria-label", "Close details");
+  backdrop.addEventListener("click", () => closeGameMoreInfoModal());
+
+  const dialog = document.createElement("div");
+  dialog.className = "games-more-info-dialog";
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.setAttribute("aria-labelledby", "games-more-info-title");
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "games-more-info-close";
+  closeBtn.textContent = "Close";
+  closeBtn.addEventListener("click", () => closeGameMoreInfoModal());
+
+  const titleEl = document.createElement("h3");
+  titleEl.id = "games-more-info-title";
+  titleEl.className = "games-more-info-title";
+
+  const bodyEl = document.createElement("div");
+  bodyEl.className = "games-more-info-body";
+
+  dialog.appendChild(closeBtn);
+  dialog.appendChild(titleEl);
+  dialog.appendChild(bodyEl);
+  root.appendChild(backdrop);
+  root.appendChild(dialog);
+  document.body.appendChild(root);
+
+  gameMoreInfoUi.root = root;
+  gameMoreInfoUi.dialog = dialog;
+  gameMoreInfoUi.titleEl = titleEl;
+  gameMoreInfoUi.bodyEl = bodyEl;
+}
+
+/**
+ * @param {number | null | undefined} cents
+ * @returns {string}
+ */
+function formatMoneyFromCents(cents) {
+  if (cents == null || Number.isNaN(Number(cents))) {
+    return "";
+  }
+  const n = Number(cents) / 100;
+  return n.toLocaleString(undefined, { style: "currency", currency: "USD" });
+}
+
+/**
+ * @param {unknown} payload
+ */
+function renderGameMoreInfoSections(payload) {
+  ensureGameMoreInfoModal();
+  const body = gameMoreInfoUi.bodyEl;
+  if (!body) {
+    return;
+  }
+  body.replaceChildren();
+
+  if (payload == null || typeof payload !== "object") {
+    const p = document.createElement("p");
+    p.className = "games-more-info-empty";
+    p.textContent = "Details are not available for this game.";
+    body.appendChild(p);
+    return;
+  }
+
+  const highScores = payload.highScores;
+  const pingolfTargets = payload.pingolfTargets;
+  const customMods = payload.customMods;
+  const saleListingPublic = payload.saleListingPublic;
+  const partySummaries = payload.partySummaries;
+
+  let any = false;
+
+  /**
+   * @param {string} heading
+   * @param {HTMLElement} inner
+   */
+  function addSection(heading, inner) {
+    const sec = document.createElement("section");
+    sec.className = "games-more-info-section";
+    const h = document.createElement("h4");
+    h.textContent = heading;
+    sec.appendChild(h);
+    sec.appendChild(inner);
+    body.appendChild(sec);
+    any = true;
+  }
+
+  if (Array.isArray(highScores) && highScores.length > 0) {
+    const ul = document.createElement("ul");
+    ul.className = "games-more-info-list";
+    for (const row of highScores) {
+      if (!row || typeof row !== "object") continue;
+      const li = document.createElement("li");
+      const parts = [
+        row.score != null ? formatHighScoreDisplay(row.score) : "",
+        hasNonemptyString(row.playerLabel) ? String(row.playerLabel) : "",
+        hasNonemptyString(row.achievedOn) ? formatDateLabel(String(row.achievedOn)) : "",
+      ].filter(Boolean);
+      li.textContent = parts.join(" · ");
+      if (hasNonemptyString(row.notes)) {
+        li.textContent += ` — ${String(row.notes)}`;
+      }
+      ul.appendChild(li);
+    }
+    addSection("High scores", ul);
+  }
+
+  if (Array.isArray(pingolfTargets) && pingolfTargets.length > 0) {
+    const ul = document.createElement("ul");
+    ul.className = "games-more-info-list";
+    for (const row of pingolfTargets) {
+      if (!row || typeof row !== "object") continue;
+      const li = document.createElement("li");
+      let t = hasNonemptyString(row.description) ? String(row.description) : "Target";
+      if (row.targetValue != null && row.targetValue !== "") {
+        t += ` (goal: ${row.targetValue})`;
+      }
+      li.textContent = t;
+      ul.appendChild(li);
+    }
+    addSection("Pingolf", ul);
+  }
+
+  if (Array.isArray(partySummaries) && partySummaries.some((x) => hasNonemptyString(x))) {
+    const ul = document.createElement("ul");
+    ul.className = "games-more-info-list";
+    for (const line of partySummaries) {
+      if (!hasNonemptyString(line)) continue;
+      const li = document.createElement("li");
+      li.textContent = String(line);
+      ul.appendChild(li);
+    }
+    addSection("Owners & lenders", ul);
+  }
+
+  if (saleListingPublic && typeof saleListingPublic === "object") {
+    const p = document.createElement("p");
+    p.className = "games-more-info-sale";
+    const bits = [];
+    if (hasNonemptyString(saleListingPublic.status)) {
+      bits.push(String(saleListingPublic.status));
+    }
+    const centsRaw = saleListingPublic.askingPriceCents;
+    const price = formatMoneyFromCents(
+      typeof centsRaw === "number" ? centsRaw : centsRaw != null ? Number(centsRaw) : null
+    );
+    if (price) bits.push(`Asking ${price}`);
+    p.textContent = bits.join(" · ");
+    if (hasNonemptyString(saleListingPublic.notes)) {
+      const note = document.createElement("span");
+      note.className = "games-more-info-sale-notes";
+      note.textContent = String(saleListingPublic.notes);
+      p.appendChild(document.createElement("br"));
+      p.appendChild(note);
+    }
+    addSection("For sale", p);
+  }
+
+  if (Array.isArray(customMods) && customMods.length > 0) {
+    const ul = document.createElement("ul");
+    ul.className = "games-more-info-list";
+    for (const row of customMods) {
+      if (!row || typeof row !== "object") continue;
+      const li = document.createElement("li");
+      const title = hasNonemptyString(row.title) ? String(row.title) : "Mod";
+      if (hasNonemptyString(row.referenceUrl)) {
+        const a = document.createElement("a");
+        a.href = String(row.referenceUrl);
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = title;
+        li.appendChild(a);
+      } else {
+        li.textContent = title;
+      }
+      if (hasNonemptyString(row.description)) {
+        li.appendChild(document.createTextNode(` — ${String(row.description)}`));
+      }
+      ul.appendChild(li);
+    }
+    addSection("Custom mods", ul);
+  }
+
+  if (!any) {
+    const p = document.createElement("p");
+    p.className = "games-more-info-empty";
+    p.textContent = "No additional details on file.";
+    body.appendChild(p);
+  }
+}
+
+function closeGameMoreInfoModal() {
+  if (gameMoreInfoUi.onKeyDown) {
+    document.removeEventListener("keydown", gameMoreInfoUi.onKeyDown);
+    gameMoreInfoUi.onKeyDown = null;
+  }
+  if (gameMoreInfoUi.root) {
+    gameMoreInfoUi.root.hidden = true;
+  }
+  if (gameMoreInfoUi.lastFocus && typeof gameMoreInfoUi.lastFocus.focus === "function") {
+    gameMoreInfoUi.lastFocus.focus();
+  }
+  gameMoreInfoUi.lastFocus = null;
+}
+
+/**
+ * @param {{ title?: string, id?: string }} game
+ */
+async function openGameMoreInfoModal(game) {
+  const client = getPublicSupabaseClient();
+  if (!client || !gameHasCatalogUuid(game)) {
+    return;
+  }
+  ensureGameMoreInfoModal();
+  const root = gameMoreInfoUi.root;
+  const titleEl = gameMoreInfoUi.titleEl;
+  const bodyEl = gameMoreInfoUi.bodyEl;
+  const dialog = gameMoreInfoUi.dialog;
+  if (!root || !titleEl || !bodyEl || !dialog) {
+    return;
+  }
+
+  gameMoreInfoUi.lastFocus = /** @type {HTMLElement} */ (document.activeElement);
+  root.hidden = false;
+  titleEl.textContent = game.title ? `More about ${game.title}` : "Game details";
+  bodyEl.replaceChildren();
+  const loading = document.createElement("p");
+  loading.className = "games-more-info-loading";
+  loading.textContent = "Loading…";
+  bodyEl.appendChild(loading);
+
+  gameMoreInfoUi.onKeyDown = (ev) => {
+    if (ev.key === "Escape") {
+      ev.preventDefault();
+      closeGameMoreInfoModal();
+    }
+  };
+  document.addEventListener("keydown", gameMoreInfoUi.onKeyDown);
+
+  const closeBtn = dialog.querySelector(".games-more-info-close");
+  if (closeBtn && typeof closeBtn.focus === "function") {
+    closeBtn.focus();
+  }
+
+  try {
+    const res = await client.rpc("snh_public_game_more_info", { p_game_id: game.id });
+    if (res.error) {
+      throw new Error(res.error.message || String(res.error));
+    }
+    let data = res.data;
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch {
+        data = null;
+      }
+    }
+    renderGameMoreInfoSections(data);
+  } catch (err) {
+    console.error("More Info RPC failed:", err);
+    bodyEl.replaceChildren();
+    const p = document.createElement("p");
+    p.className = "games-more-info-error";
+    p.textContent = err instanceof Error ? err.message : "Could not load details right now.";
+    bodyEl.appendChild(p);
+  }
 }
 
 function createGamesList(games) {
@@ -417,7 +760,8 @@ function createGamesList(games) {
     const pinsideUrl = game.pinsideUrl;
     const ipdbUrl = game.ipdbUrl;
     const pintipsUrl = getPinTipsUrl(game);
-    if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub) {
+    const moreInfoEligible = !!getPublicSupabaseClient() && gameHasCatalogUuid(game);
+    if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
 
@@ -508,6 +852,18 @@ function createGamesList(games) {
         linkRow.appendChild(pintipsLink);
       }
 
+      if (moreInfoEligible) {
+        const moreBtn = document.createElement("button");
+        moreBtn.type = "button";
+        moreBtn.className = "games-more-info-btn";
+        moreBtn.textContent = "More info";
+        moreBtn.setAttribute("aria-haspopup", "dialog");
+        moreBtn.addEventListener("click", () => {
+          void openGameMoreInfoModal(game);
+        });
+        linkRow.appendChild(moreBtn);
+      }
+
       item.appendChild(linkRow);
     }
 
@@ -570,7 +926,10 @@ async function loadGames() {
     const data = await fetchGamesCatalogPayload();
 
     enrichGamesPayload(data);
-    const sorted = sortGamesNewestJoinFirst(data.games);
+    const visibleGames = (Array.isArray(data.games) ? data.games : []).filter(
+      (game) => !isSoftDeletedGame(game)
+    );
+    const sorted = sortGamesNewestJoinFirst(visibleGames);
     const hasAnyAtClub = sorted.some((game) => game && typeof game === "object" && game.atClub === true);
     const timelineDates = buildTimelineDates(sorted);
     const todayIso = todayIsoDate();

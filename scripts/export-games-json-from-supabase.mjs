@@ -40,7 +40,7 @@ async function fetchGamesRows() {
   const endpoint =
     `${supabaseUrl}/rest/v1/games_catalog_v1` +
     "?select=game" +
-    "&order=title.asc";
+    "&order=slug.asc";
 
   const response = await fetch(endpoint, {
     headers: {
@@ -64,6 +64,40 @@ async function fetchGamesRows() {
   return data;
 }
 
+async function fetchActiveGameIds() {
+  const supabaseUrl = requiredEnv("SUPABASE_URL").replace(/\/+$/, "");
+  const apiKey = getApiKey();
+  const endpoint =
+    `${supabaseUrl}/rest/v1/games` +
+    "?select=id" +
+    "&deleted_at=is.null";
+
+  const response = await fetch(endpoint, {
+    headers: {
+      apikey: apiKey,
+      Authorization: `Bearer ${apiKey}`,
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(
+      `Supabase active-id export failed (${response.status} ${response.statusText}): ${details}`
+    );
+  }
+
+  const data = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error("Supabase active-id export failed: expected an array response.");
+  }
+  return new Set(
+    data
+      .map((row) => (row && typeof row === "object" ? row.id : null))
+      .filter((id) => typeof id === "string" && id.trim() !== "")
+  );
+}
+
 function normalizeRows(rows) {
   return rows
     .map((row) => row?.game)
@@ -72,7 +106,11 @@ function normalizeRows(rows) {
 
 async function main() {
   const rows = await fetchGamesRows();
-  const games = normalizeRows(rows);
+  const activeIds = await fetchActiveGameIds();
+  const games = normalizeRows(rows).filter((game) => {
+    const id = typeof game.id === "string" ? game.id.trim() : "";
+    return id && activeIds.has(id);
+  });
   const payload = { games };
 
   await mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
