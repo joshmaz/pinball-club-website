@@ -574,6 +574,23 @@
     if (result.error) throw result.error;
   }
 
+  async function gamesSoftDelete(gameId, note) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_soft_delete", {
+      p_game_id: gameId,
+      p_note: note || null
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesRestore(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_restore", { p_game_id: gameId });
+    if (result.error) throw result.error;
+  }
+
   async function gamesSetManualAtClub(gameId, overrideBool, note) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -635,6 +652,8 @@
     gamesUpsert: gamesUpsert,
     gamesUpsertStint: gamesUpsertStint,
     gamesDeleteStint: gamesDeleteStint,
+    gamesSoftDelete: gamesSoftDelete,
+    gamesRestore: gamesRestore,
     gamesSetManualAtClub: gamesSetManualAtClub,
     gamesClearManualAtClub: gamesClearManualAtClub,
     gamesGetSaleListing: gamesGetSaleListing,

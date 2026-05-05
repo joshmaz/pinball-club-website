@@ -28,6 +28,10 @@
   var inited = false;
   var lastUserRoles = [];
   var comboboxListboxId = "member-games-combobox-listbox";
+  var deleteStatusEl = null;
+  var deleteNoteInputEl = null;
+  var softDeleteBtnEl = null;
+  var restoreBtnEl = null;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -93,6 +97,17 @@
         text: ""
       })
     );
+    deleteStatusEl = el("p", { className: "member-games-delete-status", id: "mg-delete-status", hidden: "hidden" });
+    deleteNoteInputEl = textareaInput("mg-delete-note", "");
+    deleteNoteInputEl.setAttribute("rows", "3");
+    var deleteNoteRow = fieldRow("Delete note (optional)", deleteNoteInputEl);
+    var deleteActions = el("div", { className: "member-games-form-actions", id: "mg-delete-actions" });
+    softDeleteBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-soft-delete" });
+    softDeleteBtnEl.textContent = "Soft-delete game";
+    restoreBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-restore" });
+    restoreBtnEl.textContent = "Restore game";
+    deleteActions.appendChild(softDeleteBtnEl);
+    deleteActions.appendChild(restoreBtnEl);
     formEl.appendChild(
       fieldRow(
         "Title",
@@ -230,6 +245,9 @@
     cancelBtn.textContent = "Cancel";
     var actions = el("div", { className: "member-games-form-actions" }, [saveBtn, cancelBtn]);
     formEl.appendChild(actions);
+    formEl.appendChild(deleteStatusEl);
+    formEl.appendChild(deleteNoteRow);
+    formEl.appendChild(deleteActions);
 
     saveBtn.addEventListener("click", onSaveGame);
     cancelBtn.addEventListener("click", function () {
@@ -238,6 +256,8 @@
     });
     formEl.addEventListener("input", onFormPotentiallyDirty);
     formEl.addEventListener("change", onFormPotentiallyDirty);
+    softDeleteBtnEl.addEventListener("click", onSoftDeleteGame);
+    restoreBtnEl.addEventListener("click", onRestoreGame);
 
     return formEl;
   }
@@ -259,10 +279,44 @@
   function normalizeGamesForDisplay(list) {
     return (list || []).map(function (g) {
       var out = g || {};
-      out.__label = out.title || out.slug || out.id || "Untitled game";
+      var baseLabel = out.title || out.slug || out.id || "Untitled game";
+      out.__label = isGameDeleted(out) ? baseLabel + " (deleted)" : baseLabel;
       out.__searchTitle = String(out.title || "").toLowerCase();
       return out;
     });
+  }
+
+  function currentGame() {
+    return gamesCache.find(function (x) {
+      return String(x.id) === String(currentGameId);
+    });
+  }
+
+  function hasDeleteAccess() {
+    return !!(
+      window.SNHMemberPortal &&
+      window.SNHMemberPortal.memberHasAnyRole &&
+      window.SNHMemberPortal.memberHasAnyRole(lastUserRoles || [], "games_admin,club_admin")
+    );
+  }
+
+  function isGameDeleted(game) {
+    if (!game) return false;
+    var v = game.deletedAt;
+    if (v === null || v === undefined) return false;
+    var s = String(v).trim().toLowerCase();
+    return s !== "" && s !== "null" && s !== "undefined";
+  }
+
+  function setButtonVisible(btn, visible) {
+    if (!btn) return;
+    if (visible) {
+      btn.hidden = false;
+      btn.style.display = "";
+    } else {
+      btn.hidden = true;
+      btn.style.display = "none";
+    }
   }
 
   function setComboboxOpen(isOpen) {
@@ -344,6 +398,11 @@
     if (manualWrapEl) manualWrapEl.hidden = mode !== "edit";
     if (saleEl) saleEl.hidden = mode !== "edit";
     if (stintsEl) stintsEl.hidden = mode !== "edit";
+    if (deleteStatusEl) deleteStatusEl.hidden = mode !== "edit";
+    var deleteNoteRow = deleteNoteInputEl ? deleteNoteInputEl.closest(".member-games-field") : null;
+    if (deleteNoteRow) deleteNoteRow.hidden = mode !== "edit";
+    var deleteActions = document.getElementById("mg-delete-actions");
+    if (deleteActions) deleteActions.hidden = mode !== "edit";
   }
 
   function focusFirstFormField() {
@@ -639,9 +698,7 @@
 
   async function populateForm(gameId) {
     currentGameId = gameId;
-    var g = gamesCache.find(function (x) {
-      return String(x.id) === String(gameId);
-    });
+    var g = currentGame();
     if (!g) return;
     if (comboboxInputEl) comboboxInputEl.value = g.__label || g.title || g.slug || "";
     setMode("edit");
@@ -672,6 +729,19 @@
       else man.value = "follow_map";
     }
     document.getElementById("mg-manual-note").value = g.manualAtClubNote || "";
+    if (deleteStatusEl) {
+      deleteStatusEl.hidden = false;
+      deleteStatusEl.textContent = isGameDeleted(g)
+        ? "This game is soft-deleted and hidden from the public catalog."
+        : "This game is active in the editor and public catalog.";
+    }
+    if (deleteNoteInputEl) {
+      deleteNoteInputEl.value = g.deleteNote || "";
+    }
+    var canDelete = hasDeleteAccess();
+    var deleted = isGameDeleted(g);
+    setButtonVisible(softDeleteBtnEl, canDelete && !deleted);
+    setButtonVisible(restoreBtnEl, canDelete && deleted);
     renderStints(g.locationStints || []);
     suppressDirtyTracking = false;
     await loadSale(gameId);
@@ -717,6 +787,11 @@
       } else {
         if (!savedGameId) {
           setStatus("Select a game first.");
+          return;
+        }
+        var editingGame = currentGame();
+        if (editingGame && isGameDeleted(editingGame)) {
+          setStatus("Restore this game before saving metadata changes.");
           return;
         }
         await window.SNHMemberPortal.gamesUpsert(savedGameId, fields);
@@ -797,6 +872,43 @@
       });
       if (g) renderStints(g.locationStints || []);
       setStatus("Stint deleted.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onSoftDeleteGame() {
+    if (!currentGameId || !window.SNHMemberPortal || !window.SNHMemberPortal.gamesSoftDelete) return;
+    var game = currentGame();
+    if (!game || isGameDeleted(game)) return;
+    if (!window.confirm("Soft-delete this game? It will be hidden from the public catalog.")) return;
+    setStatus("Soft-deleting game…");
+    try {
+      await window.SNHMemberPortal.gamesSoftDelete(currentGameId, getVal("mg-delete-note") || null);
+      var data = await window.SNHMemberPortal.gamesEditorLoad();
+      gamesCache = (data && data.games) || [];
+      populateCombobox();
+      await populateForm(currentGameId);
+      isDirty = false;
+      setStatus("Game soft-deleted.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onRestoreGame() {
+    if (!currentGameId || !window.SNHMemberPortal || !window.SNHMemberPortal.gamesRestore) return;
+    var game = currentGame();
+    if (!game || !isGameDeleted(game)) return;
+    setStatus("Restoring game…");
+    try {
+      await window.SNHMemberPortal.gamesRestore(currentGameId);
+      var data = await window.SNHMemberPortal.gamesEditorLoad();
+      gamesCache = (data && data.games) || [];
+      populateCombobox();
+      await populateForm(currentGameId);
+      isDirty = false;
+      setStatus("Game restored.");
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     }
