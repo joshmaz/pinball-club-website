@@ -1931,6 +1931,16 @@ footer {
   max-width: 40rem;
 }
 
+/* Stacked-field layout (column flex): combobox lives inside `.member-games-field`.
+   Avoid flex-grow here — otherwise the wrapper stretches tall and `top: 100%`
+   anchors the dropdown far below the input. */
+.member-games-field > .member-games-combobox {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+  max-width: 40rem;
+}
+
 .member-games-combobox-input {
   width: 100%;
 }
@@ -2015,6 +2025,21 @@ footer {
 .member-games-review-todo {
   color: #9aa8b8;
   font-size: 0.88rem;
+}
+
+.member-games-section-heading {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.12rem;
+  font-weight: 650;
+  color: #e8eef5;
+  letter-spacing: 0.02em;
+}
+
+.member-games-parties-block-heading {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c9d7e8;
 }
 
 .member-games-mode-note {
@@ -2120,6 +2145,41 @@ footer {
 
 .member-games-stint-row .mg-st-addr {
   max-width: 18rem;
+}
+
+.member-games-parties-dir,
+.member-games-parties-block,
+.member-games-party-link {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d3540;
+}
+
+.member-games-party-fields-shell {
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #394453;
+  background: rgba(20, 26, 34, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.member-games-party-fields-shell[hidden] {
+  display: none;
+}
+
+.member-games-party-link {
+  border-top: 0;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #394453;
+}
+
+.member-games-parties-dir h4:first-of-type,
+.member-games-parties-block-heading:first-of-type {
+  margin-top: 0;
 }
 
 .member-games-extended,

@@ -1,13 +1,4 @@
 (function () {
-  var GAMES_EDIT_CSV =
-    (window.SNHMemberPortal &&
-      window.SNHMemberPortal.rolesToCsv &&
-      window.SNHMemberPortal.rolesToCsv(
-        (window.SNHMemberPortal.ROLE_GROUPS && window.SNHMemberPortal.ROLE_GROUPS.GAMES_ACCESS) ||
-          ["games_editor", "games_admin", "club_admin"]
-      )) ||
-    "games_editor,games_admin,club_admin";
-
   var appEl = null;
   var statusEl = null;
   var listEl = null;
@@ -50,12 +41,8 @@
     return i;
   }
 
-  function hasGamesEdit() {
-    return !!(
-      window.SNHMemberPortal &&
-      window.SNHMemberPortal.memberHasAnyRole &&
-      window.SNHMemberPortal.memberHasAnyRole(lastRoles || [], GAMES_EDIT_CSV)
-    );
+  function canEditClubIssues() {
+    return Array.isArray(lastRoles) && lastRoles.length > 0;
   }
 
   function setStatus(msg) {
@@ -78,7 +65,7 @@
 
   function syncFormVisibility() {
     if (!formWrap) return;
-    formWrap.hidden = !hasGamesEdit();
+    formWrap.hidden = !canEditClubIssues();
   }
 
   function buildShell() {
@@ -122,7 +109,7 @@
   }
 
   async function onSubmit() {
-    if (!window.SNHMemberPortal || !hasGamesEdit()) return;
+    if (!window.SNHMemberPortal || !canEditClubIssues()) return;
     var titleEl = document.getElementById("ci-title");
     var title = titleEl ? String(titleEl.value || "").trim() : "";
     if (!title) {
@@ -174,7 +161,7 @@
           if (row.body) {
             card.appendChild(el("p", { text: row.body }));
           }
-          if (hasGamesEdit() && row.id) {
+          if (canEditClubIssues() && row.id) {
             var edit = el("button", { type: "button", className: "members-sidebar-link" });
             edit.textContent = "Edit";
             edit.addEventListener("click", function () {
@@ -198,7 +185,7 @@
   }
 
   function startEdit(row) {
-    if (!row || !hasGamesEdit()) return;
+    if (!row || !canEditClubIssues()) return;
     editingId = row.id;
     var t = document.getElementById("ci-title");
     var b = document.getElementById("ci-body");

@@ -37,6 +37,23 @@
   var pingolfTargetsWrapEl = null;
   var pingolfAdminEl = null;
   var featuredPingolfSessionId = null;
+  var partiesCache = [];
+  var filteredParties = [];
+  var partyComboboxOpen = false;
+  var partyComboboxActiveIndex = -1;
+  var partyComboboxInputEl = null;
+  var partyComboboxPanelEl = null;
+  var partyComboboxOptionsEl = null;
+  var partyComboboxEmptyEl = null;
+  var partyComboWrapEl = null;
+  var partiesBlockEl = null;
+  var gameComboWrapEl = null;
+  var partyComboboxListboxId = "member-parties-combobox-listbox";
+  var editingPartyId = null;
+  var partyFieldsWrapEl = null;
+  var partyEditMode = "idle"; // idle | new | edit
+  var partyFormDirty = false;
+  var partyLinkWrapEl = null;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -129,6 +146,13 @@
       el("p", {
         className: "member-games-mode-note",
         id: "member-games-mode-note",
+        text: ""
+      })
+    );
+    formEl.appendChild(
+      el("h3", {
+        className: "member-games-section-heading",
+        id: "mg-section-game",
         text: ""
       })
     );
@@ -274,6 +298,8 @@
     saleEl.appendChild(fieldRow("Notes", textareaInput("mg-sale-notes", "")));
     formEl.appendChild(saleEl);
 
+    appendPartyGameLinkSection();
+
     highScoresWrapEl = el("div", { className: "member-games-extended", id: "mg-high-scores-wrap" });
     highScoresWrapEl.appendChild(el("h4", { text: "High scores (public More Info)" }));
     highScoresWrapEl.appendChild(el("div", { id: "mg-high-scores-list", className: "member-games-sublist" }));
@@ -385,6 +411,22 @@
     });
   }
 
+  function normalizePartiesForDisplay(list) {
+    return (list || []).map(function (p) {
+      var out = p || {};
+      var full = String(out.fullName || "").trim();
+      var disp = String(out.displayName || "").trim();
+      var fallback = full || disp || String(out.id || "Untitled party");
+      var bits = "";
+      if (full && disp) bits = disp === full ? full : full + " · " + disp;
+      else bits = fallback;
+      if (bits.length > 92) bits = bits.slice(0, 89) + "…";
+      out.__label = bits;
+      out.__search = (full + " " + disp + " " + String(out.contactEmail || "")).trim().toLowerCase();
+      return out;
+    });
+  }
+
   function currentGame() {
     return gamesCache.find(function (x) {
       return String(x.id) === String(currentGameId);
@@ -481,6 +523,145 @@
     renderComboboxOptions();
   }
 
+  function setPartyComboboxOpen(isOpen) {
+    partyComboboxOpen = !!isOpen;
+    if (partyComboboxPanelEl) partyComboboxPanelEl.hidden = !partyComboboxOpen;
+    if (partyComboboxInputEl) {
+      partyComboboxInputEl.setAttribute("aria-expanded", partyComboboxOpen ? "true" : "false");
+    }
+    if (!partyComboboxOpen) {
+      partyComboboxActiveIndex = -1;
+      if (partyComboboxInputEl) partyComboboxInputEl.setAttribute("aria-activedescendant", "");
+    }
+  }
+
+  function updatePartyActiveDescendant() {
+    if (!partyComboboxInputEl) return;
+    if (partyComboboxActiveIndex < 0 || partyComboboxActiveIndex >= filteredParties.length) {
+      partyComboboxInputEl.setAttribute("aria-activedescendant", "");
+      return;
+    }
+    var active = filteredParties[partyComboboxActiveIndex];
+    partyComboboxInputEl.setAttribute("aria-activedescendant", "member-parties-option-" + String(active.id));
+  }
+
+  function refreshPartyComboboxActiveStyles() {
+    if (!partyComboboxOptionsEl) return;
+    var buttons = partyComboboxOptionsEl.querySelectorAll(".member-games-option");
+    buttons.forEach(function (btn, idx) {
+      var active = idx === partyComboboxActiveIndex;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+    });
+  }
+
+  function renderPartyComboboxOptions() {
+    if (!partyComboboxOptionsEl || !partyComboboxEmptyEl || !partyComboboxInputEl) return;
+    partyComboboxOptionsEl.replaceChildren();
+    var term = String(partyComboboxInputEl.value || "").trim().toLowerCase();
+    filteredParties = partiesCache.filter(function (p) {
+      return !term || p.__search.indexOf(term) !== -1;
+    });
+    filteredParties.forEach(function (p, idx) {
+      var opt = el("button", {
+        type: "button",
+        className: "member-games-option",
+        role: "option",
+        id: "member-parties-option-" + String(p.id),
+        "aria-selected": partyComboboxActiveIndex === idx ? "true" : "false"
+      });
+      opt.textContent = p.__label;
+      opt.addEventListener("click", function () {
+        startEditParty(p);
+        setPartyComboboxOpen(false);
+        if (partyComboboxInputEl) partyComboboxInputEl.value = p.__label || "";
+      });
+      partyComboboxOptionsEl.appendChild(opt);
+    });
+    if (partyComboboxActiveIndex >= filteredParties.length) partyComboboxActiveIndex = filteredParties.length - 1;
+    if (partyComboboxActiveIndex < -1) partyComboboxActiveIndex = -1;
+    updatePartyActiveDescendant();
+    refreshPartyComboboxActiveStyles();
+    partyComboboxEmptyEl.hidden = filteredParties.length > 0;
+  }
+
+  function populatePartyCombobox() {
+    partiesCache = normalizePartiesForDisplay(partiesCache);
+    renderPartyComboboxOptions();
+  }
+
+  function updatePartyModeShell() {
+    var n = document.getElementById("member-parties-mode-note");
+    if (!n) return;
+    if (partyEditMode === "idle") {
+      n.textContent = "";
+      n.hidden = true;
+      return;
+    }
+    n.hidden = false;
+    if (partyEditMode === "edit") n.textContent = "Editing an existing directory entry — save changes or cancel.";
+    else if (partyEditMode === "new") n.textContent = "Adding a new party — full name copies into display until you edit display name.";
+    else n.textContent = "";
+  }
+
+  function setPartyShellOpen(isOpen) {
+    if (!partyFieldsWrapEl) return;
+    var show = !!isOpen;
+    partyFieldsWrapEl.hidden = !show;
+    partyFieldsWrapEl.setAttribute("aria-hidden", show ? "false" : "true");
+    updatePartyModeShell();
+  }
+
+  function openPartyEditor(nextMode) {
+    partyEditMode = nextMode || "edit";
+    partyFormDirty = false;
+    setPartyShellOpen(true);
+  }
+
+  function confirmDiscardPartyIfDirty() {
+    if (!partyFormDirty) return true;
+    return window.confirm("Discard unsaved party changes?");
+  }
+
+  function enterPartyIdleModeInternal(statusMsg) {
+    partyEditMode = "idle";
+    editingPartyId = null;
+    partyFormDirty = false;
+    setPartyShellOpen(false);
+    if (partyComboboxInputEl) partyComboboxInputEl.value = "";
+    setPartyComboboxOpen(false);
+    partyComboboxActiveIndex = -1;
+    populatePartyCombobox();
+    if (statusMsg) setStatus(statusMsg);
+  }
+
+  function enterPartyIdleMode(statusMsg) {
+    if (!confirmDiscardPartyIfDirty()) return;
+    enterPartyIdleModeInternal(statusMsg);
+  }
+
+  function onPartyPotentiallyDirty() {
+    if (partyEditMode === "idle") return;
+    partyFormDirty = true;
+  }
+
+  function beginNewPartyFromCombobox() {
+    if (!confirmDiscardPartyIfDirty()) return;
+    openPartyEditor("new");
+    onNewPartyFormCore();
+    setPartyComboboxOpen(false);
+    if (partyComboboxInputEl) partyComboboxInputEl.value = "";
+    var fn = document.getElementById("mg-party-full-name");
+    if (fn) fn.focus();
+    setStatus("New party — fill details and save.");
+  }
+
+  function onMemberGamesDocumentClick(evt) {
+    if (!appEl) return;
+    if (comboboxOpen && gameComboWrapEl && !gameComboWrapEl.contains(evt.target)) setComboboxOpen(false);
+    if (partyComboboxOpen && partyComboWrapEl && !partyComboWrapEl.contains(evt.target)) setPartyComboboxOpen(false);
+  }
+
   function setMode(nextMode) {
     mode = nextMode;
     var isIdle = mode === "idle";
@@ -508,6 +689,16 @@
           window.SNHMemberPortal.memberHasAnyRole(lastUserRoles || [], "games_admin,club_admin")
         );
     }
+    var secGame = document.getElementById("mg-section-game");
+    if (secGame) {
+      secGame.textContent =
+        mode === "new"
+          ? "New manual game entry"
+          : mode === "edit"
+            ? "Edit game catalog"
+            : "";
+    }
+    if (partyLinkWrapEl) partyLinkWrapEl.hidden = mode !== "edit";
     if (stintsEl) stintsEl.hidden = mode !== "edit";
     if (deleteStatusEl) deleteStatusEl.hidden = mode !== "edit";
     var deleteNoteRow = deleteNoteInputEl ? deleteNoteInputEl.closest(".member-games-field") : null;
@@ -568,6 +759,12 @@
     if (hsDate) hsDate.value = "";
     var featAdmin = document.getElementById("mg-pg-admin-featured");
     if (featAdmin) featAdmin.checked = false;
+    var pls = document.getElementById("mg-party-link-select");
+    if (pls) pls.value = "";
+    var prel = document.getElementById("mg-party-relationship-public");
+    if (prel) prel.value = "";
+    var gh = document.getElementById("mg-game-hide-owner-public");
+    if (gh) gh.checked = false;
     var hsl = document.getElementById("mg-high-scores-list");
     if (hsl) hsl.replaceChildren();
     var ml = document.getElementById("mg-mods-list");
@@ -597,12 +794,14 @@
   }
 
   function onGameSelected(gameId) {
+    if (!confirmDiscardPartyIfDirty()) return;
     if (!confirmDiscardIfDirty()) return;
     populateForm(gameId);
     setComboboxOpen(false);
   }
 
   function beginNewGameMode() {
+    if (!confirmDiscardPartyIfDirty()) return;
     if (!confirmDiscardIfDirty()) return;
     currentGameId = null;
     setMode("new");
@@ -610,6 +809,458 @@
     isDirty = false;
     setStatus('Creating new game. Use "Save game" to create a manual entry.');
     focusFirstFormField();
+  }
+
+  async function loadPartiesDirectory() {
+    if (!window.SNHMemberPortal || !window.SNHMemberPortal.ownerPartiesList) return;
+    try {
+      var rows = await window.SNHMemberPortal.ownerPartiesList();
+      partiesCache = Array.isArray(rows) ? rows : [];
+      populatePartyCombobox();
+      refreshPartyLinkSelect();
+    } catch (e) {
+      console.warn("owner parties", e);
+    }
+  }
+
+  function refreshPartyLinkSelect() {
+    var sel = document.getElementById("mg-party-link-select");
+    if (!sel) return;
+    var cur = sel.value;
+    while (sel.options.length > 1) {
+      sel.remove(1);
+    }
+    partiesCache.forEach(function (p) {
+      if (!p || !p.id) return;
+      var opt = document.createElement("option");
+      opt.value = String(p.id);
+      var label = (p.fullName || p.displayName || String(p.id)).trim();
+      opt.textContent = label.length > 90 ? label.slice(0, 87) + "…" : label;
+      sel.appendChild(opt);
+    });
+    if (cur && Array.prototype.some.call(sel.options, function (o) { return o.value === cur; })) {
+      sel.value = cur;
+    }
+  }
+
+  function syncPartyDirectoryDeleteVisibility() {
+    var delBtn = document.getElementById("mg-party-delete");
+    if (delBtn) delBtn.hidden = !hasDeleteAccess();
+  }
+
+  function startEditParty(p) {
+    if (!p) return;
+    if (!confirmDiscardPartyIfDirty()) return;
+    openPartyEditor("edit");
+    editingPartyId = p.id;
+    var fn = document.getElementById("mg-party-full-name");
+    var dn = document.getElementById("mg-party-display-name");
+    if (fn) fn.value = p.fullName || "";
+    if (dn) {
+      dn.value = p.displayName || "";
+      dn.dataset.userEdited = "1";
+    }
+    var kind = document.getElementById("mg-party-kind");
+    if (kind) kind.value = (p.partyKind || "").toLowerCase();
+    var vis = document.getElementById("mg-party-vis-public");
+    if (vis) vis.checked = p.visibilityPublic !== false;
+    var em = document.getElementById("mg-party-email");
+    if (em) em.value = p.contactEmail || "";
+    var ph = document.getElementById("mg-party-phone");
+    if (ph) ph.value = p.contactPhone || "";
+    var dc = document.getElementById("mg-party-discord");
+    if (dc) dc.value = p.discordOrOther || "";
+    var cn = document.getElementById("mg-party-contact-notes");
+    if (cn) cn.value = p.contactNotes || "";
+    var inn = document.getElementById("mg-party-internal-notes");
+    if (inn) inn.value = p.internalNotes || "";
+    setStatus("Editing party — adjust fields and click Save party.");
+    if (partyComboboxInputEl) {
+      var row = normalizePartiesForDisplay([p])[0];
+      partyComboboxInputEl.value = row.__label || "";
+    }
+    partyFormDirty = false;
+  }
+
+  function onNewPartyFormCore() {
+    editingPartyId = null;
+    var ids = [
+      "mg-party-full-name",
+      "mg-party-display-name",
+      "mg-party-email",
+      "mg-party-phone",
+      "mg-party-discord",
+      "mg-party-contact-notes",
+      "mg-party-internal-notes"
+    ];
+    ids.forEach(function (id) {
+      var n = document.getElementById(id);
+      if (n) n.value = "";
+    });
+    var dn = document.getElementById("mg-party-display-name");
+    if (dn) dn.dataset.userEdited = "0";
+    var kind = document.getElementById("mg-party-kind");
+    if (kind) kind.value = "";
+    var vis = document.getElementById("mg-party-vis-public");
+    if (vis) vis.checked = true;
+    if (partyComboboxInputEl) partyComboboxInputEl.value = "";
+    setPartyComboboxOpen(false);
+    partyComboboxActiveIndex = -1;
+    populatePartyCombobox();
+  }
+
+  function onNewPartyForm() {
+    if (!confirmDiscardPartyIfDirty()) return;
+    openPartyEditor("new");
+    onNewPartyFormCore();
+    setStatus("New party — enter full name (display name copies until you edit it), then Save party.");
+    var fn = document.getElementById("mg-party-full-name");
+    if (fn) fn.focus();
+  }
+
+  async function onSavePartyDirectory() {
+    if (!window.SNHMemberPortal) return;
+    var full = getVal("mg-party-full-name");
+    if (!full) {
+      setStatus("Party full name is required.");
+      return;
+    }
+    var dispIn = document.getElementById("mg-party-display-name");
+    var disp = dispIn ? String(dispIn.value || "").trim() : "";
+    var kindVal = getVal("mg-party-kind");
+    var fields = {
+      fullName: full,
+      displayName: disp || full,
+      partyKind: kindVal || null,
+      visibilityPublic: !!(document.getElementById("mg-party-vis-public") || {}).checked,
+      contactEmail: getVal("mg-party-email") || null,
+      contactPhone: getVal("mg-party-phone") || null,
+      discordOrOther: getVal("mg-party-discord") || null,
+      contactNotes: getVal("mg-party-contact-notes") || null,
+      internalNotes: getVal("mg-party-internal-notes") || null
+    };
+    setStatus("Saving party…");
+    try {
+      await window.SNHMemberPortal.ownerPartiesUpsert(editingPartyId, fields);
+      partyFormDirty = false;
+      await loadPartiesDirectory();
+      openPartyEditor("new");
+      onNewPartyFormCore();
+      setStatus("Party saved.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onDeletePartyById(partyId) {
+    if (!partyId || !window.SNHMemberPortal || !confirm("Delete this party? Games linked to it will lose the link.")) return;
+    try {
+      await window.SNHMemberPortal.ownerPartiesDelete(partyId);
+      if (String(editingPartyId) === String(partyId)) enterPartyIdleModeInternal(null);
+      await loadPartiesDirectory();
+      if (currentGameId) {
+        var data = await window.SNHMemberPortal.gamesEditorLoad();
+        gamesCache = (data && data.games) || [];
+        await populateForm(currentGameId);
+      }
+      setStatus("Party deleted.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onDeletePartyDirectory() {
+    if (!editingPartyId) {
+      setStatus("Select a party in Owner parties (below) before deleting.");
+      return;
+    }
+    await onDeletePartyById(editingPartyId);
+  }
+
+  async function persistPartyLinkFromForm(gameId) {
+    if (!gameId || !window.SNHMemberPortal) return;
+    var sel = document.getElementById("mg-party-link-select");
+    var pid = sel && sel.value ? sel.value : null;
+    var rel = getVal("mg-party-relationship-public");
+    var hideEl = document.getElementById("mg-game-hide-owner-public");
+    var hide = !!(hideEl && hideEl.checked);
+    await window.SNHMemberPortal.gamesSetPartyLink(gameId, pid, rel || null, hide);
+  }
+
+  async function onSavePartyLink() {
+    if (!currentGameId || !window.SNHMemberPortal) return;
+    setStatus("Saving owner link…");
+    try {
+      await persistPartyLinkFromForm(currentGameId);
+      var data = await window.SNHMemberPortal.gamesEditorLoad();
+      gamesCache = (data && data.games) || [];
+      populateCombobox();
+      await populateForm(currentGameId);
+      setStatus("Owner link saved.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onClearPartyLink() {
+    if (!currentGameId || !window.SNHMemberPortal) return;
+    var hideEl = document.getElementById("mg-game-hide-owner-public");
+    var hide = !!(hideEl && hideEl.checked);
+    setStatus("Clearing owner link…");
+    try {
+      await window.SNHMemberPortal.gamesSetPartyLink(currentGameId, null, null, hide);
+      var sel = document.getElementById("mg-party-link-select");
+      if (sel) sel.value = "";
+      var rel = document.getElementById("mg-party-relationship-public");
+      if (rel) rel.value = "";
+      var data = await window.SNHMemberPortal.gamesEditorLoad();
+      gamesCache = (data && data.games) || [];
+      populateCombobox();
+      await populateForm(currentGameId);
+      setStatus("Owner link cleared.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  function appendPartyGameLinkSection() {
+    partyLinkWrapEl = el("div", { className: "member-games-party-link", id: "mg-party-link-wrap" });
+    partyLinkWrapEl.appendChild(
+      el("h4", {
+        className: "member-games-parties-block-heading",
+        text: "Link owner to this game"
+      })
+    );
+    partyLinkWrapEl.appendChild(
+      el("p", {
+        className: "member-games-help",
+        text: "Add or edit contacts in Owner parties (section below this form). Saved parties appear in this list for the open game only."
+      })
+    );
+    var partySel = el("select", { id: "mg-party-link-select", className: "member-games-input" });
+    partySel.appendChild(el("option", { value: "", text: "— No party linked —" }));
+    partyLinkWrapEl.appendChild(fieldRow("Party", partySel));
+    partyLinkWrapEl.appendChild(fieldRow("Public relationship label", textInput("mg-party-relationship-public", "")));
+    var hideOwnerRow = el("div", { className: "member-games-field member-games-checkbox-row" });
+    var hideOwnerCb = el("input", { type: "checkbox", id: "mg-game-hide-owner-public" });
+    hideOwnerRow.appendChild(hideOwnerCb);
+    hideOwnerRow.appendChild(
+      el("label", { for: "mg-game-hide-owner-public", text: "Hide owner from public More Info (this game)" })
+    );
+    partyLinkWrapEl.appendChild(hideOwnerRow);
+    var partyLinkActions = el("div", { className: "member-games-form-actions" });
+    var savePartyLinkBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-link-save" });
+    savePartyLinkBtn.textContent = "Save owner link";
+    savePartyLinkBtn.addEventListener("click", function () {
+      void onSavePartyLink();
+    });
+    var clearPartyLinkBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-link-clear" });
+    clearPartyLinkBtn.textContent = "Clear link";
+    clearPartyLinkBtn.addEventListener("click", function () {
+      void onClearPartyLink();
+    });
+    partyLinkActions.appendChild(savePartyLinkBtn);
+    partyLinkActions.appendChild(clearPartyLinkBtn);
+    partyLinkWrapEl.appendChild(partyLinkActions);
+    formEl.appendChild(partyLinkWrapEl);
+  }
+
+  function buildPartiesMainStrip() {
+    partiesBlockEl = el("div", {
+      className: "member-games-parties-block member-games-parties-dir",
+      id: "mg-parties-block"
+    });
+    partiesBlockEl.appendChild(
+      el("h3", {
+        className: "member-games-section-heading",
+        text: "Owner parties directory"
+      })
+    );
+    partiesBlockEl.appendChild(
+      el("p", {
+        className: "member-games-help",
+        text: "Search or + New party to edit directory records (fields open when you pick one). To attach a party to a machine, open that game in the catalog editor above."
+      })
+    );
+
+    partyComboWrapEl = el("div", { className: "member-games-combobox" });
+    partyComboboxInputEl = el("input", {
+      type: "text",
+      id: "member-parties-combobox-input",
+      className: "member-games-input member-games-combobox-input",
+      role: "combobox",
+      "aria-expanded": "false",
+      "aria-controls": partyComboboxListboxId,
+      "aria-autocomplete": "list",
+      autocomplete: "off",
+      placeholder: "Search parties by full or display name…"
+    });
+    partyComboboxPanelEl = el("div", {
+      className: "member-games-combobox-panel",
+      hidden: "hidden",
+      id: "member-parties-combobox-panel"
+    });
+    partyComboboxOptionsEl = el("div", {
+      className: "member-games-options",
+      id: partyComboboxListboxId,
+      role: "listbox"
+    });
+    var partyPinnedNew = el("button", { type: "button", className: "member-games-option member-games-option--new" });
+    partyPinnedNew.textContent = "+ New party";
+    partyPinnedNew.addEventListener("click", function () {
+      beginNewPartyFromCombobox();
+    });
+    partyComboboxEmptyEl = el("div", { className: "member-games-empty", hidden: "hidden" });
+    partyComboboxEmptyEl.appendChild(el("p", { text: "No parties match that search yet." }));
+    partyComboboxEmptyEl.appendChild(el("p", { text: "Refine search or create a directory entry." }));
+    var partyEmptyNew = el("button", { type: "button", className: "members-sidebar-link" });
+    partyEmptyNew.textContent = "+ New party";
+    partyEmptyNew.addEventListener("click", function () {
+      beginNewPartyFromCombobox();
+    });
+    partyComboboxEmptyEl.appendChild(partyEmptyNew);
+    partyComboboxPanelEl.appendChild(partyComboboxOptionsEl);
+    partyComboboxPanelEl.appendChild(partyPinnedNew);
+    partyComboboxPanelEl.appendChild(partyComboboxEmptyEl);
+    partyComboWrapEl.appendChild(partyComboboxInputEl);
+    partyComboWrapEl.appendChild(partyComboboxPanelEl);
+    partiesBlockEl.appendChild(fieldRow("Search directory", partyComboWrapEl));
+
+    partyComboboxInputEl.addEventListener("focus", function () {
+      setPartyComboboxOpen(true);
+      renderPartyComboboxOptions();
+    });
+    partyComboboxInputEl.addEventListener("click", function () {
+      setPartyComboboxOpen(true);
+      renderPartyComboboxOptions();
+    });
+    partyComboboxInputEl.addEventListener("input", function () {
+      setPartyComboboxOpen(true);
+      partyComboboxActiveIndex = -1;
+      renderPartyComboboxOptions();
+    });
+    partyComboboxInputEl.addEventListener("keydown", function (evt) {
+      if (evt.key === "ArrowDown") {
+        evt.preventDefault();
+        if (!partyComboboxOpen) setPartyComboboxOpen(true);
+        if (filteredParties.length) {
+          partyComboboxActiveIndex = Math.min(filteredParties.length - 1, partyComboboxActiveIndex + 1);
+          refreshPartyComboboxActiveStyles();
+          updatePartyActiveDescendant();
+        }
+      } else if (evt.key === "ArrowUp") {
+        evt.preventDefault();
+        if (!partyComboboxOpen) setPartyComboboxOpen(true);
+        if (filteredParties.length) {
+          partyComboboxActiveIndex = Math.max(0, partyComboboxActiveIndex - 1);
+          refreshPartyComboboxActiveStyles();
+          updatePartyActiveDescendant();
+        }
+      } else if (evt.key === "Enter") {
+        if (!partyComboboxOpen) return;
+        evt.preventDefault();
+        if (partyComboboxActiveIndex >= 0 && partyComboboxActiveIndex < filteredParties.length) {
+          var pPick = filteredParties[partyComboboxActiveIndex];
+          startEditParty(pPick);
+          setPartyComboboxOpen(false);
+          if (partyComboboxInputEl) partyComboboxInputEl.value = pPick.__label || "";
+        } else if (!filteredParties.length) {
+          beginNewPartyFromCombobox();
+        }
+      } else if (evt.key === "Escape") {
+        if (partyComboboxOpen) {
+          evt.preventDefault();
+          setPartyComboboxOpen(false);
+          partyComboboxInputEl.focus();
+        }
+      }
+    });
+
+    partyFieldsWrapEl = el("div", {
+      className: "member-games-party-fields-shell",
+      id: "mg-party-fields-shell",
+      hidden: "hidden",
+      "aria-hidden": "true"
+    });
+    partyFieldsWrapEl.appendChild(
+      el("p", {
+        className: "member-games-mode-note",
+        id: "member-parties-mode-note",
+        text: "",
+        hidden: "hidden"
+      })
+    );
+
+    partyFieldsWrapEl.appendChild(
+      el("h4", { className: "member-games-parties-block-heading", text: "Party details and contacts" })
+    );
+    var fnIn = textInput("mg-party-full-name", "");
+    var dnIn = textInput("mg-party-display-name", "");
+    dnIn.dataset.userEdited = "0";
+    fnIn.addEventListener("input", function () {
+      if (editingPartyId) return;
+      if (dnIn.dataset.userEdited === "1") return;
+      dnIn.value = fnIn.value;
+    });
+    dnIn.addEventListener("input", function () {
+      dnIn.dataset.userEdited = "1";
+    });
+    partyFieldsWrapEl.appendChild(fieldRow("Full name", fnIn));
+    partyFieldsWrapEl.appendChild(fieldRow("Display name (public)", dnIn));
+    var kindSel = el("select", { id: "mg-party-kind", className: "member-games-input" });
+    kindSel.appendChild(el("option", { value: "", text: "(unspecified)" }));
+    ["person", "organization", "club", "operator"].forEach(function (k) {
+      var o = el("option", { value: k });
+      o.textContent = k;
+      kindSel.appendChild(o);
+    });
+    partyFieldsWrapEl.appendChild(fieldRow("Kind", kindSel));
+    var visRow = el("div", { className: "member-games-field member-games-checkbox-row" });
+    var visCb = el("input", { type: "checkbox", id: "mg-party-vis-public" });
+    visCb.checked = true;
+    visRow.appendChild(visCb);
+    visRow.appendChild(el("label", { for: "mg-party-vis-public", text: "Allow display name on public More Info" }));
+    partyFieldsWrapEl.appendChild(visRow);
+    partyFieldsWrapEl.appendChild(fieldRow("Contact email", textInput("mg-party-email", "")));
+    partyFieldsWrapEl.appendChild(fieldRow("Contact phone", textInput("mg-party-phone", "")));
+    partyFieldsWrapEl.appendChild(fieldRow("Discord / other", textInput("mg-party-discord", "")));
+    var cnotes = textareaInput("mg-party-contact-notes", "");
+    cnotes.setAttribute("rows", "3");
+    partyFieldsWrapEl.appendChild(fieldRow("Contact notes", cnotes));
+    var inotes = textareaInput("mg-party-internal-notes", "");
+    inotes.setAttribute("rows", "3");
+    partyFieldsWrapEl.appendChild(fieldRow("Internal notes", inotes));
+    var pActions = el("div", { className: "member-games-form-actions" });
+    var newPB = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-new" });
+    newPB.textContent = "New party";
+    newPB.addEventListener("click", onNewPartyForm);
+    var savePB = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-save" });
+    savePB.textContent = "Save party";
+    savePB.addEventListener("click", function () {
+      void onSavePartyDirectory();
+    });
+    var delPB = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-delete" });
+    delPB.textContent = "Delete party";
+    delPB.addEventListener("click", function () {
+      void onDeletePartyDirectory();
+    });
+    var cancelPB = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-cancel" });
+    cancelPB.textContent = "Cancel";
+    cancelPB.addEventListener("click", function () {
+      enterPartyIdleMode("Party editing closed.");
+    });
+    pActions.appendChild(newPB);
+    pActions.appendChild(savePB);
+    pActions.appendChild(delPB);
+    pActions.appendChild(cancelPB);
+    partyFieldsWrapEl.appendChild(pActions);
+
+    partyFieldsWrapEl.addEventListener("input", onPartyPotentiallyDirty);
+    partyFieldsWrapEl.addEventListener("change", onPartyPotentiallyDirty);
+
+    partiesBlockEl.appendChild(partyFieldsWrapEl);
+
+    return partiesBlockEl;
   }
 
   function buildPicker() {
@@ -632,8 +1283,15 @@
         text: 'Use "New Game" here only for entries that Pinball Map does not cover (for example prototypes, private/offline records, or non-standard catalog items).'
       })
     );
+    wrap.appendChild(
+      el("p", {
+        className: "member-games-help",
+        text: "Search or pick a game to open the catalog editor directly under this search. Owner parties stay in a separate section farther down — open a game first to link one."
+      })
+    );
     var row = el("div", { className: "member-games-picker-row" });
     var comboWrap = el("div", { className: "member-games-combobox" });
+    gameComboWrapEl = comboWrap;
     comboboxInputEl = el("input", {
       type: "text",
       id: "member-games-combobox-input",
@@ -720,11 +1378,6 @@
           comboboxInputEl.focus();
         }
       }
-    });
-    document.addEventListener("click", function (evt) {
-      if (!appEl || !comboboxOpen) return;
-      var inCombo = comboWrap.contains(evt.target);
-      if (!inCombo) setComboboxOpen(false);
     });
     return wrap;
   }
@@ -1178,6 +1831,13 @@
     await loadModsForGame(gameId);
     await loadPingolfTargetsForGame(gameId);
     await renderPingolfAdmin();
+    await loadPartiesDirectory();
+    var ps = document.getElementById("mg-party-link-select");
+    if (ps) ps.value = g.partyId ? String(g.partyId) : "";
+    var prelPub = document.getElementById("mg-party-relationship-public");
+    if (prelPub) prelPub.value = g.partyRelationshipPublic || "";
+    var ghOwn = document.getElementById("mg-game-hide-owner-public");
+    if (ghOwn) ghOwn.checked = g.hideOwnerPublic === true;
     isDirty = false;
     setStatus("Editing " + (g.title || g.slug || g.id) + ".");
     focusFirstFormField();
@@ -1229,6 +1889,8 @@
         }
         await window.SNHMemberPortal.gamesUpsert(savedGameId, fields);
       }
+
+      await persistPartyLinkFromForm(savedGameId);
 
       if (mode === "edit") {
         var m = document.getElementById("mg-manual");
@@ -1362,6 +2024,7 @@
           renderComboboxOptions();
         }
       }
+      await loadPartiesDirectory();
       enterIdleMode("Loaded " + gamesCache.length + " games.");
     } catch (err) {
       catalogLoaded = false;
@@ -1381,8 +2044,11 @@
     });
     appEl.appendChild(statusEl);
     appEl.appendChild(buildPicker());
-    appEl.appendChild(buildReviewScaffolds());
     appEl.appendChild(buildForm());
+    appEl.appendChild(buildPartiesMainStrip());
+    appEl.appendChild(buildReviewScaffolds());
+    document.addEventListener("click", onMemberGamesDocumentClick);
+    syncPartyDirectoryDeleteVisibility();
     setMode("idle");
   }
 
@@ -1400,6 +2066,8 @@
         if (currentGameId) return loadPingolfTargetsForGame(currentGameId);
       });
       renderPingolfAdmin();
+      syncPartyDirectoryDeleteVisibility();
+      void loadPartiesDirectory();
       setMode(mode);
     }
   }

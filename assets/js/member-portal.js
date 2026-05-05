@@ -760,6 +760,44 @@
     return parseRpcJson(result.data);
   }
 
+  async function ownerPartiesList() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_owner_parties_list");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function ownerPartiesUpsert(partyId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_owner_parties_upsert", {
+      p_id: partyId || null,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function ownerPartiesDelete(partyId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_owner_parties_delete", { p_id: partyId });
+    if (result.error) throw result.error;
+  }
+
+  async function gamesSetPartyLink(gameId, partyId, relationshipPublic, hideOwnerPublic) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_games_set_party_link", {
+      p_game_id: gameId,
+      p_party_id: partyId != null ? partyId : null,
+      p_party_relationship_public: relationshipPublic != null && relationshipPublic !== "" ? relationshipPublic : null,
+      p_hide_owner_public: hideOwnerPublic != null ? hideOwnerPublic : null
+    });
+    if (result.error) throw result.error;
+  }
+
   window.SNHMemberPortal = {
     getFriendlyAuthErrorMessage: getFriendlyAuthErrorMessage,
     getSession: getSession,
@@ -807,6 +845,10 @@
     gameCustomModsDelete: gameCustomModsDelete,
     clubIssuesList: clubIssuesList,
     clubIssuesUpsert: clubIssuesUpsert,
+    ownerPartiesList: ownerPartiesList,
+    ownerPartiesUpsert: ownerPartiesUpsert,
+    ownerPartiesDelete: ownerPartiesDelete,
+    gamesSetPartyLink: gamesSetPartyLink,
     publicGameMoreInfo: publicGameMoreInfo,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     formatDate: formatDate,
