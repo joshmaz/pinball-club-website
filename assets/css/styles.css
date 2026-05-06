@@ -2250,3 +2250,50 @@ footer {
 .member-club-issues-form h4 {
   margin: 0 0 0.5rem;
 }
+
+.member-club-issues-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.member-club-issues-filter-label {
+  font-size: 0.85rem;
+  color: #8fa0b3;
+}
+
+.member-club-issues-filter-btn[aria-current="true"] {
+  font-weight: 600;
+}
+
+.member-club-issues-game-name {
+  font-weight: 500;
+  color: #c8d4e0;
+}
+
+.member-club-issues-game-link {
+  font-size: 0.82rem;
+}
+
+.member-club-issues-unlinked {
+  font-style: italic;
+}
+
+.member-club-issues-body {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  white-space: pre-wrap;
+}
+
+.member-club-issues-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.35rem;
+}
+
+.member-club-issues-quick-btn {
+  font-size: 0.82rem;
+}

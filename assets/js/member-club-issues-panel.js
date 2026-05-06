@@ -3,9 +3,13 @@
   var statusEl = null;
   var listEl = null;
   var formWrap = null;
+  var filterEl = null;
   var inited = false;
   var lastRoles = [];
   var editingId = null;
+  var lastRows = [];
+  var currentFilter = "all";
+  var gameOptionsReady = false;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -53,7 +57,7 @@
     editingId = null;
     var t = document.getElementById("ci-title");
     var b = document.getElementById("ci-body");
-    var g = document.getElementById("ci-game-id");
+    var g = document.getElementById("ci-game-select");
     var s = document.getElementById("ci-status");
     if (t) t.value = "";
     if (b) b.value = "";
@@ -68,6 +72,62 @@
     formWrap.hidden = !canEditClubIssues();
   }
 
+  async function ensureGameOptions() {
+    if (gameOptionsReady || !window.SNHMemberPortal || !window.SNHMemberPortal.clubIssuesGameOptions) return;
+    var sel = document.getElementById("ci-game-select");
+    if (!sel) return;
+    try {
+      var games = await window.SNHMemberPortal.clubIssuesGameOptions();
+      var arr = Array.isArray(games) ? games : [];
+      while (sel.options.length > 1) {
+        sel.remove(1);
+      }
+      arr.forEach(function (g) {
+        if (!g || !g.id) return;
+        var opt = el("option", { value: g.id });
+        opt.textContent = g.title || g.slug || String(g.id);
+        sel.appendChild(opt);
+      });
+      gameOptionsReady = true;
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  function buildFilterBar() {
+    var wrap = el("div", {
+      className: "member-club-issues-filter",
+      role: "group",
+      "aria-label": "Filter by status"
+    });
+    var label = el("span", { className: "member-club-issues-filter-label", text: "Show:" });
+    wrap.appendChild(label);
+    [
+      { key: "all", text: "All" },
+      { key: "open", text: "Open" },
+      { key: "in_progress", text: "In progress" },
+      { key: "resolved", text: "Resolved" }
+    ].forEach(function (opt) {
+      var btn = el("button", {
+        type: "button",
+        className: "members-sidebar-link member-club-issues-filter-btn",
+        "data-ci-filter": opt.key
+      });
+      btn.textContent = opt.text;
+      if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
+      btn.addEventListener("click", function () {
+        currentFilter = opt.key;
+        wrap.querySelectorAll(".member-club-issues-filter-btn").forEach(function (b) {
+          b.removeAttribute("aria-current");
+        });
+        btn.setAttribute("aria-current", "true");
+        renderIssueList();
+      });
+      wrap.appendChild(btn);
+    });
+    return wrap;
+  }
+
   function buildShell() {
     appEl = document.getElementById("member-club-issues-app");
     if (!appEl) return;
@@ -78,12 +138,19 @@
       role: "status",
       "aria-live": "polite"
     });
+    filterEl = buildFilterBar();
     listEl = el("div", { className: "member-club-issues-list" });
     formWrap = el("div", { className: "member-club-issues-form member-games-form" });
     formWrap.appendChild(el("h4", { text: "Add or edit issue" }));
     formWrap.appendChild(fieldRow("Title", textInput("ci-title", "")));
     formWrap.appendChild(fieldRow("Details", textareaInput("ci-body", "")));
-    formWrap.appendChild(fieldRow("Game id (optional uuid)", textInput("ci-game-id", "")));
+
+    var gameSel = el("select", { id: "ci-game-select", className: "member-games-input" });
+    var blankOpt = el("option", { value: "" });
+    blankOpt.textContent = "Not linked to a catalog game";
+    gameSel.appendChild(blankOpt);
+    formWrap.appendChild(fieldRow("Catalog game", gameSel));
+
     var sel = el("select", { id: "ci-status", className: "member-games-input" });
     ["open", "in_progress", "resolved"].forEach(function (v) {
       var opt = el("option", { value: v });
@@ -103,6 +170,7 @@
     formWrap.appendChild(el("div", { className: "member-games-form-actions" }, [sub, clr]));
 
     appEl.appendChild(statusEl);
+    appEl.appendChild(filterEl);
     appEl.appendChild(listEl);
     appEl.appendChild(formWrap);
     syncFormVisibility();
@@ -117,7 +185,7 @@
       return;
     }
     var bodyEl = document.getElementById("ci-body");
-    var gidEl = document.getElementById("ci-game-id");
+    var gidEl = document.getElementById("ci-game-select");
     var stEl = document.getElementById("ci-status");
     var body = bodyEl ? String(bodyEl.value || "").trim() : "";
     var gid = gidEl ? String(gidEl.value || "").trim() : "";
@@ -139,41 +207,134 @@
     }
   }
 
+  function gameSummaryLine(row) {
+    var gid = row.gameId || row.game_id;
+    var gTitle = row.gameTitle;
+    var gSlug = row.gameSlug;
+    if (gTitle) {
+      var span = el("span", { className: "member-club-issues-game-name", text: gTitle });
+      if (gSlug) {
+        var link = el("a", {
+          href: "games.html",
+          className: "member-club-issues-game-link",
+          text: "Games page"
+        });
+        return el("span", {}, [
+          span,
+          document.createTextNode(" · "),
+          link
+        ]);
+      }
+      return span;
+    }
+    if (gid) {
+      return el("span", {
+        className: "member-club-issues-unlinked",
+        text: "Linked (catalog row unavailable)"
+      });
+    }
+    return el("span", {
+      className: "member-club-issues-unlinked",
+      text: "Not linked to catalog"
+    });
+  }
+
+  function appendQuickActions(card, row) {
+    if (!canEditClubIssues() || !row.id) return;
+    var st = String(row.status || "open").toLowerCase();
+    var actions = el("div", { className: "member-club-issues-quick-actions" });
+
+    function mk(label, next) {
+      var b = el("button", { type: "button", className: "members-sidebar-link member-club-issues-quick-btn" });
+      b.textContent = label;
+      b.addEventListener("click", function () {
+        quickStatus(row, next);
+      });
+      actions.appendChild(b);
+    }
+
+    if (st === "open") {
+      mk("Mark in progress", "in_progress");
+      mk("Resolve", "resolved");
+    } else if (st === "in_progress") {
+      mk("Back to open", "open");
+      mk("Resolve", "resolved");
+    } else if (st === "resolved") {
+      mk("Reopen", "open");
+    }
+
+    if (actions.childNodes.length) card.appendChild(actions);
+  }
+
+  async function quickStatus(row, nextStatus) {
+    if (!window.SNHMemberPortal || !canEditClubIssues() || !row || !row.id) return;
+    setStatus("Updating…");
+    try {
+      await window.SNHMemberPortal.clubIssuesUpsert(row.id, {
+        title: row.title,
+        status: nextStatus
+      });
+      await loadList();
+      setStatus("Updated.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  function renderIssueList() {
+    if (!listEl) return;
+    listEl.replaceChildren();
+    var filtered = lastRows.filter(function (r) {
+      if (currentFilter === "all") return true;
+      return String(r.status || "").toLowerCase() === currentFilter;
+    });
+    if (filtered.length === 0) {
+      listEl.appendChild(
+        el("p", {
+          className: "member-games-help",
+          text: lastRows.length === 0 ? "No issues logged yet." : "No issues match this filter."
+        })
+      );
+      return;
+    }
+    filtered.forEach(function (row) {
+      var card = el("article", { className: "member-club-issues-card" });
+      card.appendChild(el("h4", { text: row.title || "(untitled)" }));
+      var meta = el("p", { className: "member-club-issues-meta" });
+      meta.appendChild(
+        document.createTextNode(
+          (row.status || "").replace(/_/g, " ") + (row.createdAt ? " · " + row.createdAt : "") + " · "
+        )
+      );
+      meta.appendChild(gameSummaryLine(row));
+      card.appendChild(meta);
+      if (row.body) {
+        card.appendChild(el("p", { className: "member-club-issues-body", text: row.body }));
+      }
+      appendQuickActions(card, row);
+      if (canEditClubIssues() && row.id) {
+        var edit = el("button", { type: "button", className: "members-sidebar-link" });
+        edit.textContent = "Edit";
+        edit.addEventListener("click", function () {
+          startEdit(row);
+        });
+        card.appendChild(edit);
+      }
+      listEl.appendChild(card);
+    });
+  }
+
   async function loadList() {
     if (!listEl || !window.SNHMemberPortal) return;
-    listEl.replaceChildren();
     setStatus("Loading issues…");
     try {
       var rows = await window.SNHMemberPortal.clubIssuesList();
       var arr = Array.isArray(rows) ? rows : [];
-      if (arr.length === 0) {
-        listEl.appendChild(el("p", { className: "member-games-help", text: "No issues logged yet." }));
-      } else {
-        arr.forEach(function (row) {
-          var card = el("article", { className: "member-club-issues-card" });
-          card.appendChild(el("h4", { text: row.title || "(untitled)" }));
-          var meta = el("p", { className: "member-club-issues-meta" });
-          meta.textContent =
-            (row.status || "") +
-            (row.gameId ? " · game " + String(row.gameId).slice(0, 8) + "…" : " · club-wide") +
-            (row.createdAt ? " · " + row.createdAt : "");
-          card.appendChild(meta);
-          if (row.body) {
-            card.appendChild(el("p", { text: row.body }));
-          }
-          if (canEditClubIssues() && row.id) {
-            var edit = el("button", { type: "button", className: "members-sidebar-link" });
-            edit.textContent = "Edit";
-            edit.addEventListener("click", function () {
-              startEdit(row);
-            });
-            card.appendChild(edit);
-          }
-          listEl.appendChild(card);
-        });
-      }
+      lastRows = arr;
+      renderIssueList();
       setStatus("Loaded " + arr.length + " issue(s).");
     } catch (err) {
+      listEl.replaceChildren();
       listEl.appendChild(
         el("p", {
           className: "members-page-status",
@@ -184,16 +345,17 @@
     }
   }
 
-  function startEdit(row) {
+  async function startEdit(row) {
     if (!row || !canEditClubIssues()) return;
+    await ensureGameOptions();
     editingId = row.id;
     var t = document.getElementById("ci-title");
     var b = document.getElementById("ci-body");
-    var g = document.getElementById("ci-game-id");
+    var g = document.getElementById("ci-game-select");
     var s = document.getElementById("ci-status");
     if (t) t.value = row.title || "";
     if (b) b.value = row.body || "";
-    if (g) g.value = row.gameId || "";
+    if (g) g.value = row.gameId || row.game_id || "";
     if (s) s.value = String(row.status || "open").toLowerCase();
     var sub = document.getElementById("ci-submit");
     if (sub) sub.textContent = "Update issue";
@@ -212,6 +374,9 @@
         buildShell();
       } else {
         syncFormVisibility();
+      }
+      if (canEditClubIssues()) {
+        ensureGameOptions();
       }
       loadList();
     }
