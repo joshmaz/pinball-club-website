@@ -42,6 +42,9 @@ _RE_PINBALLMAP_SUFFIX = re.compile(
 # Pinball Map location id 8908 — pre-move club home (extend when new locations exist).
 LEGACY_PINBALLMAP_LOCATION_ID = 8908
 LEGACY_CLUB_ADDRESS = "134 Haines Street, Nashua, NH"
+BRIDGE_CLUB_ADDRESS = "48 Bridge St, Unit 3A, Nashua"
+HAINES_LAST_DAY = "2026-04-23"
+BRIDGE_FIRST_DAY = "2026-04-24"
 
 UNKNOWN_TENURE_SORT_JOIN = "2016-01-01"
 UNKNOWN_TENURE_SORT_LEFT_PREVIOUS = "2016-12-31"
@@ -208,7 +211,7 @@ class MachineState:
 
 def infer_join_and_leave(
     add_dates: list[str], remove_dates: list[str]
-) -> tuple[str | None, str | None, bool]:
+) -> tuple[str | None, str | None, bool, str | None]:
     events: list[tuple[str, str]] = []
     for d in add_dates:
         events.append((d, "add"))
@@ -219,18 +222,21 @@ def infer_join_and_leave(
     on = False
     first_join: str | None = None
     last_left_if_off: str | None = None
+    current_join: str | None = None
     for d, k in events:
         if k == "add":
             if first_join is None:
                 first_join = d
+            if not on:
+                current_join = d
             on = True
         else:
             if on:
                 last_left_if_off = d
             on = False
     if on:
-        return (first_join, None, True)
-    return (first_join, last_left_if_off, False)
+        return (first_join, None, True, current_join)
+    return (first_join, last_left_if_off, False, None)
 
 
 def parse_year_mfr_from_original(machine_name: str) -> tuple[str | None, str | None]:
@@ -253,6 +259,27 @@ def address_for_pinballmap_location(
     if name:
         return f"{name} (Pinball Map location {location_id})"
     return f"Pinball Map location {location_id}"
+
+
+def choose_canonical_stint(
+    *,
+    location_id: int,
+    join: str | None,
+    leave: str | None,
+    on: bool,
+    fallback_address: str,
+) -> tuple[str, str | None, str | None]:
+    if location_id != LEGACY_PINBALLMAP_LOCATION_ID:
+        return fallback_address, join, leave
+    if join and join >= BRIDGE_FIRST_DAY:
+        return BRIDGE_CLUB_ADDRESS, join, leave
+    if leave and leave <= HAINES_LAST_DAY:
+        return LEGACY_CLUB_ADDRESS, join, leave
+    if join and join < BRIDGE_FIRST_DAY and (on or not leave or leave >= BRIDGE_FIRST_DAY):
+        return BRIDGE_CLUB_ADDRESS, BRIDGE_FIRST_DAY, leave
+    if not join and on:
+        return BRIDGE_CLUB_ADDRESS, BRIDGE_FIRST_DAY, None
+    return LEGACY_CLUB_ADDRESS, join, leave
 
 
 def migrate_legacy_pinball_fields(game: dict[str, Any]) -> None:
@@ -279,9 +306,17 @@ def migrate_legacy_pinball_fields(game: dict[str, Any]) -> None:
         game.pop(k, None)
 
 
-def find_stint_index(stints: list[dict[str, Any]], location_id: int) -> int:
+def find_stint_index(
+    stints: list[dict[str, Any]],
+    location_id: int,
+    location_address: str,
+) -> int:
     for i, s in enumerate(stints):
-        if s.get("pinballMapLocationId") == location_id:
+        if (
+            s.get("pinballMapLocationId") == location_id
+            and str(s.get("address") or "").strip().lower()
+            == location_address.strip().lower()
+        ):
             return i
     return -1
 
@@ -301,24 +336,32 @@ def apply_pinball_to_stints(
         stints = []
         game["locationStints"] = stints
 
-    idx = find_stint_index(stints, location_id)
+    address, joined, left = choose_canonical_stint(
+        location_id=location_id,
+        join=j,
+        leave=l,
+        on=on,
+        fallback_address=location_address,
+    )
+
+    idx = find_stint_index(stints, location_id, address)
     if idx < 0:
         stints.append(
             {
-                "address": location_address,
+                "address": address,
                 "pinballMapLocationId": location_id,
             }
         )
         idx = len(stints) - 1
 
     st = stints[idx]
-    st.setdefault("address", location_address)
+    st["address"] = address
     st["pinballMapLocationId"] = location_id
 
-    if j:
-        st["joinedClubDate"] = j
-    if l:
-        st["leftClubDate"] = l
+    if joined:
+        st["joinedClubDate"] = joined
+    if left:
+        st["leftClubDate"] = left
     elif on:
         st.pop("leftClubDate", None)
     if mid is not None:
@@ -408,11 +451,11 @@ def main() -> None:
         by_key.setdefault(key, MachineState()).add_event(str(st), ymd, mid_i)
         sample_name.setdefault(key, mname)
 
-    inferred: dict[str, tuple[str | None, str | None, bool, int | None]] = {}
+    inferred: dict[str, tuple[str | None, str | None, bool, str | None, int | None]] = {}
     for key, st in by_key.items():
-        j, l, on = infer_join_and_leave(st.add_dates, st.remove_dates)
+        j, l, on, current_join = infer_join_and_leave(st.add_dates, st.remove_dates)
         rep_id = min(st.machine_ids) if st.machine_ids else None
-        inferred[key] = (j, l, on, rep_id)
+        inferred[key] = (j, l, on, current_join, rep_id)
 
     all_keys: set[str] = set()
     for g in data.get("games") or []:
@@ -478,18 +521,19 @@ def main() -> None:
         map_key = resolve_inferred_key(title, g)
         if map_key is None:
             continue
-        j, l, on, mid = inferred[map_key]
+        j, l, on, current_join, mid = inferred[map_key]
+        stint_join = current_join or j if on else j
         apply_pinball_to_stints(
             g,
             location_id=activity_location_id,
             location_address=location_address,
-            j=j,
+            j=stint_join,
             l=l,
             on=on,
             mid=mid,
         )
 
-    for key, (j, l, on, mid) in inferred.items():
+    for key, (j, l, on, current_join, mid) in inferred.items():
         if key in all_keys:
             continue
         if find_canonical_for_short_map_key(key, mid) is not None:
@@ -509,14 +553,22 @@ def main() -> None:
             parts.append("Still on the map as of the latest activity.")
         deets = " ".join(parts)
 
+        stint_join = current_join or j if on else j
+        canonical_address, canonical_join, canonical_left = choose_canonical_stint(
+            location_id=activity_location_id,
+            join=stint_join,
+            leave=l,
+            on=on,
+            fallback_address=location_address,
+        )
         stint: dict[str, Any] = {
-            "address": location_address,
+            "address": canonical_address,
             "pinballMapLocationId": activity_location_id,
         }
-        if j:
-            stint["joinedClubDate"] = j
-        if l and not on:
-            stint["leftClubDate"] = l
+        if canonical_join:
+            stint["joinedClubDate"] = canonical_join
+        if canonical_left and not on:
+            stint["leftClubDate"] = canonical_left
         if mid is not None:
             stint["pinballMapMachineId"] = mid
 

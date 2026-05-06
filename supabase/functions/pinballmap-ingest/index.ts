@@ -1,5 +1,11 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { buildPinballRpcPayload, type ActivityPayload, type DbGame, type DbStint } from "./merge.ts";
+import {
+  buildPinballConditionPayload,
+  buildPinballRpcPayload,
+  type ActivityPayload,
+  type DbGame,
+  type DbStint,
+} from "./merge.ts";
 
 const LOCATION_DEFAULT = 8908;
 
@@ -22,10 +28,11 @@ Deno.serve(async (req) => {
     }
 
     const locationId = Number(Deno.env.get("PINBALLMAP_LOCATION_ID") || LOCATION_DEFAULT) || LOCATION_DEFAULT;
-    const baseQs = `location_id=${locationId}&limit=50`;
-    const activityBase =
+    const baseQs = `id=${locationId}&limit=50`;
+    const rawActivityBase =
       Deno.env.get("PINBALLMAP_ACTIVITY_URL") ||
       `https://pinballmap.com/api/v1/user_submissions/location.json?${baseQs}`;
+    const activityBase = rawActivityBase.replace(/([?&])location_id=/g, "$1id=");
 
     const merged: ActivityPayload = { meta: { location_id: locationId }, user_submissions: [] };
     const seen = new Set<string>();
@@ -36,7 +43,18 @@ Deno.serve(async (req) => {
       if (!actRes.ok) {
         return jsonResponse({ ok: false, error: `Pinball Map fetch failed: ${actRes.status}` }, 502);
       }
-      const pageJson = (await actRes.json()) as ActivityPayload;
+      let pageJson = (await actRes.json()) as ActivityPayload & { errors?: string };
+      if (pageJson.errors && pageJson.errors.toLowerCase().includes("failed to find location") && url.includes("location_id=")) {
+        const retryUrl = url.replace(/([?&])location_id=/g, "$1id=");
+        const retry = await fetch(retryUrl);
+        if (!retry.ok) {
+          return jsonResponse({ ok: false, error: `Pinball Map fetch failed: ${retry.status}` }, 502);
+        }
+        pageJson = (await retry.json()) as ActivityPayload & { errors?: string };
+      }
+      if (pageJson.errors) {
+        return jsonResponse({ ok: false, error: `Pinball Map API error: ${pageJson.errors}` }, 502);
+      }
       if (page === 1) merged.meta = { ...merged.meta, ...(pageJson.meta || {}) };
       const subs = pageJson.user_submissions || [];
       for (const row of subs) {
@@ -84,7 +102,26 @@ Deno.serve(async (req) => {
     });
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
 
-    return jsonResponse({ ok: true, result: data, counts: { updates: payload.updates.length, creates: payload.creates.length } });
+    const conditionPayload = buildPinballConditionPayload(activity);
+    let conditionResult: unknown = { ok: true, imported: 0 };
+    if (conditionPayload.rows.length) {
+      const cond = await supabase.rpc("snh_pinballmap_import_conditions", {
+        p_payload: conditionPayload,
+      });
+      if (cond.error) return jsonResponse({ ok: false, error: cond.error.message }, 500);
+      conditionResult = cond.data;
+    }
+
+    return jsonResponse({
+      ok: true,
+      result: data,
+      conditions: conditionResult,
+      counts: {
+        updates: payload.updates.length,
+        creates: payload.creates.length,
+        conditionRows: conditionPayload.rows.length,
+      },
+    });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return jsonResponse({ ok: false, error: msg }, 500);
