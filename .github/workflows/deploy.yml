@@ -56,10 +56,20 @@ jobs:
           --exclude "README.md"
         aws s3 cp donate.html s3://${{ secrets.S3_BUCKET }}/donate \
           --content-type "text/html; charset=utf-8"
+        # Serve real donate page at /donate/ (not donate.html stub — its relative refresh breaks under /donate/)
         aws s3api put-object \
           --bucket "${{ secrets.S3_BUCKET }}" \
           --key "donate/" \
-          --body donate.html \
+          --body donate/index.html \
+          --content-type "text/html; charset=utf-8"
+        # S3 REST + CloudFront do not map /wix_archive/ to index.html; add a redirect key
+        # (not in the repo tree) so /wix_archive/ works. Re-applied after each sync because
+        # --delete would otherwise remove this object.
+        printf '' | aws s3api put-object \
+          --bucket "${{ secrets.S3_BUCKET }}" \
+          --key "wix_archive/" \
+          --body - \
+          --website-redirect-location "/wix_archive/index.html" \
           --content-type "text/html; charset=utf-8"
 
     - name: Invalidate CloudFront cache
