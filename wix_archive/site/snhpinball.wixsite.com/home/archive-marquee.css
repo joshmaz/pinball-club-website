@@ -1,6 +1,5 @@
 /**
- * Replacement marquee for Wix SlideShowGallery (Thunderbolt does not run in static archive).
- * Loaded only by archive-marquee.js on the mirrored home page.
+ * Slide carousel replacing Wix SlideShowGallery on static archive home.
  */
 #SldShwGllry0.archive-marquee-host {
   overflow: hidden;
@@ -26,68 +25,33 @@
 
 #SldShwGllry0 .archive-marquee-track {
   display: flex;
-  width: max-content;
-  animation: archiveMarqueeScroll 54s linear infinite;
-  align-items: center;
+  flex-direction: row;
   height: 100%;
+  will-change: transform;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  #SldShwGllry0 .archive-marquee-track {
-    animation: none;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    height: auto;
-    max-height: none;
-    padding: 12px;
-    box-sizing: border-box;
-  }
-
-  #SldShwGllry0 .archive-marquee-set {
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    gap: 8px;
-  }
-
-  #SldShwGllry0 .archive-marquee-set[aria-hidden='true'] {
-    display: none;
-  }
-
-  #SldShwGllry0 .archive-marquee-img {
-    max-height: 160px;
-  }
+#SldShwGllry0 .archive-marquee-track.is-transitioning {
+  transition: transform 0.22s ease-out;
 }
 
-@keyframes archiveMarqueeScroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-#SldShwGllry0 .archive-marquee-set {
+#SldShwGllry0 .archive-marquee-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 0 10px;
-  flex-shrink: 0;
-}
-
-#SldShwGllry0 .archive-marquee-figure {
-  margin: 0;
-  flex-shrink: 0;
+  justify-content: center;
+  padding: 12px;
 }
 
 #SldShwGllry0 .archive-marquee-img {
   display: block;
-  height: min(420px, 78vh);
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
-  max-width: min(520px, 85vw);
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   border-radius: 4px;
 }
 
@@ -99,4 +63,10 @@
   color: rgba(255, 255, 255, 0.65);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #SldShwGllry0 .archive-marquee-track.is-transitioning {
+    transition: none;
+  }
 }

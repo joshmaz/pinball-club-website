@@ -1,51 +1,45 @@
 /**
- * Static-archive replacement for the Wix home slideshow (nine club photos).
- * Images load from static.wixstatic.com (same CDN as the original site).
+ * Static-archive slideshow: club logo first, parking last, four photos between.
+ * Timing: 3s initial dwell on logo; then ~220ms slide; 1.5s hold per slide (loop).
  */
 (function () {
-  const IDS = [
-    'fb7b05_5efb990805f1423bad7af29ce1660456~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_60c62518f5604dbfbf915e13b8f1366d~mv2_d_1936_2592_s_2.jpg',
-    'fb7b05_7d005ae1b6f44539b5bff136d4435fa2~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_c76d9f404f3e4aaeb84b90d66d0b45cf~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_ceb045e00e86482295dca6d415623fc4~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_af10fcf827d540949141dd7e0b9e42b7~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_1374523374ac47a695eb73be9c1be82f~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_ccf48267cc5e46bda8561c8713ce997d~mv2_d_1936_1936_s_2.jpg',
-    'fb7b05_59b16299759a43e4a19be509313da16d~mv2_d_1936_1936_s_2.jpg',
+  var HOLD_MS = 1500;
+  var INITIAL_LOGO_MS = 3000;
+
+  var SLIDES = [
+    {
+      id: 'fb7b05_1e20a8131fa048708bd65678bb565f1a~mv2.png',
+      alt: 'Southern New Hampshire Pinball Club logo',
+    },
+    {
+      id: 'fb7b05_9ab711212eb6499f947c23942dab21df~mv2.jpg',
+      alt: 'TNA lock evening',
+    },
+    {
+      id: 'fb7b05_5efb990805f1423bad7af29ce1660456~mv2_d_1936_1936_s_2.jpg',
+      alt: 'Club photos',
+    },
+    {
+      id: 'fb7b05_60c62518f5604dbfbf915e13b8f1366d~mv2_d_1936_2592_s_2.jpg',
+      alt: 'Club photos',
+    },
+    {
+      id: 'fb7b05_7d005ae1b6f44539b5bff136d4435fa2~mv2_d_1936_1936_s_2.jpg',
+      alt: 'Club photos',
+    },
+    {
+      id: 'fb7b05_7605530f626841a3896477cdbafdabb3~mv2.jpg',
+      alt: 'Parking',
+    },
   ];
 
-  function wixImageUrl(id) {
-    var base = 'https://static.wixstatic.com/media/' + id;
+  function wixImageUrl(mediaId) {
+    var base = 'https://static.wixstatic.com/media/' + mediaId;
     return (
       base +
-      '/v1/fill/w_520,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/' +
-      id
+      '/v1/fill/w_640,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/' +
+      mediaId
     );
-  }
-
-  function buildSet(clone) {
-    var set = document.createElement('div');
-    set.className = 'archive-marquee-set';
-    if (clone) set.setAttribute('aria-hidden', 'true');
-
-    IDS.forEach(function (id, idx) {
-      var fig = document.createElement('figure');
-      fig.className = 'archive-marquee-figure';
-
-      var img = document.createElement('img');
-      img.className = 'archive-marquee-img';
-      img.src = wixImageUrl(id);
-      img.alt =
-        'Southern New Hampshire Pinball Club photo ' + (idx + 1) + ' of ' + IDS.length;
-      img.loading = 'lazy';
-      img.decoding = 'async';
-
-      fig.appendChild(img);
-      set.appendChild(fig);
-    });
-
-    return set;
   }
 
   function run() {
@@ -64,18 +58,90 @@
     var track = document.createElement('div');
     track.className = 'archive-marquee-track';
 
-    track.appendChild(buildSet(false));
-    track.appendChild(buildSet(true));
+    var n = SLIDES.length;
+    track.style.width = n * 100 + '%';
+
+    SLIDES.forEach(function (spec, idx) {
+      var slide = document.createElement('div');
+      slide.className = 'archive-marquee-slide';
+      slide.style.flex = '0 0 ' + 100 / n + '%';
+
+      var img = document.createElement('img');
+      img.className = 'archive-marquee-img';
+      img.src = wixImageUrl(spec.id);
+      img.alt = spec.alt;
+      img.loading = idx === 0 ? 'eager' : 'lazy';
+      img.decoding = 'async';
+
+      slide.appendChild(img);
+      track.appendChild(slide);
+    });
 
     viewport.appendChild(track);
     wrap.appendChild(viewport);
 
     var note = document.createElement('div');
     note.className = 'archive-marquee-note';
-    note.textContent = 'Photo strip (museum replay)';
+    note.textContent = 'Slideshow (museum replay)';
     wrap.appendChild(note);
 
     root.appendChild(wrap);
+
+    var index = 0;
+    var initialLogoWait = true;
+    var dwellTimer = null;
+
+    function clearDwell() {
+      if (dwellTimer) {
+        clearTimeout(dwellTimer);
+        dwellTimer = null;
+      }
+    }
+
+    function applyOffset(useTransition) {
+      var pct = -(index / SLIDES.length) * 100;
+      track.style.transform = 'translateX(' + pct + '%)';
+      if (useTransition) {
+        track.classList.add('is-transitioning');
+      } else {
+        track.classList.remove('is-transitioning');
+      }
+    }
+
+    function scheduleDwell() {
+      clearDwell();
+      var ms = HOLD_MS;
+      if (index === 0 && initialLogoWait) {
+        ms = INITIAL_LOGO_MS;
+        initialLogoWait = false;
+      }
+      dwellTimer = window.setTimeout(advance, ms);
+    }
+
+    function advance() {
+      clearDwell();
+      index = (index + 1) % SLIDES.length;
+      applyOffset(true);
+    }
+
+    function onTransitionEnd(ev) {
+      if (ev.propertyName !== 'transform') return;
+      if (ev.target !== track) return;
+      scheduleDwell();
+    }
+
+    track.addEventListener('transitionend', onTransitionEnd);
+
+    applyOffset(false);
+    scheduleDwell();
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      clearDwell();
+      track.removeEventListener('transitionend', onTransitionEnd);
+      track.classList.remove('is-transitioning');
+      index = 0;
+      applyOffset(false);
+    }
   }
 
   if (document.readyState === 'loading') {
