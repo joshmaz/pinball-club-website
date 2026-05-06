@@ -1,0 +1,102 @@
+/**
+ * Replacement marquee for Wix SlideShowGallery (Thunderbolt does not run in static archive).
+ * Loaded only by archive-marquee.js on the mirrored home page.
+ */
+#SldShwGllry0.archive-marquee-host {
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+#SldShwGllry0 .archive-marquee {
+  position: relative;
+  width: 686px;
+  max-width: 100%;
+  height: 534px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+#SldShwGllry0 .archive-marquee-viewport {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+#SldShwGllry0 .archive-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: archiveMarqueeScroll 54s linear infinite;
+  align-items: center;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #SldShwGllry0 .archive-marquee-track {
+    animation: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  #SldShwGllry0 .archive-marquee-set {
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 8px;
+  }
+
+  #SldShwGllry0 .archive-marquee-set[aria-hidden='true'] {
+    display: none;
+  }
+
+  #SldShwGllry0 .archive-marquee-img {
+    max-height: 160px;
+  }
+}
+
+@keyframes archiveMarqueeScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+#SldShwGllry0 .archive-marquee-set {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px;
+  flex-shrink: 0;
+}
+
+#SldShwGllry0 .archive-marquee-figure {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+#SldShwGllry0 .archive-marquee-img {
+  display: block;
+  height: min(420px, 78vh);
+  width: auto;
+  max-width: min(520px, 85vw);
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+#SldShwGllry0 .archive-marquee-note {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font: 11px/1.2 system-ui, sans-serif;
+  color: rgba(255, 255, 255, 0.65);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
