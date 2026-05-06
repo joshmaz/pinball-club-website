@@ -1,6 +1,7 @@
 /**
- * Static-archive slideshow: club logo first, parking last, four photos between.
- * Timing: 3s initial dwell on logo; then ~220ms slide; 1.5s hold per slide (loop).
+ * Static-archive slideshow: logo, six club photos, parking (8 slides).
+ * Clone of logo after parking for seamless forward loop (no rewind).
+ * Timing: 3s initial dwell on logo; ~440ms slide; 1.5s hold per slide.
  */
 (function () {
   var HOLD_MS = 1500;
@@ -25,6 +26,14 @@
     },
     {
       id: 'fb7b05_7d005ae1b6f44539b5bff136d4435fa2~mv2_d_1936_1936_s_2.jpg',
+      alt: 'Club photos',
+    },
+    {
+      id: 'fb7b05_c76d9f404f3e4aaeb84b90d66d0b45cf~mv2_d_1936_1936_s_2.jpg',
+      alt: 'Club photos',
+    },
+    {
+      id: 'fb7b05_ceb045e00e86482295dca6d415623fc4~mv2_d_1936_1936_s_2.jpg',
       alt: 'Club photos',
     },
     {
@@ -58,24 +67,35 @@
     var track = document.createElement('div');
     track.className = 'archive-marquee-track';
 
-    var n = SLIDES.length;
-    track.style.width = n * 100 + '%';
+    var logicalCount = SLIDES.length;
+    var cloneCount = 1;
+    var panelCount = logicalCount + cloneCount;
 
-    SLIDES.forEach(function (spec, idx) {
+    track.style.width = panelCount * 100 + '%';
+
+    function appendSlide(spec, idx, isClone) {
       var slide = document.createElement('div');
       slide.className = 'archive-marquee-slide';
-      slide.style.flex = '0 0 ' + 100 / n + '%';
+      slide.style.flex = '0 0 ' + 100 / panelCount + '%';
+      if (isClone) {
+        slide.setAttribute('aria-hidden', 'true');
+      }
 
       var img = document.createElement('img');
       img.className = 'archive-marquee-img';
       img.src = wixImageUrl(spec.id);
-      img.alt = spec.alt;
-      img.loading = idx === 0 ? 'eager' : 'lazy';
+      img.alt = isClone ? spec.alt + ' (loop)' : spec.alt;
+      img.loading = idx === 0 && !isClone ? 'eager' : 'lazy';
       img.decoding = 'async';
 
       slide.appendChild(img);
       track.appendChild(slide);
+    }
+
+    SLIDES.forEach(function (spec, idx) {
+      appendSlide(spec, idx, false);
     });
+    appendSlide(SLIDES[0], 0, true);
 
     viewport.appendChild(track);
     wrap.appendChild(viewport);
@@ -99,7 +119,7 @@
     }
 
     function applyOffset(useTransition) {
-      var pct = -(index / SLIDES.length) * 100;
+      var pct = -(index / panelCount) * 100;
       track.style.transform = 'translateX(' + pct + '%)';
       if (useTransition) {
         track.classList.add('is-transitioning');
@@ -120,13 +140,27 @@
 
     function advance() {
       clearDwell();
-      index = (index + 1) % SLIDES.length;
+      if (index >= logicalCount) {
+        return;
+      }
+      index += 1;
       applyOffset(true);
     }
 
     function onTransitionEnd(ev) {
       if (ev.propertyName !== 'transform') return;
       if (ev.target !== track) return;
+
+      if (index === logicalCount) {
+        track.classList.remove('is-transitioning');
+        index = 0;
+        applyOffset(false);
+        window.requestAnimationFrame(function () {
+          window.requestAnimationFrame(scheduleDwell);
+        });
+        return;
+      }
+
       scheduleDwell();
     }
 
