@@ -4,6 +4,11 @@
  */
 
 const RE_PINBALLMAP_SUFFIX = / \(([^)]+, \d{4})\)\s*$/;
+const LEGACY_PINBALLMAP_LOCATION_ID = 8908;
+const HAINES_ADDRESS = "134 Haines Street, Nashua, NH";
+const BRIDGE_ADDRESS = "48 Bridge St, Unit 3A, Nashua";
+const HAINES_LAST_DAY = "2026-04-23";
+const BRIDGE_FIRST_DAY = "2026-04-24";
 
 export type DbGame = {
   id: string;
@@ -25,7 +30,9 @@ export type DbStint = {
 };
 
 export type ActivityRow = {
+  id?: number | string;
   submission_type?: string;
+  comment?: string | null;
   machine_name?: string;
   machine_id?: number | null;
   created_at?: string;
@@ -35,6 +42,31 @@ export type ActivityPayload = {
   meta?: { location_id?: number | string; location_name?: string };
   user_submissions?: ActivityRow[];
 };
+
+export function buildPinballConditionPayload(activity: ActivityPayload): {
+  location_id: number;
+  rows: Record<string, unknown>[];
+} {
+  const meta = activity.meta || {};
+  const locationId = Number(meta.location_id ?? LEGACY_PINBALLMAP_LOCATION_ID) || LEGACY_PINBALLMAP_LOCATION_ID;
+  const rows: Record<string, unknown>[] = [];
+  for (const row of activity.user_submissions || []) {
+    if (row.submission_type !== "new_condition") continue;
+    const submissionId = row.id != null ? String(row.id) : "";
+    const comment = String(row.comment || "").trim();
+    const machineName = String(row.machine_name || "").trim();
+    const createdAt = String(row.created_at || "").trim();
+    if (!submissionId || !comment || !machineName || !createdAt) continue;
+    rows.push({
+      submissionId,
+      machineName,
+      machineId: row.machine_id != null ? Number(row.machine_id) : null,
+      comment,
+      createdAt,
+    });
+  }
+  return { location_id: locationId, rows };
+}
 
 function normalizeMapTitle(machineName: string): string {
   let s = (machineName || "").trim();
@@ -68,7 +100,7 @@ class MachineState {
 function inferJoinAndLeave(
   addDates: string[],
   removeDates: string[]
-): { join: string | null; leave: string | null; on: boolean } {
+): { join: string | null; leave: string | null; on: boolean; currentJoin: string | null } {
   const events: [string, "add" | "remove"][] = [];
   for (const d of addDates) events.push([d, "add"]);
   for (const d of removeDates) events.push([d, "remove"]);
@@ -79,17 +111,19 @@ function inferJoinAndLeave(
   let on = false;
   let firstJoin: string | null = null;
   let lastLeft: string | null = null;
+  let currentJoin: string | null = null;
   for (const [d, k] of events) {
     if (k === "add") {
       if (!firstJoin) firstJoin = d;
+      if (!on) currentJoin = d;
       on = true;
     } else {
       if (on) lastLeft = d;
       on = false;
     }
   }
-  if (on) return { join: firstJoin, leave: null, on: true };
-  return { join: firstJoin, leave: lastLeft, on: false };
+  if (on) return { join: firstJoin, leave: null, on: true, currentJoin };
+  return { join: firstJoin, leave: lastLeft, on: false, currentJoin: null };
 }
 
 function parseYearMfr(machineName: string): { mfr: string | null; yr: string | null } {
@@ -116,10 +150,36 @@ function machineIdFromGame(
 }
 
 function addressForLocation(locationId: number, meta: ActivityPayload["meta"]): string {
-  if (locationId === 8908) return "134 Haines Street, Nashua, NH";
+  if (locationId === LEGACY_PINBALLMAP_LOCATION_ID) return HAINES_ADDRESS;
   const name = meta?.location_name;
   if (name) return `${name} (Pinball Map location ${locationId})`;
   return `Pinball Map location ${locationId}`;
+}
+
+function chooseCanonicalStint(
+  locationId: number,
+  join: string | null,
+  leave: string | null,
+  on: boolean,
+  fallbackAddress: string
+): { address: string; joined: string | null; left: string | null } {
+  if (locationId !== LEGACY_PINBALLMAP_LOCATION_ID) {
+    return { address: fallbackAddress, joined: join, left: leave };
+  }
+
+  if (join && join >= BRIDGE_FIRST_DAY) {
+    return { address: BRIDGE_ADDRESS, joined: join, left: leave };
+  }
+  if (leave && leave <= HAINES_LAST_DAY) {
+    return { address: HAINES_ADDRESS, joined: join, left: leave };
+  }
+  if (join && join < BRIDGE_FIRST_DAY && (on || !leave || leave >= BRIDGE_FIRST_DAY)) {
+    return { address: BRIDGE_ADDRESS, joined: BRIDGE_FIRST_DAY, left: leave };
+  }
+  if (!join && on) {
+    return { address: BRIDGE_ADDRESS, joined: BRIDGE_FIRST_DAY, left: null };
+  }
+  return { address: HAINES_ADDRESS, joined: join, left: leave };
 }
 
 export function buildPinballRpcPayload(
@@ -160,11 +220,14 @@ export function buildPinballRpcPayload(
     if (!sampleName.has(key)) sampleName.set(key, row.machine_name || key);
   }
 
-  const inferred = new Map<string, { join: string | null; leave: string | null; on: boolean; repId: number | null }>();
+  const inferred = new Map<
+    string,
+    { join: string | null; leave: string | null; on: boolean; currentJoin: string | null; repId: number | null }
+  >();
   for (const [key, st] of byKey) {
-    const { join, leave, on } = inferJoinAndLeave(st.addDates, st.removeDates);
+    const { join, leave, on, currentJoin } = inferJoinAndLeave(st.addDates, st.removeDates);
     const repId = st.machineIds.size ? Math.min(...st.machineIds) : null;
-    inferred.set(key, { join, leave, on, repId });
+    inferred.set(key, { join, leave, on, currentJoin, repId });
   }
 
   const allTitles = new Set(games.map((g) => g.title.trim()).filter(Boolean));
@@ -212,12 +275,14 @@ export function buildPinballRpcPayload(
     if (!mapKey) continue;
     const inf = inferred.get(mapKey);
     if (!inf) continue;
+    const stintJoin = inf.on ? (inf.currentJoin || inf.join) : inf.join;
+    const canonical = chooseCanonicalStint(locationId, stintJoin, inf.leave, inf.on, locationAddress);
     const stint: Record<string, unknown> = {
-      address: locationAddress,
+      address: canonical.address,
       pinballMapLocationId: locationId,
     };
-    if (inf.join) stint.joinedClubDate = inf.join;
-    if (inf.leave && !inf.on) stint.leftClubDate = inf.leave;
+    if (canonical.joined) stint.joinedClubDate = canonical.joined;
+    if (canonical.left && !inf.on) stint.leftClubDate = canonical.left;
     else if (inf.on) stint.leftClubDate = null;
     if (inf.repId != null) stint.pinballMapMachineId = inf.repId;
 
@@ -244,12 +309,14 @@ export function buildPinballRpcPayload(
     else if (inf.on && inf.join) parts.push("Still on the map as of the latest activity.");
     const deets = parts.join(" ");
 
+    const stintJoin = inf.on ? (inf.currentJoin || inf.join) : inf.join;
+    const canonical = chooseCanonicalStint(locationId, stintJoin, inf.leave, inf.on, locationAddress);
     const stint: Record<string, unknown> = {
-      address: locationAddress,
+      address: canonical.address,
       pinballMapLocationId: locationId,
     };
-    if (inf.join) stint.joinedClubDate = inf.join;
-    if (inf.leave && !inf.on) stint.leftClubDate = inf.leave;
+    if (canonical.joined) stint.joinedClubDate = canonical.joined;
+    if (canonical.left && !inf.on) stint.leftClubDate = canonical.left;
     if (inf.repId != null) stint.pinballMapMachineId = inf.repId;
 
     const slug = key

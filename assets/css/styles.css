@@ -1374,7 +1374,9 @@ footer {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* Cap column max width so one game does not stretch across the viewport (avoid 1fr-only row). */
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 420px));
+  justify-content: start;
   gap: 0.9rem;
 }
 
