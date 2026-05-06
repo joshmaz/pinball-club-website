@@ -1,0 +1,8 @@
+{
+  "name": "snh-wix-mirror",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "website-scraper": "^5.3.1"
+  }
+}
