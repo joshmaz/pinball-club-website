@@ -69,7 +69,7 @@ Pinball Map activity ingest runs in the Edge Function `supabase/functions/pinbal
 
 The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional CloudFront cache invalidation.
 
-The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing page at `wix_archive/index.html`). It is included in the repo so `aws s3 sync ... --delete` does not remove it on deploy. To refresh the mirror before Wix is shut down, run `npm install` and `node mirror.mjs` from `scripts/wix-mirror/` at the repo root (`node scripts/wix-mirror/mirror.mjs`). That script rewrites absolute `snhpinball.wixsite.com` URLs to `/wix_archive/site/...` so navigation keeps working after Wix is offline. After a deploy, confirm `/wix_archive/` on the live domain and spot-check the archived home page; repeat once Wix is shut down to confirm nothing still depends on the live Wix host.
+The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing page at `wix_archive/index.html`). It is included in the repo so `aws s3 sync ... --delete` does not remove it on deploy. To refresh the mirror before Wix is shut down, run `npm install` and `node mirror.mjs` from `scripts/wix-mirror/` at the repo root (`node scripts/wix-mirror/mirror.mjs`). That script rewrites absolute `snhpinball.wixsite.com` URLs to `/wix_archive/site/...` so navigation keeps working after Wix is offline. After a deploy, confirm `/wix_archive/` on the live domain and spot-check the archived home page; repeat once Wix is shut down to confirm nothing still depends on the live Wix host. On Windows, if `git add wix_archive` fails with “Filename too long”, run `git config core.longpaths true` once in this repo (mirrored asset paths can exceed the legacy path limit).
 
 ## Architecture notes
 
