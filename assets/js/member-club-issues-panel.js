@@ -207,25 +207,52 @@
     }
   }
 
+  function formatIssueDate(iso) {
+    if (!iso || !window.SNHMemberPortal || !window.SNHMemberPortal.formatDate) return "";
+    return window.SNHMemberPortal.formatDate(iso);
+  }
+
+  function canEditGameCatalog() {
+    if (!window.SNHMemberPortal || !Array.isArray(lastRoles)) return false;
+    var grp =
+      (window.SNHMemberPortal.ROLE_GROUPS && window.SNHMemberPortal.ROLE_GROUPS.GAMES_ACCESS) ||
+      ["games_editor", "games_admin", "club_admin"];
+    var csv =
+      window.SNHMemberPortal.rolesToCsv && window.SNHMemberPortal.rolesToCsv(grp);
+    return window.SNHMemberPortal.memberHasAnyRole(lastRoles, csv || "games_editor,games_admin,club_admin");
+  }
+
   function gameSummaryLine(row) {
     var gid = row.gameId || row.game_id;
     var gTitle = row.gameTitle;
     var gSlug = row.gameSlug;
     if (gTitle) {
       var span = el("span", { className: "member-club-issues-game-name", text: gTitle });
-      if (gSlug) {
-        var link = el("a", {
+      var bits = [span];
+      if (gid && canEditGameCatalog()) {
+        var editA = el("a", {
+          href: "#",
+          className: "member-club-issues-game-link",
+          text: "Edit game"
+        });
+        editA.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          if (window.snhNavigateToMemberGameEditor) {
+            window.snhNavigateToMemberGameEditor(gid);
+          }
+        });
+        bits.push(document.createTextNode(" · "));
+        bits.push(editA);
+      } else if (gSlug) {
+        var pub = el("a", {
           href: "games.html",
           className: "member-club-issues-game-link",
           text: "Games page"
         });
-        return el("span", {}, [
-          span,
-          document.createTextNode(" · "),
-          link
-        ]);
+        bits.push(document.createTextNode(" · "));
+        bits.push(pub);
       }
-      return span;
+      return el("span", {}, bits);
     }
     if (gid) {
       return el("span", {
@@ -301,13 +328,22 @@
       var card = el("article", { className: "member-club-issues-card" });
       card.appendChild(el("h4", { text: row.title || "(untitled)" }));
       var meta = el("p", { className: "member-club-issues-meta" });
-      meta.appendChild(
-        document.createTextNode(
-          (row.status || "").replace(/_/g, " ") + (row.createdAt ? " · " + row.createdAt : "") + " · "
-        )
-      );
+      var submittedIso = row.submittedAt || row.createdAt;
+      var metaParts = [];
+      if (submittedIso) metaParts.push("Submitted " + formatIssueDate(submittedIso));
+      metaParts.push((row.status || "").replace(/_/g, " "));
+      meta.appendChild(document.createTextNode(metaParts.join(" · ") + " · "));
       meta.appendChild(gameSummaryLine(row));
       card.appendChild(meta);
+      var subForCmp = row.submittedAt || row.createdAt;
+      if (row.updatedAt && subForCmp && String(row.updatedAt) !== String(subForCmp)) {
+        card.appendChild(
+          el("p", {
+            className: "member-club-issues-updated",
+            text: "Last updated " + formatIssueDate(row.updatedAt)
+          })
+        );
+      }
       if (row.body) {
         card.appendChild(el("p", { className: "member-club-issues-body", text: row.body }));
       }

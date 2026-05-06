@@ -816,6 +816,14 @@
     setPhotosPanelIntro(userRoles);
     setGamesPanelIntro(userRoles);
 
+    window.snhNavigateToMemberGameEditor = function (gameId) {
+      if (!gameId) return;
+      showMemberPanel("games", {});
+      if (window.SNHMemberGamesPanel && typeof window.SNHMemberGamesPanel.openGameForEdit === "function") {
+        void window.SNHMemberGamesPanel.openGameForEdit(String(gameId), userRoles);
+      }
+    };
+
     onMemberAdminPanelShown = async function () {
       if (!window.SNHMemberPortal) return;
       setMemberAdminPanelIntro(userRoles);

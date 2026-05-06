@@ -25,6 +25,7 @@
   var comboboxOpen = false;
   var comboboxActiveIndex = -1;
   var catalogLoaded = false;
+  var catalogLoadPromise = null;
   var inited = false;
   var lastUserRoles = [];
   var comboboxListboxId = "member-games-combobox-listbox";
@@ -2010,26 +2011,33 @@
   }
 
   async function loadCatalog() {
-    setStatus("Loading games catalog…");
-    try {
-      var data = await window.SNHMemberPortal.gamesEditorLoad();
-      gamesCache = (data && data.games) || [];
-      catalogLoaded = true;
-      populateCombobox();
-      if (comboboxInputEl) {
-        comboboxInputEl.removeAttribute("disabled");
-        comboboxInputEl.placeholder = "Search by title to edit an existing game…";
-        if (document.activeElement === comboboxInputEl) {
-          setComboboxOpen(true);
-          renderComboboxOptions();
+    if (catalogLoaded) return;
+    if (catalogLoadPromise) return catalogLoadPromise;
+    catalogLoadPromise = (async function () {
+      setStatus("Loading games catalog…");
+      try {
+        var data = await window.SNHMemberPortal.gamesEditorLoad();
+        gamesCache = (data && data.games) || [];
+        catalogLoaded = true;
+        populateCombobox();
+        if (comboboxInputEl) {
+          comboboxInputEl.removeAttribute("disabled");
+          comboboxInputEl.placeholder = "Search by title to edit an existing game…";
+          if (document.activeElement === comboboxInputEl) {
+            setComboboxOpen(true);
+            renderComboboxOptions();
+          }
         }
+        await loadPartiesDirectory();
+        enterIdleMode("Loaded " + gamesCache.length + " games.");
+      } catch (err) {
+        catalogLoaded = false;
+        setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+      } finally {
+        catalogLoadPromise = null;
       }
-      await loadPartiesDirectory();
-      enterIdleMode("Loaded " + gamesCache.length + " games.");
-    } catch (err) {
-      catalogLoaded = false;
-      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-    }
+    })();
+    return catalogLoadPromise;
   }
 
   function buildShell() {
@@ -2060,7 +2068,7 @@
     if (!inited) {
       inited = true;
       buildShell();
-      loadCatalog();
+      void loadCatalog();
     } else {
       refreshFeaturedPingolfSession().then(function () {
         if (currentGameId) return loadPingolfTargetsForGame(currentGameId);
@@ -2072,7 +2080,28 @@
     }
   }
 
+  async function openGameForEdit(gameId, hintRoles) {
+    var roles = hintRoles || lastUserRoles;
+    if (!gameId || !window.SNHMemberPortal) return;
+    if (!window.SNHMemberPortal.memberHasAnyRole(roles || [], GAMES_ROLE_CSV)) return;
+
+    lastUserRoles = roles || lastUserRoles;
+
+    if (!inited) {
+      inited = true;
+      buildShell();
+    }
+    await loadCatalog();
+    if (!catalogLoaded) return;
+
+    if (!confirmDiscardPartyIfDirty()) return;
+    if (!confirmDiscardIfDirty()) return;
+    await populateForm(String(gameId));
+    setComboboxOpen(false);
+  }
+
   window.SNHMemberGamesPanel = {
-    onPanelShown: onPanelShown
+    onPanelShown: onPanelShown,
+    openGameForEdit: openGameForEdit
   };
 })();
