@@ -12,13 +12,51 @@
  *   SUPABASE_SERVICE_ROLE_KEY — service role key (never commit)
  *   PINBALLMAP_LOCATION_ID    — optional, default 8908
  *
- * Usage (PowerShell):
- *   $env:SUPABASE_URL="https://....supabase.co"
- *   $env:SUPABASE_SERVICE_ROLE_KEY="..."
+ * Environment variables can be set in the shell or in a `.env` file at the repo
+ * root (same directory you run `node` from, or next to this script's parent).
+ * This script loads `.env` automatically; shell vars still win if already set.
+ *
+ * Usage (PowerShell), from repo root:
  *   node scripts/backfill_pinballmap_club_issues.mjs
+ *
+ * Or without `.env` (Node 20.6+ can use `node --env-file=.env scripts/...`).
  */
 
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 const LOCATION_DEFAULT = 8908;
+
+/** Minimal `.env` loader — Node does not read `.env` unless we load it. */
+function loadDotEnv() {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const candidates = [join(process.cwd(), ".env"), join(here, "..", ".env")];
+  for (const envPath of candidates) {
+    if (!existsSync(envPath)) continue;
+    const text = readFileSync(envPath, "utf8");
+    for (const line of text.split(/\r?\n/)) {
+      const t = line.trim();
+      if (!t || t.startsWith("#")) continue;
+      const eq = t.indexOf("=");
+      if (eq === -1) continue;
+      const key = t.slice(0, eq).trim();
+      let val = t.slice(eq + 1).trim();
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (process.env[key] === undefined) {
+        process.env[key] = val;
+      }
+    }
+    return;
+  }
+}
+
+loadDotEnv();
 
 function buildPinballConditionPayload(activity) {
   const meta = activity.meta || {};
