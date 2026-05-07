@@ -12,7 +12,7 @@ dateUnknown = no joinedClubDate and no leftClubDate; sort keys use an editorial
 2016 band for unknown tenure, or 9999-12-31 for current games with no leave date.
 
 Legacy top-level joinedClubDate / leftClubDate / pinballMapMachineId are
-migrated into the first stint for 134 Haines on first run.
+migrated into the first stint for Haines St on first run.
 
 Games live in a single `games` array (sorted newest-first by first stint join).
 `mapAtClub` tracks floor status inferred from Pinball Map; editors may set
@@ -41,8 +41,8 @@ _RE_PINBALLMAP_SUFFIX = re.compile(
 
 # Pinball Map location id 8908 — pre-move club home (extend when new locations exist).
 LEGACY_PINBALLMAP_LOCATION_ID = 8908
-LEGACY_CLUB_ADDRESS = "134 Haines Street, Nashua, NH"
-BRIDGE_CLUB_ADDRESS = "48 Bridge St, Unit 3A, Nashua"
+LEGACY_CLUB_ADDRESS = "Haines St"
+BRIDGE_CLUB_ADDRESS = "Bridge St"
 HAINES_LAST_DAY = "2026-04-23"
 BRIDGE_FIRST_DAY = "2026-04-24"
 

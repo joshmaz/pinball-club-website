@@ -1955,7 +1955,7 @@
 
   async function onAddStint() {
     if (!currentGameId) return;
-    await onSaveStint("", "134 Haines Street, Nashua, NH", "8908", "", "", "");
+    await onSaveStint("", "Haines St", "8908", "", "", "");
   }
 
   async function onDeleteStint(stintId) {
