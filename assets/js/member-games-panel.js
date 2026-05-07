@@ -1393,16 +1393,7 @@
       })
     );
     missing.appendChild(el("p", { className: "member-games-review-todo", text: "TODO: add quality checks and review queue." }));
-    var malfunction = el("section", { className: "member-games-review-card" });
-    malfunction.appendChild(el("h4", { text: "Game malfunction reports" }));
-    malfunction.appendChild(
-      el("p", {
-        text: "Track machine issues and status notes for follow-up repair and lineup visibility decisions."
-      })
-    );
-    malfunction.appendChild(el("p", { className: "member-games-review-todo", text: "TODO: connect issue reporting workflow." }));
     reviewScaffoldsEl.appendChild(missing);
-    reviewScaffoldsEl.appendChild(malfunction);
     return reviewScaffoldsEl;
   }
 
