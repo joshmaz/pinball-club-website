@@ -104,7 +104,7 @@
     wrap.appendChild(label);
     [
       { key: "all", text: "All" },
-      { key: "open", text: "Open" },
+      { key: "open", text: "Incoming" },
       { key: "in_progress", text: "In progress" },
       { key: "resolved", text: "Resolved" }
     ].forEach(function (opt) {
@@ -154,7 +154,7 @@
     var sel = el("select", { id: "ci-status", className: "member-games-input" });
     ["open", "in_progress", "resolved"].forEach(function (v) {
       var opt = el("option", { value: v });
-      opt.textContent = v.replace(/_/g, " ");
+      opt.textContent = formatIssueStatusLabel(v);
       sel.appendChild(opt);
     });
     formWrap.appendChild(fieldRow("Status", sel));
@@ -210,6 +210,15 @@
   function formatIssueDate(iso) {
     if (!iso || !window.SNHMemberPortal || !window.SNHMemberPortal.formatDate) return "";
     return window.SNHMemberPortal.formatDate(iso);
+  }
+
+  /** Display labels (stored status values remain open | in_progress | resolved). */
+  function formatIssueStatusLabel(raw) {
+    var s = String(raw || "open").toLowerCase();
+    if (s === "open") return "Incoming";
+    if (s === "in_progress") return "In progress";
+    if (s === "resolved") return "Resolved";
+    return s.replace(/_/g, " ");
   }
 
   function canEditGameCatalog() {
@@ -284,10 +293,10 @@
       mk("Mark in progress", "in_progress");
       mk("Resolve", "resolved");
     } else if (st === "in_progress") {
-      mk("Back to open", "open");
+      mk("Back to incoming", "open");
       mk("Resolve", "resolved");
     } else if (st === "resolved") {
-      mk("Reopen", "open");
+      mk("Mark incoming", "open");
     }
 
     if (actions.childNodes.length) card.appendChild(actions);
@@ -331,7 +340,7 @@
       var submittedIso = row.submittedAt || row.createdAt;
       var metaParts = [];
       if (submittedIso) metaParts.push("Submitted " + formatIssueDate(submittedIso));
-      metaParts.push((row.status || "").replace(/_/g, " "));
+      metaParts.push(formatIssueStatusLabel(row.status));
       meta.appendChild(document.createTextNode(metaParts.join(" · ") + " · "));
       meta.appendChild(gameSummaryLine(row));
       card.appendChild(meta);
