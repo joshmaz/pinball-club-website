@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Sign in to your Southern New Hampshire Pinball Club account: member access, club updates, and future membership and payment tools.">
-  <title>SNHPC - Members</title>
+  <meta name="description" content="Free SNHPC website account: sign in to the member portal for club tools, events, and games. Volunteer roles unlock more; on-site membership management coming soon.">
+  <title>Sign in - SNHPC members</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -43,30 +43,61 @@
 <section class="page-hero page-hero--members" aria-labelledby="members-hero-title">
   <div class="page-hero-backdrop" aria-hidden="true"></div>
   <div class="page-hero-inner">
-    <h2 id="members-hero-title">Member access</h2>
-    <p class="page-hero-lead">Sign in to access your account, stay connected with club updates, and follow along as the members area grows.</p>
-    <p class="page-hero-note">New here? Create your account, confirm your email, and check back as we add more member tools and features.</p>
+    <h2 id="members-hero-title">Member sign-in</h2>
+    <p class="page-hero-lead">Hop in. The member portal is where we run the club online: games, events, machine issues, photos, and more as we keep building.</p>
+    <p class="page-hero-note">New here? Create an account (it’s free), confirm your email, then sign in below. Takes a minute.</p>
   </div>
 </section>
 
-<section class="content">
-  <h3>Welcome to the Southern New Hampshire Pinball Club!</h3>
-  <p><strong>What an account is for today</strong></p>
-  <ul class="members-account-list">
-    <li>Sign in with the email and password you used at registration.</li>
-    <li>Foundation for membership billing and club tools as we roll them out.</li>
-  </ul>
+<section class="content signin-prose">
+  <h3>Glad you’re here</h3>
   <p>
-    We are excited to keep building this members area into a more useful home base for the club.
-    In the future, we hope to make it even easier for members to manage membership status, update
-    payment methods, order SNHPC swag, add profile details, and take care of more club business all
-    in one place.
+    If you play with us at SNHPC, or you’re thinking about it, this page is how you get into the
+    member portal. <strong>New here?</strong> Enter your email and password below and click
+    <strong>Sign Up</strong>. We will send a short confirmation message to that address; open the
+    link in it to verify your email, then come back here and use <strong>Login</strong> with the same
+    email and password. <strong>Already set up?</strong> Just log in. No secret handshake required,
+    just don’t tilt the form.
+  </p>
+
+  <h4>Your account on this site</h4>
+  <p class="members-signin-callout">
+    <strong>Creating and using an account on this website is free.</strong> That’s just your login
+    and profile here. It is not the same thing as optional paid floor membership through the club’s
+    billing when you join that path. We’ll keep those ideas clearly labeled as the portal grows.
   </p>
   <p>
-    This site is still brand new, so thank you for your patience while we continue building and
-    improving it. We are laying the groundwork now with the goal of making member access smoother,
-    more convenient, and more helpful over time.
+    <strong>Soon:</strong> we’re working toward letting you manage your on-site club membership from
+    the member portal itself (think fewer hoops when it’s time to renew or update how you pay).
+    Not live yet. We’ll shout when it ships.
   </p>
+
+  <h4>What’s in the member portal</h4>
+  <p>
+    Behind this sign-in, the club runs a lot of day-to-day work: <strong>games</strong> catalog and
+    floor history, <strong>events</strong>, <strong>machine issue</strong> reports (Pinball Map
+    imports and club-wide notes), <strong>photo</strong> library tools, and <strong>membership</strong>
+    admin for folks who help run the roster. Not everyone sees every panel. You’ll only get the
+    sections that match the <strong>roles</strong> you’ve been assigned. If you volunteer, we can
+    open more tools over time as it makes sense.
+  </p>
+
+  <h4>New chapter, new website</h4>
+  <p>
+    SNHPC is writing a fresh chapter at a new home, and this site is part of that story. It’ll get
+    better looking; right now we’re chasing <strong>function first</strong> so the lineup, calendar,
+    and issue list stay trustworthy while we wire things up. Thanks for bearing with a site that’s
+    still a workshop, not a showroom.
+  </p>
+
+  <h4>How you can help</h4>
+  <p>
+    We’re a nonprofit, member-driven club, and <strong>volunteers</strong> keep the lights on.
+    Whether you like wrenching games, tinkering with the web, or helping keep a steady cadence of
+    on-site events for everyone, there’s room for you. Sign in, poke around the portal, and grab a
+    board member or volunteer lead at league or open play if you want to pitch in.
+  </p>
+
   <form id="auth-form" class="members-auth-form">
     <input id="email" type="email" autocomplete="email" placeholder="Email" />
     <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
