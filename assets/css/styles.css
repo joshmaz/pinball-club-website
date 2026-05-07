@@ -568,6 +568,28 @@ nav a {
   margin-top: 0.35rem;
 }
 
+/* Sign-in page: sectioned copy */
+.signin-prose h3 {
+  margin: 0 0 0.5rem;
+}
+.signin-prose h4 {
+  margin: 1.25rem 0 0.45rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #e8edf2;
+}
+.signin-prose p {
+  line-height: 1.55;
+  margin: 0 0 0.65rem;
+}
+.signin-prose p.members-signin-callout {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #3a4553;
+  background: rgba(24, 30, 38, 0.75);
+  margin-bottom: 0.85rem;
+}
+
 .members-auth-form,
 .members-profile-form {
   display: grid;
@@ -2247,6 +2269,59 @@ footer {
   color: #8fa0b3;
 }
 
+.member-club-issues-updated {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  color: #6b7a8c;
+}
+
 .member-club-issues-form h4 {
   margin: 0 0 0.5rem;
+}
+
+.member-club-issues-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.member-club-issues-filter-label {
+  font-size: 0.85rem;
+  color: #8fa0b3;
+}
+
+.member-club-issues-filter-btn[aria-current="true"] {
+  font-weight: 600;
+}
+
+.member-club-issues-game-name {
+  font-weight: 500;
+  color: #c8d4e0;
+}
+
+.member-club-issues-game-link {
+  font-size: 0.82rem;
+}
+
+.member-club-issues-unlinked {
+  font-style: italic;
+}
+
+.member-club-issues-body {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  white-space: pre-wrap;
+}
+
+.member-club-issues-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.35rem;
+}
+
+.member-club-issues-quick-btn {
+  font-size: 0.82rem;
 }

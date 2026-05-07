@@ -5,8 +5,8 @@
 
 const RE_PINBALLMAP_SUFFIX = / \(([^)]+, \d{4})\)\s*$/;
 const LEGACY_PINBALLMAP_LOCATION_ID = 8908;
-const HAINES_ADDRESS = "134 Haines Street, Nashua, NH";
-const BRIDGE_ADDRESS = "48 Bridge St, Unit 3A, Nashua";
+const HAINES_ADDRESS = "Haines St";
+const BRIDGE_ADDRESS = "Bridge St";
 const HAINES_LAST_DAY = "2026-04-23";
 const BRIDGE_FIRST_DAY = "2026-04-24";
 

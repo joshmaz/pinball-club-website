@@ -752,6 +752,14 @@
     if (result.error) throw result.error;
   }
 
+  async function clubIssuesGameOptions() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_club_issues_game_options");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
   async function publicGameMoreInfo(gameId) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -845,6 +853,7 @@
     gameCustomModsDelete: gameCustomModsDelete,
     clubIssuesList: clubIssuesList,
     clubIssuesUpsert: clubIssuesUpsert,
+    clubIssuesGameOptions: clubIssuesGameOptions,
     ownerPartiesList: ownerPartiesList,
     ownerPartiesUpsert: ownerPartiesUpsert,
     ownerPartiesDelete: ownerPartiesDelete,
