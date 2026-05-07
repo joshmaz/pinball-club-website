@@ -8,7 +8,7 @@
   var lastRoles = [];
   var editingId = null;
   var lastRows = [];
-  var currentFilter = "all";
+  var currentFilter = "open";
   var gameOptionsReady = false;
 
   function el(tag, attrs, children) {
