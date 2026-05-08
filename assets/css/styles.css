@@ -779,7 +779,7 @@ nav a {
   align-items: center;
 }
 
-.members-ifpa-preview {
+.members-link-preview {
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.3;
@@ -794,7 +794,7 @@ nav a {
   font-size: 0.85rem;
 }
 
-.members-ifpa-preview a {
+.members-link-preview a {
   color: #7dd3fc;
 }
 

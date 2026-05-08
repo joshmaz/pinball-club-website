@@ -271,6 +271,13 @@
     return "https://www.ifpapinball.com/player.php?p=" + id;
   }
 
+  /** Canonical MatchPlay user profile URL. Encoded for safety; expected to be a numeric id. */
+  function buildMatchplayPlayerProfileUrl(playerId) {
+    var id = playerId ? String(playerId).trim() : "";
+    if (!id) return "";
+    return "https://app.matchplay.events/users/" + encodeURIComponent(id);
+  }
+
   async function upsertExternalAccount(memberId, providerSlug, accountHandle, accountUrl) {
     var client = getClient();
     if (!client || !memberId || !providerSlug) return;
@@ -331,7 +338,12 @@
         buildIfpaPlayerProfileUrl(ifpaDigitsForExternal)
       );
       await upsertExternalAccount(memberId, EXTERNAL_PROVIDER_STERN, sternHandleForExternal, "");
-      await upsertExternalAccount(memberId, EXTERNAL_PROVIDER_MATCHPLAY, matchplayHandleForExternal, "");
+      await upsertExternalAccount(
+        memberId,
+        EXTERNAL_PROVIDER_MATCHPLAY,
+        matchplayHandleForExternal,
+        buildMatchplayPlayerProfileUrl(matchplayHandleForExternal)
+      );
     }
 
     return result.data;
@@ -883,6 +895,7 @@
     gamesSetPartyLink: gamesSetPartyLink,
     publicGameMoreInfo: publicGameMoreInfo,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
+    buildMatchplayPlayerProfileUrl: buildMatchplayPlayerProfileUrl,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,
     clearPasswordRecoveryIntent: clearPasswordRecoveryIntent,

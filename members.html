@@ -130,7 +130,7 @@
             <p class="member-form-hint">Connects your IFPA profile and competitive history. The digits from your profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
             <div class="members-inline-link-row">
               <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
-              <p class="members-ifpa-preview" id="member-ifpa-link-wrap" hidden>
+              <p class="members-link-preview" id="member-ifpa-link-wrap" hidden>
                 <a id="member-ifpa-link" target="_blank" rel="noopener noreferrer">View profile</a>
               </p>
             </div>
@@ -141,7 +141,12 @@
 
             <label for="member-matchplay-player-id">MatchPlay player ID</label>
             <p class="member-form-hint">Connects your profile with <a href="https://app.matchplay.events/" target="_blank" rel="noopener noreferrer">MatchPlay</a> events and tournament results.</p>
-            <input id="member-matchplay-player-id" type="text" maxlength="80" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
+            <div class="members-inline-link-row">
+              <input id="member-matchplay-player-id" type="text" maxlength="80" placeholder="e.g. 17938" autocomplete="off" spellcheck="false">
+              <p class="members-link-preview" id="member-matchplay-link-wrap" hidden>
+                <a id="member-matchplay-link" target="_blank" rel="noopener noreferrer">View profile</a>
+              </p>
+            </div>
 
             <h3>Privacy</h3>
             <p class="member-panel-helper">Storing the details above is separate from showing them to other members. The club doesn't have a member-facing profile view yet, so nothing in your profile is shared. Sharing controls will live in this section once that view exists.</p>
@@ -365,6 +370,8 @@
     var ifpaNumberInput = document.getElementById("member-ifpa-number");
     var sternInsiderUsernameInput = document.getElementById("member-stern-insider-username");
     var matchplayPlayerIdInput = document.getElementById("member-matchplay-player-id");
+    var matchplayLinkWrap = document.getElementById("member-matchplay-link-wrap");
+    var matchplayLink = document.getElementById("member-matchplay-link");
     var ifpaLinkWrap = document.getElementById("member-ifpa-link-wrap");
     var ifpaLink = document.getElementById("member-ifpa-link");
     var avatarPreview = document.getElementById("member-avatar-preview");
@@ -496,6 +503,24 @@
       ifpaLink.title = full;
       ifpaLink.textContent = "View IFPA #" + digits;
       ifpaLinkWrap.hidden = false;
+    }
+
+    function syncMatchplayProfileLink() {
+      if (!matchplayLinkWrap || !matchplayLink || !matchplayPlayerIdInput) return;
+      var build = window.SNHMemberPortal && window.SNHMemberPortal.buildMatchplayPlayerProfileUrl;
+      var id = String(matchplayPlayerIdInput.value || "").trim();
+      var full = build ? build(id) : "";
+      if (!full) {
+        matchplayLinkWrap.hidden = true;
+        matchplayLink.removeAttribute("href");
+        matchplayLink.removeAttribute("title");
+        matchplayLink.textContent = "View profile";
+        return;
+      }
+      matchplayLink.href = full;
+      matchplayLink.title = full;
+      matchplayLink.textContent = "View MatchPlay profile";
+      matchplayLinkWrap.hidden = false;
     }
 
     function readProfileFormState() {
@@ -1321,6 +1346,7 @@
       if (matchplayPlayerIdInput) matchplayPlayerIdInput.value = profile.matchplay_player_id || "";
       syncAvatarPreview();
       syncIfpaProfileLink();
+      syncMatchplayProfileLink();
       profileFormBaseline = readProfileFormState();
       syncProfileSubmitButton();
       if (recoveryMode) {
@@ -1339,6 +1365,7 @@
       if (matchplayPlayerIdInput) matchplayPlayerIdInput.value = "";
       syncAvatarPreview();
       syncIfpaProfileLink();
+      syncMatchplayProfileLink();
       profileFormBaseline = readProfileFormState();
       syncProfileSubmitButton();
       if (recoveryMode) {
@@ -1382,6 +1409,8 @@
       sternInsiderUsernameInput.addEventListener("change", syncProfileSubmitButton);
     }
     if (matchplayPlayerIdInput) {
+      matchplayPlayerIdInput.addEventListener("input", syncMatchplayProfileLink);
+      matchplayPlayerIdInput.addEventListener("change", syncMatchplayProfileLink);
       matchplayPlayerIdInput.addEventListener("input", syncProfileSubmitButton);
       matchplayPlayerIdInput.addEventListener("change", syncProfileSubmitButton);
     }
@@ -1428,6 +1457,7 @@
         setPageStatus("Profile saved.");
         syncAvatarPreview();
         syncIfpaProfileLink();
+        syncMatchplayProfileLink();
       } catch (err) {
         setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
       } finally {
