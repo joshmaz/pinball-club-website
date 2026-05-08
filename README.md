@@ -17,7 +17,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - profile editing grouped into Account (name basics + avatar URL), Pinball profiles (IFPA, Stern Insider, MatchPlay player ID), Privacy (scaffolding only), and Password
   - live IFPA profile link preview based on entered IFPA player number
   - current membership status display (status, tier, renews/ends) plus a phase-0 writeup of how membership works today (treasurer-tracked, $40/month or $480/year, pay via cash or PayPal at [paypal.me/snhpinball](https://paypal.me/snhpinball))
-  - role-gated **Member Tools** panel (member directory, stats, role grants/revokes) backed by Supabase RPCs
+  - role-gated **Member Tools** panel (member directory with membership status fields, stats, role grants/revokes, and manual membership updates) backed by Supabase RPCs
   - role-gated Events, Photos, and Games panels for designated helpers
   - shared Club & machine notes panel readable by every signed-in member; writable by anyone with a portal helper role
   - password change for signed-in users
@@ -53,7 +53,8 @@ Keep auth and billing concerns separated:
   - `stern_insider` for a Stern Insider username
   - `matchplay_events` for a MatchPlay player ID
   - The portal reads these via the `snh_get_my_external_accounts` RPC and writes them with `upsert`/`delete` on the table; clearing a field deletes the matching row.
-- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`) gated by the `MEMBERSHIP_MANAGE_ACCESS` role group (see role table below).
+- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`, `snh_set_member_membership`) gated by the `MEMBERSHIP_MANAGE_ACCESS` role group (see role table below).
+- Manual membership updates in Member Tools use `snh_set_member_membership` with allowlisted status values (`active`, `past_due`, `expired`, `canceled`, `inactive`) and a latest-record update pattern in `public.memberships` (fallback insert when no membership row exists yet).
 
 ## Role-gated UI sections
 
@@ -64,7 +65,7 @@ The member dashboard sidebar shows a section if the signed-in member has any of 
 | Profile        | Profile                  | Any signed-in member                                          | Always shown.                                                                          |
 | Membership     | Membership               | Any signed-in member                                          | Always shown.                                                                          |
 | Notes          | Club & machine notes     | Any signed-in member can read                                 | Add/edit requires any portal helper role (events, photos, games, or membership).       |
-| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`.                              |
+| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes. |
 | Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Scaffolding only today; no upload/moderation tools yet.   |
 | Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`.                                                            |
