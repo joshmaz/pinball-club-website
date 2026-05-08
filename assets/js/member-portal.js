@@ -425,6 +425,17 @@
     return parsed.toLocaleDateString();
   }
 
+  function formatMembershipStatusLabel(status) {
+    var normalized = String(status || "").trim().toLowerCase();
+    if (!normalized) return "Not set";
+    if (normalized === "active") return "Active";
+    if (normalized === "past_due") return "Past due";
+    if (normalized === "expired") return "Expired";
+    if (normalized === "canceled") return "Canceled";
+    if (normalized === "inactive") return "Inactive";
+    return normalized.replace(/_/g, " ");
+  }
+
   /**
    * Canonical role groups used by the members UI sidebar gating and access notes.
    *
@@ -516,6 +527,22 @@
     var result = await client.rpc("snh_revoke_member_role", {
       p_member_id: memberId,
       p_role_slug: roleSlug
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function setMemberMembership(memberId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var payload = fields || {};
+    var statusValue = String(payload.status || "").trim().toLowerCase();
+    var tierValue = String(payload.tier || "").trim() || "standard";
+    var endDateValue = payload.endDate || null;
+    var result = await client.rpc("snh_set_member_membership", {
+      p_member_id: memberId,
+      p_status: statusValue,
+      p_tier: tierValue,
+      p_end_date: endDateValue || null
     });
     if (result.error) throw result.error;
   }
@@ -861,6 +888,7 @@
     listMembersForAdmin: listMembersForAdmin,
     grantMemberRole: grantMemberRole,
     revokeMemberRole: revokeMemberRole,
+    setMemberMembership: setMemberMembership,
     listEventsForAdmin: listEventsForAdmin,
     saveEventForAdmin: saveEventForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
@@ -896,6 +924,7 @@
     publicGameMoreInfo: publicGameMoreInfo,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     buildMatchplayPlayerProfileUrl: buildMatchplayPlayerProfileUrl,
+    formatMembershipStatusLabel: formatMembershipStatusLabel,
     formatDate: formatDate,
     isPasswordRecoveryIntentActive: isPasswordRecoveryIntentActive,
     clearPasswordRecoveryIntent: clearPasswordRecoveryIntent,

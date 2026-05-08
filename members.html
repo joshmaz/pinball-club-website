@@ -225,15 +225,24 @@
           </p>
 
           <h3>Directory &amp; roles</h3>
+          <p class="members-admin-toolbar">
+            <label for="member-admin-directory-filter">Show:</label>
+            <select id="member-admin-directory-filter">
+              <option value="all">All members</option>
+              <option value="with-roles">Members with roles</option>
+            </select>
+          </p>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table">
               <caption class="visually-hidden">Club members and their RBAC roles</caption>
               <thead>
                 <tr>
-                  <th scope="col">Email</th>
                   <th scope="col">First name</th>
                   <th scope="col">Last name</th>
                   <th scope="col">Display name</th>
+                  <th scope="col">Membership status</th>
+                  <th scope="col">Ends</th>
+                  <th scope="col">Last updated</th>
                   <th scope="col">Roles</th>
                   <th scope="col"><span class="visually-hidden">Revoke</span></th>
                 </tr>
@@ -241,6 +250,30 @@
               <tbody id="member-admin-table-body"></tbody>
             </table>
           </div>
+
+          <h3>Set membership status</h3>
+          <form id="member-admin-membership-form" class="members-profile-form">
+            <label for="member-admin-membership-member">Member</label>
+            <select id="member-admin-membership-member" required>
+              <option value="">Select a member…</option>
+            </select>
+            <label for="member-admin-membership-status">Status</label>
+            <select id="member-admin-membership-status" required>
+              <option value="">Select a status…</option>
+              <option value="active">Active</option>
+              <option value="past_due">Past due</option>
+              <option value="expired">Expired</option>
+              <option value="canceled">Canceled</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <label for="member-admin-membership-tier">Tier</label>
+            <select id="member-admin-membership-tier" required>
+              <option value="standard">Standard</option>
+            </select>
+            <label for="member-admin-membership-end-date">Ends on</label>
+            <input id="member-admin-membership-end-date" type="date">
+            <button type="submit" id="member-admin-membership-submit">Set membership status</button>
+          </form>
 
           <h3>Grant a role</h3>
           <form id="member-admin-grant-form" class="members-profile-form">
@@ -395,10 +428,17 @@
     var memberAdminStatus = document.getElementById("member-admin-status");
     var memberAdminStats = document.getElementById("member-admin-stats");
     var memberAdminRefresh = document.getElementById("member-admin-refresh");
+    var memberAdminDirectoryFilter = document.getElementById("member-admin-directory-filter");
     var memberAdminTableBody = document.getElementById("member-admin-table-body");
     var memberAdminGrantForm = document.getElementById("member-admin-grant-form");
     var memberAdminGrantMember = document.getElementById("member-admin-grant-member");
     var memberAdminGrantRole = document.getElementById("member-admin-grant-role");
+    var memberAdminMembershipForm = document.getElementById("member-admin-membership-form");
+    var memberAdminMembershipMember = document.getElementById("member-admin-membership-member");
+    var memberAdminMembershipStatus = document.getElementById("member-admin-membership-status");
+    var memberAdminMembershipTier = document.getElementById("member-admin-membership-tier");
+    var memberAdminMembershipEndDate = document.getElementById("member-admin-membership-end-date");
+    var memberAdminMembershipSubmit = document.getElementById("member-admin-membership-submit");
     var memberEventsStatus = document.getElementById("member-events-status");
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
@@ -439,6 +479,28 @@
 
     function trimOrEmpty(value) {
       return String(value || "").trim();
+    }
+
+    function membershipStatusLabel(value) {
+      if (window.SNHMemberPortal && typeof window.SNHMemberPortal.formatMembershipStatusLabel === "function") {
+        return window.SNHMemberPortal.formatMembershipStatusLabel(value);
+      }
+      var normalized = String(value || "").trim().toLowerCase();
+      if (!normalized) return "Not set";
+      return normalized.replace(/_/g, " ");
+    }
+
+    function membershipEndDateForInput(value) {
+      var raw = String(value || "").trim();
+      if (!raw) return "";
+      var onlyDate = raw.slice(0, 10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(onlyDate)) return onlyDate;
+      var parsed = new Date(raw);
+      if (Number.isNaN(parsed.getTime())) return "";
+      var y = parsed.getFullYear();
+      var m = String(parsed.getMonth() + 1).padStart(2, "0");
+      var d = String(parsed.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + d;
     }
 
     function toLocalDateTimeInputValue(iso) {
@@ -881,22 +943,42 @@
           optDead.textContent = "Select a member…";
           memberAdminGrantMember.appendChild(optDead);
         }
+        if (memberAdminMembershipMember) {
+          memberAdminMembershipMember.innerHTML = "";
+          var optDeadMembership = document.createElement("option");
+          optDeadMembership.value = "";
+          optDeadMembership.textContent = "Select a member…";
+          memberAdminMembershipMember.appendChild(optDeadMembership);
+        }
         return;
+      }
+
+      var rowsForTable = rows;
+      var filterMode = memberAdminDirectoryFilter ? String(memberAdminDirectoryFilter.value || "all") : "all";
+      if (filterMode === "with-roles") {
+        rowsForTable = rows.filter(function (row) {
+          var slugs = Array.isArray(row.role_slugs) ? row.role_slugs : [];
+          return slugs.length > 0;
+        });
       }
 
       if (memberAdminTableBody) {
         memberAdminTableBody.innerHTML = "";
-        for (var r = 0; r < rows.length; r += 1) {
-          var row = rows[r];
+        for (var r = 0; r < rowsForTable.length; r += 1) {
+          var row = rowsForTable[r];
           var tr = document.createElement("tr");
-          var tdEmail = document.createElement("td");
-          tdEmail.textContent = row.email || "";
           var tdFirstName = document.createElement("td");
           tdFirstName.textContent = row.first_name || "";
           var tdLastName = document.createElement("td");
           tdLastName.textContent = row.last_name || "";
           var tdName = document.createElement("td");
           tdName.textContent = row.display_name || "";
+          var tdMembershipStatus = document.createElement("td");
+          tdMembershipStatus.textContent = membershipStatusLabel(row.membership_status);
+          var tdMembershipEnd = document.createElement("td");
+          tdMembershipEnd.textContent = window.SNHMemberPortal.formatDate(row.membership_end_date);
+          var tdMembershipUpdated = document.createElement("td");
+          tdMembershipUpdated.textContent = window.SNHMemberPortal.formatDate(row.membership_last_updated_at);
           var tdRoles = document.createElement("td");
           var ul = document.createElement("ul");
           ul.className = "members-admin-role-list";
@@ -926,24 +1008,34 @@
           }
           tdRoles.appendChild(ul);
           var tdAct = document.createElement("td");
-          tr.appendChild(tdEmail);
           tr.appendChild(tdFirstName);
           tr.appendChild(tdLastName);
           tr.appendChild(tdName);
+          tr.appendChild(tdMembershipStatus);
+          tr.appendChild(tdMembershipEnd);
+          tr.appendChild(tdMembershipUpdated);
           tr.appendChild(tdRoles);
           tr.appendChild(tdAct);
           memberAdminTableBody.appendChild(tr);
         }
       }
 
-      if (memberAdminGrantMember && memberAdminGrantRole) {
+      if ((memberAdminGrantMember && memberAdminGrantRole) || memberAdminMembershipMember) {
         var currentMember = memberAdminGrantMember.value;
         var currentRole = memberAdminGrantRole.value;
+        var currentMembershipMember = memberAdminMembershipMember ? memberAdminMembershipMember.value : "";
         memberAdminGrantMember.innerHTML = "";
         var optM0 = document.createElement("option");
         optM0.value = "";
         optM0.textContent = "Select a member…";
         memberAdminGrantMember.appendChild(optM0);
+        if (memberAdminMembershipMember) {
+          memberAdminMembershipMember.innerHTML = "";
+          var optMembership0 = document.createElement("option");
+          optMembership0.value = "";
+          optMembership0.textContent = "Select a member…";
+          memberAdminMembershipMember.appendChild(optMembership0);
+        }
         for (var k = 0; k < rows.length; k += 1) {
           var mr = rows[k];
           var optM = document.createElement("option");
@@ -956,8 +1048,20 @@
           }
           optM.textContent = (mr.email || "(no email)") + (memberLabelParts.length ? " · " + memberLabelParts.join(" • ") : "");
           memberAdminGrantMember.appendChild(optM);
+          if (memberAdminMembershipMember) {
+            var optMembership = document.createElement("option");
+            optMembership.value = String(mr.member_id);
+            optMembership.textContent = optM.textContent;
+            optMembership.setAttribute("data-membership-status", String(mr.membership_status || ""));
+            optMembership.setAttribute("data-membership-tier", String(mr.membership_tier || "standard"));
+            optMembership.setAttribute("data-membership-end-date", String(mr.membership_end_date || ""));
+            memberAdminMembershipMember.appendChild(optMembership);
+          }
         }
         if (currentMember) memberAdminGrantMember.value = currentMember;
+        if (memberAdminMembershipMember && currentMembershipMember) {
+          memberAdminMembershipMember.value = currentMembershipMember;
+        }
 
         var rolesArr = window.SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES || [];
         memberAdminGrantRole.innerHTML = "";
@@ -973,6 +1077,7 @@
           memberAdminGrantRole.appendChild(optR);
         }
         if (currentRole) memberAdminGrantRole.value = currentRole;
+        syncMembershipFormFromSelectedMember();
       }
     };
 
@@ -1014,8 +1119,76 @@
       });
     }
 
+    function syncMembershipFormFromSelectedMember() {
+      if (!memberAdminMembershipMember) return;
+      var option = memberAdminMembershipMember.options[memberAdminMembershipMember.selectedIndex];
+      if (!option) return;
+      if (memberAdminMembershipStatus) {
+        memberAdminMembershipStatus.value = String(option.getAttribute("data-membership-status") || "").trim();
+      }
+      if (memberAdminMembershipTier) {
+        memberAdminMembershipTier.value = String(option.getAttribute("data-membership-tier") || "standard").trim() || "standard";
+      }
+      if (memberAdminMembershipEndDate) {
+        memberAdminMembershipEndDate.value = membershipEndDateForInput(option.getAttribute("data-membership-end-date"));
+      }
+    }
+
+    if (memberAdminMembershipMember) {
+      memberAdminMembershipMember.addEventListener("change", syncMembershipFormFromSelectedMember);
+    }
+
+    if (memberAdminMembershipForm) {
+      memberAdminMembershipForm.addEventListener("submit", async function (ev) {
+        ev.preventDefault();
+        if (!window.SNHMemberPortal || !onMemberAdminPanelShown) return;
+        var mid = memberAdminMembershipMember ? memberAdminMembershipMember.value : "";
+        var statusValue = memberAdminMembershipStatus ? trimOrEmpty(memberAdminMembershipStatus.value).toLowerCase() : "";
+        var tierValue = memberAdminMembershipTier ? trimOrEmpty(memberAdminMembershipTier.value) : "standard";
+        var endDateValue = memberAdminMembershipEndDate ? trimOrEmpty(memberAdminMembershipEndDate.value) : "";
+
+        if (!mid || !statusValue) {
+          if (memberAdminStatus) memberAdminStatus.textContent = "Pick a member and status before saving.";
+          return;
+        }
+
+        try {
+          if (memberAdminStatus) memberAdminStatus.textContent = "Saving membership update...";
+          if (memberAdminMembershipSubmit) memberAdminMembershipSubmit.disabled = true;
+          await window.SNHMemberPortal.setMemberMembership(mid, {
+            status: statusValue,
+            tier: tierValue || "standard",
+            endDate: endDateValue || null
+          });
+          await onMemberAdminPanelShown();
+          if (memberAdminMembershipForm) memberAdminMembershipForm.reset();
+          if (memberAdminMembershipTier) memberAdminMembershipTier.value = "standard";
+          if (memberAdminStatus) memberAdminStatus.textContent = "Membership updated. Form reset and table refreshed.";
+        } catch (err) {
+          if (memberAdminStatus) {
+            var code = err && (err.code || err.error_code);
+            if (code === "42501") {
+              memberAdminStatus.textContent = "You do not have permission to update membership.";
+            } else if (code === "22023") {
+              memberAdminStatus.textContent = "Please choose a valid member, status, and date.";
+            } else {
+              memberAdminStatus.textContent = "Could not update membership. Try again.";
+            }
+          }
+        } finally {
+          if (memberAdminMembershipSubmit) memberAdminMembershipSubmit.disabled = false;
+        }
+      });
+    }
+
     if (memberAdminRefresh) {
       memberAdminRefresh.addEventListener("click", function () {
+        if (onMemberAdminPanelShown) onMemberAdminPanelShown();
+      });
+    }
+
+    if (memberAdminDirectoryFilter) {
+      memberAdminDirectoryFilter.addEventListener("change", function () {
         if (onMemberAdminPanelShown) onMemberAdminPanelShown();
       });
     }
@@ -1417,7 +1590,7 @@
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
     if (membership) {
-      membershipStatus.textContent = membership.status || "Unknown";
+      membershipStatus.textContent = membershipStatusLabel(membership.status);
       membershipTier.textContent = membership.tier || "Standard";
       membershipPeriodEnd.textContent = window.SNHMemberPortal.formatDate(membership.end_date);
     } else {
