@@ -76,6 +76,17 @@ The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing pag
 - Audit logging design: `docs/audit-logging-design.md`
 - Website task agents planning: `docs/website-task-agents.md`
 - Games catalog (Supabase + optional DB-backed public page): `docs/games-relational-migration-plan.md`
+- Multi-tenant guardrails while building single-tenant features: `docs/multi-tenant-notes.md`
+
+## Lightweight PR checklist (tenant-safe by default)
+
+Before merging, quickly confirm:
+
+- Ownership is explicit for new/changed data (who owns each record?).
+- Read/write access rules are clear (who can read, create, update, delete?).
+- Authorization is enforced server-side (RLS/RPC), not only in UI.
+- Queries are scoped (avoid broad reads filtered in client code).
+- New schema/API work has a clear future path to `tenant_id`.
 
 ## Secrets and local configuration
 
