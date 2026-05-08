@@ -600,8 +600,8 @@
       return;
     }
     n.hidden = false;
-    if (partyEditMode === "edit") n.textContent = "Editing an existing directory entry — save changes or cancel.";
-    else if (partyEditMode === "new") n.textContent = "Adding a new party — full name copies into display until you edit display name.";
+    if (partyEditMode === "edit") n.textContent = "Editing an existing directory entry. Save changes or cancel.";
+    else if (partyEditMode === "new") n.textContent = "Adding a new party. Full name copies into display until you edit display name.";
     else n.textContent = "";
   }
 
@@ -654,7 +654,7 @@
     if (partyComboboxInputEl) partyComboboxInputEl.value = "";
     var fn = document.getElementById("mg-party-full-name");
     if (fn) fn.focus();
-    setStatus("New party — fill details and save.");
+    setStatus("New party. Fill details and save.");
   }
 
   function onMemberGamesDocumentClick(evt) {
@@ -875,7 +875,7 @@
     if (cn) cn.value = p.contactNotes || "";
     var inn = document.getElementById("mg-party-internal-notes");
     if (inn) inn.value = p.internalNotes || "";
-    setStatus("Editing party — adjust fields and click Save party.");
+    setStatus("Editing party. Adjust fields and click Save party.");
     if (partyComboboxInputEl) {
       var row = normalizePartiesForDisplay([p])[0];
       partyComboboxInputEl.value = row.__label || "";
@@ -914,7 +914,7 @@
     if (!confirmDiscardPartyIfDirty()) return;
     openPartyEditor("new");
     onNewPartyFormCore();
-    setStatus("New party — enter full name (display name copies until you edit it), then Save party.");
+    setStatus("New party. Enter full name (display name copies until you edit it), then Save party.");
     var fn = document.getElementById("mg-party-full-name");
     if (fn) fn.focus();
   }
@@ -1039,7 +1039,7 @@
       })
     );
     var partySel = el("select", { id: "mg-party-link-select", className: "member-games-input" });
-    partySel.appendChild(el("option", { value: "", text: "— No party linked —" }));
+    partySel.appendChild(el("option", { value: "", text: "(no party linked)" }));
     partyLinkWrapEl.appendChild(fieldRow("Party", partySel));
     partyLinkWrapEl.appendChild(fieldRow("Public relationship label", textInput("mg-party-relationship-public", "")));
     var hideOwnerRow = el("div", { className: "member-games-field member-games-checkbox-row" });
@@ -1287,7 +1287,7 @@
     wrap.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "Search or pick a game to open the catalog editor directly under this search. Owner parties stay in a separate section farther down — open a game first to link one."
+        text: "Search or pick a game to open the catalog editor directly under this search. Owner parties stay in a separate section farther down; open a game first to link one."
       })
     );
     var row = el("div", { className: "member-games-picker-row" });

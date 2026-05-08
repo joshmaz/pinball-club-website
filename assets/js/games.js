@@ -49,7 +49,7 @@ async function fetchGamesCatalogPayload() {
   return data;
 }
 
-/** Club opened Jan 2016; Pinball Map coverage starts 2017 — legacy imports often lack stint dates. */
+/** Club opened Jan 2016; Pinball Map coverage starts 2017, so legacy imports often lack stint dates. */
 const UNKNOWN_TENURE_SORT_JOIN = "2016-01-01";
 const UNKNOWN_TENURE_SORT_LEFT_PREVIOUS = "2016-12-31";
 /** Sort value for machines still on the floor (no leave date). */
@@ -238,7 +238,7 @@ function formatLocationStints(stints) {
       line += `: through ${through}`;
     }
     if (s.dateUnknown) {
-      line += line === where ? " — tenure dates unknown" : " (tenure dates unknown)";
+      line += line === where ? ", tenure dates unknown" : " (tenure dates unknown)";
     }
     lines.push(line);
   }
@@ -548,7 +548,7 @@ function renderGameMoreInfoSections(payload) {
       ].filter(Boolean);
       li.textContent = parts.join(" · ");
       if (hasNonemptyString(row.notes)) {
-        li.textContent += ` — ${String(row.notes)}`;
+        li.textContent += `: ${String(row.notes)}`;
       }
       ul.appendChild(li);
     }
@@ -624,7 +624,7 @@ function renderGameMoreInfoSections(payload) {
         li.textContent = title;
       }
       if (hasNonemptyString(row.description)) {
-        li.appendChild(document.createTextNode(` — ${String(row.description)}`));
+        li.appendChild(document.createTextNode(`: ${String(row.description)}`));
       }
       ul.appendChild(li);
     }

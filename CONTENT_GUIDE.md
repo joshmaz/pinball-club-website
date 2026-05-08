@@ -1,4 +1,4 @@
-# CONTENT_GUIDE.md — SNH Pinball Club Website Content & Messaging Guide
+# CONTENT_GUIDE.md: SNH Pinball Club Website Content & Messaging Guide
 
 ---
 

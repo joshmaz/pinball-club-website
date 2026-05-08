@@ -33,7 +33,7 @@
       function showCurrent() {
         const g = all[currentIndex];
         imgElement.src = IMAGE_BASE_PATH + "/" + g.imageFilename;
-        imgElement.alt = g.title + " — pinball machine from the club collection";
+        imgElement.alt = g.title + ", pinball machine from the club collection";
       }
       showCurrent();
       setInterval(function () {

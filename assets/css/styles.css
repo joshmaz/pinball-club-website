@@ -736,6 +736,25 @@ nav a {
   color: #9aa8b8;
 }
 
+.member-panel-access-note {
+  margin: -0.4rem 0 1rem;
+  font-size: 0.85rem;
+  color: #6f7d8c;
+  font-style: italic;
+}
+
+.member-panel-helper {
+  margin: 0.25rem 0 0.85rem;
+  font-size: 0.92rem;
+  color: #9aa8b8;
+}
+
+.member-form-hint {
+  margin: 0.1rem 0 0.45rem;
+  font-size: 0.85rem;
+  color: #8392a3;
+}
+
 .members-avatar-preview-wrap {
   margin: 0.5rem 0 0;
 }
@@ -760,7 +779,7 @@ nav a {
   align-items: center;
 }
 
-.members-ifpa-preview {
+.members-link-preview {
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.3;
@@ -775,7 +794,7 @@ nav a {
   font-size: 0.85rem;
 }
 
-.members-ifpa-preview a {
+.members-link-preview a {
   color: #7dd3fc;
 }
 
@@ -803,23 +822,16 @@ nav a {
   font-size: 0.92rem;
 }
 
-.membership-actions {
-  margin-top: 1rem;
+.membership-info-list {
+  margin: 0.4rem 0 1rem;
+  padding-left: 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  max-width: 28rem;
+  gap: 0.3rem;
 }
 
-.membership-actions-note {
-  margin: 0;
-  font-size: 0.88rem;
-  color: #8a9aaa;
-}
-
-.membership-actions .members-sidebar-link:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.membership-info-list li {
+  line-height: 1.4;
 }
 
 .member-panel-placeholder {
@@ -2236,6 +2248,7 @@ footer {
 
 .member-games-checkbox-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 0.35rem;

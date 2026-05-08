@@ -14,11 +14,13 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - per-machine PinTips links to Match Play Events when available
 - Supabase-backed sign up and sign in
 - Member dashboard (`members.html`) with:
-  - expanded profile updates (`first_name`, `last_name`, `display_name`, `avatar_url`, `ifpa_player_id`, `stern_insider_username`)
+  - profile editing grouped into Account (name basics + avatar URL), Pinball profiles (IFPA, Stern Insider, MatchPlay player ID), Privacy (scaffolding only), and Password
   - live IFPA profile link preview based on entered IFPA player number
-  - current membership status display
+  - current membership status display (status, tier, renews/ends) plus a phase-0 writeup of how membership works today (treasurer-tracked, $40/month or $480/year, pay via cash or PayPal at [paypal.me/snhpinball](https://paypal.me/snhpinball))
+  - role-gated **Member Tools** panel (member directory, stats, role grants/revokes) backed by Supabase RPCs
+  - role-gated Events, Photos, and Games panels for designated helpers
+  - shared Club & machine notes panel readable by every signed-in member; writable by anyone with a portal helper role
   - password change for signed-in users
-  - role-gated Members admin panel backed by Supabase RPCs
 - Password recovery from `signin.html` ("Forgot Password" email flow)
 
 ## Membership roadmap (working notes)
@@ -45,13 +47,33 @@ Keep auth and billing concerns separated:
 
 ## Supabase notes (current implementation)
 
-- `public.members` now stores `first_name`, `last_name`, and `stern_insider_username` alongside `display_name`.
-- Avatar URL and IFPA player id are stored in Supabase Auth `user_metadata` and synchronized through the member portal profile save flow.
-- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`) gated by `club_admin`/`members_manager`.
+- `public.members` stores `first_name`, `last_name`, `display_name`, and `avatar_url` for each member, keyed by `user_id` (the Supabase Auth UID).
+- External pinball-platform identifiers live in `public.external_accounts`, one row per (`member_id`, `provider_slug`):
+  - `ifpa` for an IFPA player number (also stores the `ifpapinball.com` profile URL in `account_url`)
+  - `stern_insider` for a Stern Insider username
+  - `matchplay_events` for a MatchPlay player ID
+  - The portal reads these via the `snh_get_my_external_accounts` RPC and writes them with `upsert`/`delete` on the table; clearing a field deletes the matching row.
+- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`) gated by the `MEMBERSHIP_MANAGE_ACCESS` role group (see role table below).
+
+## Role-gated UI sections
+
+The member dashboard sidebar shows a section if the signed-in member has any of the role slugs listed below. UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
+
+| Sidebar label  | Panel heading            | Roles that grant access                                       | Notes                                                                                  |
+|----------------|--------------------------|---------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| Profile        | Profile                  | Any signed-in member                                          | Always shown.                                                                          |
+| Membership     | Membership               | Any signed-in member                                          | Always shown.                                                                          |
+| Notes          | Club & machine notes     | Any signed-in member can read                                 | Add/edit requires any portal helper role (events, photos, games, or membership).       |
+| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`.                              |
+| Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
+| Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Scaffolding only today; no upload/moderation tools yet.   |
+| Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`.                                                            |
+
+Role groups are defined in `assets/js/member-portal.js` as `SNHMemberPortal.ROLE_GROUPS`. Keep that map in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
 
 ## Games catalog (relational)
 
-After applying migrations, bulk-load from the repo JSON (requires **service role** in `.env` as `SUPABASE_SERVICE_ROLE_KEY` — local only, never in CI for public builds):
+After applying migrations, bulk-load from the repo JSON (requires **service role** in `.env` as `SUPABASE_SERVICE_ROLE_KEY`; local only, never in CI for public builds):
 
 ```bash
 node --env-file=.env scripts/import-games-json.mjs
