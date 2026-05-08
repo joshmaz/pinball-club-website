@@ -2248,6 +2248,7 @@ footer {
 
 .member-games-checkbox-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 0.35rem;
