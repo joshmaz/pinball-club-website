@@ -256,6 +256,12 @@ STRIPE_WEBHOOK_SECRET=
 - Community-driven
 - Slightly playful
 
+# ✍️ Copy & Writing Style
+
+- Stop using em dashes (`—` / `&mdash;`) in user-facing copy and in assistant prose. Prefer a comma, period, parentheses, or a colon instead.
+- Avoid rollout/backend language in user copy (e.g. "as we roll out", "when those systems go live", "RBAC", "role slugs").
+- Be specific and helpful for unfinished workflows rather than vague (e.g. "Billing self-service is not connected yet. Email us and we'll help with your record.").
+
 ---
 
 # 🔮 Future Enhancements

@@ -126,7 +126,7 @@
       "categoryId": "websites",
       "title": "Pixels & Pinball",
       "summary": "New England pinball retailer: new games, preorders, and arcade gear; official partner of the New England Pinball League.",
-      "description": "Shop for in-stock and preorder titles, accessories, and arcade products—handy for buyers in the region and for following local retail and league news.",
+      "description": "Shop for in-stock and preorder titles, accessories, and arcade products. Handy for buyers in the region and for following local retail and league news.",
       "links": [
         { "label": "Pixels & Pinball", "url": "https://pixelsandpinball.com/" }
       ],
@@ -137,7 +137,7 @@
       "categoryId": "websites",
       "title": "Match Play Events",
       "shortLabel": "Match Play",
-      "summary": "Tournament web app: discover events, register, and follow live brackets and results—common for IFPA tournaments and league play.",
+      "summary": "Tournament web app: discover events, register, and follow live brackets and results. Common for IFPA tournaments and league play.",
       "description": "Players use it to find competitions and track pairings; organizers use it to run draws, scoring, and standings in the browser.",
       "links": [
         { "label": "Match Play Events", "url": "https://app.matchplay.events/" }
@@ -178,6 +178,17 @@
       "sortOrder": 32
     },
     {
+      "id": "em-pinball-sounds",
+      "categoryId": "websites",
+      "title": "EM Pinball Sounds",
+      "summary": "Community-focused site for upgrading electro-mechanical pinball machines with modern audio and customization ideas.",
+      "description": "Shares practical guidance for adding music and sound effects to EM games using low-cost controllers (like Arduino or Raspberry Pi), plus hardware/theme notes and a forum-style community for project progress and troubleshooting.",
+      "links": [
+        { "label": "EM Pinball Sounds", "url": "https://empinballsounds.com/" }
+      ],
+      "sortOrder": 33
+    },
+    {
       "id": "kineticist",
       "categoryId": "websites",
       "title": "Kineticist",
@@ -212,7 +223,7 @@
       "id": "mitchell-lighting",
       "categoryId": "parts",
       "title": "Mitchell Lighting",
-      "summary": "Pinball LED bulbs and kits tuned for a warm, vintage arcade look—modern efficiency without losing that classic glow.",
+      "summary": "Pinball LED bulbs and kits tuned for a warm, vintage arcade look, with modern efficiency and without losing that classic glow.",
       "description": "Popular for restorations and upgrades when you want incandescent-style color and diffusion with less heat and maintenance than old bulbs.",
       "links": [
         { "label": "Mitchell Lighting", "url": "https://mitchelllighting.com/" },
@@ -248,7 +259,7 @@
       "categoryId": "major-events",
       "title": "Pintastic New England",
       "summary": "Large regional show with games on free play, vendors, and tournaments.",
-      "description": "Dates and venue vary year to year—check the site for the next event.",
+      "description": "Dates and venue vary year to year; check the site for the next event.",
       "links": [
         { "label": "Pintastic NE", "url": "https://www.pintasticnewengland.com/" }
       ],

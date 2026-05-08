@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SNHPC member dashboard: profile, membership, and role-based tools as they become available.">
+  <meta name="description" content="SNHPC member dashboard: your profile, membership status, and the tools members use to help keep the club running.">
   <title>SNHPC - My Account</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="assets/js/config.js"></script>
@@ -45,8 +45,8 @@
   <div class="page-hero-backdrop" aria-hidden="true"></div>
   <div class="page-hero-inner">
     <h2 id="members-dashboard-title">Member dashboard</h2>
-    <p class="page-hero-lead">Your account home for profile, membership, and member-only tools as we roll them out.</p>
-    <p class="page-hero-note">Use the sidebar to move between sections. Extra features will unlock based on your roles when those systems go live.</p>
+    <p class="page-hero-lead">Manage your club profile, membership status, and the tools you use to help keep SNH Pinball Club running.</p>
+    <p class="page-hero-note">If something looks off, email <a href="mailto:info@snhpinball.com">info@snhpinball.com</a> and we'll help sort it out.</p>
   </div>
 </section>
 
@@ -68,12 +68,12 @@
           </li>
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">
-              Club issues
+              Notes
             </button>
           </li>
           <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Members: statistics and role management">
-              Members
+            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Member tools: statistics and role management">
+              Member Tools
             </button>
           </li>
           <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
@@ -97,11 +97,13 @@
       <div class="members-panels">
         <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
           <h3>Profile</h3>
-          <p class="member-panel-intro">Account details, optional public links, and password security.</p>
+          <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. Anything you save here stays with the club and isn't shared with other members yet.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
 
-          <h3>Account</h3>
           <form id="profile-form" class="members-profile-form">
+            <h3>Account</h3>
+            <p class="member-panel-helper">Basic info the club uses to recognize you.</p>
+
             <label for="member-email">Email</label>
             <input id="member-email" type="email" disabled>
 
@@ -114,16 +116,18 @@
             <label for="member-display-name">Display name</label>
             <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
 
-            <h3>Public &amp; competitive</h3>
-            <p class="member-panel-intro">Optional fields for the roster and website. Avatar image must be a direct HTTPS link to an image you have rights to use. IFPA number is the digits from your player profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
-
             <label for="member-avatar-url">Avatar image URL (HTTPS)</label>
+            <p class="member-form-hint">Direct HTTPS link to a square photo you have rights to use.</p>
             <input id="member-avatar-url" type="url" maxlength="500" placeholder="https://…" inputmode="url" autocomplete="photo">
             <div class="members-avatar-preview-wrap">
               <img id="member-avatar-preview" class="members-avatar-preview" src="" alt="" hidden width="72" height="72">
             </div>
 
+            <h3>Pinball profiles</h3>
+            <p class="member-panel-helper">Optional identifiers that link your club account to tournament results, event tools, leaderboards, and other club features as we build them. All optional, and nothing here is shared automatically with other members.</p>
+
             <label for="member-ifpa-number">IFPA player number</label>
+            <p class="member-form-hint">Connects your IFPA profile and competitive history. The digits from your profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
             <div class="members-inline-link-row">
               <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
               <p class="members-ifpa-preview" id="member-ifpa-link-wrap" hidden>
@@ -132,7 +136,15 @@
             </div>
 
             <label for="member-stern-insider-username">Stern Insider username</label>
+            <p class="member-form-hint">Useful for Stern-connected events, scores, and future club features.</p>
             <input id="member-stern-insider-username" type="text" maxlength="80" placeholder="e.g. player123" autocomplete="off" spellcheck="false">
+
+            <label for="member-matchplay-player-id">MatchPlay player ID</label>
+            <p class="member-form-hint">Connects your profile with <a href="https://app.matchplay.events/" target="_blank" rel="noopener noreferrer">MatchPlay</a> events and tournament results.</p>
+            <input id="member-matchplay-player-id" type="text" maxlength="80" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
+
+            <h3>Privacy</h3>
+            <p class="member-panel-helper">Storing the details above is separate from showing them to other members. The club doesn't have a member-facing profile view yet, so nothing in your profile is shared. Sharing controls will live in this section once that view exists.</p>
 
             <button type="submit">Save profile</button>
           </form>
@@ -172,25 +184,33 @@
 
         <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
           <h3>Membership</h3>
-          <p class="member-panel-intro">Subscribe at different levels, manage billing, and add guest access when those flows are connected.</p>
+          <p class="member-panel-intro">Your membership standing as the treasurer has it on file. Billing self-service is not connected yet, so the treasurer updates records by hand after each payment and this view follows along.</p>
           <div class="membership-card">
             <p><strong>Status:</strong> <span id="membership-status">Loading...</span></p>
             <p><strong>Tier:</strong> <span id="membership-tier">Loading...</span></p>
             <p><strong>Renews / Ends:</strong> <span id="membership-period-end">Loading...</span></p>
-            <p class="membership-card-note">Questions about your record? Email <a href="mailto:info@snhpinball.com">info@snhpinball.com</a> and we will help.</p>
+            <p class="membership-card-note">Something off in your record? Email <a href="mailto:info@snhpinball.com">info@snhpinball.com</a> and we will help sort it out.</p>
           </div>
-          <div class="membership-actions">
-            <p class="membership-actions-note">Checkout, plan changes, saved payment methods, and guest passes will appear here once Stripe billing is wired to your account.</p>
-            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Choose a membership level</button>
-            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Manage payment method</button>
-            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Cancel or change subscription</button>
-            <button type="button" class="members-sidebar-link" disabled aria-disabled="true">Buy guest passes</button>
-          </div>
+
+          <h4>How membership works today</h4>
+          <p>Members pay monthly or annually, in cash or by recurring PayPal, and the treasurer updates your record after each payment.</p>
+          <ul class="membership-info-list">
+            <li><strong>Monthly:</strong> $40</li>
+            <li><strong>Annual:</strong> $480</li>
+            <li><strong>Pay by PayPal:</strong> <a href="https://paypal.me/snhpinball" target="_blank" rel="noopener noreferrer">paypal.me/snhpinball</a></li>
+            <li><strong>Pay in cash:</strong> hand it to the treasurer at the club</li>
+          </ul>
+
+          <h4>What membership gets you</h4>
+          <p>24/7 pass access to the club's pinball room on Bridge St in Nashua, with every game on free-play. Just stopping by for an event? Visitors can grab an all-day guest pass for $10 per visit.</p>
+
+          <p class="membership-card-note">Memberships help keep this nonprofit pinball club afloat. If you want to push the club ahead in bigger ways, a <a href="donate/">donation</a> is the most direct boost.</p>
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
-          <h3>Members</h3>
-          <p id="member-admin-intro" class="member-panel-intro">Overview of membership data, the member directory, and assigning RBAC roles. Requires <strong>membership_editor</strong>, <strong>membership_admin</strong>, or <strong>club_admin</strong> on your account. Database migrations must include the admin RPCs.</p>
+          <h3>Member Tools</h3>
+          <p id="member-admin-intro" class="member-panel-intro">Look up members, see at-a-glance stats, and manage who has access to which tools. Use this to onboard a new helper, hand off a role, or check on a member record before answering a question.</p>
+          <p id="member-admin-access" class="member-panel-access-note" hidden></p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
 
           <h3>Overview</h3>
@@ -209,7 +229,6 @@
                   <th scope="col">First name</th>
                   <th scope="col">Last name</th>
                   <th scope="col">Display name</th>
-                  <th scope="col">Stern Insider</th>
                   <th scope="col">Roles</th>
                   <th scope="col"><span class="visually-hidden">Revoke</span></th>
                 </tr>
@@ -234,7 +253,8 @@
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h3>Events</h3>
-          <p id="member-events-intro" class="member-panel-intro">Create and manage events that appear on the public Events page. Requires <strong>events_editor</strong>, <strong>events_admin</strong>, or <strong>club_admin</strong>.</p>
+          <p id="member-events-intro" class="member-panel-intro">Keep the public events calendar accurate. Add tournaments, open houses, and league nights, edit details if plans change, and unpublish anything that gets cancelled. Anything you publish here lands on the public Events page right away.</p>
+          <p id="member-events-access" class="member-panel-access-note" hidden></p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
@@ -306,18 +326,20 @@
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
           <h3>Photos</h3>
-          <p id="member-photos-intro" class="member-panel-intro">Photo uploads and gallery moderation will be available here for designated volunteers. Requires <strong>photos_editor</strong>, <strong>photos_admin</strong>, or <strong>club_admin</strong>.</p>
+          <p id="member-photos-intro" class="member-panel-intro">A spot reserved for the helpers who curate club photos. There are no photo tools to use here yet. When upload and gallery workflows are ready, they will live in this section.</p>
+          <p id="member-photos-access" class="member-panel-access-note" hidden></p>
         </div>
 
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
           <h3>Games</h3>
-          <p id="member-games-intro" class="member-panel-intro">Floor and tech tools for trusted members will appear in this section when RBAC is enabled. Requires <strong>games_editor</strong>, <strong>games_admin</strong>, or <strong>club_admin</strong>.</p>
+          <p id="member-games-intro" class="member-panel-intro">Keep the club's game list current: add a machine when it lands on the floor, update floor and maintenance details, link owner parties, and make sure the catalog reflects what members will actually see at the club.</p>
+          <p id="member-games-access" class="member-panel-access-note" hidden></p>
           <div id="member-games-app" class="member-games-app" aria-live="polite"></div>
         </div>
 
         <div id="member-panel-club-issues" class="member-panel" role="region" aria-labelledby="member-nav-club-issues" tabindex="-1" aria-hidden="true">
-          <h3>Club issues</h3>
-          <p class="member-panel-intro">Operator notes for machines or club-wide topics. All signed-in members can read the list. Adding or editing requires any <strong>assigned portal role</strong> on your account (for example events, photos, games, or membership roles).</p>
+          <h3>Club &amp; machine notes</h3>
+          <p class="member-panel-intro">A shared place to track machine issues, floor notes, and club tasks so other helpers know what needs attention. Every signed-in member can read the list. Members who help run the club (events, photos, games, or membership helpers) can add or edit notes.</p>
           <div id="member-club-issues-app" class="member-club-issues-app" aria-live="polite"></div>
         </div>
       </div>
@@ -342,6 +364,7 @@
     var avatarUrlInput = document.getElementById("member-avatar-url");
     var ifpaNumberInput = document.getElementById("member-ifpa-number");
     var sternInsiderUsernameInput = document.getElementById("member-stern-insider-username");
+    var matchplayPlayerIdInput = document.getElementById("member-matchplay-player-id");
     var ifpaLinkWrap = document.getElementById("member-ifpa-link-wrap");
     var ifpaLink = document.getElementById("member-ifpa-link");
     var avatarPreview = document.getElementById("member-avatar-preview");
@@ -362,7 +385,6 @@
     var onPhotosPanelShown = null;
     var onGamesPanelShown = null;
     var onClubIssuesPanelShown = null;
-    var memberAdminIntro = document.getElementById("member-admin-intro");
     var memberAdminStatus = document.getElementById("member-admin-status");
     var memberAdminStats = document.getElementById("member-admin-stats");
     var memberAdminRefresh = document.getElementById("member-admin-refresh");
@@ -370,7 +392,6 @@
     var memberAdminGrantForm = document.getElementById("member-admin-grant-form");
     var memberAdminGrantMember = document.getElementById("member-admin-grant-member");
     var memberAdminGrantRole = document.getElementById("member-admin-grant-role");
-    var memberEventsIntro = document.getElementById("member-events-intro");
     var memberEventsStatus = document.getElementById("member-events-status");
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
@@ -388,8 +409,6 @@
     var memberEventsNextPage = document.getElementById("member-events-next-page");
     var memberEventsPageMeta = document.getElementById("member-events-page-meta");
     var memberEventsPageSizeSelect = document.getElementById("member-events-page-size");
-    var memberPhotosIntro = document.getElementById("member-photos-intro");
-    var memberGamesIntro = document.getElementById("member-games-intro");
     var memberEventsCache = {};
     var memberEventsFormHighlightTimer = null;
     var memberEventsAllRows = [];
@@ -486,7 +505,8 @@
         display_name: displayNameInput ? displayNameInput.value.trim() : "",
         avatar_url: avatarUrlInput ? avatarUrlInput.value.trim() : "",
         ifpa_player_id: ifpaNumberInput ? String(ifpaNumberInput.value || "").replace(/\D/g, "").slice(0, 12) : "",
-        stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : ""
+        stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : "",
+        matchplay_player_id: matchplayPlayerIdInput ? matchplayPlayerIdInput.value.trim() : ""
       };
     }
 
@@ -578,16 +598,6 @@
       }
     }
 
-    function roleListToDisplay(rolesList) {
-      var out = [];
-      for (var i = 0; i < (rolesList || []).length; i += 1) {
-        out.push("<strong>" + String(rolesList[i]) + "</strong>");
-      }
-      if (out.length <= 1) return out[0] || "";
-      if (out.length === 2) return out[0] + " or " + out[1];
-      return out.slice(0, out.length - 1).join(", ") + ", or " + out[out.length - 1];
-    }
-
     function normalizeRoleSlug(roleSlug) {
       return String(roleSlug || "").trim().toLowerCase();
     }
@@ -613,18 +623,17 @@
       return "";
     }
 
-    function renderAccessIntro(options) {
-      if (!options || !options.element) return;
-      var allowedRoles = options.allowedRoles || [];
-      var baseCopy = String(options.baseCopy || "");
-      var grantingRole = findGrantingRole(options.userRolesList || [], allowedRoles);
+    function setPanelAccessNote(noteElementId, userRolesList, allowedRoles, accessLabel) {
+      var el = document.getElementById(noteElementId);
+      if (!el) return;
+      var grantingRole = findGrantingRole(userRolesList || [], allowedRoles || []);
       if (grantingRole) {
-        baseCopy += ' Your access is granted by <strong>' + grantingRole + "</strong>.";
+        el.textContent = "Shown because your account has " + accessLabel + " access.";
+        el.hidden = false;
+      } else {
+        el.textContent = "";
+        el.hidden = true;
       }
-      if (options.trailingCopy) {
-        baseCopy += " " + String(options.trailingCopy);
-      }
-      options.element.innerHTML = baseCopy;
     }
 
     function syncRbacRoleDatasets() {
@@ -648,73 +657,39 @@
     }
 
     function setEventsPanelIntro(userRolesList) {
-      if (!memberEventsIntro) return;
       var allowedRoles =
         (window.SNHMemberPortal &&
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.EVENTS_MANAGE_ACCESS) ||
         ["events_editor", "events_admin", "club_admin"];
-      renderAccessIntro({
-        element: memberEventsIntro,
-        userRolesList: userRolesList,
-        allowedRoles: allowedRoles,
-        baseCopy: "Create and manage events that appear on the public Events page. Requires " + roleListToDisplay(allowedRoles) + "."
-      });
+      setPanelAccessNote("member-events-access", userRolesList, allowedRoles, "Events");
     }
 
     function setMemberAdminPanelIntro(userRolesList) {
-      if (!memberAdminIntro) return;
       var allowedRoles =
         (window.SNHMemberPortal &&
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS) ||
         ["membership_editor", "membership_admin", "club_admin"];
-      renderAccessIntro({
-        element: memberAdminIntro,
-        userRolesList: userRolesList,
-        allowedRoles: allowedRoles,
-        baseCopy:
-          "Overview of membership data, the member directory, and assigning RBAC roles. Requires " +
-          roleListToDisplay(allowedRoles) +
-          " on your account.",
-        trailingCopy: "Database migrations must include the admin RPCs."
-      });
+      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Member Tools");
     }
 
     function setPhotosPanelIntro(userRolesList) {
-      if (!memberPhotosIntro) return;
       var allowedRoles =
         (window.SNHMemberPortal &&
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.PHOTOS_ACCESS) ||
         ["photos_editor", "photos_admin", "club_admin"];
-      renderAccessIntro({
-        element: memberPhotosIntro,
-        userRolesList: userRolesList,
-        allowedRoles: allowedRoles,
-        baseCopy:
-          "Photo uploads and gallery moderation will be available here for designated volunteers. Requires " +
-          roleListToDisplay(allowedRoles) +
-          "."
-      });
+      setPanelAccessNote("member-photos-access", userRolesList, allowedRoles, "Photos");
     }
 
     function setGamesPanelIntro(userRolesList) {
-      if (!memberGamesIntro) return;
       var allowedRoles =
         (window.SNHMemberPortal &&
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.GAMES_ACCESS) ||
         ["games_editor", "games_admin", "club_admin"];
-      renderAccessIntro({
-        element: memberGamesIntro,
-        userRolesList: userRolesList,
-        allowedRoles: allowedRoles,
-        baseCopy:
-          "Floor and tech tools for trusted members will appear in this section when RBAC is enabled. Requires " +
-          roleListToDisplay(allowedRoles) +
-          "."
-      });
+      setPanelAccessNote("member-games-access", userRolesList, allowedRoles, "Games");
     }
 
     function userCanDeleteEvents(userRolesList) {
@@ -897,8 +872,6 @@
           tdLastName.textContent = row.last_name || "";
           var tdName = document.createElement("td");
           tdName.textContent = row.display_name || "";
-          var tdStern = document.createElement("td");
-          tdStern.textContent = row.stern_insider_username || "";
           var tdRoles = document.createElement("td");
           var ul = document.createElement("ul");
           ul.className = "members-admin-role-list";
@@ -932,7 +905,6 @@
           tr.appendChild(tdFirstName);
           tr.appendChild(tdLastName);
           tr.appendChild(tdName);
-          tr.appendChild(tdStern);
           tr.appendChild(tdRoles);
           tr.appendChild(tdAct);
           memberAdminTableBody.appendChild(tr);
@@ -957,10 +929,7 @@
           } else if (mr.display_name) {
             memberLabelParts.push(mr.display_name);
           }
-          if (mr.stern_insider_username) {
-            memberLabelParts.push("Stern: " + mr.stern_insider_username);
-          }
-          optM.textContent = (mr.email || "(no email)") + (memberLabelParts.length ? " — " + memberLabelParts.join(" • ") : "");
+          optM.textContent = (mr.email || "(no email)") + (memberLabelParts.length ? " · " + memberLabelParts.join(" • ") : "");
           memberAdminGrantMember.appendChild(optM);
         }
         if (currentMember) memberAdminGrantMember.value = currentMember;
@@ -1349,6 +1318,7 @@
       if (avatarUrlInput) avatarUrlInput.value = profile.avatar_url || "";
       if (ifpaNumberInput) ifpaNumberInput.value = profile.ifpa_player_id || "";
       if (sternInsiderUsernameInput) sternInsiderUsernameInput.value = profile.stern_insider_username || "";
+      if (matchplayPlayerIdInput) matchplayPlayerIdInput.value = profile.matchplay_player_id || "";
       syncAvatarPreview();
       syncIfpaProfileLink();
       profileFormBaseline = readProfileFormState();
@@ -1366,6 +1336,7 @@
       if (avatarUrlInput) avatarUrlInput.value = "";
       if (ifpaNumberInput) ifpaNumberInput.value = "";
       if (sternInsiderUsernameInput) sternInsiderUsernameInput.value = "";
+      if (matchplayPlayerIdInput) matchplayPlayerIdInput.value = "";
       syncAvatarPreview();
       syncIfpaProfileLink();
       profileFormBaseline = readProfileFormState();
@@ -1410,6 +1381,10 @@
       sternInsiderUsernameInput.addEventListener("input", syncProfileSubmitButton);
       sternInsiderUsernameInput.addEventListener("change", syncProfileSubmitButton);
     }
+    if (matchplayPlayerIdInput) {
+      matchplayPlayerIdInput.addEventListener("input", syncProfileSubmitButton);
+      matchplayPlayerIdInput.addEventListener("change", syncProfileSubmitButton);
+    }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
     if (membership) {
@@ -1445,6 +1420,7 @@
           last_name: lastNameInput ? lastNameInput.value.trim() : "",
           display_name: displayName,
           stern_insider_username: sternInsiderUsernameInput ? sternInsiderUsernameInput.value.trim() : "",
+          matchplay_player_id: matchplayPlayerIdInput ? matchplayPlayerIdInput.value.trim() : "",
           avatar_url: avatarVal,
           ifpa_player_id: ifpaNumberInput ? ifpaNumberInput.value : ""
         });

@@ -404,7 +404,7 @@
     if (s) s.value = String(row.status || "open").toLowerCase();
     var sub = document.getElementById("ci-submit");
     if (sub) sub.textContent = "Update issue";
-    setStatus("Editing selected issue — adjust fields and save.");
+    setStatus("Editing selected issue. Adjust fields and save.");
     if (formWrap && !formWrap.hidden) {
       formWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }

@@ -82,6 +82,7 @@
 
   var EXTERNAL_PROVIDER_IFPA = "ifpa";
   var EXTERNAL_PROVIDER_STERN = "stern_insider";
+  var EXTERNAL_PROVIDER_MATCHPLAY = "matchplay_events";
 
   async function getSession() {
     var client = getClient();
@@ -185,7 +186,8 @@
       display_name: "",
       avatar_url: "",
       ifpa_player_id: "",
-      stern_insider_username: ""
+      stern_insider_username: "",
+      matchplay_player_id: ""
     };
     if (!client) return base;
 
@@ -245,6 +247,16 @@
         var sternHandle = String(ext.account_handle || "").trim();
         if (sternHandle) {
           base.stern_insider_username = sternHandle;
+        }
+      } else if (
+        slug === EXTERNAL_PROVIDER_MATCHPLAY ||
+        slug === "matchplay" ||
+        slug === "matchplay_player" ||
+        slug === "matchplay_player_id"
+      ) {
+        var matchplayHandle = String(ext.account_handle || "").trim();
+        if (matchplayHandle) {
+          base.matchplay_player_id = matchplayHandle;
         }
       }
     }
@@ -309,6 +321,9 @@
       var sternHandleForExternal = Object.prototype.hasOwnProperty.call(profile, "stern_insider_username")
         ? String(profile.stern_insider_username || "").trim()
         : "";
+      var matchplayHandleForExternal = Object.prototype.hasOwnProperty.call(profile, "matchplay_player_id")
+        ? String(profile.matchplay_player_id || "").trim()
+        : "";
       await upsertExternalAccount(
         memberId,
         EXTERNAL_PROVIDER_IFPA,
@@ -316,6 +331,7 @@
         buildIfpaPlayerProfileUrl(ifpaDigitsForExternal)
       );
       await upsertExternalAccount(memberId, EXTERNAL_PROVIDER_STERN, sternHandleForExternal, "");
+      await upsertExternalAccount(memberId, EXTERNAL_PROVIDER_MATCHPLAY, matchplayHandleForExternal, "");
     }
 
     return result.data;
@@ -397,7 +413,14 @@
     return parsed.toLocaleDateString();
   }
 
-  /** Canonical role groups used by members UI + Supabase policy assumptions. */
+  /**
+   * Canonical role groups used by the members UI sidebar gating and access notes.
+   *
+   * These slugs MUST stay in sync with the RLS policies and `SECURITY DEFINER`
+   * RPCs in `supabase/migrations/`. UI gating is not a security boundary; it
+   * is purely a hint about what helpers will see. The README has the full table
+   * of which sidebar section each group unlocks.
+   */
   var ROLE_GROUPS = Object.freeze({
     MEMBERSHIP_MANAGE_ACCESS: Object.freeze(["membership_editor", "membership_admin", "club_admin"]),
     EVENTS_MANAGE_ACCESS: Object.freeze(["events_editor", "events_admin", "club_admin"]),
