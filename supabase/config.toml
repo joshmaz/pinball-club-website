@@ -3,3 +3,8 @@
 [functions.pinballmap-ingest]
 # Invoked on a schedule with the service role from Supabase (no end-user JWT).
 verify_jwt = false
+
+[functions.ai-game-enrich-propose]
+# Member-triggered function; require authenticated JWT.
+verify_jwt = true
+# Optional: supabase secrets set OPDB_API_TOKEN for artwork thumbnails (Open Pinball Database API).

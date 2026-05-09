@@ -278,3 +278,4 @@ STRIPE_WEBHOOK_SECRET=
 - Prefer simple solutions
 - Avoid new infrastructure
 - Extend existing patterns
+- Games catalog **propose-only** enrichment (Edge Function, portal UI, audit): see `docs/games-ai-assistant.md`

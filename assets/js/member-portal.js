@@ -686,6 +686,57 @@
     if (result.error) throw result.error;
   }
 
+  async function aiGameEnrichPropose(payload) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var sessionResult = await client.auth.getSession();
+    var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+    if (!session || !session.access_token) throw new Error("You must be signed in to use AI enrichment.");
+
+    var cfg = window.SNH_CONFIG || {};
+    var fnUrl = String((cfg.supabaseUrl || "").replace(/\/+$/, "")) + "/functions/v1/ai-game-enrich-propose";
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+      throw new Error("Missing Supabase config for AI enrichment.");
+    }
+
+    var resp = null;
+    try {
+      resp = await fetch(fnUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: cfg.supabaseAnonKey,
+          Authorization: "Bearer " + session.access_token,
+        },
+        body: JSON.stringify(payload || {}),
+      });
+    } catch (fetchErr) {
+      var netMsg = fetchErr && fetchErr.message ? String(fetchErr.message) : "Network error";
+      throw new Error(
+        "Could not reach AI enrichment function. " +
+          netMsg +
+          ". Verify the Edge Function is deployed at " +
+          fnUrl +
+          "."
+      );
+    }
+    var raw = await resp.text();
+    var data = null;
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      data = null;
+    }
+    if (!resp.ok) {
+      var msg = (data && data.error) || ("AI enrichment request failed (" + resp.status + ").");
+      if (resp.status === 404) {
+        msg += " Deploy the ai-game-enrich-propose function to this Supabase project.";
+      }
+      throw new Error(msg);
+    }
+    return data;
+  }
+
   async function parseRpcJson(data) {
     if (data == null) return null;
     if (typeof data === "string") {
@@ -903,6 +954,7 @@
     gamesClearManualAtClub: gamesClearManualAtClub,
     gamesGetSaleListing: gamesGetSaleListing,
     gamesSetSaleListing: gamesSetSaleListing,
+    aiGameEnrichPropose: aiGameEnrichPropose,
     gameHighScoresList: gameHighScoresList,
     gameHighScoresUpsert: gameHighScoresUpsert,
     gameHighScoresDelete: gameHighScoresDelete,
