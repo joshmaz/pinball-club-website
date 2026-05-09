@@ -11,8 +11,10 @@
   var comboboxPanelEl = null;
   var comboboxOptionsEl = null;
   var comboboxEmptyEl = null;
+  var atClubOnlyToggleEl = null;
   var reviewScaffoldsEl = null;
   var formEl = null;
+  var stintsSectionEl = null;
   var stintsEl = null;
   var saleEl = null;
   var manualWrapEl = null;
@@ -55,6 +57,14 @@
   var partyEditMode = "idle"; // idle | new | edit
   var partyFormDirty = false;
   var partyLinkWrapEl = null;
+  var aiWrapEl = null;
+  var aiStatusEl = null;
+  var aiProposalBodyEl = null;
+  var aiProposalData = null;
+  var aiDescriptionRegenCount = 0;
+  var aiImageRegenCount = 0;
+  var aiBusy = false;
+  var filterAtClubOnly = false;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -70,6 +80,16 @@
       if (c) n.appendChild(c);
     });
     return n;
+  }
+
+  /** Collapsible panel; closed by default. Summary doubles as section heading. */
+  function wrapCollapsible(summaryText, panelEl, extraDetailClass) {
+    var det = el("details", {
+      className: "member-games-collapsible" + (extraDetailClass ? " " + extraDetailClass : "")
+    });
+    det.appendChild(el("summary", { className: "member-games-collapsible-summary", text: summaryText }));
+    det.appendChild(panelEl);
+    return det;
   }
 
   function fieldRow(label, input) {
@@ -288,81 +308,83 @@
     manualWrapEl.appendChild(fieldRow("Override note", textInput("mg-manual-note", "")));
     formEl.appendChild(manualWrapEl);
 
-    stintsEl = el("div", { className: "member-games-stints" });
-    stintsEl.appendChild(el("h4", { text: "Location stints" }));
-    formEl.appendChild(stintsEl);
+    formEl.appendChild(buildReviewScaffolds());
 
-    saleEl = el("div", { className: "member-games-sale" });
-    saleEl.appendChild(el("h4", { text: "For sale listing" }));
-    saleEl.appendChild(fieldRow("Status", textInput("mg-sale-status", "draft")));
-    saleEl.appendChild(fieldRow("Asking price (cents)", numberInput("mg-sale-cents", "")));
-    saleEl.appendChild(fieldRow("Notes", textareaInput("mg-sale-notes", "")));
+    stintsEl = el("div", { className: "member-games-stints member-games-collapsible-panel" });
+    stintsSectionEl = wrapCollapsible("Location stints", stintsEl);
+    formEl.appendChild(stintsSectionEl);
+
+    var salePanel = el("div", { className: "member-games-sale member-games-collapsible-panel" });
+    salePanel.appendChild(fieldRow("Status", textInput("mg-sale-status", "draft")));
+    salePanel.appendChild(fieldRow("Asking price (cents)", numberInput("mg-sale-cents", "")));
+    salePanel.appendChild(fieldRow("Notes", textareaInput("mg-sale-notes", "")));
+    saleEl = wrapCollapsible("For sale listing", salePanel);
     formEl.appendChild(saleEl);
 
     appendPartyGameLinkSection();
 
-    highScoresWrapEl = el("div", { className: "member-games-extended", id: "mg-high-scores-wrap" });
-    highScoresWrapEl.appendChild(el("h4", { text: "High scores (public More Info)" }));
-    highScoresWrapEl.appendChild(el("div", { id: "mg-high-scores-list", className: "member-games-sublist" }));
-    highScoresWrapEl.appendChild(
+    var hsPanel = el("div", { className: "member-games-extended member-games-collapsible-panel", id: "mg-high-scores-wrap" });
+    hsPanel.appendChild(el("div", { id: "mg-high-scores-list", className: "member-games-sublist" }));
+    hsPanel.appendChild(
       el("p", { className: "member-games-help", text: "Shown when visitors open More Info on games.html." })
     );
     var hsScoreInput = el("input", { type: "text", id: "mg-hs-score", className: "member-games-input" });
     wireHighScoreScoreField(hsScoreInput);
-    highScoresWrapEl.appendChild(fieldRow("Score", hsScoreInput));
-    highScoresWrapEl.appendChild(fieldRow("Initials / label", textInput("mg-hs-player", "")));
-    highScoresWrapEl.appendChild(fieldRow("Achieved on", dateInput("mg-hs-date", "")));
-    highScoresWrapEl.appendChild(fieldRow("Notes", textInput("mg-hs-notes", "")));
+    hsPanel.appendChild(fieldRow("Score", hsScoreInput));
+    hsPanel.appendChild(fieldRow("Initials / label", textInput("mg-hs-player", "")));
+    hsPanel.appendChild(fieldRow("Achieved on", dateInput("mg-hs-date", "")));
+    hsPanel.appendChild(fieldRow("Notes", textInput("mg-hs-notes", "")));
     var hsAdd = el("button", { type: "button", className: "members-sidebar-link", id: "mg-hs-add" });
     hsAdd.textContent = "Add high score";
     hsAdd.addEventListener("click", onAddHighScore);
-    highScoresWrapEl.appendChild(hsAdd);
+    hsPanel.appendChild(hsAdd);
+    highScoresWrapEl = wrapCollapsible("High scores (public More Info)", hsPanel);
     formEl.appendChild(highScoresWrapEl);
 
-    modsWrapEl = el("div", { className: "member-games-extended", id: "mg-mods-wrap" });
-    modsWrapEl.appendChild(el("h4", { text: "Custom mods (public More Info)" }));
-    modsWrapEl.appendChild(el("div", { id: "mg-mods-list", className: "member-games-sublist" }));
-    modsWrapEl.appendChild(fieldRow("Title", textInput("mg-mod-title", "")));
-    modsWrapEl.appendChild(fieldRow("Description", textInput("mg-mod-desc", "")));
-    modsWrapEl.appendChild(fieldRow("Reference URL", textInput("mg-mod-url", "")));
+    var modsPanel = el("div", { className: "member-games-extended member-games-collapsible-panel", id: "mg-mods-wrap" });
+    modsPanel.appendChild(el("div", { id: "mg-mods-list", className: "member-games-sublist" }));
+    modsPanel.appendChild(fieldRow("Title", textInput("mg-mod-title", "")));
+    modsPanel.appendChild(fieldRow("Description", textInput("mg-mod-desc", "")));
+    modsPanel.appendChild(fieldRow("Reference URL", textInput("mg-mod-url", "")));
     var modAdd = el("button", { type: "button", className: "members-sidebar-link", id: "mg-mod-add" });
     modAdd.textContent = "Add mod";
     modAdd.addEventListener("click", onAddMod);
-    modsWrapEl.appendChild(modAdd);
+    modsPanel.appendChild(modAdd);
+    modsWrapEl = wrapCollapsible("Custom mods (public More Info)", modsPanel);
     formEl.appendChild(modsWrapEl);
 
-    pingolfTargetsWrapEl = el("div", { className: "member-games-extended", id: "mg-pingolf-targets-wrap" });
-    pingolfTargetsWrapEl.appendChild(el("h4", { text: "Pingolf target (featured session)" }));
-    pingolfTargetsWrapEl.appendChild(el("p", { className: "member-games-help", id: "mg-pingolf-help", text: "" }));
-    pingolfTargetsWrapEl.appendChild(el("div", { id: "mg-pingolf-target-list", className: "member-games-sublist" }));
-    pingolfTargetsWrapEl.appendChild(fieldRow("Target description", textInput("mg-pg-desc", "")));
-    pingolfTargetsWrapEl.appendChild(fieldRow("Target value (optional)", numberInput("mg-pg-val", "")));
+    var pingolfPanel = el("div", { className: "member-games-extended member-games-collapsible-panel", id: "mg-pingolf-targets-wrap" });
+    pingolfPanel.appendChild(el("p", { className: "member-games-help", id: "mg-pingolf-help", text: "" }));
+    pingolfPanel.appendChild(el("div", { id: "mg-pingolf-target-list", className: "member-games-sublist" }));
+    pingolfPanel.appendChild(fieldRow("Target description", textInput("mg-pg-desc", "")));
+    pingolfPanel.appendChild(fieldRow("Target value (optional)", numberInput("mg-pg-val", "")));
     var pgAdd = el("button", { type: "button", className: "members-sidebar-link", id: "mg-pg-add" });
     pgAdd.textContent = "Add Pingolf target";
     pgAdd.addEventListener("click", onAddPingolfTarget);
-    pingolfTargetsWrapEl.appendChild(pgAdd);
+    pingolfPanel.appendChild(pgAdd);
+    pingolfTargetsWrapEl = wrapCollapsible("Pingolf target (featured session)", pingolfPanel);
     formEl.appendChild(pingolfTargetsWrapEl);
 
-    pingolfAdminEl = el("div", { className: "member-games-pingolf-admin", id: "mg-pingolf-admin-wrap" });
-    pingolfAdminEl.appendChild(el("h4", { text: "Pingolf sessions (games admin)" }));
-    pingolfAdminEl.appendChild(
+    var pingolfAdminPanel = el("div", { className: "member-games-pingolf-admin member-games-collapsible-panel", id: "mg-pingolf-admin-wrap" });
+    pingolfAdminPanel.appendChild(
       el("p", {
         className: "member-games-help",
         text: "Only one featured session at a time; it drives public Pingolf targets in More Info on games.html."
       })
     );
-    pingolfAdminEl.appendChild(el("ul", { className: "mg-pingolf-session-ul member-games-help" }));
-    pingolfAdminEl.appendChild(fieldRow("New session title", textInput("mg-pg-admin-title", "")));
+    pingolfAdminPanel.appendChild(el("ul", { className: "mg-pingolf-session-ul member-games-help" }));
+    pingolfAdminPanel.appendChild(fieldRow("New session title", textInput("mg-pg-admin-title", "")));
     var featRow = el("div", { className: "member-games-field member-games-checkbox-row" });
     var featCb = el("input", { type: "checkbox", id: "mg-pg-admin-featured" });
     featRow.appendChild(featCb);
     featRow.appendChild(el("label", { for: "mg-pg-admin-featured", text: "Featured session" }));
-    pingolfAdminEl.appendChild(featRow);
-    pingolfAdminEl.appendChild(fieldRow("Session notes", textInput("mg-pg-admin-notes", "")));
+    pingolfAdminPanel.appendChild(featRow);
+    pingolfAdminPanel.appendChild(fieldRow("Session notes", textInput("mg-pg-admin-notes", "")));
     var pgSessBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-pg-admin-save" });
     pgSessBtn.textContent = "Save Pingolf session";
     pgSessBtn.addEventListener("click", onCreatePingolfSession);
-    pingolfAdminEl.appendChild(pgSessBtn);
+    pingolfAdminPanel.appendChild(pgSessBtn);
+    pingolfAdminEl = wrapCollapsible("Pingolf sessions (games admin)", pingolfAdminPanel);
     formEl.appendChild(pingolfAdminEl);
 
     var saveBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-save" });
@@ -400,6 +422,22 @@
   function getVal(id) {
     var n = document.getElementById(id);
     return n ? String(n.value || "").trim() : "";
+  }
+
+  function isValidHttpUrl(value) {
+    var v = String(value || "").trim();
+    if (!v) return true;
+    try {
+      var u = new URL(v);
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function fmtConfidence(score) {
+    if (typeof score !== "number" || Number.isNaN(score)) return "0%";
+    return Math.round(score * 100) + "%";
   }
 
   function normalizeGamesForDisplay(list) {
@@ -450,6 +488,15 @@
     return s !== "" && s !== "null" && s !== "undefined";
   }
 
+  function isGameAtClubToday(game) {
+    if (!game || typeof game !== "object") return false;
+    if (game.manualAtClubOverride === true) return true;
+    if (game.manualAtClubOverride === false) return false;
+    if (game.mapAtClub === true) return true;
+    if (game.mapAtClub === false) return false;
+    return game.atClub === true;
+  }
+
   function setButtonVisible(btn, visible) {
     if (!btn) return;
     if (visible) {
@@ -486,6 +533,7 @@
     comboboxOptionsEl.replaceChildren();
     var term = String((comboboxInputEl && comboboxInputEl.value) || "").trim().toLowerCase();
     filteredGames = gamesCache.filter(function (g) {
+      if (filterAtClubOnly && !isGameAtClubToday(g)) return false;
       return !term || g.__searchTitle.indexOf(term) !== -1;
     });
     filteredGames.forEach(function (g, idx) {
@@ -507,6 +555,25 @@
     updateActiveDescendant();
     refreshComboboxActiveStyles();
     comboboxEmptyEl.hidden = filteredGames.length > 0;
+    if (!filteredGames.length) {
+      comboboxEmptyEl.replaceChildren();
+      if (filterAtClubOnly) {
+        comboboxEmptyEl.appendChild(el("p", { text: "No games are currently marked as at club." }));
+        comboboxEmptyEl.appendChild(
+          el("p", { text: "Clear the checkbox to browse the full catalog, including off-floor and archived entries." })
+        );
+      } else {
+        comboboxEmptyEl.appendChild(el("p", { text: "No games match that title search yet." }));
+        comboboxEmptyEl.appendChild(el("p", { text: "You can refine your search or create a new manual entry." }));
+      }
+      var emptyNew = el("button", { type: "button", className: "members-sidebar-link" });
+      emptyNew.textContent = "+ New Game";
+      emptyNew.addEventListener("click", function () {
+        beginNewGameMode();
+        setComboboxOpen(false);
+      });
+      comboboxEmptyEl.appendChild(emptyNew);
+    }
   }
 
   function refreshComboboxActiveStyles() {
@@ -521,6 +588,7 @@
 
   function populateCombobox() {
     gamesCache = normalizeGamesForDisplay(gamesCache);
+    if (atClubOnlyToggleEl) atClubOnlyToggleEl.checked = !!filterAtClubOnly;
     renderComboboxOptions();
   }
 
@@ -668,7 +736,7 @@
     var isIdle = mode === "idle";
     formEl.hidden = isIdle;
     formEl.setAttribute("aria-hidden", isIdle ? "true" : "false");
-    if (reviewScaffoldsEl) reviewScaffoldsEl.hidden = !isIdle;
+    if (reviewScaffoldsEl) reviewScaffoldsEl.hidden = mode !== "edit";
     var modeNote = document.getElementById("member-games-mode-note");
     if (modeNote) {
       modeNote.textContent =
@@ -700,7 +768,7 @@
             : "";
     }
     if (partyLinkWrapEl) partyLinkWrapEl.hidden = mode !== "edit";
-    if (stintsEl) stintsEl.hidden = mode !== "edit";
+    if (stintsSectionEl) stintsSectionEl.hidden = mode !== "edit";
     if (deleteStatusEl) deleteStatusEl.hidden = mode !== "edit";
     var deleteNoteRow = deleteNoteInputEl ? deleteNoteInputEl.closest(".member-games-field") : null;
     if (deleteNoteRow) deleteNoteRow.hidden = mode !== "edit";
@@ -791,6 +859,7 @@
     }
     setComboboxOpen(false);
     renderComboboxOptions();
+    resetAiProposalUi();
     if (statusMessage) setStatus(statusMessage);
   }
 
@@ -807,6 +876,7 @@
     currentGameId = null;
     setMode("new");
     clearFormForNewGame();
+    resetAiProposalUi();
     isDirty = false;
     setStatus('Creating new game. Use "Save game" to create a manual entry.');
     focusFirstFormField();
@@ -1025,14 +1095,8 @@
   }
 
   function appendPartyGameLinkSection() {
-    partyLinkWrapEl = el("div", { className: "member-games-party-link", id: "mg-party-link-wrap" });
-    partyLinkWrapEl.appendChild(
-      el("h4", {
-        className: "member-games-parties-block-heading",
-        text: "Link owner to this game"
-      })
-    );
-    partyLinkWrapEl.appendChild(
+    var inner = el("div", { className: "member-games-party-link", id: "mg-party-link-wrap" });
+    inner.appendChild(
       el("p", {
         className: "member-games-help",
         text: "Add or edit contacts in Owner parties (section below this form). Saved parties appear in this list for the open game only."
@@ -1040,15 +1104,15 @@
     );
     var partySel = el("select", { id: "mg-party-link-select", className: "member-games-input" });
     partySel.appendChild(el("option", { value: "", text: "(no party linked)" }));
-    partyLinkWrapEl.appendChild(fieldRow("Party", partySel));
-    partyLinkWrapEl.appendChild(fieldRow("Public relationship label", textInput("mg-party-relationship-public", "")));
+    inner.appendChild(fieldRow("Party", partySel));
+    inner.appendChild(fieldRow("Public relationship label", textInput("mg-party-relationship-public", "")));
     var hideOwnerRow = el("div", { className: "member-games-field member-games-checkbox-row" });
     var hideOwnerCb = el("input", { type: "checkbox", id: "mg-game-hide-owner-public" });
     hideOwnerRow.appendChild(hideOwnerCb);
     hideOwnerRow.appendChild(
       el("label", { for: "mg-game-hide-owner-public", text: "Hide owner from public More Info (this game)" })
     );
-    partyLinkWrapEl.appendChild(hideOwnerRow);
+    inner.appendChild(hideOwnerRow);
     var partyLinkActions = el("div", { className: "member-games-form-actions" });
     var savePartyLinkBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-party-link-save" });
     savePartyLinkBtn.textContent = "Save owner link";
@@ -1062,7 +1126,8 @@
     });
     partyLinkActions.appendChild(savePartyLinkBtn);
     partyLinkActions.appendChild(clearPartyLinkBtn);
-    partyLinkWrapEl.appendChild(partyLinkActions);
+    inner.appendChild(partyLinkActions);
+    partyLinkWrapEl = wrapCollapsible("Link owner to this game", inner, "member-games-collapsible-party");
     formEl.appendChild(partyLinkWrapEl);
   }
 
@@ -1330,6 +1395,22 @@
     comboWrap.appendChild(comboboxPanelEl);
     row.appendChild(comboWrap);
     wrap.appendChild(row);
+    var toggleRow = el("label", { className: "member-games-help", for: "member-games-at-club-only-toggle" });
+    atClubOnlyToggleEl = el("input", {
+      type: "checkbox",
+      id: "member-games-at-club-only-toggle"
+    });
+    atClubOnlyToggleEl.checked = !!filterAtClubOnly;
+    atClubOnlyToggleEl.addEventListener("change", function () {
+      filterAtClubOnly = !!atClubOnlyToggleEl.checked;
+      if (!catalogLoaded) return;
+      setComboboxOpen(true);
+      comboboxActiveIndex = -1;
+      renderComboboxOptions();
+    });
+    toggleRow.appendChild(atClubOnlyToggleEl);
+    toggleRow.appendChild(document.createTextNode(" Only at club today"));
+    wrap.appendChild(toggleRow);
     comboboxInputEl.addEventListener("focus", function () {
       if (!catalogLoaded) return;
       setComboboxOpen(true);
@@ -1383,16 +1464,368 @@
     return wrap;
   }
 
+  function makeAiFieldKeyCheckboxId(fieldKey) {
+    return "mg-ai-apply-" + String(fieldKey || "").replace(/[^a-zA-Z0-9_-]+/g, "-");
+  }
+
+  function isAiProposalLinkField(fieldKey) {
+    return fieldKey === "ipdbUrl" || fieldKey === "pinsideUrl" || fieldKey === "kineticistUrl";
+  }
+
+  /** Prefix like "Current: " or ""; opens http(s) values in a new tab for verification. */
+  function appendAiProposalUrlParagraph(row, prefixText, rawValue) {
+    var v = String(rawValue || "").trim();
+    var p = el("p", { className: "member-games-help" });
+    if (prefixText) p.appendChild(document.createTextNode(prefixText));
+    if (!v) {
+      p.appendChild(document.createTextNode("—"));
+      row.appendChild(p);
+      return;
+    }
+    if (isValidHttpUrl(v)) {
+      p.appendChild(
+        el("a", {
+          href: v,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          className: "member-games-ai-external-link",
+          text: v,
+        })
+      );
+    } else {
+      p.appendChild(document.createTextNode(v));
+    }
+    row.appendChild(p);
+  }
+
+  function setAiStatus(msg) {
+    if (aiStatusEl) aiStatusEl.textContent = msg || "";
+  }
+
+  function resetAiProposalUi() {
+    aiProposalData = null;
+    aiDescriptionRegenCount = 0;
+    aiImageRegenCount = 0;
+    if (aiProposalBodyEl) aiProposalBodyEl.replaceChildren();
+    setAiStatus("");
+  }
+
+  function renderAiProposal(proposal) {
+    if (!aiProposalBodyEl) return;
+    aiProposalBodyEl.replaceChildren();
+    aiProposalData = proposal || null;
+    if (!proposal) return;
+
+    var intro = el("p", {
+      className: "member-games-help",
+      text: "Review field suggestions, then apply selected fields."
+    });
+    aiProposalBodyEl.appendChild(intro);
+
+    var warningList = proposal.warnings || [];
+    if (warningList.length) {
+      var warn = el("ul", { className: "member-games-ai-warnings" });
+      warningList.forEach(function (w) {
+        warn.appendChild(el("li", { text: String(w) }));
+      });
+      aiProposalBodyEl.appendChild(warn);
+    }
+
+    var fields = Array.isArray(proposal.fields) ? proposal.fields : [];
+    fields.forEach(function (f) {
+      if (!f || !f.field) return;
+      var row = el("div", { className: "member-games-ai-field" });
+
+      var isExistingLinkRetained =
+        String(f.reason || "").trim() === "Existing link retained." && isAiProposalLinkField(f.field);
+
+      if (isExistingLinkRetained) {
+        row.classList.add("member-games-ai-field-link-confirmed");
+        var retainedLine = el("p", { className: "member-games-help" });
+        retainedLine.appendChild(document.createTextNode(String(f.field) + ": confirmed. "));
+        var keptUrl = String(f.currentValue || f.suggestedValue || "").trim();
+        if (keptUrl && isValidHttpUrl(keptUrl)) {
+          retainedLine.appendChild(
+            el("a", {
+              href: keptUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "member-games-ai-external-link",
+              text: keptUrl,
+            })
+          );
+        } else if (keptUrl) {
+          retainedLine.appendChild(document.createTextNode(keptUrl));
+        } else {
+          retainedLine.appendChild(document.createTextNode("—"));
+        }
+        row.appendChild(retainedLine);
+        aiProposalBodyEl.appendChild(row);
+        return;
+      }
+
+      var checkboxId = makeAiFieldKeyCheckboxId(f.field);
+      var cb = el("input", { type: "checkbox", id: checkboxId });
+      cb.checked = !!f.applyByDefault && !f.reviewRequired;
+      if (f.reviewRequired) cb.checked = false;
+      var label = el("label", { for: checkboxId, text: String(f.field) + " (" + fmtConfidence(f.confidenceScore) + ")" });
+      row.appendChild(cb);
+      row.appendChild(label);
+
+      var currentText = String(f.currentValue || "").trim() || "—";
+      var suggestedText = String(f.suggestedValue || "").trim() || "—";
+      if (isAiProposalLinkField(f.field)) {
+        appendAiProposalUrlParagraph(row, "Current: ", f.currentValue);
+        appendAiProposalUrlParagraph(row, "Suggested: ", f.suggestedValue);
+      } else {
+        row.appendChild(el("p", { className: "member-games-help", text: "Current: " + currentText }));
+        row.appendChild(el("p", { className: "member-games-help", text: "Suggested: " + suggestedText }));
+      }
+      if (f.reason) row.appendChild(el("p", { className: "member-games-help", text: "Reason: " + String(f.reason) }));
+      var fw = Array.isArray(f.warnings) ? f.warnings : [];
+      if (fw.length) {
+        var fwul = el("ul", { className: "member-games-ai-warnings" });
+        fw.forEach(function (w) {
+          fwul.appendChild(el("li", { text: String(w) }));
+        });
+        row.appendChild(fwul);
+      }
+      aiProposalBodyEl.appendChild(row);
+    });
+
+    var imgs = Array.isArray(proposal.imageCandidates) ? proposal.imageCandidates : [];
+    if (imgs.length) {
+      var imgsWrap = el("div", { className: "member-games-ai-images" });
+      imgsWrap.appendChild(el("h5", { text: "Image candidates" }));
+      imgsWrap.appendChild(
+        el("p", {
+          className: "member-games-help member-games-ai-images-intro",
+          text:
+            "These previews are not uploaded automatically. Download an image you are allowed to use, add the file to assets/images/machines in the website project, publish that build to hosting, then type the file name into the Image field on this form and save the game. Add OPDB credit in More info or the description. Apply selected fields only updates catalog data; it does not download images from the web.",
+        })
+      );
+      imgs.forEach(function (img, idx) {
+        var imgRow = el("div", { className: "member-games-ai-image-row" });
+        var thumbSrc = String((img && img.imageUrl) || "").trim();
+        var thumbEl;
+        var attrNote = String((img && img.licenseOrUsageNote) || "").trim();
+        var attrReq = !!(img && img.attributionRequired);
+        var altBits = ["Candidate " + (idx + 1)];
+        if (attrReq || attrNote) altBits.push("preview for review only");
+        if (thumbSrc) {
+          thumbEl = el("img", {
+            className: "member-games-ai-image-preview",
+            alt: altBits.join(", "),
+            src: thumbSrc,
+          });
+        } else {
+          var placeholder = el("div", {
+            className: "member-games-ai-image-placeholder",
+            role: "img",
+            "aria-label": "No thumbnail for candidate " + (idx + 1),
+          });
+          placeholder.appendChild(
+            el("span", { className: "member-games-ai-image-placeholder-note", text: "No inline preview." })
+          );
+          var ref = String((img && img.sourceUrl) || "").trim();
+          if (ref && isValidHttpUrl(ref)) {
+            placeholder.appendChild(
+              el("a", {
+                className: "member-games-ai-image-ref-link",
+                href: ref,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                text: "Open reference page",
+              })
+            );
+          }
+          thumbEl = placeholder;
+        }
+        var meta = el("p", {
+          className: "member-games-help",
+          text: "Score " +
+            fmtConfidence(Number(img.qualityScore || 0)) +
+            " · " +
+            String(img.sourceType || "source") +
+            (img.attributionRequired ? " · attribution required" : "")
+        });
+        imgRow.appendChild(thumbEl);
+        imgRow.appendChild(meta);
+
+        var srcUrl = String((img && img.sourceUrl) || "").trim();
+        var showAttrBlock = !!(attrNote || attrReq || (srcUrl && isValidHttpUrl(srcUrl)));
+        if (showAttrBlock) {
+          var attrWrap = el("div", { className: "member-games-ai-image-attribution" });
+          var usageP = el("p", { className: "member-games-ai-image-attribution-usage" });
+          usageP.appendChild(el("span", { className: "member-games-ai-image-attribution-label", text: "Usage / credit: " }));
+          if (attrNote) {
+            usageP.appendChild(document.createTextNode(attrNote));
+          } else if (attrReq) {
+            usageP.appendChild(
+              document.createTextNode(
+                "Confirm license terms with the source before hosting this image on the public catalog."
+              )
+            );
+          } else {
+            usageP.appendChild(document.createTextNode("See source link below."));
+          }
+          attrWrap.appendChild(usageP);
+          if (srcUrl && isValidHttpUrl(srcUrl)) {
+            var srcP = el("p", { className: "member-games-ai-image-attribution-source" });
+            srcP.appendChild(document.createTextNode("Source: "));
+            var disp = srcUrl.length > 88 ? srcUrl.slice(0, 85) + "…" : srcUrl;
+            srcP.appendChild(
+              el("a", {
+                href: srcUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                className: "member-games-ai-external-link",
+                title: srcUrl,
+                text: disp,
+              })
+            );
+            attrWrap.appendChild(srcP);
+          }
+          imgRow.appendChild(attrWrap);
+        }
+
+        imgsWrap.appendChild(imgRow);
+      });
+      aiProposalBodyEl.appendChild(imgsWrap);
+    }
+  }
+
+  async function runAiPropose(opts) {
+    if (!currentGameId || !window.SNHMemberPortal || !window.SNHMemberPortal.aiGameEnrichPropose) return;
+    if (aiBusy) return;
+    aiBusy = true;
+    setAiStatus("Generating AI proposal…");
+    try {
+      var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
+        gameId: currentGameId,
+        regenerateDescription: !!(opts && opts.regenerateDescription),
+        regenerateImageCandidates: !!(opts && opts.regenerateImageCandidates),
+      });
+      renderAiProposal(proposal);
+      setAiStatus("AI proposal ready.");
+    } catch (err) {
+      setAiStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    } finally {
+      aiBusy = false;
+    }
+  }
+
+  function collectAiSelectedFields() {
+    var out = {};
+    if (!aiProposalData || !Array.isArray(aiProposalData.fields)) return out;
+    aiProposalData.fields.forEach(function (f) {
+      if (!f || !f.field) return;
+      var cb = document.getElementById(makeAiFieldKeyCheckboxId(f.field));
+      if (!cb || !cb.checked) return;
+      if (f.field === "details") out.details = f.suggestedValue || "";
+      if (f.field === "ipdbUrl") out.ipdbUrl = f.suggestedValue || null;
+      if (f.field === "pinsideUrl") out.pinsideUrl = f.suggestedValue || null;
+      if (f.field === "kineticistUrl") out.kineticistUrl = f.suggestedValue || null;
+      if (f.field === "imageFilename") out.imageFilename = f.suggestedValue || null;
+    });
+    return out;
+  }
+
+  async function onApplyAiSelection() {
+    if (!currentGameId || !window.SNHMemberPortal || !aiProposalData) return;
+    var selected = collectAiSelectedFields();
+    var keys = Object.keys(selected);
+    if (!keys.length) {
+      setAiStatus("Select at least one field to apply.");
+      return;
+    }
+    if (selected.ipdbUrl && !isValidHttpUrl(selected.ipdbUrl)) {
+      setAiStatus("IPDB URL is invalid. Deselect or fix before apply.");
+      return;
+    }
+    if (selected.pinsideUrl && !isValidHttpUrl(selected.pinsideUrl)) {
+      setAiStatus("Pinside URL is invalid. Deselect or fix before apply.");
+      return;
+    }
+    if (selected.kineticistUrl && !isValidHttpUrl(selected.kineticistUrl)) {
+      setAiStatus("Kineticist URL is invalid. Deselect or fix before apply.");
+      return;
+    }
+    setAiStatus("Applying selected AI fields…");
+    try {
+      await window.SNHMemberPortal.gamesUpsert(currentGameId, selected);
+      var data = await window.SNHMemberPortal.gamesEditorLoad();
+      gamesCache = (data && data.games) || [];
+      populateCombobox();
+      await populateForm(currentGameId);
+      setAiStatus("Applied selected AI fields.");
+      isDirty = false;
+    } catch (err) {
+      setAiStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
   function buildReviewScaffolds() {
     reviewScaffoldsEl = el("div", { className: "member-games-review-scaffolds" });
     var missing = el("section", { className: "member-games-review-card" });
-    missing.appendChild(el("h4", { text: "Missing game data" }));
+    missing.appendChild(el("h4", { text: "AI enrichment assistant" }));
     missing.appendChild(
       el("p", {
-        text: "Review games that are missing key metadata (image, year, manufacturer, or links) and queue updates."
+        text: "Open a game, run AI refresh, then review and apply only the fields you approve."
       })
     );
-    missing.appendChild(el("p", { className: "member-games-review-todo", text: "TODO: add quality checks and review queue." }));
+    missing.appendChild(
+      el("p", {
+        className: "member-games-help",
+        text:
+          "Image previews work best when this game already has a club photo filename. Listing sites often block inline thumbnails in the browser. Open Pinball Database artwork previews can be wired up separately for editors.",
+      })
+    );
+    aiWrapEl = missing;
+    var actions = el("div", { className: "member-games-form-actions" });
+    var proposeBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-refresh" });
+    proposeBtn.textContent = "AI refresh current game";
+    proposeBtn.addEventListener("click", function () {
+      if (!currentGameId || mode !== "edit") {
+        setAiStatus("Select a game first.");
+        return;
+      }
+      void runAiPropose({});
+    });
+    var regenDescBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-regen-desc" });
+    regenDescBtn.textContent = "Regenerate description";
+    regenDescBtn.addEventListener("click", function () {
+      if (aiDescriptionRegenCount >= 2) {
+        setAiStatus("Description regenerate limit reached for this session.");
+        return;
+      }
+      aiDescriptionRegenCount += 1;
+      void runAiPropose({ regenerateDescription: true });
+    });
+    var regenImgBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-regen-img" });
+    regenImgBtn.textContent = "Regenerate image candidates";
+    regenImgBtn.addEventListener("click", function () {
+      if (aiImageRegenCount >= 1) {
+        setAiStatus("Image regenerate limit reached for this session.");
+        return;
+      }
+      aiImageRegenCount += 1;
+      void runAiPropose({ regenerateImageCandidates: true });
+    });
+    var applyBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply" });
+    applyBtn.textContent = "Apply selected AI fields";
+    applyBtn.addEventListener("click", function () {
+      void onApplyAiSelection();
+    });
+    actions.appendChild(proposeBtn);
+    actions.appendChild(regenDescBtn);
+    actions.appendChild(regenImgBtn);
+    actions.appendChild(applyBtn);
+    missing.appendChild(actions);
+    aiStatusEl = el("p", { className: "member-games-help", id: "mg-ai-status" });
+    aiProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-proposal" });
+    missing.appendChild(aiStatusEl);
+    missing.appendChild(aiProposalBodyEl);
     reviewScaffoldsEl.appendChild(missing);
     return reviewScaffoldsEl;
   }
@@ -1824,6 +2257,7 @@
     await loadPingolfTargetsForGame(gameId);
     await renderPingolfAdmin();
     await loadPartiesDirectory();
+    resetAiProposalUi();
     var ps = document.getElementById("mg-party-link-select");
     if (ps) ps.value = g.partyId ? String(g.partyId) : "";
     var prelPub = document.getElementById("mg-party-relationship-public");
@@ -2045,7 +2479,6 @@
     appEl.appendChild(buildPicker());
     appEl.appendChild(buildForm());
     appEl.appendChild(buildPartiesMainStrip());
-    appEl.appendChild(buildReviewScaffolds());
     document.addEventListener("click", onMemberGamesDocumentClick);
     syncPartyDirectoryDeleteVisibility();
     setMode("idle");
