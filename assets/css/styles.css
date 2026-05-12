@@ -2063,6 +2063,131 @@ footer {
   font-size: 0.88rem;
 }
 
+.member-games-ai-proposal {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.member-games-ai-field {
+  border: 1px solid #2d3540;
+  border-radius: 8px;
+  background: #121821;
+  padding: 0.55rem 0.65rem;
+}
+
+.member-games-ai-field > label {
+  margin-left: 0.35rem;
+  font-weight: 600;
+}
+
+.member-games-ai-warnings {
+  margin: 0.35rem 0 0;
+  color: #f4cb87;
+  font-size: 0.85rem;
+}
+
+.member-games-ai-images {
+  border: 1px dashed #425263;
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+}
+
+.member-games-ai-images h5 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  color: #d0e0f1;
+}
+
+.member-games-ai-images-intro {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  color: #aab9c9;
+}
+
+.member-games-ai-image-row {
+  margin-bottom: 0.5rem;
+}
+
+.member-games-ai-image-attribution {
+  margin: 0.4rem 0 0;
+  padding: 0.45rem 0.55rem;
+  max-width: 22rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #c8d6e4;
+  background: rgba(10, 14, 22, 0.65);
+  border-radius: 6px;
+  border-left: 3px solid #6b8cae;
+}
+
+.member-games-ai-image-attribution-label {
+  font-weight: 650;
+  color: #dfe9f3;
+}
+
+.member-games-ai-image-attribution-usage {
+  margin: 0;
+}
+
+.member-games-ai-image-attribution-source {
+  margin: 0.35rem 0 0;
+  word-break: break-word;
+}
+
+.member-games-ai-image-preview {
+  width: 100%;
+  max-width: 16rem;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #304152;
+  background: #111720;
+}
+
+.member-games-ai-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  max-width: 16rem;
+  aspect-ratio: 4 / 3;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px dashed #4a6278;
+  background: #111720;
+  color: #aab9c9;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.member-games-ai-image-placeholder-note {
+  display: block;
+}
+
+.member-games-ai-image-ref-link {
+  color: #8ec6ff;
+  font-weight: 600;
+}
+
+.member-games-ai-image-ref-link:hover {
+  color: #c5e4ff;
+}
+
+.member-games-ai-external-link {
+  color: #8ec6ff;
+  word-break: break-word;
+}
+
+.member-games-ai-external-link:hover {
+  color: #c5e4ff;
+}
+
+.member-games-ai-field-link-confirmed {
+  padding-left: 0.15rem;
+}
+
 .member-games-section-heading {
   margin: 0.25rem 0 0.5rem;
   font-size: 1.12rem;
@@ -2159,6 +2284,52 @@ footer {
 .member-games-sale h4 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
+}
+
+/* Collapsible sections (games editor) — closed by default */
+.member-games-collapsible {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d3540;
+}
+
+.member-games-collapsible-party {
+  border-top: 1px dashed #394453;
+}
+
+.member-games-collapsible > .member-games-collapsible-summary {
+  cursor: pointer;
+  list-style: none;
+  margin: 0 0 0.35rem;
+  padding: 0.15rem 0;
+  font-size: 1rem;
+  font-weight: 650;
+  color: #e8eef5;
+}
+
+.member-games-collapsible > .member-games-collapsible-summary::-webkit-details-marker {
+  display: none;
+}
+
+.member-games-collapsible > .member-games-collapsible-summary::before {
+  content: "▸ ";
+  display: inline-block;
+  width: 1em;
+  color: #8ec6ff;
+}
+
+.member-games-collapsible[open] > .member-games-collapsible-summary::before {
+  content: "▾ ";
+}
+
+.member-games-collapsible-panel {
+  padding-top: 0.15rem;
+}
+
+.member-games-collapsible > .member-games-collapsible-panel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
 .member-games-stint-row {

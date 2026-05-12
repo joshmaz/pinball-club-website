@@ -99,6 +99,7 @@ The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing pag
 - Audit logging design: `docs/audit-logging-design.md`
 - Website task agents planning: `docs/website-task-agents.md`
 - Games catalog (Supabase + optional DB-backed public page): `docs/games-relational-migration-plan.md`
+- Games AI enrichment assistant (member editor, Edge Function, rollback): `docs/games-ai-assistant.md`
 - Multi-tenant guardrails while building single-tenant features: `docs/multi-tenant-notes.md`
 - Dynamic photos foundation (schema, RPCs, Edge Functions, threat model, test plan): `docs/photos-foundation.md`
 

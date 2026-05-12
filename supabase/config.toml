@@ -4,6 +4,11 @@
 # Invoked on a schedule with the service role from Supabase (no end-user JWT).
 verify_jwt = false
 
+[functions.ai-game-enrich-propose]
+# Member-triggered function; require authenticated JWT.
+verify_jwt = true
+# Optional: supabase secrets set OPDB_API_TOKEN for artwork thumbnails (Open Pinball Database API).
+
 [functions.photo-upload-intent]
 # Called from the member portal by photos editors. Requires a user JWT so the
 # function can identify the caller and check their member_roles.
