@@ -38,7 +38,14 @@ comment on column public.photo_assets.exclude_from_slideshow is
 comment on column public.photo_assets.promo_role is
   'event_hero: at most one per event across linked albums; event_branding: optional.';
 
-create or replace view public.photo_albums_public_v1 as
+-- Postgres does not allow CREATE OR REPLACE VIEW to insert new columns before
+-- existing output columns (it would reinterpret column names). Drop and
+-- recreate the public read views; they only reference base tables (not each
+-- other), so order is safe. photo_asset_variants_public_v1 is unchanged.
+drop view if exists public.photo_assets_public_v1 cascade;
+drop view if exists public.photo_albums_public_v1 cascade;
+
+create view public.photo_albums_public_v1 as
 select
   alb.id,
   alb.slug,
@@ -53,7 +60,10 @@ select
 from public.photo_albums alb
 where alb.published = true;
 
-create or replace view public.photo_assets_public_v1 as
+comment on view public.photo_albums_public_v1 is
+  'Stable public surface for published albums; no scope columns leaked.';
+
+create view public.photo_assets_public_v1 as
 select
   a.id,
   a.album_id,
@@ -70,3 +80,9 @@ join public.photo_albums alb on alb.id = a.album_id
 where a.status = 'published'
   and a.visibility = 'public'
   and alb.published = true;
+
+comment on view public.photo_assets_public_v1 is
+  'Stable public surface for published photo assets; pair with photo_asset_variants_public_v1 for URLs.';
+
+grant select on public.photo_albums_public_v1 to anon, authenticated;
+grant select on public.photo_assets_public_v1 to anon, authenticated;
