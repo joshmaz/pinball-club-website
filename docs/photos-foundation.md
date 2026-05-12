@@ -286,6 +286,12 @@ Migrations:
   - `snh_public_event_promo_asset(p_event_id)` small public payload for the
     event hero image (Open Graph style use cases).
 
+- `supabase/migrations/20260520100000_event_editor_photo_digest.sql` (and follow-up
+  `20260520103000_event_digest_editor_hero.sql`): `snh_event_photo_digest_for_editor(p_event_id)`
+  returns linked albums plus the event hero asset JSON for **authenticated** events or
+  photos editors. The member Events form shows this digest under **Photos for this event**
+  (hero preview and album list; linking still happens from the Photos panel).
+
 Product rules (locked):
 
 - Multiple albums may share the same `event_id` (no unique constraint).

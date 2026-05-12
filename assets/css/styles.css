@@ -755,6 +755,60 @@ nav a {
   color: #8392a3;
 }
 
+.member-events-photo-digest {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #2a3544;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.member-events-photo-digest-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #c8d4e0;
+}
+
+.member-events-photo-digest-body {
+  margin-top: 0.5rem;
+}
+
+.member-events-photo-digest-hero {
+  margin: 0 0 0.75rem;
+}
+
+.member-events-photo-digest-hero img {
+  display: block;
+  max-width: 100%;
+  max-height: 12rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #0a0a0a;
+}
+
+.member-events-photo-digest-subheading {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #aebccc;
+}
+
+.member-events-photo-digest-albums {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.88rem;
+  color: #9aa8b8;
+  line-height: 1.45;
+}
+
+#member-events-open-photos-panel {
+  margin-top: 0.65rem;
+}
+
 .members-avatar-preview-wrap {
   margin: 0.5rem 0 0;
 }
