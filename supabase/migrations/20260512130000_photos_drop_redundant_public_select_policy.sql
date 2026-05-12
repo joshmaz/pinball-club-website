@@ -1,0 +1,21 @@
+-- Drop the photos_public_anon_read policy on storage.objects.
+--
+-- Why: Supabase Security Advisor flagged that this policy lets any anon /
+-- authenticated client run `select ... from storage.objects where
+-- bucket_id = 'photos-public'`, which enumerates every object in the
+-- bucket (keys, sizes, timestamps, content hashes), including assets that
+-- were just unpublished but not yet purged from storage.
+--
+-- The policy is NOT required to serve images. The `photos-public` bucket
+-- is created with `public = true`, which makes the public URL endpoint
+-- `/storage/v1/object/public/photos-public/<key>` work without consulting
+-- RLS on storage.objects. Our frontend always builds and uses these
+-- public URLs (see assets/js/home-highlights.js and assets/js/member-portal.js)
+-- and never calls `.list()` or queries storage.objects directly. Writes
+-- continue to come exclusively from the Edge Functions running as
+-- service_role, which bypasses RLS.
+--
+-- Net effect: anonymous bucket enumeration is removed; image loads still
+-- work; Edge Function writes still work.
+
+drop policy if exists photos_public_anon_read on storage.objects;

@@ -40,9 +40,17 @@ Migrations:
 - `supabase/migrations/20260512110000_photos_storage_buckets.sql`
   - Creates `photos-private` (private) and `photos-public` (public).
   - Drops any prior storage.objects policies for these buckets.
-  - Allows `select` on `photos-public` for `anon` + `authenticated`.
   - No INSERT / UPDATE / DELETE policy for client roles. service_role
     bypasses RLS, which is how the Edge Functions write.
+
+- `supabase/migrations/20260512130000_photos_drop_redundant_public_select_policy.sql`
+  - Drops the `photos_public_anon_read` SELECT policy added in the
+    previous migration. Public reads of derivatives go through the
+    `photos-public` bucket's `public = true` flag and the
+    `/storage/v1/object/public/...` URL, which bypasses RLS. The SELECT
+    policy on `storage.objects` was redundant for serving images and
+    enabled anonymous bucket enumeration, which Supabase Security
+    Advisor correctly flagged.
 
 - `supabase/migrations/20260512120000_photos_rpcs.sql`
   - Editor RPCs: `snh_photo_albums_list_editor`,
@@ -225,7 +233,8 @@ public site:
 
 ## Bootstrap checklist
 
-1. Apply the three migrations with `supabase db push`.
+1. Apply the migrations with `supabase db push` (initial three plus the
+   `..._photos_drop_redundant_public_select_policy.sql` follow-up).
 2. Deploy the three Edge Functions with `supabase functions deploy`.
 3. Verify both buckets exist in the Supabase dashboard and that
    `photos-public` is marked public.
