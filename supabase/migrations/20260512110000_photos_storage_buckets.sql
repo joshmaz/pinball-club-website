@@ -60,5 +60,10 @@ create policy photos_public_anon_read
 --     and coalesce(public.snh_member_has_photos_admin_access(), false)
 --   );
 
-comment on policy photos_public_anon_read on storage.objects is
-  'Read-only public access to derivative objects in photos-public. Writes only via service_role from photo Edge Functions.';
+-- NOTE: We deliberately do NOT run `COMMENT ON POLICY ... ON storage.objects`
+-- here. storage.objects is owned by supabase_storage_admin; the migration
+-- role can CREATE / DROP policies on it (Supabase grants those explicitly)
+-- but cannot COMMENT on it (Postgres requires table ownership for COMMENT).
+-- The rationale that would have been the policy comment:
+--   Read-only public access to derivative objects in photos-public.
+--   Writes only via service_role from photo Edge Functions.
