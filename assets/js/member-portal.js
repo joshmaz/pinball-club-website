@@ -956,6 +956,23 @@
     if (result.error) throw result.error;
   }
 
+  async function photoEventsListForPhotoLink() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_events_list_for_photo_link");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data) || [];
+  }
+
+  async function publicEventPromoAsset(eventId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    if (!eventId) return null;
+    var result = await client.rpc("snh_public_event_promo_asset", { p_event_id: eventId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
   async function photoAssetFinalizeUpload(assetId, byteSize, contentHashHex, width, height) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1223,6 +1240,8 @@
     photoAlbumDelete: photoAlbumDelete,
     photoAssetsListEditor: photoAssetsListEditor,
     photoAssetSetMetadata: photoAssetSetMetadata,
+    photoEventsListForPhotoLink: photoEventsListForPhotoLink,
+    publicEventPromoAsset: publicEventPromoAsset,
     photoAssetFinalizeUpload: photoAssetFinalizeUpload,
     photoUploadAndRegister: photoUploadAndRegister,
     photoPublishAsset: photoPublishAsset,

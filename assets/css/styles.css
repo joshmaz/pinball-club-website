@@ -2561,6 +2561,18 @@ footer {
   border-radius: 8px;
 }
 
+.member-photos-album-form select,
+.member-photos-album-form input[type="datetime-local"] {
+  width: 100%;
+  font-size: 0.88rem;
+  margin-bottom: 0.35rem;
+}
+
+.member-photos-asset-meta select {
+  width: 100%;
+  font-size: 0.88rem;
+}
+
 .member-photos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));

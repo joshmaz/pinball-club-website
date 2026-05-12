@@ -165,6 +165,8 @@
       for (let j = 0; j < album.assets.length; j += 1) {
         const asset = album.assets[j];
         if (!asset) continue;
+        if (asset.excludeFromSlideshow === true) continue;
+        if (asset.promoRole === "event_hero") continue;
         const web = pickVariant(asset, "web");
         const thumb = pickVariant(asset, "thumb") || web;
         if (!web || !web.objectKey) continue;

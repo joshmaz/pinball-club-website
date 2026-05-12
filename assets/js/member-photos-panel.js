@@ -4,9 +4,10 @@
 // editors manage albums, upload images via server-issued signed URLs, edit
 // captions/alt text, publish/unpublish, reorder, and delete (admin).
 //
-// Authorization is enforced server-side by the RPCs in
-// supabase/migrations/20260512120000_photos_rpcs.sql; this UI is a
-// convenience layer only.
+// Authorization is enforced server-side by the photos RPC migrations
+// (see supabase/migrations/20260512120000_photos_rpcs.sql and
+// 20260519091000_photo_albums_events_rpcs.sql); this UI is a convenience
+// layer only.
 
 (function () {
   var appEl = null;
@@ -15,6 +16,7 @@
   var albumsCache = [];
   var selectedAlbumId = null;
   var assetsByAlbum = {};
+  var eventsForLink = [];
   var lastUserRoles = [];
 
   function el(tag, attrs, children) {
@@ -68,6 +70,28 @@
     return Number.isNaN(d.getTime()) ? "Not set" : d.toLocaleDateString();
   }
 
+  function toDatetimeLocalValue(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    function p(n) {
+      return String(n).padStart(2, "0");
+    }
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+
+  async function loadEventsForLink() {
+    if (!window.SNHMemberPortal || !window.SNHMemberPortal.photoEventsListForPhotoLink) {
+      eventsForLink = [];
+      return;
+    }
+    try {
+      eventsForLink = await window.SNHMemberPortal.photoEventsListForPhotoLink();
+    } catch (_e) {
+      eventsForLink = [];
+    }
+  }
+
   function buildAlbumForm(album) {
     var idVal = album ? album.id : "";
     var slugVal = album ? (album.slug || "") : "";
@@ -107,6 +131,32 @@
     sortInput.value = sortVal;
     form.appendChild(sortInput);
 
+    form.appendChild(el("label", { for: "member-photos-album-event", text: "Linked event (optional)" }));
+    form.appendChild(el("p", {
+      className: "member-form-hint",
+      text: "Only published events are listed. Multiple albums may link to the same event."
+    }));
+    var eventSelect = el("select", { id: "member-photos-album-event" });
+    eventSelect.appendChild(el("option", { value: "", text: "None" }));
+    for (var ei = 0; ei < (eventsForLink || []).length; ei += 1) {
+      var ev = eventsForLink[ei];
+      if (!ev || !ev.id) continue;
+      var evLabel = (ev.title || "(untitled)") + (ev.startsAt ? " (" + fmtDate(ev.startsAt) + ")" : "");
+      var evOpt = el("option", { value: String(ev.id), text: evLabel });
+      if (album && album.eventId && String(album.eventId) === String(ev.id)) evOpt.selected = true;
+      eventSelect.appendChild(evOpt);
+    }
+    form.appendChild(eventSelect);
+
+    form.appendChild(el("label", { for: "member-photos-album-display-at", text: "Display date (optional)" }));
+    form.appendChild(el("p", {
+      className: "member-form-hint",
+      text: "Optional date for sorting or display, especially for albums with no linked event."
+    }));
+    var displayAtInput = el("input", { type: "datetime-local", id: "member-photos-album-display-at" });
+    displayAtInput.value = album && album.displayAt ? toDatetimeLocalValue(album.displayAt) : "";
+    form.appendChild(displayAtInput);
+
     var publishedLabel = el("label", { className: "members-checkbox-label" });
     var publishedInput = el("input", { type: "checkbox", id: "member-photos-album-published", checked: publishedVal });
     publishedLabel.appendChild(publishedInput);
@@ -144,7 +194,9 @@
         title: titleInput.value.trim(),
         description: descInput.value.trim(),
         sortPosition: Number(sortInput.value || 0) || 0,
-        published: publishedInput.checked
+        published: publishedInput.checked,
+        eventId: eventSelect.value ? eventSelect.value : null,
+        displayAt: displayAtInput.value ? new Date(displayAtInput.value).toISOString() : null
       };
       try {
         setStatus(album ? "Saving album..." : "Creating album...");
@@ -213,9 +265,33 @@
     meta.appendChild(sortLabel);
     meta.appendChild(sortInput);
 
+    var excludeWrap = el("label", { className: "members-checkbox-label" });
+    var excludeInput = el("input", { type: "checkbox", checked: !!asset.excludeFromSlideshow });
+    excludeWrap.appendChild(excludeInput);
+    excludeWrap.appendChild(document.createTextNode(" Exclude from home highlights mosaic"));
+    meta.appendChild(excludeWrap);
+
+    meta.appendChild(el("label", { text: "Promo role (requires linked event on this album)" }));
+    var promoSelect = el("select", { "aria-label": "Promo role" });
+    var promoOpts = [
+      ["", "Normal gallery"],
+      ["event_hero", "Event hero (headers, share preview)"],
+      ["event_branding", "Event branding"]
+    ];
+    for (var pi = 0; pi < promoOpts.length; pi += 1) {
+      var po = el("option", { value: promoOpts[pi][0], text: promoOpts[pi][1] });
+      if ((asset.promoRole || "") === promoOpts[pi][0]) po.selected = true;
+      promoSelect.appendChild(po);
+    }
+    if (!album.eventId) {
+      promoSelect.disabled = true;
+      promoSelect.title = "Link this album to an event above to use promo roles.";
+    }
+    meta.appendChild(promoSelect);
+
     var actions = el("p", { className: "member-photos-asset-actions" });
     var saveBtn = el("button", { type: "button", className: "members-events-form-action", text: "Save text" });
-    saveBtn.addEventListener("click", function () { void saveAssetMeta(asset.id, captionInput, altInput, sortInput); });
+    saveBtn.addEventListener("click", function () { void saveAssetMeta(asset.id, captionInput, altInput, sortInput, excludeInput, promoSelect); });
     actions.appendChild(saveBtn);
 
     if (asset.status === "uploaded" || asset.status === "unpublished") {
@@ -251,13 +327,15 @@
     return null;
   }
 
-  async function saveAssetMeta(assetId, captionInput, altInput, sortInput) {
+  async function saveAssetMeta(assetId, captionInput, altInput, sortInput, excludeInput, promoSelect) {
     try {
       setStatus("Saving asset...");
       await window.SNHMemberPortal.photoAssetSetMetadata(assetId, {
         caption: captionInput.value || "",
         altText: altInput.value || "",
-        sortPosition: Number(sortInput.value || 0) || 0
+        sortPosition: Number(sortInput.value || 0) || 0,
+        excludeFromSlideshow: !!(excludeInput && excludeInput.checked),
+        promoRole: promoSelect && promoSelect.value ? promoSelect.value : null
       });
       setStatus("Asset updated.");
       await refreshAssets(selectedAlbumId);
@@ -371,6 +449,7 @@
       try {
         setStatus("Refreshing...");
         await refreshAlbums();
+        await loadEventsForLink();
         if (selectedAlbumId) await refreshAssets(selectedAlbumId);
         setStatus("");
         await renderApp();
@@ -452,7 +531,7 @@
       rightCol.appendChild(el("h4", { text: "Photos in: " + (selectedAlbum.title || selectedAlbum.slug) }));
       rightCol.appendChild(el("p", {
         className: "member-form-hint",
-        text: "Last updated " + fmtDate(selectedAlbum.updatedAt) + " · Slug: " + (selectedAlbum.slug || "(none)")
+        text: "Last updated " + fmtDate(selectedAlbum.updatedAt) + " · Slug: " + (selectedAlbum.slug || "(none)") + (selectedAlbum.eventId ? " · Linked event: " + (selectedAlbum.eventTitle || selectedAlbum.eventId) : "")
       }));
 
       var uploadWrap = el("p", { className: "members-admin-toolbar" });
@@ -508,6 +587,7 @@
       try {
         setStatus("Loading albums...");
         await refreshAlbums();
+        await loadEventsForLink();
         setStatus("");
       } catch (err) {
         setStatus(friendlyError(err), "error");
@@ -515,6 +595,7 @@
     } else {
       try {
         await refreshAlbums();
+        await loadEventsForLink();
         if (selectedAlbumId) await refreshAssets(selectedAlbumId);
       } catch (err) {
         setStatus(friendlyError(err), "error");

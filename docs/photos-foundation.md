@@ -257,3 +257,38 @@ public site:
 - Optional moderation queue for non-admin uploads.
 - Migrate `home-gallery.js` (machine cabinet rotation) to a similar
   pattern when the games-photo workflow is in scope.
+
+## Albums linked to events (2026-05-19)
+
+Migrations:
+
+- `supabase/migrations/20260519090000_photo_albums_events_schema.sql`
+  - `photo_albums.event_id` optional FK to `events(id)` on delete set null.
+  - `photo_albums.display_at` optional timestamptz for album display or sort.
+  - `photo_assets.exclude_from_slideshow` boolean (home mosaic skips when true).
+  - `photo_assets.promo_role` null or `event_hero` or `event_branding` (check constraint).
+  - Index on `photo_albums(event_id)` where not null. Public views updated.
+
+- `supabase/migrations/20260519091000_photo_albums_events_rpcs.sql`
+  - Extends editor and public JSON with event and promo fields.
+  - `snh_photo_album_upsert` accepts `eventId` and `displayAt` in `p_fields`;
+    only **published** events may be linked; **photos editors only** (same
+    `snh_member_has_photos_access()` gate). When `event_id` on an album
+    changes, promo roles on assets in that album are cleared.
+  - `snh_photo_asset_set_metadata` accepts `excludeFromSlideshow` and
+    `promoRole`. `event_hero` and `event_branding` require the album to have
+    an `event_id`. At most one **`event_hero` per event** across all albums
+    sharing that event (other heroes cleared when a new one is set).
+  - `snh_public_photo_albums` includes `eventId`, `eventStartsAt`,
+    `eventTitle`, `displayAt` on albums and promo fields on assets.
+  - `snh_events_list_for_photo_link()` for the member Photos event picker
+    (published events only).
+  - `snh_public_event_promo_asset(p_event_id)` small public payload for the
+    event hero image (Open Graph style use cases).
+
+Product rules (locked):
+
+- Multiple albums may share the same `event_id` (no unique constraint).
+- Home highlights mosaic skips assets with `excludeFromSlideshow` or
+  `promoRole === 'event_hero'`.
+
