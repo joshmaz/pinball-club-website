@@ -856,6 +856,250 @@
     if (result.error) throw result.error;
   }
 
+  // ---------------------------------------------------------------------
+  // Photos
+  // ---------------------------------------------------------------------
+
+  async function photoAlbumsListEditor() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_photo_albums_list_editor");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data) || [];
+  }
+
+  async function photoAlbumUpsert(albumId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_photo_album_upsert", {
+      p_album_id: albumId || null,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function photoAlbumDelete(albumId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_photo_album_delete", { p_album_id: albumId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
+  async function photoAssetsListEditor(albumId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_photo_assets_list_editor", { p_album_id: albumId });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data) || [];
+  }
+
+  async function photoAssetSetMetadata(assetId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_photo_asset_set_metadata", {
+      p_asset_id: assetId,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function photoAssetFinalizeUpload(assetId, byteSize, contentHashHex, width, height) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_photo_asset_finalize_upload", {
+      p_asset_id: assetId,
+      p_byte_size: byteSize,
+      p_content_hash: contentHashHex,
+      p_width: width != null ? width : null,
+      p_height: height != null ? height : null
+    });
+    if (result.error) throw result.error;
+  }
+
+  function getFunctionsBaseUrl() {
+    var cfg = window.SNH_CONFIG || {};
+    if (cfg.functionsBaseUrl) return String(cfg.functionsBaseUrl).replace(/\/+$/, "");
+    var supabaseUrl = String(cfg.supabaseUrl || "").replace(/\/+$/, "");
+    if (!supabaseUrl) return "";
+    return supabaseUrl + "/functions/v1";
+  }
+
+  async function callPhotoFunction(name, body) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var sessionResult = await client.auth.getSession();
+    var token = sessionResult && sessionResult.data && sessionResult.data.session
+      ? sessionResult.data.session.access_token
+      : "";
+    if (!token) throw new Error("Not signed in.");
+    var base = getFunctionsBaseUrl();
+    if (!base) throw new Error("Supabase functions URL not configured.");
+    var resp = await fetch(base + "/" + name, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify(body || {})
+    });
+    var payload = null;
+    try {
+      payload = await resp.json();
+    } catch (_e) {
+      payload = null;
+    }
+    if (!resp.ok || !payload || payload.ok === false) {
+      var msg = (payload && payload.error) || ("HTTP " + resp.status);
+      var err = new Error(msg);
+      err.status = resp.status;
+      err.payload = payload;
+      throw err;
+    }
+    return payload;
+  }
+
+  async function photoUploadIntent(albumId, contentType, byteSize, originalFilename) {
+    return callPhotoFunction("photo-upload-intent", {
+      albumId: albumId,
+      contentType: contentType,
+      byteSize: byteSize,
+      originalFilename: originalFilename || null
+    });
+  }
+
+  async function photoPublishAsset(assetId, opts) {
+    return callPhotoFunction("photo-publish", {
+      assetId: assetId,
+      publish: opts && opts.publish === false ? false : true
+    });
+  }
+
+  async function photoPurgeAsset(assetId, action) {
+    return callPhotoFunction("photo-purge", {
+      assetId: assetId,
+      action: action === "delete" ? "delete" : "unpublish"
+    });
+  }
+
+  async function uploadOriginalToSignedUrl(intent, fileBlob, contentType) {
+    var client = getClient();
+    if (client && intent && intent.objectKey && intent.token && intent.bucket) {
+      var bucketRef = client.storage.from(intent.bucket);
+      if (bucketRef && typeof bucketRef.uploadToSignedUrl === "function") {
+        var result = await bucketRef.uploadToSignedUrl(intent.objectKey, intent.token, fileBlob, {
+          contentType: contentType || "application/octet-stream",
+          upsert: true
+        });
+        if (result && result.error) {
+          throw new Error("Upload failed: " + (result.error.message || "unknown"));
+        }
+        return;
+      }
+    }
+    var resp = await fetch(intent.signedUrl, {
+      method: "PUT",
+      headers: { "Content-Type": contentType || "application/octet-stream" },
+      body: fileBlob
+    });
+    if (!resp.ok) {
+      throw new Error("Upload failed (HTTP " + resp.status + ")");
+    }
+  }
+
+  async function sha256HexOfBlob(blob) {
+    var buffer = await blob.arrayBuffer();
+    var digest = await crypto.subtle.digest("SHA-256", buffer);
+    var bytes = new Uint8Array(digest);
+    var hex = "";
+    for (var i = 0; i < bytes.length; i += 1) {
+      var b = bytes[i].toString(16);
+      if (b.length < 2) b = "0" + b;
+      hex += b;
+    }
+    return hex;
+  }
+
+  function readImageDimensions(blob) {
+    return new Promise(function (resolve) {
+      try {
+        var url = URL.createObjectURL(blob);
+        var img = new Image();
+        img.onload = function () {
+          var w = img.naturalWidth || img.width || 0;
+          var h = img.naturalHeight || img.height || 0;
+          URL.revokeObjectURL(url);
+          resolve({ width: w, height: h });
+        };
+        img.onerror = function () {
+          URL.revokeObjectURL(url);
+          resolve({ width: 0, height: 0 });
+        };
+        img.src = url;
+      } catch (_e) {
+        resolve({ width: 0, height: 0 });
+      }
+    });
+  }
+
+  async function photoUploadAndRegister(albumId, file) {
+    if (!file) throw new Error("No file selected.");
+    var contentType = String(file.type || "").toLowerCase();
+    if (["image/jpeg", "image/png"].indexOf(contentType) === -1) {
+      throw new Error("Unsupported image type. Use JPEG or PNG.");
+    }
+    var byteSize = file.size || 0;
+    if (!byteSize || byteSize > 50 * 1024 * 1024) {
+      throw new Error("File must be between 1 byte and 50 MB.");
+    }
+
+    var intent = await photoUploadIntent(albumId, contentType, byteSize, file.name || null);
+    if (!intent || !intent.signedUrl || !intent.assetId) {
+      throw new Error("Could not get upload URL.");
+    }
+
+    await uploadOriginalToSignedUrl(intent, file, contentType);
+
+    var dims = await readImageDimensions(file);
+    var hashHex = await sha256HexOfBlob(file);
+    await photoAssetFinalizeUpload(intent.assetId, byteSize, hashHex, dims.width, dims.height);
+
+    return {
+      assetId: intent.assetId,
+      objectKey: intent.objectKey,
+      bucket: intent.bucket,
+      width: dims.width,
+      height: dims.height,
+      contentHash: hashHex,
+      byteSize: byteSize,
+      contentType: contentType
+    };
+  }
+
+  async function publicPhotoAlbums() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_public_photo_albums");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data) || [];
+  }
+
+  function buildPublicPhotoUrl(objectKey) {
+    if (!objectKey) return "";
+    var cfg = window.SNH_CONFIG || {};
+    var supabaseUrl = String(cfg.supabaseUrl || "").replace(/\/+$/, "");
+    if (!supabaseUrl) return "";
+    return supabaseUrl + "/storage/v1/object/public/photos-public/" + encodeStoragePath(objectKey);
+  }
+
+  function encodeStoragePath(path) {
+    return String(path)
+      .split("/")
+      .map(function (part) { return encodeURIComponent(part); })
+      .join("/");
+  }
+
   async function gamesSetPartyLink(gameId, partyId, relationshipPublic, hideOwnerPublic) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -922,6 +1166,17 @@
     ownerPartiesDelete: ownerPartiesDelete,
     gamesSetPartyLink: gamesSetPartyLink,
     publicGameMoreInfo: publicGameMoreInfo,
+    photoAlbumsListEditor: photoAlbumsListEditor,
+    photoAlbumUpsert: photoAlbumUpsert,
+    photoAlbumDelete: photoAlbumDelete,
+    photoAssetsListEditor: photoAssetsListEditor,
+    photoAssetSetMetadata: photoAssetSetMetadata,
+    photoAssetFinalizeUpload: photoAssetFinalizeUpload,
+    photoUploadAndRegister: photoUploadAndRegister,
+    photoPublishAsset: photoPublishAsset,
+    photoPurgeAsset: photoPurgeAsset,
+    publicPhotoAlbums: publicPhotoAlbums,
+    buildPublicPhotoUrl: buildPublicPhotoUrl,
     buildIfpaPlayerProfileUrl: buildIfpaPlayerProfileUrl,
     buildMatchplayPlayerProfileUrl: buildMatchplayPlayerProfileUrl,
     formatMembershipStatusLabel: formatMembershipStatusLabel,

@@ -23,6 +23,7 @@
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/member-portal.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
+  <script src="assets/js/member-photos-panel.js"></script>
   <script src="assets/js/member-club-issues-panel.js"></script>
 </head>
 <body>
@@ -364,8 +365,10 @@
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
           <h3>Photos</h3>
-          <p id="member-photos-intro" class="member-panel-intro">A spot reserved for the helpers who curate club photos. There are no photo tools to use here yet. When upload and gallery workflows are ready, they will live in this section.</p>
+          <p id="member-photos-intro" class="member-panel-intro">Curate the club photo gallery: organize albums, upload originals, write captions and alt text, and publish what should appear on the public site. Originals stay private; only published derivatives are publicly visible.</p>
           <p id="member-photos-access" class="member-panel-access-note" hidden></p>
+          <p id="member-photos-status" class="members-page-status" aria-live="polite"></p>
+          <div id="member-photos-app" class="member-photos-app" aria-live="polite"></div>
         </div>
 
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
@@ -1355,6 +1358,9 @@
 
     onPhotosPanelShown = function () {
       setPhotosPanelIntro(userRoles);
+      if (window.SNHMemberPhotosPanel && typeof window.SNHMemberPhotosPanel.init === "function") {
+        void window.SNHMemberPhotosPanel.init(userRoles);
+      }
     };
 
     onGamesPanelShown = function () {

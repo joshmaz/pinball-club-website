@@ -3,3 +3,18 @@
 [functions.pinballmap-ingest]
 # Invoked on a schedule with the service role from Supabase (no end-user JWT).
 verify_jwt = false
+
+[functions.photo-upload-intent]
+# Called from the member portal by photos editors. Requires a user JWT so the
+# function can identify the caller and check their member_roles.
+verify_jwt = true
+
+[functions.photo-publish]
+# Called from the member portal to generate derivatives and publish an asset.
+# Requires a user JWT for the role + audit trail.
+verify_jwt = true
+
+[functions.photo-purge]
+# Called from the member portal to unpublish or delete an asset (admin role
+# for delete). Requires a user JWT.
+verify_jwt = true

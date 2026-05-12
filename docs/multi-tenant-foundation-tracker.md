@@ -9,6 +9,7 @@ Keep daily development compatible with a future tenant-scoped architecture witho
 ## References
 
 - `docs/multi-tenant-notes.md`
+- `docs/photos-foundation.md` (first feature designed against this tracker)
 - `README.md` -> "Lightweight PR checklist (tenant-safe by default)"
 
 ## Next Up
@@ -16,6 +17,9 @@ Keep daily development compatible with a future tenant-scoped architecture witho
 - [ ] Add first automated DB policy tests for scope/isolation assumptions.
 - [ ] Inventory current privileged RPCs and expected ownership boundaries.
 - [ ] Define initial `tenants` + `tenant_members` draft schema (design note only).
+- [ ] Photos: per-scope storage quota (read aggregate `original_byte_size`) and visible quota in editor UI.
+- [ ] Photos: pending-asset garbage collection job (delete `photo_assets` rows stuck in `pending` > 24 h and matching storage objects).
+- [ ] Photos: storage policy regression tests (anon denied on `photos-private`, authenticated denied write on either bucket, signed URL scope check).
 
 ## Ongoing Rule
 
