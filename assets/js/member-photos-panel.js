@@ -1,4 +1,4 @@
-// Member Photos panel: album list + per-album asset editor.
+// Member Photos panel: album list, metadata form, then photos + upload in one column.
 //
 // Wires the dynamic photos foundation into the member portal. Lets photos
 // editors manage albums, upload images via server-issued signed URLs, edit
@@ -36,9 +36,15 @@
     return n;
   }
 
+  function setUploadInlineStatus(message) {
+    var u = document.getElementById("member-photos-upload-inline-status");
+    if (u) u.textContent = message || "";
+  }
+
   function setStatus(message, kind) {
     if (!statusEl) return;
     statusEl.textContent = message || "";
+    if (!message) setUploadInlineStatus("");
     statusEl.classList.remove("is-error");
     if (kind === "error") statusEl.classList.add("is-error");
   }
@@ -418,14 +424,20 @@
     if (!files || !files.length) return;
     try {
       for (var i = 0; i < files.length; i += 1) {
-        setStatus("Uploading " + (i + 1) + " of " + files.length + ": " + files[i].name);
+        var line = "Uploading " + (i + 1) + " of " + files.length + ": " + files[i].name;
+        setStatus(line);
+        setUploadInlineStatus(line);
         await window.SNHMemberPortal.photoUploadAndRegister(albumId, files[i]);
       }
-      setStatus("Uploaded " + files.length + " file(s). Click Generate & publish to make them visible.");
+      var doneMsg = "Uploaded " + files.length + " file(s). Click Generate & publish to make them visible.";
+      setStatus(doneMsg);
       await refreshAssets(albumId);
       await renderApp();
+      setUploadInlineStatus(doneMsg);
     } catch (err) {
-      setStatus(friendlyError(err), "error");
+      var errMsg = friendlyError(err);
+      setStatus(errMsg, "error");
+      setUploadInlineStatus(errMsg);
     }
   }
 
@@ -474,11 +486,11 @@
 
     var layout = el("div", { className: "member-photos-layout" });
 
-    var leftCol = el("section", { className: "member-photos-albums-col" });
-    leftCol.appendChild(el("h4", { text: "Albums" }));
+    var mainCol = el("section", { className: "member-photos-main-col" });
+    mainCol.appendChild(el("h4", { text: "Albums" }));
 
     if (!albumsCache.length) {
-      leftCol.appendChild(el("p", {
+      mainCol.appendChild(el("p", {
         className: "member-form-hint",
         text: "No albums yet. Create one below to start uploading photos."
       }));
@@ -508,13 +520,13 @@
         li.appendChild(btn);
         ul.appendChild(li);
       }
-      leftCol.appendChild(ul);
+      mainCol.appendChild(ul);
     }
 
-    leftCol.appendChild(el("h4", { text: "Album editor" }));
+    mainCol.appendChild(el("h4", { text: "Album editor" }));
     var selectedAlbum = albumsCache.find(function (a) { return String(a.id) === String(selectedAlbumId); }) || null;
     var formBundle = buildAlbumForm(selectedAlbum);
-    leftCol.appendChild(formBundle.form);
+    mainCol.appendChild(formBundle.form);
     if (selectedAlbum) {
       var cancelBtn = formBundle.form.querySelector("#" + formBundle.cancelBtnId);
       if (cancelBtn) {
@@ -531,24 +543,23 @@
       }
     }
 
-    layout.appendChild(leftCol);
-
-    var rightCol = el("section", { className: "member-photos-assets-col" });
-
     if (!selectedAlbum) {
-      rightCol.appendChild(el("p", {
-        className: "member-form-hint",
-        text: "Select an album on the left, or create one to upload photos."
+      mainCol.appendChild(el("p", {
+        className: "member-form-hint member-photos-pick-album-hint",
+        text: "Select an album above, or create one in the form, to upload photos."
       }));
     } else {
-      rightCol.appendChild(el("h4", { text: "Photos in: " + (selectedAlbum.title || selectedAlbum.slug) }));
-      rightCol.appendChild(el("p", {
+      var assetsSection = el("div", { className: "member-photos-album-assets" });
+      assetsSection.appendChild(el("h4", { text: "Photos in: " + (selectedAlbum.title || selectedAlbum.slug) }));
+      assetsSection.appendChild(el("p", {
         className: "member-form-hint",
         text: "Last updated " + fmtDate(selectedAlbum.updatedAt) + " · Slug: " + (selectedAlbum.slug || "(none)") + (selectedAlbum.eventId ? " · Linked event: " + (selectedAlbum.eventTitle || selectedAlbum.eventId) : "")
       }));
 
-      var uploadWrap = el("p", { className: "members-admin-toolbar" });
-      uploadWrap.appendChild(el("label", { for: "member-photos-upload-input", text: "Upload (JPEG or PNG, up to 50 MB):" }));
+      var uploadBlock = el("div", { className: "member-photos-upload-block" });
+      var uploadRow = el("div", { className: "member-photos-upload-row" });
+      var fileWrap = el("div", { className: "member-photos-upload-file-wrap" });
+      fileWrap.appendChild(el("label", { for: "member-photos-upload-input", text: "Upload (JPEG or PNG, up to 50 MB):" }));
       var fileInput = el("input", {
         type: "file",
         id: "member-photos-upload-input",
@@ -562,12 +573,19 @@
           fileInput.value = "";
         });
       });
-      uploadWrap.appendChild(fileInput);
-      rightCol.appendChild(uploadWrap);
+      fileWrap.appendChild(fileInput);
+      uploadRow.appendChild(fileWrap);
+      uploadRow.appendChild(el("p", {
+        id: "member-photos-upload-inline-status",
+        className: "member-photos-upload-inline-status",
+        "aria-live": "polite"
+      }));
+      uploadBlock.appendChild(uploadRow);
+      assetsSection.appendChild(uploadBlock);
 
       var assets = assetsByAlbum[selectedAlbum.id] || [];
       if (!assets.length) {
-        rightCol.appendChild(el("p", {
+        assetsSection.appendChild(el("p", {
           className: "member-form-hint",
           text: "No photos in this album yet."
         }));
@@ -576,11 +594,12 @@
         for (var j = 0; j < assets.length; j += 1) {
           grid.appendChild(buildAssetCard(selectedAlbum, assets[j]));
         }
-        rightCol.appendChild(grid);
+        assetsSection.appendChild(grid);
       }
+      mainCol.appendChild(assetsSection);
     }
 
-    layout.appendChild(rightCol);
+    layout.appendChild(mainCol);
     appEl.appendChild(layout);
   }
 
