@@ -23,6 +23,7 @@
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/member-portal.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
+  <script src="assets/js/member-photos-panel.js"></script>
   <script src="assets/js/member-club-issues-panel.js"></script>
 </head>
 <body>
@@ -325,6 +326,15 @@
               Published (visible on public Events page)
             </label>
 
+            <div id="member-events-photo-digest" class="member-events-photo-digest" hidden>
+              <h4 class="member-events-photo-digest-heading">Photos for this event</h4>
+              <p id="member-events-photo-digest-status" class="member-form-hint"></p>
+              <div id="member-events-photo-digest-body" class="member-events-photo-digest-body"></div>
+              <p class="members-admin-toolbar">
+                <button type="button" class="members-sidebar-link" id="member-events-open-photos-panel">Open Photos panel</button>
+              </p>
+            </div>
+
             <p class="members-admin-toolbar">
               <button type="submit" class="members-events-form-action">Save event</button>
               <button type="button" class="members-events-form-action" id="member-events-reset">Clear form</button>
@@ -364,8 +374,10 @@
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
           <h3>Photos</h3>
-          <p id="member-photos-intro" class="member-panel-intro">A spot reserved for the helpers who curate club photos. There are no photo tools to use here yet. When upload and gallery workflows are ready, they will live in this section.</p>
+          <p id="member-photos-intro" class="member-panel-intro">Curate the club photo gallery: organize albums, upload originals, write captions and alt text, and publish what should appear on the public site. Originals stay private; only published derivatives are publicly visible.</p>
           <p id="member-photos-access" class="member-panel-access-note" hidden></p>
+          <p id="member-photos-status" class="members-page-status" aria-live="polite"></p>
+          <div id="member-photos-app" class="member-photos-app" aria-live="polite"></div>
         </div>
 
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
@@ -461,6 +473,10 @@
     var memberEventsAllRows = [];
     var memberEventsPage = 1;
     var memberEventsPageSize = 10;
+    var memberEventsPhotoDigest = document.getElementById("member-events-photo-digest");
+    var memberEventsPhotoDigestStatus = document.getElementById("member-events-photo-digest-status");
+    var memberEventsPhotoDigestBody = document.getElementById("member-events-photo-digest-body");
+    var memberEventsOpenPhotosPanel = document.getElementById("member-events-open-photos-panel");
     var profileSubmitButton = profileForm ? profileForm.querySelector('button[type="submit"]') : null;
     var profileFormBaseline = null;
     var profileFormSaving = false;
@@ -792,6 +808,120 @@
         userRolesList || [],
         roleCsv
       );
+    }
+
+    function pickEventDigestVariant(variants, name) {
+      if (!Array.isArray(variants)) return null;
+      for (var i = 0; i < variants.length; i += 1) {
+        if (variants[i] && variants[i].variant === name) return variants[i];
+      }
+      return null;
+    }
+
+    function clearEventPhotoDigest() {
+      if (memberEventsPhotoDigest) memberEventsPhotoDigest.hidden = true;
+      if (memberEventsPhotoDigestStatus) memberEventsPhotoDigestStatus.textContent = "";
+      if (memberEventsPhotoDigestBody) memberEventsPhotoDigestBody.innerHTML = "";
+    }
+
+    async function loadEventPhotoDigest(eventId) {
+      clearEventPhotoDigest();
+      if (!memberEventsPhotoDigest || !eventId) return;
+      if (!window.SNHMemberPortal || typeof window.SNHMemberPortal.eventPhotoDigestForEditor !== "function") {
+        return;
+      }
+      memberEventsPhotoDigest.hidden = false;
+      if (memberEventsPhotoDigestStatus) {
+        memberEventsPhotoDigestStatus.textContent = "Loading linked albums…";
+      }
+      try {
+        var digest = await window.SNHMemberPortal.eventPhotoDigestForEditor(eventId);
+        var albums = (digest && digest.albums) || [];
+        var hero = digest && digest.hero ? digest.hero : null;
+        if (memberEventsPhotoDigestStatus) memberEventsPhotoDigestStatus.textContent = "";
+        if (!memberEventsPhotoDigestBody) return;
+        memberEventsPhotoDigestBody.innerHTML = "";
+
+        if (hero) {
+          var web = pickEventDigestVariant(hero.variants, "web");
+          var thumb = pickEventDigestVariant(hero.variants, "thumb") || web;
+          var url =
+            thumb && thumb.objectKey && window.SNHMemberPortal.buildPublicPhotoUrl
+              ? window.SNHMemberPortal.buildPublicPhotoUrl(thumb.objectKey)
+              : web && web.objectKey && window.SNHMemberPortal.buildPublicPhotoUrl
+                ? window.SNHMemberPortal.buildPublicPhotoUrl(web.objectKey)
+                : "";
+          var heroWrap = document.createElement("div");
+          heroWrap.className = "member-events-photo-digest-hero";
+          if (url) {
+            var im = document.createElement("img");
+            im.src = url;
+            im.alt = hero.altText || hero.caption || "Event hero image";
+            im.loading = "lazy";
+            im.decoding = "async";
+            heroWrap.appendChild(im);
+          } else {
+            heroWrap.appendChild(
+              document.createTextNode("Hero image is set but no public URL was returned.")
+            );
+          }
+          var cap = document.createElement("p");
+          cap.className = "member-form-hint";
+          cap.textContent =
+            "Event hero (used for share previews when published). In the Photos panel, link an album to this event and mark one published asset as Event hero.";
+          heroWrap.appendChild(cap);
+          memberEventsPhotoDigestBody.appendChild(heroWrap);
+        } else {
+          var noHero = document.createElement("p");
+          noHero.className = "member-form-hint";
+          noHero.textContent =
+            "No published event hero yet. In the Photos panel, link an album to this event, publish assets, then mark one as Event hero.";
+          memberEventsPhotoDigestBody.appendChild(noHero);
+        }
+
+        if (!albums.length) {
+          var none = document.createElement("p");
+          none.className = "member-form-hint";
+          none.textContent =
+            "No photo albums are linked to this event. Open the Photos panel and choose Linked event on an album.";
+          memberEventsPhotoDigestBody.appendChild(none);
+        } else {
+          var sub = document.createElement("h4");
+          sub.className = "member-events-photo-digest-subheading";
+          sub.textContent = "Linked photo albums";
+          memberEventsPhotoDigestBody.appendChild(sub);
+          var ul = document.createElement("ul");
+          ul.className = "member-events-photo-digest-albums";
+          for (var a = 0; a < albums.length; a += 1) {
+            var alb = albums[a];
+            if (!alb) continue;
+            var li = document.createElement("li");
+            var counts = alb.assetCounts || {};
+            var pub = counts.published != null ? counts.published : 0;
+            var tot = counts.total != null ? counts.total : 0;
+            li.textContent =
+              (alb.title || "(untitled)") +
+              " · slug " +
+              (alb.slug || "") +
+              (alb.published ? " · published album" : " · draft album") +
+              " · " +
+              pub +
+              "/" +
+              tot +
+              " published assets";
+            ul.appendChild(li);
+          }
+          memberEventsPhotoDigestBody.appendChild(ul);
+        }
+      } catch (digestErr) {
+        if (memberEventsPhotoDigestStatus) {
+          memberEventsPhotoDigestStatus.textContent =
+            "Could not load photo digest: " +
+            (window.SNHMemberPortal.getFriendlyAuthErrorMessage
+              ? window.SNHMemberPortal.getFriendlyAuthErrorMessage(digestErr)
+              : String((digestErr && digestErr.message) || digestErr));
+        }
+      }
     }
 
     function initialPanelFromHash() {
@@ -1198,6 +1328,7 @@
       memberEventsForm.reset();
       if (memberEventsId) memberEventsId.value = "";
       if (memberEventsPublished) memberEventsPublished.checked = true;
+      clearEventPhotoDigest();
     }
 
     function setEventsFormFromRow(row) {
@@ -1210,6 +1341,7 @@
       if (memberEventsSource) memberEventsSource.value = row.source || "";
       if (memberEventsDescription) memberEventsDescription.value = row.description || "";
       if (memberEventsPublished) memberEventsPublished.checked = !!row.published;
+      void loadEventPhotoDigest(row.id);
     }
 
     function focusAndHighlightEventsEditor() {
@@ -1355,6 +1487,9 @@
 
     onPhotosPanelShown = function () {
       setPhotosPanelIntro(userRoles);
+      if (window.SNHMemberPhotosPanel && typeof window.SNHMemberPhotosPanel.init === "function") {
+        void window.SNHMemberPhotosPanel.init(userRoles);
+      }
     };
 
     onGamesPanelShown = function () {
@@ -1380,6 +1515,16 @@
       memberEventsReset.addEventListener("click", function () {
         resetEventsForm();
         setEventsStatus("Form cleared.");
+      });
+    }
+
+    if (memberEventsOpenPhotosPanel) {
+      memberEventsOpenPhotosPanel.addEventListener("click", function () {
+        showMemberPanel("photos", {});
+        setPhotosPanelIntro(userRoles);
+        if (window.SNHMemberPhotosPanel && typeof window.SNHMemberPhotosPanel.init === "function") {
+          void window.SNHMemberPhotosPanel.init(userRoles);
+        }
       });
     }
 

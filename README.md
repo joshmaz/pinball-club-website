@@ -18,7 +18,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - live IFPA profile link preview based on entered IFPA player number
   - current membership status display (status, tier, renews/ends) plus a phase-0 writeup of how membership works today (treasurer-tracked, $40/month or $480/year, pay via cash or PayPal at [paypal.me/snhpinball](https://paypal.me/snhpinball))
   - role-gated **Member Tools** panel (member directory with membership status fields, stats, role grants/revokes, and manual membership updates) backed by Supabase RPCs
-  - role-gated Events, Photos, and Games panels for designated helpers
+  - role-gated Events, Photos, and Games panels for designated helpers (Photos panel ships full upload/caption/publish/regenerate/unpublish/delete via Supabase Storage; see `docs/photos-foundation.md`)
   - shared Club & machine notes panel readable by every signed-in member; writable by anyone with a portal helper role
   - password change for signed-in users
 - Password recovery from `signin.html` ("Forgot Password" email flow)
@@ -67,7 +67,7 @@ The member dashboard sidebar shows a section if the signed-in member has any of 
 | Notes          | Club & machine notes     | Any signed-in member can read                                 | Add/edit requires any portal helper role (events, photos, games, or membership).       |
 | Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes. |
 | Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
-| Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Scaffolding only today; no upload/moderation tools yet.   |
+| Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
 | Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`.                                                            |
 
 Role groups are defined in `assets/js/member-portal.js` as `SNHMemberPortal.ROLE_GROUPS`. Keep that map in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
@@ -101,6 +101,7 @@ The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing pag
 - Games catalog (Supabase + optional DB-backed public page): `docs/games-relational-migration-plan.md`
 - Games AI enrichment assistant (member editor, Edge Function, rollback): `docs/games-ai-assistant.md`
 - Multi-tenant guardrails while building single-tenant features: `docs/multi-tenant-notes.md`
+- Dynamic photos foundation (schema, RPCs, Edge Functions, threat model, test plan): `docs/photos-foundation.md`
 
 ## Lightweight PR checklist (tenant-safe by default)
 

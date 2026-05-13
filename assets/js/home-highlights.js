@@ -3,6 +3,7 @@
   const MOBILE_MAX_VISIBLE = 5;
   const MOBILE_MEDIA_QUERY = "(max-width: 700px)";
   const HIGHLIGHTS_URL = "data/highlights.json";
+  const STATIC_IMAGE_BASE = "assets/images/highlights/processed/";
 
   function shuffleInPlace(array) {
     for (let i = array.length - 1; i > 0; i -= 1) {
@@ -14,6 +15,25 @@
     return array;
   }
 
+  function pickVariant(asset, name) {
+    const variants = (asset && asset.variants) || [];
+    for (let i = 0; i < variants.length; i += 1) {
+      if (variants[i] && variants[i].variant === name) return variants[i];
+    }
+    return null;
+  }
+
+  function buildPublicPhotoUrl(objectKey) {
+    const cfg = window.SNH_CONFIG || {};
+    const supabaseUrl = String(cfg.supabaseUrl || "").replace(/\/+$/, "");
+    if (!supabaseUrl || !objectKey) return "";
+    const encoded = String(objectKey)
+      .split("/")
+      .map(function (part) { return encodeURIComponent(part); })
+      .join("/");
+    return supabaseUrl + "/storage/v1/object/public/photos-public/" + encoded;
+  }
+
   function createCard(item) {
     const figure = document.createElement("figure");
     figure.className = "home-highlight-card";
@@ -22,11 +42,11 @@
     trigger.type = "button";
     trigger.className = "home-highlight-trigger";
     trigger.setAttribute("aria-label", "Open photo: " + item.caption);
-    trigger.dataset.imageSrc = "assets/images/highlights/processed/" + item.filename;
+    trigger.dataset.imageSrc = item.fullSrc || item.thumbSrc;
     trigger.dataset.imageAlt = item.alt;
 
     const image = document.createElement("img");
-    image.src = trigger.dataset.imageSrc;
+    image.src = item.thumbSrc || item.fullSrc;
     image.alt = item.alt;
     image.loading = "lazy";
     image.decoding = "async";
@@ -113,19 +133,56 @@
     });
   }
 
-  function sanitizeHighlights(input) {
+  function sanitizeStaticHighlights(input) {
     if (!Array.isArray(input)) return [];
-    return input.filter(function (item) {
-      return (
-        item &&
-        typeof item.filename === "string" &&
-        item.filename &&
-        typeof item.alt === "string" &&
-        item.alt &&
-        typeof item.caption === "string" &&
-        item.caption
-      );
-    });
+    return input
+      .filter(function (item) {
+        return (
+          item &&
+          typeof item.filename === "string" && item.filename &&
+          typeof item.alt === "string" && item.alt &&
+          typeof item.caption === "string" && item.caption
+        );
+      })
+      .map(function (item) {
+        const src = STATIC_IMAGE_BASE + item.filename;
+        return {
+          source: "static",
+          alt: item.alt,
+          caption: item.caption,
+          thumbSrc: src,
+          fullSrc: src
+        };
+      });
+  }
+
+  function flattenDynamicAlbums(albums) {
+    if (!Array.isArray(albums)) return [];
+    const out = [];
+    for (let i = 0; i < albums.length; i += 1) {
+      const album = albums[i];
+      if (!album || !Array.isArray(album.assets)) continue;
+      for (let j = 0; j < album.assets.length; j += 1) {
+        const asset = album.assets[j];
+        if (!asset) continue;
+        if (asset.excludeFromSlideshow === true) continue;
+        if (asset.promoRole === "event_hero") continue;
+        const web = pickVariant(asset, "web");
+        const thumb = pickVariant(asset, "thumb") || web;
+        if (!web || !web.objectKey) continue;
+        const fullSrc = buildPublicPhotoUrl(web.objectKey);
+        const thumbSrc = thumb && thumb.objectKey ? buildPublicPhotoUrl(thumb.objectKey) : fullSrc;
+        if (!fullSrc) continue;
+        out.push({
+          source: "dynamic",
+          alt: asset.altText || asset.caption || "Club photo",
+          caption: asset.caption || album.title || "Club photo",
+          thumbSrc: thumbSrc,
+          fullSrc: fullSrc
+        });
+      }
+    }
+    return out;
   }
 
   function renderHighlightsMessage(grid, message) {
@@ -136,13 +193,36 @@
     grid.appendChild(msg);
   }
 
-  async function loadHighlights() {
+  async function loadDynamicHighlights() {
+    const client = window.snhSupabase;
+    if (!client || typeof client.rpc !== "function") return null;
+    try {
+      const result = await client.rpc("snh_public_photo_albums");
+      if (result.error) return null;
+      let data = result.data;
+      if (typeof data === "string") {
+        try { data = JSON.parse(data); } catch (_e) { data = null; }
+      }
+      const flattened = flattenDynamicAlbums(data || []);
+      return flattened;
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  async function loadStaticHighlights() {
     const response = await fetch(HIGHLIGHTS_URL, { cache: "no-store" });
     if (!response.ok) {
       throw new Error("Highlights request failed (" + response.status + ")");
     }
     const payload = await response.json();
-    return sanitizeHighlights(payload.highlights);
+    return sanitizeStaticHighlights(payload.highlights);
+  }
+
+  async function loadHighlights() {
+    const dynamic = await loadDynamicHighlights();
+    if (dynamic && dynamic.length > 0) return dynamic;
+    return loadStaticHighlights();
   }
 
   async function initHighlights() {
@@ -158,7 +238,7 @@
       return;
     }
 
-    if (highlights.length === 0) {
+    if (!highlights || highlights.length === 0) {
       renderHighlightsMessage(grid, "No highlight photos published yet.");
       return;
     }

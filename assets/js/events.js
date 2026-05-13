@@ -477,3 +477,198 @@ async function loadEvents() {
 }
 
 loadEvents();
+
+const EVENTS_SPOTLIGHT_MAX_GRID = 6;
+
+function eventsSpotlightNormalizeUuid(value) {
+  if (!value || typeof value !== 'string') return '';
+  const t = value.trim().toLowerCase();
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(t)
+  ) {
+    return '';
+  }
+  return t;
+}
+
+function eventsSpotlightParseRpcJson(data) {
+  if (data == null) return null;
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data);
+    } catch (_e) {
+      return null;
+    }
+  }
+  return data;
+}
+
+function eventsSpotlightBuildPublicPhotoUrl(objectKey) {
+  const cfg = window.SNH_CONFIG || {};
+  const supabaseUrl = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
+  if (!supabaseUrl || !objectKey) return '';
+  const encoded = String(objectKey)
+    .split('/')
+    .map((part) => encodeURIComponent(part))
+    .join('/');
+  return `${supabaseUrl}/storage/v1/object/public/photos-public/${encoded}`;
+}
+
+function eventsSpotlightPickVariant(asset, name) {
+  const variants = (asset && asset.variants) || [];
+  for (let i = 0; i < variants.length; i += 1) {
+    if (variants[i] && variants[i].variant === name) return variants[i];
+  }
+  return null;
+}
+
+function eventsSpotlightAssetImageUrls(asset) {
+  if (!asset) return { thumb: '', full: '' };
+  const web = eventsSpotlightPickVariant(asset, 'web');
+  const thumb = eventsSpotlightPickVariant(asset, 'thumb') || web;
+  const fullSrc = web && web.objectKey ? eventsSpotlightBuildPublicPhotoUrl(web.objectKey) : '';
+  const thumbSrc =
+    thumb && thumb.objectKey ? eventsSpotlightBuildPublicPhotoUrl(thumb.objectKey) : fullSrc;
+  return { thumb: thumbSrc || '', full: fullSrc || thumbSrc || '' };
+}
+
+function eventsSpotlightPromoImageUrls(promo) {
+  if (!promo || !Array.isArray(promo.variants)) return { thumb: '', full: '' };
+  const web = promo.variants.find((v) => v && v.variant === 'web');
+  const thumb = promo.variants.find((v) => v && v.variant === 'thumb') || web;
+  const fullSrc = web && web.objectKey ? eventsSpotlightBuildPublicPhotoUrl(web.objectKey) : '';
+  const thumbSrc =
+    thumb && thumb.objectKey ? eventsSpotlightBuildPublicPhotoUrl(thumb.objectKey) : fullSrc;
+  return { thumb: thumbSrc || '', full: fullSrc || thumbSrc || '' };
+}
+
+function eventsSpotlightClearShell(section, statusEl, logoEl, titleEl, descEl, gridEl) {
+  if (statusEl) statusEl.textContent = '';
+  if (titleEl) titleEl.textContent = '';
+  if (descEl) {
+    descEl.textContent = '';
+    descEl.hidden = true;
+  }
+  if (gridEl) gridEl.replaceChildren();
+  if (logoEl) {
+    logoEl.removeAttribute('src');
+    logoEl.removeAttribute('srcset');
+    logoEl.hidden = true;
+  }
+  if (section) section.hidden = true;
+}
+
+async function loadEventsPhotoSpotlight() {
+  const section = document.getElementById('events-photo-spotlight');
+  const statusEl = document.getElementById('events-photo-spotlight-status');
+  const logoEl = document.getElementById('events-photo-spotlight-logo');
+  const titleEl = document.getElementById('events-photo-spotlight-title');
+  const descEl = document.getElementById('events-photo-spotlight-desc');
+  const gridEl = document.getElementById('events-photo-spotlight-grid');
+  if (!section || !logoEl || !titleEl || !descEl || !gridEl) return;
+
+  const client = window.snhSupabase;
+  if (!client || typeof client.rpc !== 'function') {
+    eventsSpotlightClearShell(section, statusEl, logoEl, titleEl, descEl, gridEl);
+    return;
+  }
+
+  try {
+    const albumRes = await client.rpc('snh_public_events_spotlight_album');
+    if (albumRes.error) throw albumRes.error;
+    const album = eventsSpotlightParseRpcJson(albumRes.data);
+    if (!album || typeof album !== 'object') {
+      eventsSpotlightClearShell(section, statusEl, logoEl, titleEl, descEl, gridEl);
+      return;
+    }
+
+    let promo = null;
+    const evId = album.eventId != null ? String(album.eventId).trim() : '';
+    if (evId && eventsSpotlightNormalizeUuid(evId)) {
+      const promoRes = await client.rpc('snh_public_event_promo_asset', { p_event_id: evId });
+      if (!promoRes.error) {
+        promo = eventsSpotlightParseRpcJson(promoRes.data);
+      }
+    }
+
+    const assets = Array.isArray(album.assets) ? album.assets : [];
+    let heroAssetId = promo && promo.assetId != null ? String(promo.assetId) : '';
+
+    const { thumb: promoThumb, full: promoFull } = eventsSpotlightPromoImageUrls(promo);
+    let logoThumb = promoThumb;
+    let logoFull = promoFull;
+    let logoAlt = (promo && (promo.altText || promo.caption)) || '';
+
+    if (!logoThumb && assets.length > 0) {
+      const first = assets[0];
+      heroAssetId = String(first.id || '');
+      const u = eventsSpotlightAssetImageUrls(first);
+      logoThumb = u.thumb;
+      logoFull = u.full;
+      logoAlt = first.altText || first.caption || album.title || 'Event photo';
+    }
+
+    if (logoThumb) {
+      logoEl.src = logoThumb;
+      logoEl.srcset = logoFull && logoFull !== logoThumb ? `${logoThumb} 1x, ${logoFull} 2x` : '';
+      logoEl.alt = logoAlt || album.title || 'Featured event photo';
+      logoEl.hidden = false;
+    } else {
+      logoEl.removeAttribute('srcset');
+      logoEl.hidden = true;
+    }
+
+    titleEl.textContent = album.title || 'Photo album';
+    const descText = album.description != null ? String(album.description).trim() : '';
+    if (descText) {
+      descEl.textContent = descText;
+      descEl.hidden = false;
+    } else {
+      descEl.textContent = '';
+      descEl.hidden = true;
+    }
+
+    const gridAssets = [];
+    for (let i = 0; i < assets.length && gridAssets.length < EVENTS_SPOTLIGHT_MAX_GRID; i += 1) {
+      const asset = assets[i];
+      if (!asset) continue;
+      if (heroAssetId && String(asset.id) === heroAssetId) continue;
+      const { thumb, full } = eventsSpotlightAssetImageUrls(asset);
+      if (!thumb) continue;
+      gridAssets.push({ asset, thumb, full });
+    }
+
+    gridEl.replaceChildren();
+    const gridLabel = `${album.title || 'Event'} photos`;
+    gridEl.setAttribute('aria-label', gridLabel);
+    section.setAttribute('aria-label', gridLabel);
+
+    for (let j = 0; j < gridAssets.length; j += 1) {
+      const { asset, thumb, full } = gridAssets[j];
+      const fig = document.createElement('figure');
+      fig.className = 'event-spotlight-card';
+      fig.setAttribute('role', 'listitem');
+      const img = document.createElement('img');
+      img.src = thumb;
+      if (full && full !== thumb) {
+        img.srcset = `${thumb} 1x, ${full} 2x`;
+      }
+      img.alt = asset.altText || asset.caption || album.title || 'Event photo';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      fig.appendChild(img);
+      gridEl.appendChild(fig);
+    }
+
+    if (statusEl) statusEl.textContent = '';
+    section.hidden = false;
+  } catch (err) {
+    console.warn('[SNH] Events photo spotlight:', err);
+    section.hidden = false;
+    if (statusEl) {
+      statusEl.textContent = `Could not load featured photos: ${err && err.message ? err.message : String(err)}`;
+    }
+  }
+}
+
+void loadEventsPhotoSpotlight();
