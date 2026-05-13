@@ -2636,21 +2636,6 @@ footer {
   margin-top: 0.75rem;
 }
 
-.member-photos-album-form .member-photos-album-delete {
-  border-color: #8b4545;
-  color: #fecdd3;
-}
-
-.member-photos-album-form .member-photos-album-delete:hover {
-  border-color: #b85858;
-  background: rgba(139, 69, 69, 0.12);
-}
-
-.member-photos-album-form .member-photos-album-delete:focus-visible {
-  outline: 2px solid #f9a8a8;
-  outline-offset: 2px;
-}
-
 .member-photos-album-list {
   list-style: none;
   margin: 0 0 1rem;
