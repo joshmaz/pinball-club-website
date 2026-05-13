@@ -195,7 +195,7 @@
       if (isAdmin(lastUserRoles)) {
         var deleteBtn = el("button", {
           type: "button",
-          className: "members-admin-revoke",
+          className: "members-events-form-action member-photos-album-delete",
           id: "member-photos-album-delete",
           text: "Delete album"
         });
