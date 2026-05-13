@@ -99,6 +99,7 @@
     var descVal = album ? (album.description || "") : "";
     var sortVal = album ? (album.sortPosition != null ? String(album.sortPosition) : "0") : "0";
     var publishedVal = album ? !!album.published : false;
+    var includeHighlightsVal = album ? !!album.includeInHighlights : false;
 
     var form = el("form", { className: "member-photos-album-form members-profile-form" });
 
@@ -163,6 +164,16 @@
     publishedLabel.appendChild(document.createTextNode(" Published (visible on public gallery)"));
     form.appendChild(publishedLabel);
 
+    var highlightsLabel = el("label", { className: "members-checkbox-label" });
+    var highlightsInput = el("input", { type: "checkbox", id: "member-photos-album-include-highlights", checked: includeHighlightsVal });
+    highlightsLabel.appendChild(highlightsInput);
+    highlightsLabel.appendChild(document.createTextNode(" Include in highlights (Events page photo block)"));
+    form.appendChild(highlightsLabel);
+    form.appendChild(el("p", {
+      className: "member-form-hint",
+      text: "If several albums are checked, the public site picks one using sort position, then title. The album must be published to appear."
+    }));
+
     var actions = el("p", { className: "members-admin-toolbar" });
     var saveBtn = el("button", { type: "submit", className: "members-events-form-action", text: album ? "Save changes" : "Create album" });
     actions.appendChild(saveBtn);
@@ -195,6 +206,7 @@
         description: descInput.value.trim(),
         sortPosition: Number(sortInput.value || 0) || 0,
         published: publishedInput.checked,
+        includeInHighlights: highlightsInput.checked,
         eventId: eventSelect.value ? eventSelect.value : null,
         displayAt: displayAtInput.value ? new Date(displayAtInput.value).toISOString() : null
       };
@@ -483,7 +495,8 @@
         var counts = alb.assetCounts || { total: 0, published: 0 };
         btn.textContent = (alb.title || "(untitled)") +
           " (" + (counts.published || 0) + "/" + (counts.total || 0) + " published)" +
-          (alb.published ? "" : " [draft]");
+          (alb.published ? "" : " [draft]") +
+          (alb.includeInHighlights ? " · Events page" : "");
         (function (id) {
           btn.addEventListener("click", function () {
             selectedAlbumId = String(id);

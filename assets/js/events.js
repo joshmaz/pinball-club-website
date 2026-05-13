@@ -480,13 +480,6 @@ loadEvents();
 
 const EVENTS_SPOTLIGHT_MAX_GRID = 6;
 
-function eventsSpotlightConfig() {
-  const cfg = window.SNH_CONFIG || {};
-  const slug = cfg.eventsSpotlightAlbumSlug != null ? String(cfg.eventsSpotlightAlbumSlug).trim() : '';
-  const eventId = cfg.eventsSpotlightEventId != null ? String(cfg.eventsSpotlightEventId).trim() : '';
-  return { slug: slug.toLowerCase(), eventId };
-}
-
 function eventsSpotlightNormalizeUuid(value) {
   if (!value || typeof value !== 'string') return '';
   const t = value.trim().toLowerCase();
@@ -549,32 +542,20 @@ function eventsSpotlightPromoImageUrls(promo) {
   return { thumb: thumbSrc || '', full: fullSrc || thumbSrc || '' };
 }
 
-function eventsSpotlightAlbumSortKey(album) {
-  const sp = album && album.sortPosition;
-  if (sp == null || Number.isNaN(Number(sp))) return 1e9;
-  return Number(sp);
-}
-
-function eventsSpotlightPickAlbum(albums, cfg) {
-  if (!Array.isArray(albums) || albums.length === 0) return null;
-  if (cfg.slug) {
-    for (let i = 0; i < albums.length; i += 1) {
-      const a = albums[i];
-      if (a && String(a.slug || '').toLowerCase() === cfg.slug) return a;
-    }
+function eventsSpotlightClearShell(section, statusEl, logoEl, titleEl, descEl, gridEl) {
+  if (statusEl) statusEl.textContent = '';
+  if (titleEl) titleEl.textContent = '';
+  if (descEl) {
+    descEl.textContent = '';
+    descEl.hidden = true;
   }
-  const eid = eventsSpotlightNormalizeUuid(cfg.eventId);
-  if (!eid) return null;
-  const linked = albums.filter((a) => a && String(a.eventId || '').toLowerCase() === eid);
-  if (linked.length === 0) return null;
-  linked.sort((a, b) => {
-    const d = eventsSpotlightAlbumSortKey(a) - eventsSpotlightAlbumSortKey(b);
-    if (d !== 0) return d;
-    return String(a.title || '').localeCompare(String(b.title || ''), undefined, {
-      sensitivity: 'base',
-    });
-  });
-  return linked[0];
+  if (gridEl) gridEl.replaceChildren();
+  if (logoEl) {
+    logoEl.removeAttribute('src');
+    logoEl.removeAttribute('srcset');
+    logoEl.hidden = true;
+  }
+  if (section) section.hidden = true;
 }
 
 async function loadEventsPhotoSpotlight() {
@@ -586,47 +567,18 @@ async function loadEventsPhotoSpotlight() {
   const gridEl = document.getElementById('events-photo-spotlight-grid');
   if (!section || !logoEl || !titleEl || !descEl || !gridEl) return;
 
-  const cfg = eventsSpotlightConfig();
-  if (!cfg.slug && !cfg.eventId) {
-    return;
-  }
-  if (!cfg.slug && cfg.eventId && !eventsSpotlightNormalizeUuid(cfg.eventId)) {
-    section.hidden = false;
-    if (statusEl) {
-      statusEl.textContent =
-        'SNH_CONFIG.eventsSpotlightEventId is set but is not a valid UUID. Fix config.js or regenerate from EVENTS_SPOTLIGHT_EVENT_ID.';
-    }
-    return;
-  }
-
   const client = window.snhSupabase;
   if (!client || typeof client.rpc !== 'function') {
-    section.hidden = false;
-    if (statusEl) {
-      statusEl.textContent =
-        'Featured photos need Supabase config. Run node scripts/write-config.mjs and deploy config.js.';
-    }
+    eventsSpotlightClearShell(section, statusEl, logoEl, titleEl, descEl, gridEl);
     return;
   }
 
   try {
-    const albumsRes = await client.rpc('snh_public_photo_albums');
-    if (albumsRes.error) throw albumsRes.error;
-    const albumsRaw = eventsSpotlightParseRpcJson(albumsRes.data);
-    const albums = Array.isArray(albumsRaw) ? albumsRaw : [];
-    const album = eventsSpotlightPickAlbum(albums, cfg);
-    if (!album) {
-      section.hidden = false;
-      if (statusEl) {
-        statusEl.textContent =
-          cfg.slug !== ''
-            ? `No published album matched slug “${cfg.slug}”.`
-            : 'No published album is linked to that event yet.';
-      }
-      titleEl.textContent = '';
-      descEl.textContent = '';
-      gridEl.replaceChildren();
-      logoEl.hidden = true;
+    const albumRes = await client.rpc('snh_public_events_spotlight_album');
+    if (albumRes.error) throw albumRes.error;
+    const album = eventsSpotlightParseRpcJson(albumRes.data);
+    if (!album || typeof album !== 'object') {
+      eventsSpotlightClearShell(section, statusEl, logoEl, titleEl, descEl, gridEl);
       return;
     }
 
