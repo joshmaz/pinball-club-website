@@ -171,7 +171,7 @@
     form.appendChild(highlightsLabel);
     form.appendChild(el("p", {
       className: "member-form-hint",
-      text: "If several albums are checked, the public site picks one using sort position, then title. The album must be published to appear."
+      text: "If several albums are checked, the public site picks one at random on each load for variety. The album must be published to appear."
     }));
 
     var actions = el("p", { className: "members-admin-toolbar" });
