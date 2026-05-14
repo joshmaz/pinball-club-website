@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "kineticist": {
+      "command": "npx",
+      "args": ["@kineticist/mcp-server"],
+      "env": {
+        "KINETICIST_API_KEY": "${env:KINETICIST_API_KEY}"
+      }
+    }
+  }
+}
