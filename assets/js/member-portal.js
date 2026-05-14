@@ -590,6 +590,55 @@
     if (result.error) throw result.error;
   }
 
+  async function pinballmapIngestStatus() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_pinballmap_ingest_status");
+    if (result.error) throw result.error;
+    var data = result.data;
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        data = null;
+      }
+    }
+    return data;
+  }
+
+  async function pinballmapIngestInvoke() {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    if (!client.functions || typeof client.functions.invoke !== "function") {
+      throw new Error("Edge Functions are not available in this browser build.");
+    }
+    var result = await client.functions.invoke("pinballmap-ingest", { body: {} });
+    if (result.error) {
+      var msg = result.error.message || String(result.error);
+      var ctx = result.error.context;
+      if (ctx && typeof ctx.json === "function") {
+        try {
+          var parsed = await ctx.json();
+          if (parsed && typeof parsed === "object") {
+            if (parsed.error) msg = String(parsed.error);
+            else if (parsed.message) msg = String(parsed.message);
+            if (parsed.hint) msg = msg + " " + String(parsed.hint);
+          }
+        } catch (ignore) {
+          /* keep msg */
+        }
+      }
+      throw new Error(msg);
+    }
+    var body = result.data;
+    if (body && body.ok === false && body.error) {
+      var line = String(body.error);
+      if (body.hint) line = line + " " + String(body.hint);
+      throw new Error(line);
+    }
+    return body;
+  }
+
   async function gamesEditorLoad() {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -865,10 +914,12 @@
     if (result.error) throw result.error;
   }
 
-  async function clubIssuesGameOptions() {
+  async function clubIssuesGameOptions(includeGameId) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
-    var result = await client.rpc("snh_club_issues_game_options");
+    var payload = {};
+    if (includeGameId) payload.p_include_game_id = includeGameId;
+    var result = await client.rpc("snh_club_issues_game_options", payload);
     if (result.error) throw result.error;
     return parseRpcJson(result.data);
   }
@@ -1219,6 +1270,8 @@
     saveEventForAdmin: saveEventForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
     gamesEditorLoad: gamesEditorLoad,
+    pinballmapIngestStatus: pinballmapIngestStatus,
+    pinballmapIngestInvoke: pinballmapIngestInvoke,
     gamesCreate: gamesCreate,
     gamesUpsert: gamesUpsert,
     gamesUpsertStint: gamesUpsertStint,

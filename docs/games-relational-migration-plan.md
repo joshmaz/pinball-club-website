@@ -77,7 +77,11 @@ Games catalog DDL and RPCs are split across four migrations (apply in timestamp 
 - Fetches paginated `user_submissions`, loads current `games` + `game_location_stints`, builds `{ location_id, location_address, updates, creates }`, calls `snh_pinballmap_upsert_from_activity`.
 - [`supabase/config.toml`](../supabase/config.toml) — `verify_jwt = false` for scheduled/service invokes.
 
-**Schedule:** In Supabase Dashboard → Edge Functions → `pinballmap-ingest` → add a cron schedule (e.g. daily). Set secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, optional `PINBALLMAP_LOCATION_ID` (default `8908`), optional `PINBALLMAP_ACTIVITY_URL`.
+**Schedule (in repo):** Migration [`20260523120000_pinballmap_ingest_pg_cron.sql`](../supabase/migrations/20260523120000_pinballmap_ingest_pg_cron.sql) registers a **pg_cron** job (`pinballmap-ingest-every-6h`, every **6 hours** at minute 0 UTC) that POSTs to `/functions/v1/pinballmap-ingest` via **pg_net**. URLs and auth come from **Vault** (not committed): create secrets `snh_pinballmap_ingest_supabase_url` (project URL, no trailing slash) and `snh_pinballmap_ingest_anon_key` (anon / publishable key). See migration header comments for `vault.create_secret` examples. Enable the **pg_net** extension if the migration cannot create it (Dashboard → Database → Extensions).
+
+You can still add a second schedule from **Dashboard → Integrations → Cron** if you prefer UI-only ops; avoid duplicate overlapping jobs unless intentional.
+
+Edge Function **default** secrets (injected on every project) supply `SUPABASE_URL` and an elevated key via **`SUPABASE_SECRET_KEYS`** (`default` entry, `sb_secret_…`) or legacy **`SUPABASE_SERVICE_ROLE_KEY`**. The worker only needs **custom** secrets you add under Edge Functions → `pinballmap-ingest`, for example optional `PINBALLMAP_LOCATION_ID` (default `8908`) and optional `PINBALLMAP_ACTIVITY_URL`.
 
 ### CI / deploy
 
@@ -125,7 +129,7 @@ Ship the relational catalog cutover prerequisites in one focused pass:
 
 - [x] Apply hosted migration: `supabase db push`
 - [x] Import catalog seed: `node --env-file=.env scripts/import-games-json.mjs`
-- [x] Deploy `pinballmap-ingest`, set required secrets, and add daily cron
+- [x] Deploy `pinballmap-ingest`, set required Edge secrets, enable **pg_cron** ingest via migration + Vault (`snh_pinballmap_ingest_supabase_url`, `snh_pinballmap_ingest_anon_key`), or add an equivalent Dashboard cron
 - [x] Verify `games_catalog_v1` rows in Supabase SQL/Table Editor
 - [x] Set `GAMES_CATALOG_SOURCE=db` (local + GitHub Actions)
 - [x] Regenerate deploy config: `node scripts/write-config.mjs`
@@ -135,7 +139,7 @@ Ship the relational catalog cutover prerequisites in one focused pass:
 
 - Public `games.html` loads from `games_catalog_v1` without regression.
 - Member games editor reads/writes through RPCs as expected.
-- Pinball Map ingest runs on schedule and records successful upserts.
+- Pinball Map ingest runs on schedule (pg_cron + Vault HTTP invoke, or Dashboard cron) and records successful upserts in `audit_log`.
 
 ## Rollback checklist
 
@@ -146,6 +150,7 @@ Ship the relational catalog cutover prerequisites in one focused pass:
 
 ## Notes
 
+- **`club_issues` submission provenance:** `submission_origin` distinguishes `member_portal` (signed-in member; `created_by` is the auth user), `pinballmap` (service-role ingest), and reserved `public_games` for a possible future anonymous public path. The list RPC exposes a `submittedByLabel` for the UI. Portal `snh_club_issues_upsert` allows any authenticated member to **insert** (non-helpers always create as Incoming). Only members with a portal helper role may **update** existing rows (full edit of title, body, game link, and status). See migrations `20260524120000_club_issues_submission_provenance.sql` and `20260525120000_club_issues_helpers_full_edit.sql`.
 - Sort keys on stints remain **derived** in the view (same rules as `assets/js/games.js`).
 - Never expose `SUPABASE_SERVICE_ROLE_KEY` in the browser or in Actions for public PRs from forks.
 - Operator restore path: use member games editor "Restore game" action (admin roles) or call `snh_games_restore(p_game_id)` from SQL when needed.

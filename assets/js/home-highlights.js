@@ -1,6 +1,6 @@
 (function () {
-  const DESKTOP_MAX_VISIBLE = 9;
-  const MOBILE_MAX_VISIBLE = 5;
+  const DESKTOP_MAX_VISIBLE = 8;
+  const MOBILE_MAX_VISIBLE = 4;
   const MOBILE_MEDIA_QUERY = "(max-width: 700px)";
   const HIGHLIGHTS_URL = "data/highlights.json";
   const STATIC_IMAGE_BASE = "assets/images/highlights/processed/";

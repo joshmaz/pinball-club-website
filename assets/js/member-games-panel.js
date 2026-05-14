@@ -65,6 +65,9 @@
   var aiImageRegenCount = 0;
   var aiBusy = false;
   var filterAtClubOnly = false;
+  var pinballMapIngestStatusRowEl = null;
+  var pinballMapIngestBtnEl = null;
+  var pinballMapIngestBusy = false;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -1329,18 +1332,138 @@
     return partiesBlockEl;
   }
 
-  function buildPicker() {
-    var wrap = el("div", { className: "member-games-picker" });
-    wrap.appendChild(
-      el("p", {
-        className: "member-games-help",
-        text: "Preferred: add new machines through Pinball Map at the SNHPC location. This keeps ingest and lineup history aligned."
+  function formatLocalDateTime(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return String(iso);
+    return d.toLocaleString();
+  }
+
+  function buildPinballMapFoot() {
+    var foot = el("div", { className: "member-games-pinballmap-foot" });
+    var credit = el("p", { className: "member-games-help" });
+    credit.appendChild(document.createTextNode("Data credit: "));
+    credit.appendChild(
+      el("a", {
+        href: "https://pinballmap.com/",
+        target: "_blank",
+        rel: "noopener noreferrer",
+        text: "Pinball Map"
       })
     );
+    credit.appendChild(
+      document.createTextNode(
+        " (location data and public API). Thanks to the Pinball Map volunteers for the project."
+      )
+    );
+    foot.appendChild(credit);
+    pinballMapIngestStatusRowEl = el("p", {
+      className: "member-games-meta",
+      id: "member-games-pbm-ingest-status",
+      text: ""
+    });
+    foot.appendChild(pinballMapIngestStatusRowEl);
+    var actions = el("div", { className: "member-games-pinballmap-actions" });
+    pinballMapIngestBtnEl = el("button", {
+      type: "button",
+      className: "members-sidebar-link",
+      id: "member-games-pbm-ingest-btn",
+      text: "Run Pinball Map ingest now"
+    });
+    pinballMapIngestBtnEl.addEventListener("click", function () {
+      void onPinballMapIngestClick();
+    });
+    actions.appendChild(pinballMapIngestBtnEl);
+    actions.appendChild(
+      el("span", {
+        className: "member-games-meta",
+        text: "Uses the hosted ingest job (can take up to about a minute). A schedule still runs in the background."
+      })
+    );
+    foot.appendChild(actions);
+    return foot;
+  }
+
+  async function refreshPinballMapIngestStatus() {
+    if (!pinballMapIngestStatusRowEl || !window.SNHMemberPortal || !window.SNHMemberPortal.pinballmapIngestStatus) return;
+    pinballMapIngestStatusRowEl.textContent = "Checking last Pinball Map ingest…";
+    try {
+      var row = await window.SNHMemberPortal.pinballmapIngestStatus();
+      if (!row || row.last_ingest_at == null) {
+        pinballMapIngestStatusRowEl.textContent =
+          "No Pinball Map ingest has been recorded yet, or status is not available on this database version.";
+        return;
+      }
+      var loc = row.location_id != null ? " (Pinball Map location id " + row.location_id + ")" : "";
+      var line =
+        "Last catalog sync from Pinball Map: " + formatLocalDateTime(row.last_ingest_at) + loc + ".";
+      var s = row.ingest_summary;
+      if (s && typeof s === "object") {
+        var u = Number(s.updates_count);
+        var c = Number(s.creates_count);
+        var bits = [];
+        if (!Number.isNaN(u) && u > 0) bits.push(u + " update" + (u === 1 ? "" : "s"));
+        if (!Number.isNaN(c) && c > 0) bits.push(c + " create" + (c === 1 ? "" : "s"));
+        if (bits.length) line += " Last run: " + bits.join(", ") + ".";
+      }
+      pinballMapIngestStatusRowEl.textContent = line;
+    } catch (err) {
+      pinballMapIngestStatusRowEl.textContent =
+        "Could not load ingest status. If this is new, the site may need a database update.";
+    }
+  }
+
+  async function onPinballMapIngestClick() {
+    if (
+      pinballMapIngestBusy ||
+      !window.SNHMemberPortal ||
+      !window.SNHMemberPortal.pinballmapIngestInvoke ||
+      !pinballMapIngestBtnEl
+    ) {
+      return;
+    }
+    pinballMapIngestBusy = true;
+    pinballMapIngestBtnEl.disabled = true;
+    pinballMapIngestBtnEl.textContent = "Running ingest…";
+    try {
+      await window.SNHMemberPortal.pinballmapIngestInvoke();
+      if (isDirty) {
+        setStatus(
+          "Pinball Map ingest finished. Save or discard your edits, then search again if you need a fresh catalog view."
+        );
+      } else {
+        await loadCatalog();
+      }
+      await refreshPinballMapIngestStatus();
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    } finally {
+      pinballMapIngestBusy = false;
+      pinballMapIngestBtnEl.disabled = false;
+      pinballMapIngestBtnEl.textContent = "Run Pinball Map ingest now";
+    }
+  }
+
+  function buildPicker() {
+    var wrap = el("div", { className: "member-games-picker" });
+    var pref = el("p", { className: "member-games-help" });
+    pref.appendChild(document.createTextNode("Preferred: add new machines through "));
+    pref.appendChild(
+      el("a", {
+        href: "https://pinballmap.com/",
+        target: "_blank",
+        rel: "noopener noreferrer",
+        text: "Pinball Map"
+      })
+    );
+    pref.appendChild(
+      document.createTextNode(" at the SNHPC location. This keeps ingest and lineup history aligned.")
+    );
+    wrap.appendChild(pref);
     wrap.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "After adding on Pinball Map, wait for the scheduled ingest or run a manual ingest refresh."
+        text: 'After adding on Pinball Map, wait for the scheduled ingest or use "Run Pinball Map ingest now" below.'
       })
     );
     wrap.appendChild(
@@ -1411,6 +1534,7 @@
     toggleRow.appendChild(atClubOnlyToggleEl);
     toggleRow.appendChild(document.createTextNode(" Only at club today"));
     wrap.appendChild(toggleRow);
+    wrap.appendChild(buildPinballMapFoot());
     comboboxInputEl.addEventListener("focus", function () {
       if (!catalogLoaded) return;
       setComboboxOpen(true);
@@ -2455,6 +2579,7 @@
         }
         await loadPartiesDirectory();
         enterIdleMode("Loaded " + gamesCache.length + " games.");
+        await refreshPinballMapIngestStatus();
       } catch (err) {
         catalogLoaded = false;
         setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
@@ -2500,6 +2625,7 @@
       renderPingolfAdmin();
       syncPartyDirectoryDeleteVisibility();
       void loadPartiesDirectory();
+      void refreshPinballMapIngestStatus();
       setMode(mode);
     }
   }

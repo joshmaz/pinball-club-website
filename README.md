@@ -19,7 +19,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - current membership status display (status, tier, renews/ends) plus a phase-0 writeup of how membership works today (treasurer-tracked, $40/month or $480/year, pay via cash or PayPal at [paypal.me/snhpinball](https://paypal.me/snhpinball))
   - role-gated **Member Tools** panel (member directory with membership status fields, stats, role grants/revokes, and manual membership updates) backed by Supabase RPCs
   - role-gated Events, Photos, and Games panels for designated helpers (Photos panel ships full upload/caption/publish/regenerate/unpublish/delete via Supabase Storage; see `docs/photos-foundation.md`)
-  - shared Club & machine notes panel readable by every signed-in member; writable by anyone with a portal helper role
+  - shared Club & machine notes panel: every signed-in member can read and add notes (submitter is recorded; Pinball Map imports are labeled separately); members with any portal helper role can edit notes and change status (Incoming / In progress / Resolved)
   - password change for signed-in users
 - Password recovery from `signin.html` ("Forgot Password" email flow)
 
@@ -64,7 +64,7 @@ The member dashboard sidebar shows a section if the signed-in member has any of 
 |----------------|--------------------------|---------------------------------------------------------------|----------------------------------------------------------------------------------------|
 | Profile        | Profile                  | Any signed-in member                                          | Always shown.                                                                          |
 | Membership     | Membership               | Any signed-in member                                          | Always shown.                                                                          |
-| Notes          | Club & machine notes     | Any signed-in member can read                                 | Add/edit requires any portal helper role (events, photos, games, or membership).       |
+| Notes          | Club & machine notes     | Any signed-in member can read and add notes                   | Editing and status workflow require any portal helper role (events, photos, games, or membership). |
 | Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes. |
 | Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
@@ -86,7 +86,33 @@ To refresh the static fallback from DB (`games_catalog_v1` -> `data/games.json`)
 node --env-file=.env scripts/export-games-json-from-supabase.mjs
 ```
 
-Pinball Map activity ingest runs in the Edge Function `supabase/functions/pinballmap-ingest` (see `docs/games-relational-migration-plan.md` for secrets and scheduling).
+### Pinball Map (ingest, status, attribution)
+
+Location activity from [Pinball Map](https://pinballmap.com/) is merged into the relational games catalog by the Edge Function `supabase/functions/pinballmap-ingest`. Full operator notes live in `docs/games-relational-migration-plan.md`.
+
+**Hosted schedule**
+
+- Migration `supabase/migrations/20260523120000_pinballmap_ingest_pg_cron.sql` registers **pg_cron** job `pinballmap-ingest-every-6h` (every six hours, UTC) that POSTs to the Edge Function using **pg_net**.
+- One-time: in the SQL Editor, store **Vault** secrets `snh_pinballmap_ingest_supabase_url` (your `https://<ref>.supabase.co` with no trailing slash) and `snh_pinballmap_ingest_anon_key` (anon / publishable key). See the migration file header for `vault.create_secret` examples. Until both exist, the job runs but skips the HTTP call and logs a Postgres warning.
+- The Edge Function reads hosted **default** secrets (`SUPABASE_URL`, `SUPABASE_SECRET_KEYS` JSON with `default` secret key, or legacy `SUPABASE_SERVICE_ROLE_KEY`); you normally only add custom secrets such as `PINBALLMAP_LOCATION_ID` under Edge Functions.
+
+**Database**
+
+- Each successful ingest writes an `audit_log` row (`module` = `games`, `action` = `import`, `entity_type` = `pinballmap_ingest`) with a timestamp and a small summary (`updates_count`, `creates_count`, `location_id` in `new_data`).
+- Authenticated games editors can read that timestamp through the RPC `snh_pinballmap_ingest_status()` (returns JSON: `last_ingest_at`, `location_id`, `ingest_summary`). Defined in `supabase/migrations/20260523110000_pinballmap_ingest_status_rpc.sql`; callers must pass the usual games-role gate inside the function (`snh_member_has_games_access()`).
+
+**Member portal**
+
+- In `members.html` under **Games**, the catalog editor shows a short **Pinball Map** credit line, the **last catalog sync** time from `snh_pinballmap_ingest_status` (via `SNHMemberPortal.pinballmapIngestStatus()`), and a **Run Pinball Map ingest now** control that invokes the same Edge Function the scheduler uses (`SNHMemberPortal.pinballmapIngestInvoke()` in `assets/js/member-portal.js`). If the migration is not applied yet, the status line falls back to a short explanation instead of failing the panel.
+- **Club & machine notes** copy explains that some rows are imported from Pinball Map submissions and others are created in the portal.
+
+**Public site**
+
+- `games.html` includes a footnote that credits Pinball Map and links to their site for the API-backed stint history copy.
+
+**Operator note**
+
+- `pinballmap-ingest` is configured with `verify_jwt = false` in `supabase/config.toml` so scheduled invokes do not need a user JWT. Treat the function URL plus anon key like a privileged trigger: restrict who you share invoke instructions with, or harden later (for example JWT + role check or a dedicated scheduler secret).
 
 ## Deployment
 
