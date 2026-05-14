@@ -226,6 +226,7 @@ Guardrails:
 - Never edit an already-applied migration; add a new forward migration.
 - Do not rely on ad-hoc SQL as normal workflow.
 - Use `supabase migration repair --linked --status applied ...` only to reconcile migration history after manual/out-of-band applies; do not use it to perform schema changes.
+- Migration filenames use a version prefix `YYYYMMDDHHMMSS` for **sort order only**, not as a literal “run at this instant.” Prefer stepping **time of day** (hours or minutes) on the **same calendar day** as the latest existing migration (for example one hour after `…23100000_*.sql` use `…23110000_*.sql`) instead of jumping several calendar days ahead, unless you have a deliberate reason for a gap.
 
 ---
 

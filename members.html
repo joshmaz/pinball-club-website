@@ -95,6 +95,11 @@
               Games
             </button>
           </li>
+          <li class="members-sidebar-logout-wrap">
+            <button type="button" class="members-sidebar-link members-sidebar-logout" id="logout-btn" hidden>
+              Log out
+            </button>
+          </li>
         </ul>
       </nav>
 
@@ -392,7 +397,7 @@
 
         <div id="member-panel-club-issues" class="member-panel" role="region" aria-labelledby="member-nav-club-issues" tabindex="-1" aria-hidden="true">
           <h3>Club &amp; machine notes</h3>
-          <p class="member-panel-intro">A shared place to track machine issues, floor notes, and club tasks so other helpers know what needs attention. Every signed-in member can read the list. Members who help run the club (events, photos, games, or membership helpers) can add or edit notes.</p>
+          <p class="member-panel-intro">A shared place to track machine issues, floor notes, and club tasks so other helpers know what needs attention. Some machine-condition notes arrive from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a> submissions; others are filed here in the portal. Every signed-in member can read the list and add a note. Each note shows who or what submitted it when that is known. Members with a portal helper role (events, photos, games, or membership) can edit existing notes and move status between Incoming, In progress, and Resolved.</p>
           <div id="member-club-issues-app" class="member-club-issues-app" aria-live="polite"></div>
         </div>
       </div>
@@ -401,7 +406,6 @@
 </main>
 
 <footer>
-  <button type="button" id="logout-btn" hidden>Logout</button>
   <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
   <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
@@ -685,10 +689,38 @@
       }
     }
 
+    function getActiveMemberPanelId() {
+      for (var j = 0; j < panels.length; j += 1) {
+        if (panels[j].classList.contains("is-active")) {
+          var idAttr = panels[j].id || "";
+          var m = idAttr.match(/^member-panel-(.+)$/);
+          return m ? m[1] : "profile";
+        }
+      }
+      return "profile";
+    }
+
+    function scrollActiveMemberPanelIntoView(panelId) {
+      var id = String(panelId || "profile");
+      var panel = document.getElementById("member-panel-" + id);
+      if (!panel || typeof panel.scrollIntoView !== "function") return;
+      var reduced =
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      try {
+        panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      } catch (e) {
+        panel.scrollIntoView(true);
+      }
+    }
+
     function wirePanelNav() {
       for (var i = 0; i < panelButtons.length; i += 1) {
         panelButtons[i].addEventListener("click", function () {
           var pid = this.getAttribute("data-member-panel");
+          if (pid && pid === getActiveMemberPanelId()) {
+            scrollActiveMemberPanelIntoView(pid);
+            return;
+          }
           showMemberPanel(pid, {});
         });
       }

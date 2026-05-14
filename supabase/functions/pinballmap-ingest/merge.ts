@@ -27,6 +27,8 @@ export type DbStint = {
   joined_club_date: string | null;
   left_club_date: string | null;
   date_unknown: boolean;
+  /** Used to match PostgREST RPC stint row selection (joined_club_date desc, created_at desc). */
+  created_at?: string | null;
 };
 
 export type ActivityRow = {
@@ -182,6 +184,90 @@ function chooseCanonicalStint(
   return { address: HAINES_ADDRESS, joined: join, left: leave };
 }
 
+function effectiveMapAtClub(g: DbGame): boolean {
+  if (g.manual_at_club_override !== null && g.manual_at_club_override !== undefined) {
+    return !!g.manual_at_club_override;
+  }
+  return !!g.map_at_club;
+}
+
+function normYmd(v: string | null | undefined): string | null {
+  if (v == null) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  return s.length >= 10 ? s.slice(0, 10) : s;
+}
+
+function normMachineId(v: unknown): number | null {
+  if (v === undefined || v === null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** True when two stint addresses refer to the same club site (Haines vs Bridge) for Pinball Map 8908. */
+function pinballStintAddressesMatch(locId: number, a: string, b: string): boolean {
+  const ta = a.trim().toLowerCase();
+  const tb = b.trim().toLowerCase();
+  if (ta === tb) return true;
+  if (locId !== LEGACY_PINBALLMAP_LOCATION_ID) return false;
+  const haines = (s: string) => s === "haines st" || s.includes("haines street");
+  const bridge = (s: string) => s === "bridge st" || (s.includes("bridge st") && s.includes("nashua"));
+  if (haines(ta) && haines(tb)) return true;
+  if (bridge(ta) && bridge(tb)) return true;
+  return false;
+}
+
+/** Same row the RPC targets for update/insert (snh_pinballmap_upsert_from_activity). */
+function findRpcMatchedStint(
+  gameId: string,
+  locId: number,
+  stintAddress: string,
+  stints: DbStint[],
+): DbStint | null {
+  const cand = stints.filter(
+    (s) =>
+      s.game_id === gameId &&
+      (s.pinball_map_location_id ?? locId) === locId &&
+      pinballStintAddressesMatch(locId, stintAddress, s.address),
+  );
+  cand.sort((a, b) => {
+    const aNull = !a.joined_club_date;
+    const bNull = !b.joined_club_date;
+    if (aNull !== bNull) return aNull ? 1 : -1;
+    const ja = normYmd(a.joined_club_date) || "";
+    const jb = normYmd(b.joined_club_date) || "";
+    if (ja !== jb) return ja < jb ? 1 : -1;
+    const ca = (a.created_at || "").trim();
+    const cb = (b.created_at || "").trim();
+    if (ca !== cb) return ca < cb ? 1 : -1;
+    return 0;
+  });
+  return cand[0] || null;
+}
+
+/** True when JSON stint fields that the RPC would write already match the DB row. */
+function stintMatchesDb(stint: Record<string, unknown>, db: DbStint | null, locId: number): boolean {
+  if (!db) return false;
+  const loc = Number(stint.pinballMapLocationId);
+  const dbLoc = db.pinball_map_location_id ?? locId;
+  if (loc !== dbLoc) return false;
+  if (!pinballStintAddressesMatch(locId, String(stint.address || ""), db.address)) return false;
+
+  if (Object.prototype.hasOwnProperty.call(stint, "joinedClubDate")) {
+    if (normYmd(stint.joinedClubDate as string) !== normYmd(db.joined_club_date)) return false;
+  }
+  if (Object.prototype.hasOwnProperty.call(stint, "leftClubDate")) {
+    if (normYmd(stint.leftClubDate as string | null) !== normYmd(db.left_club_date)) return false;
+  }
+  if (Object.prototype.hasOwnProperty.call(stint, "pinballMapMachineId")) {
+    const p = normMachineId(stint.pinballMapMachineId);
+    const d = db.pinball_map_machine_id == null ? null : Number(db.pinball_map_machine_id);
+    const dNorm = d != null && Number.isFinite(d) ? d : null;
+    if (p !== dNorm) return false;
+  }
+  return true;
+}
+
 export function buildPinballRpcPayload(
   activity: ActivityPayload,
   games: DbGame[],
@@ -285,6 +371,11 @@ export function buildPinballRpcPayload(
     if (canonical.left && !inf.on) stint.leftClubDate = canonical.left;
     else if (inf.on) stint.leftClubDate = null;
     if (inf.repId != null) stint.pinballMapMachineId = inf.repId;
+
+    const dbStint = findRpcMatchedStint(g.id, locationId, canonical.address, stintsByGameId.get(g.id) || []);
+    const mapMatches = inf.on === effectiveMapAtClub(g);
+    const stintMatches = dbStint != null && stintMatchesDb(stint, dbStint, locationId);
+    if (mapMatches && stintMatches) continue;
 
     updates.push({
       slug: g.slug,

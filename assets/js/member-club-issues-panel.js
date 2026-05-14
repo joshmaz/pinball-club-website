@@ -10,6 +10,32 @@
   var lastRows = [];
   var currentFilter = "open";
   var gameOptionsReady = false;
+  var gameOptionsCacheKey = null;
+
+  async function ensureGameOptions(includeGameId) {
+    if (!window.SNHMemberPortal || !window.SNHMemberPortal.clubIssuesGameOptions) return;
+    var key = includeGameId ? String(includeGameId) : "";
+    var sel = document.getElementById("ci-game-select");
+    if (!sel) return;
+    if (gameOptionsReady && gameOptionsCacheKey === key) return;
+    try {
+      var games = await window.SNHMemberPortal.clubIssuesGameOptions(includeGameId || null);
+      var arr = Array.isArray(games) ? games : [];
+      while (sel.options.length > 1) {
+        sel.remove(1);
+      }
+      arr.forEach(function (g) {
+        if (!g || !g.id) return;
+        var opt = el("option", { value: g.id });
+        opt.textContent = g.title || g.slug || String(g.id);
+        sel.appendChild(opt);
+      });
+      gameOptionsReady = true;
+      gameOptionsCacheKey = key;
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -45,7 +71,8 @@
     return i;
   }
 
-  function canEditClubIssues() {
+  /** At least one portal role: full edit, status buttons, and optional status on create. */
+  function hasClubIssuesHelperAccess() {
     return Array.isArray(lastRoles) && lastRoles.length > 0;
   }
 
@@ -64,34 +91,15 @@
     if (g) g.value = "";
     if (s) s.value = "open";
     var sub = document.getElementById("ci-submit");
-    if (sub) sub.textContent = "Add issue";
+    if (sub) sub.textContent = "Add note";
+    gameOptionsReady = false;
+    gameOptionsCacheKey = null;
+    void ensureGameOptions(null);
   }
 
-  function syncFormVisibility() {
-    if (!formWrap) return;
-    formWrap.hidden = !canEditClubIssues();
-  }
-
-  async function ensureGameOptions() {
-    if (gameOptionsReady || !window.SNHMemberPortal || !window.SNHMemberPortal.clubIssuesGameOptions) return;
-    var sel = document.getElementById("ci-game-select");
-    if (!sel) return;
-    try {
-      var games = await window.SNHMemberPortal.clubIssuesGameOptions();
-      var arr = Array.isArray(games) ? games : [];
-      while (sel.options.length > 1) {
-        sel.remove(1);
-      }
-      arr.forEach(function (g) {
-        if (!g || !g.id) return;
-        var opt = el("option", { value: g.id });
-        opt.textContent = g.title || g.slug || String(g.id);
-        sel.appendChild(opt);
-      });
-      gameOptionsReady = true;
-    } catch (err) {
-      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-    }
+  function syncHelperOnlyFormBits() {
+    var row = document.getElementById("ci-status-row");
+    if (row) row.hidden = !hasClubIssuesHelperAccess();
   }
 
   function buildFilterBar() {
@@ -141,7 +149,13 @@
     filterEl = buildFilterBar();
     listEl = el("div", { className: "member-club-issues-list" });
     formWrap = el("div", { className: "member-club-issues-form member-games-form" });
-    formWrap.appendChild(el("h4", { text: "Add or edit issue" }));
+    formWrap.appendChild(el("h4", { text: "Add or edit a note" }));
+    formWrap.appendChild(
+      el("p", {
+        className: "member-games-help",
+        text: "Anyone signed in can add a new note. If your account has a portal helper role (events, photos, games, or membership), you can also edit existing notes and use the status shortcuts. Each note shows who or what submitted it when that is known."
+      })
+    );
     formWrap.appendChild(fieldRow("Title", textInput("ci-title", "")));
     formWrap.appendChild(fieldRow("Details", textareaInput("ci-body", "")));
 
@@ -149,7 +163,7 @@
     var blankOpt = el("option", { value: "" });
     blankOpt.textContent = "Not linked to a catalog game";
     gameSel.appendChild(blankOpt);
-    formWrap.appendChild(fieldRow("Catalog game", gameSel));
+    formWrap.appendChild(fieldRow("On-site catalog game", gameSel));
 
     var sel = el("select", { id: "ci-status", className: "member-games-input" });
     ["open", "in_progress", "resolved"].forEach(function (v) {
@@ -157,9 +171,11 @@
       opt.textContent = formatIssueStatusLabel(v);
       sel.appendChild(opt);
     });
-    formWrap.appendChild(fieldRow("Status", sel));
+    var statusRow = fieldRow("Status", sel);
+    statusRow.id = "ci-status-row";
+    formWrap.appendChild(statusRow);
     var sub = el("button", { type: "button", className: "members-sidebar-link", id: "ci-submit" });
-    sub.textContent = "Add issue";
+    sub.textContent = "Add note";
     sub.addEventListener("click", onSubmit);
     var clr = el("button", { type: "button", className: "members-sidebar-link", id: "ci-clear" });
     clr.textContent = "Clear form";
@@ -173,11 +189,12 @@
     appEl.appendChild(filterEl);
     appEl.appendChild(listEl);
     appEl.appendChild(formWrap);
-    syncFormVisibility();
+    syncHelperOnlyFormBits();
   }
 
   async function onSubmit() {
-    if (!window.SNHMemberPortal || !canEditClubIssues()) return;
+    if (!window.SNHMemberPortal) return;
+    if (editingId && !hasClubIssuesHelperAccess()) return;
     var titleEl = document.getElementById("ci-title");
     var title = titleEl ? String(titleEl.value || "").trim() : "";
     if (!title) {
@@ -189,7 +206,7 @@
     var stEl = document.getElementById("ci-status");
     var body = bodyEl ? String(bodyEl.value || "").trim() : "";
     var gid = gidEl ? String(gidEl.value || "").trim() : "";
-    var st = stEl ? String(stEl.value || "open") : "open";
+    var st = hasClubIssuesHelperAccess() && stEl ? String(stEl.value || "open") : "open";
     var fields = {
       title: title,
       body: body || null,
@@ -276,7 +293,7 @@
   }
 
   function appendQuickActions(card, row) {
-    if (!canEditClubIssues() || !row.id) return;
+    if (!hasClubIssuesHelperAccess() || !row.id) return;
     var st = String(row.status || "open").toLowerCase();
     var actions = el("div", { className: "member-club-issues-quick-actions" });
 
@@ -303,7 +320,7 @@
   }
 
   async function quickStatus(row, nextStatus) {
-    if (!window.SNHMemberPortal || !canEditClubIssues() || !row || !row.id) return;
+    if (!window.SNHMemberPortal || !hasClubIssuesHelperAccess() || !row || !row.id) return;
     setStatus("Updating…");
     try {
       await window.SNHMemberPortal.clubIssuesUpsert(row.id, {
@@ -340,6 +357,8 @@
       var submittedIso = row.submittedAt || row.createdAt;
       var metaParts = [];
       if (submittedIso) metaParts.push("Submitted " + formatIssueDate(submittedIso));
+      var byLabel = row.submittedByLabel || row.submitted_by_label;
+      if (byLabel) metaParts.push("By " + byLabel);
       metaParts.push(formatIssueStatusLabel(row.status));
       meta.appendChild(document.createTextNode(metaParts.join(" · ") + " · "));
       meta.appendChild(gameSummaryLine(row));
@@ -357,7 +376,7 @@
         card.appendChild(el("p", { className: "member-club-issues-body", text: row.body }));
       }
       appendQuickActions(card, row);
-      if (canEditClubIssues() && row.id) {
+      if (hasClubIssuesHelperAccess() && row.id) {
         var edit = el("button", { type: "button", className: "members-sidebar-link" });
         edit.textContent = "Edit";
         edit.addEventListener("click", function () {
@@ -367,6 +386,26 @@
       }
       listEl.appendChild(card);
     });
+  }
+
+  async function startEdit(row) {
+    if (!row || !hasClubIssuesHelperAccess()) return;
+    await ensureGameOptions(row.gameId || row.game_id || null);
+    editingId = row.id;
+    var t = document.getElementById("ci-title");
+    var b = document.getElementById("ci-body");
+    var g = document.getElementById("ci-game-select");
+    var s = document.getElementById("ci-status");
+    if (t) t.value = row.title || "";
+    if (b) b.value = row.body || "";
+    if (g) g.value = row.gameId || row.game_id || "";
+    if (s) s.value = String(row.status || "open").toLowerCase();
+    var sub = document.getElementById("ci-submit");
+    if (sub) sub.textContent = "Save changes";
+    setStatus("Editing this note. Change fields below and save, or clear the form to cancel.");
+    if (formWrap) {
+      formWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
   }
 
   async function loadList() {
@@ -390,26 +429,6 @@
     }
   }
 
-  async function startEdit(row) {
-    if (!row || !canEditClubIssues()) return;
-    await ensureGameOptions();
-    editingId = row.id;
-    var t = document.getElementById("ci-title");
-    var b = document.getElementById("ci-body");
-    var g = document.getElementById("ci-game-select");
-    var s = document.getElementById("ci-status");
-    if (t) t.value = row.title || "";
-    if (b) b.value = row.body || "";
-    if (g) g.value = row.gameId || row.game_id || "";
-    if (s) s.value = String(row.status || "open").toLowerCase();
-    var sub = document.getElementById("ci-submit");
-    if (sub) sub.textContent = "Update issue";
-    setStatus("Editing selected issue. Adjust fields and save.");
-    if (formWrap && !formWrap.hidden) {
-      formWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }
-
   window.SNHMemberClubIssuesPanel = {
     onPanelShown: function (roles) {
       lastRoles = roles || [];
@@ -418,11 +437,12 @@
         inited = true;
         buildShell();
       } else {
-        syncFormVisibility();
+        syncHelperOnlyFormBits();
+        if (!hasClubIssuesHelperAccess() && editingId) {
+          resetForm();
+        }
       }
-      if (canEditClubIssues()) {
-        ensureGameOptions();
-      }
+      void ensureGameOptions(null);
       loadList();
     }
   };

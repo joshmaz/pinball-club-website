@@ -817,24 +817,31 @@ nav a {
 }
 
 .members-auth-form input,
-.members-profile-form input {
-  padding: 0.5rem 0.65rem;
+.members-auth-form textarea,
+.members-profile-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.members-profile-form textarea {
+  padding: 0.55rem 0.7rem;
   border-radius: 6px;
   border: 1px solid var(--border-input);
   background: var(--bg-input);
   color: var(--text-main);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .members-auth-form button,
-.members-profile-form button,
-#logout-btn {
+.members-profile-form button {
   width: fit-content;
-  padding: 0.45rem 0.85rem;
+  padding: 0.5rem 0.95rem;
   border-radius: 6px;
   border: 1px solid var(--accent-teal);
   background: var(--bg-sidebar-active);
   color: var(--accent-teal-soft);
   cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .members-events-form-action {
@@ -854,8 +861,8 @@ nav a {
 /* Member dashboard: sidebar + panels */
 .members-layout {
   display: grid;
-  grid-template-columns: min(15rem, 34vw) 1fr;
-  gap: 1.5rem 1.75rem;
+  grid-template-columns: 12rem 1fr;
+  gap: 1.35rem 1.2rem;
   max-width: 60rem;
   margin: 0 auto;
   padding: 1rem 1rem 2rem;
@@ -889,10 +896,10 @@ nav a {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 0.55rem 0.75rem;
+  padding: 0.45rem 0.55rem;
   text-align: left;
   font: inherit;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   color: var(--text-main);
   background: var(--bg-sidebar);
   border: 1px solid var(--border-divider);
@@ -917,6 +924,20 @@ nav a {
   color: var(--accent-teal-soft);
 }
 
+.members-sidebar-logout-wrap {
+  margin-top: 0.45rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border-divider);
+}
+
+button.members-sidebar-logout.members-sidebar-link {
+  color: var(--text-muted-2);
+}
+
+button.members-sidebar-logout.members-sidebar-link:hover {
+  color: var(--text-main);
+}
+
 .members-panels {
   min-width: 0;
 }
@@ -927,6 +948,7 @@ nav a {
 
 .member-panel.is-active {
   display: block;
+  scroll-margin-top: 0.75rem;
 }
 
 .member-panel > h3:first-child {
@@ -1224,12 +1246,15 @@ nav a {
 }
 
 .members-profile-form select {
-  padding: 0.5rem 0.65rem;
+  padding: 0.55rem 0.7rem;
   border-radius: 6px;
   border: 1px solid var(--border-input);
   background: var(--bg-input);
   color: var(--text-main);
   max-width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .members-profile-form-edit-target {
@@ -1592,6 +1617,12 @@ footer {
   margin: 1rem 0 0;
   color: var(--text-muted-2);
   font-size: 0.9rem;
+}
+
+.games-footnote a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .games-transition-banner {
@@ -2550,6 +2581,24 @@ footer {
   margin: 0.25rem 0;
 }
 
+.member-games-pinballmap-foot {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-divider);
+}
+
+.member-games-pinballmap-foot .member-games-help {
+  margin-bottom: 0.45rem;
+}
+
+.member-games-pinballmap-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.25rem;
+}
+
 .member-games-stints,
 .member-games-sale {
   margin-top: 1rem;
@@ -2781,10 +2830,6 @@ footer {
   flex-wrap: wrap;
   gap: 0.35rem;
   margin: 0.5rem 0 0.35rem;
-}
-
-.member-club-issues-quick-btn {
-  font-size: 0.82rem;
 }
 
 /* Member portal — photos editor */
