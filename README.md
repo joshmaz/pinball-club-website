@@ -5,7 +5,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
 ## What is live now
 
 - Public club pages (`index.html`, `events.html`, `games.html`, `about.html`, etc.)
-- Home page "Right now" transition messaging (new venue lease update + Slack to Discord migration note)
+- Home page "Right now" messaging (new venue lease update + Discord as the club's day-to-day chat)
 - Games page history explorer with:
   - timeline slider (`Now` -> `Origins`)
   - date jump input for custom snapshots
