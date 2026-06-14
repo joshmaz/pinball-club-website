@@ -62,18 +62,17 @@ jobs:
           --key "donate/" \
           --body donate/index.html \
           --content-type "text/html; charset=utf-8"
-        # S3 REST + CloudFront do not map /wix_archive/ to index.html; add a redirect key
-        # (not in the repo tree) so /wix_archive/ works. Re-applied after each sync because
-        # --delete would otherwise remove this object.
-        # AWS CLI v2+ requires --body to be a file path (stdin "-" is rejected).
-        touch .wix-archive-redirect-empty
-        aws s3api put-object \
-          --bucket "${{ secrets.S3_BUCKET }}" \
-          --key "wix_archive/" \
-          --body .wix-archive-redirect-empty \
-          --website-redirect-location "/wix_archive/index.html" \
-          --content-type "text/html; charset=utf-8"
-        rm -f .wix-archive-redirect-empty
+        # Archived Wix pages are stored at <dir>/index.html, but the mirror links
+        # between pages with extensionless directory URLs (e.g. /wix_archive/.../about-us).
+        # S3 REST + CloudFront (OAC) do not resolve a directory to its index document,
+        # so those links return an "AccessDenied" XML error. Publish a copy of each
+        # index.html at its extensionless key so the links resolve. Re-applied after each
+        # sync because --delete would otherwise remove these objects.
+        find wix_archive -name index.html | while IFS= read -r f; do
+          key="${f%/index.html}"
+          aws s3 cp "$f" "s3://${{ secrets.S3_BUCKET }}/$key" \
+            --content-type "text/html; charset=utf-8"
+        done
 
     - name: Invalidate CloudFront cache
       if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
