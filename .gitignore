@@ -4,3 +4,4 @@
 assets/js/config.js
  
 supabase/.temp/
+node_modules/

@@ -1,0 +1,8 @@
+{
+  "name": "snh-resend",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "resend": "^4.6.0"
+  }
+}

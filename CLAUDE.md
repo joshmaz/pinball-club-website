@@ -29,6 +29,8 @@ Frontend (Static Site)
    ↓
 Supabase (Auth + Database)
    ↓
+Resend (Auth email via SMTP; optional API for app mail)
+   ↓
 Stripe (Subscriptions + Billing)
 
 ---
@@ -39,6 +41,7 @@ Stripe (Subscriptions + Billing)
 - GitHub (source control)
 - AWS S3 + CloudFront (primary hosting)
 - Supabase (auth + database; games catalog tables + `games_catalog_v1` when using DB mode — see `docs/games-relational-migration-plan.md`)
+- Resend (transactional email; Supabase Auth sends via Resend SMTP — see `docs/email.md`)
 - Stripe (payments)
 
 Optional:
@@ -62,6 +65,8 @@ snh-pinball-club-site/
 │   ├── auth.js
 │   ├── api.js
 │   └── main.js
+├── scripts/
+│   └── resend/              (local Resend API test script; see docs/email.md)
 ├── supabase/
 │   └── migrations/
 │       └── (Postgres DDL, e.g. member_roles)
@@ -239,6 +244,9 @@ STRIPE_PUBLIC_KEY=
 (optional backend)
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+RESEND_API_KEY=              (local scripts; same key as Supabase Auth SMTP password — see docs/email.md)
+
+Public contact email (website + auth templates): support@snhpinballclub.com
 
 ---
 
@@ -261,12 +269,13 @@ STRIPE_WEBHOOK_SECRET=
 
 - Stop using em dashes (`—` / `&mdash;`) in user-facing copy and in assistant prose. Prefer a comma, period, parentheses, or a colon instead.
 - Avoid rollout/backend language in user copy (e.g. "as we roll out", "when those systems go live", "RBAC", "role slugs").
-- Be specific and helpful for unfinished workflows rather than vague (e.g. "Billing self-service is not connected yet. Email us and we'll help with your record.").
+- Be specific and helpful for unfinished workflows rather than vague (e.g. "Billing self-service is not connected yet. Email support@snhpinballclub.com and we'll help with your record.").
 
 ---
 
 # 🔮 Future Enhancements
 
+- Branded Supabase Auth email templates (see `docs/email.md`)
 - Discord role sync
 - MatchPlay integration
 - Admin dashboard

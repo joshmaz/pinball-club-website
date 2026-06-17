@@ -21,7 +21,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - role-gated Events, Photos, and Games panels for designated helpers (Photos panel ships full upload/caption/publish/regenerate/unpublish/delete via Supabase Storage; see `docs/photos-foundation.md`)
   - shared Club & machine notes panel: every signed-in member can read and add notes (submitter is recorded; Pinball Map imports are labeled separately); members with any portal helper role can edit notes and change status (Incoming / In progress / Resolved)
   - password change for signed-in users
-- Password recovery from `signin.html` ("Forgot Password" email flow)
+- Password recovery from `signin.html` ("Forgot Password" email flow via Supabase Auth + Resend SMTP)
 
 ## Membership roadmap (working notes)
 
@@ -120,9 +120,23 @@ The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional Clo
 
 The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing page at `wix_archive/index.html`). It is included in the repo so `aws s3 sync ... --delete` does not remove it on deploy. Link to it directly as `wix_archive/index.html` (the bare `wix_archive/` directory URL does not resolve with CloudFront + the S3 REST API). Wix nav links in the mirror use relative folder URLs such as `about-us/` or `../events/`; S3 does not resolve those to `index.html`, so after mirroring run `node scripts/wix-mirror/rewrite-archive-urls.mjs` to rewrite page links to explicit `index.html` paths and inject `archive-nav-fix.js` as a runtime backup. To refresh the mirror before Wix is shut down, run `npm install` in `scripts/wix-mirror/` and `node scripts/wix-mirror/mirror.mjs` from the repo root, then run the rewrite script. That pipeline rewrites absolute `snhpinball.wixsite.com` URLs to `/wix_archive/site/...` so navigation keeps working after Wix is offline. That script rewrites absolute `snhpinball.wixsite.com` URLs to `/wix_archive/site/...` so navigation keeps working after Wix is offline. After a deploy, confirm `/wix_archive/` on the live domain and spot-check the archived home page; repeat once Wix is shut down to confirm nothing still depends on the live Wix host. On Windows, if `git add wix_archive` fails with “Filename too long”, run `git config core.longpaths true` once in this repo (mirrored asset paths can exceed the legacy path limit). The mirrored Wix home page (`wix_archive/site/.../home/index.html`) loads `archive-marquee.js` / `archive-marquee.css`, which replace the original slideshow with an eight-slide carousel (logo, six club photos, parking; duplicate logo panel for seamless looping) sourced from `static.wixstatic.com`.
 
+## Email (Resend)
+
+Auth and transactional email use **Resend**. Supabase Auth sends password reset and other auth mail through Resend SMTP (configured in the Supabase dashboard). Public contact address on the site: **support@snhpinballclub.com** (inbound currently forwarded via Cloudflare Email Routing).
+
+Full setup, secrets, and the branded-template roadmap: **`docs/email.md`**.
+
+Local Resend API smoke test:
+
+```bash
+cd scripts/resend && npm install
+node --env-file=../../.env send-test-email.mjs
+```
+
 ## Architecture notes
 
 - Audit logging design: `docs/audit-logging-design.md`
+- Email (Resend, Supabase SMTP, support address): `docs/email.md`
 - Website task agents planning: `docs/website-task-agents.md`
 - Games catalog (Supabase + optional DB-backed public page): `docs/games-relational-migration-plan.md`
 - Games AI enrichment assistant (member editor, Edge Function, rollback): `docs/games-ai-assistant.md`
@@ -158,6 +172,15 @@ Supabase URL and anon key are not committed. They are generated into `assets/js/
   ```
 
 `assets/js/config.js` is gitignored. If missing, Supabase-backed pages will show unavailable auth behavior.
+
+### Resend (email)
+
+- **Local scripts:** add `RESEND_API_KEY` to `.env` (see `.env.example`).
+- **Supabase Auth SMTP:** same API key as the SMTP password (Authentication → Email → SMTP Settings); not read from `.env`.
+- **Edge Functions:** when a function sends mail via the API, run `supabase secrets set RESEND_API_KEY=re_…` after local `.env` changes.
+- Rotate the key in Resend, then update `.env`, Supabase SMTP, and any Edge Function secrets together.
+
+See `docs/email.md` for SMTP field values and the branded auth-template checklist.
 
 ## Security notes
 
