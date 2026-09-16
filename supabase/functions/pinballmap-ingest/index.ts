@@ -5,6 +5,7 @@ import {
   type ActivityPayload,
   type DbGame,
   type DbStint,
+  type MachineDetail,
 } from "./merge.ts";
 
 const LOCATION_DEFAULT = 8908;
@@ -116,6 +117,26 @@ Deno.serve(async (req) => {
       }
       if (subs.length < 50) break;
     }
+    const rawDetailsUrl =
+      Deno.env.get("PINBALLMAP_MACHINE_DETAILS_URL") ||
+      `https://pinballmap.com/api/v1/locations/${locationId}/machine_details.json`;
+    const detailsUrl = new URL(rawDetailsUrl);
+    detailsUrl.searchParams.set("api_token", pinballMapApiToken);
+    const detailsRes = await fetch(detailsUrl);
+    if (!detailsRes.ok) {
+      return jsonResponse(
+        { ok: false, error: `Pinball Map machine details fetch failed: ${detailsRes.status}` },
+        502,
+      );
+    }
+    const detailsJson = (await detailsRes.json()) as { machines?: MachineDetail[]; errors?: string };
+    if (detailsJson.errors) {
+      return jsonResponse(
+        { ok: false, error: `Pinball Map machine details API error: ${detailsJson.errors}` },
+        502,
+      );
+    }
+    merged.machine_details = Array.isArray(detailsJson.machines) ? detailsJson.machines : [];
     const activity = merged;
 
     // Do not force Authorization: Bearer for sb_secret_* keys; PostgREST rejects non-JWT Bearer.
@@ -124,7 +145,7 @@ Deno.serve(async (req) => {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: gameRows, error: gErr } = await supabase.from("games").select("id,slug,title,map_at_club,manual_at_club_override");
+    const { data: gameRows, error: gErr } = await supabase.from("games").select("id,slug,title,map_at_club,manual_at_club_override,release_date,manufacturer,ipdb_url,opdb_id,opdb_matched_via,opdb_canonical_name");
     if (gErr) return jsonResponse({ ok: false, error: gErr.message }, 500);
 
     const { data: stintRows, error: sErr } = await supabase.from("game_location_stints").select(
