@@ -307,8 +307,11 @@ async function buildDescriptionSuggestion(
       if (secondary.ok && secondary.text) {
         draft = secondary.text;
         sourceType = `openai:${secondaryModel}`;
+        warnings.push(`Primary model failed: ${primary.reason} Secondary model was used.`);
       } else {
-        warnings.push("LLM unavailable after fallback, using deterministic fallback.");
+        warnings.push(
+          `OpenAI unavailable after fallback. Primary: ${primary.reason} Secondary: ${secondary.reason} Using deterministic fallback.`,
+        );
         draft = buildFallbackDescription(game);
         confidenceScore = 0.55;
         sourceType = "fallback:deterministic";
@@ -316,7 +319,7 @@ async function buildDescriptionSuggestion(
     } else if (primary.ok && primary.text) {
       draft = primary.text;
     } else {
-      warnings.push("LLM unavailable, using deterministic fallback.");
+      warnings.push(`${primary.reason} Using deterministic fallback.`);
       draft = buildFallbackDescription(game);
       confidenceScore = 0.55;
       sourceType = "fallback:deterministic";
@@ -507,11 +510,29 @@ function buildFallbackDescription(game: GameRow): string {
   return bits.join(" ");
 }
 
+type OpenAIResult = { ok: boolean; text: string; status: number; reason: string };
+
+function openAIErrorReason(status: number, code = "", type = ""): string {
+  const marker = `${code} ${type}`.toLowerCase();
+  if (status === 401 || status === 403) return "OpenAI authentication failed; check OPENAI_PLATFORM_KEY.";
+  if (status === 429 && /insufficient_quota|quota|billing/.test(marker)) {
+    return "OpenAI quota or billing limit reached.";
+  }
+  if (status === 429) return "OpenAI rate limit reached; try again shortly.";
+  if (status === 404 || marker.includes("model_not_found")) {
+    return "OpenAI model unavailable or not enabled for this account.";
+  }
+  if (status === 408) return "OpenAI request timed out.";
+  if (status >= 500) return "OpenAI service is temporarily unavailable.";
+  if (status === 0) return "Could not reach OpenAI.";
+  return `OpenAI request rejected (HTTP ${status}).`;
+}
+
 async function callOpenAI(
   model: string,
   prompt: string,
   apiKey: string,
-): Promise<{ ok: boolean; text: string; status: number }> {
+): Promise<OpenAIResult> {
   const controller = new AbortController();
   const timeoutMs = 45_000;
   const tid = setTimeout(() => controller.abort(), timeoutMs);
@@ -532,16 +553,38 @@ async function callOpenAI(
       }),
     });
 
-    if (!response.ok) return { ok: false, text: "", status: response.status };
+    if (!response.ok) {
+      let code = "";
+      let type = "";
+      try {
+        const errorBody = (await response.json()) as { error?: { code?: string; type?: string } };
+        code = String(errorBody.error?.code || "");
+        type = String(errorBody.error?.type || "");
+      } catch {
+        // Keep provider response bodies private; status alone is enough for a safe diagnostic.
+      }
+      return {
+        ok: false,
+        text: "",
+        status: response.status,
+        reason: openAIErrorReason(response.status, code, type),
+      };
+    }
 
     const jsonBody = (await response.json()) as {
       choices?: Array<{ message?: { content?: string | null } }>;
     };
 
     const text = String(jsonBody?.choices?.[0]?.message?.content ?? "").trim();
-    return { ok: !!text, text, status: response.status };
+    return {
+      ok: !!text,
+      text,
+      status: response.status,
+      reason: text ? "" : "OpenAI returned an empty response.",
+    };
   } catch (_e) {
-    return { ok: false, text: "", status: 0 };
+    const status = controller.signal.aborted ? 408 : 0;
+    return { ok: false, text: "", status, reason: openAIErrorReason(status) };
   } finally {
     clearTimeout(tid);
   }
@@ -573,7 +616,7 @@ function buildLinkField(
     suggestedValue: currentValue || guess.value,
     confidence: mapConfidence(score),
     confidenceScore: score,
-    reason: currentValue ? "Existing link retained." : guess.reason,
+    reason: currentValue ? "Existing link retained." : `Unverified candidate: ${guess.reason}`,
     sourceType: currentValue ? "existing" : "resolver",
     sourceUrl: currentValue || guess.sourceUrl,
     warnings,

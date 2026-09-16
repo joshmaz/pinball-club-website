@@ -16,6 +16,12 @@ export type DbGame = {
   title: string;
   map_at_club: boolean;
   manual_at_club_override: boolean | null;
+  release_date?: string | null;
+  manufacturer?: string | null;
+  ipdb_url?: string | null;
+  opdb_id?: string | null;
+  opdb_matched_via?: string | null;
+  opdb_canonical_name?: string | null;
 };
 
 export type DbStint = {
@@ -40,9 +46,19 @@ export type ActivityRow = {
   created_at?: string;
 };
 
+export type MachineDetail = {
+  id?: number | string;
+  name?: string | null;
+  year?: number | string | null;
+  manufacturer?: string | null;
+  ipdb_id?: number | string | null;
+  opdb_id?: string | null;
+};
+
 export type ActivityPayload = {
   meta?: { location_id?: number | string; location_name?: string };
   user_submissions?: ActivityRow[];
+  machine_details?: MachineDetail[];
 };
 
 export function buildPinballConditionPayload(activity: ActivityPayload): {
@@ -282,6 +298,32 @@ export function buildPinballRpcPayload(
   const locationId = Number(meta.location_id ?? 8908) || 8908;
   const locationAddress = addressForLocation(locationId, meta);
   const subs = activity.user_submissions || [];
+  const machineDetailsById = new Map<number, MachineDetail>();
+  for (const detail of activity.machine_details || []) {
+    const id = Number(detail.id);
+    if (Number.isFinite(id)) machineDetailsById.set(id, detail);
+  }
+
+  function metadataFromDetail(machineId: number | null): Record<string, unknown> {
+    if (machineId == null) return {};
+    const detail = machineDetailsById.get(machineId);
+    if (!detail) return {};
+    const out: Record<string, unknown> = {};
+    const manufacturer = String(detail.manufacturer || "").trim();
+    const year = String(detail.year || "").trim();
+    const ipdbId = String(detail.ipdb_id || "").trim();
+    const opdbId = String(detail.opdb_id || "").trim();
+    const canonicalName = String(detail.name || "").trim();
+    if (manufacturer) out.manufacturer = manufacturer;
+    if (/^\d{4}$/.test(year)) out.releaseDate = `${year}-01-01`;
+    if (/^\d+$/.test(ipdbId)) out.ipdbUrl = `https://www.ipdb.org/machine.cgi?id=${ipdbId}`;
+    if (opdbId) {
+      out.opdbId = opdbId;
+      out.opdbMatchedVia = "pinballmap_machine_details";
+      if (canonicalName) out.opdbCanonicalName = canonicalName;
+    }
+    return out;
+  }
 
   const byKey = new Map<string, MachineState>();
   const sampleName = new Map<string, string>();
@@ -375,13 +417,25 @@ export function buildPinballRpcPayload(
     const dbStint = findRpcMatchedStint(g.id, locationId, canonical.address, stintsByGameId.get(g.id) || []);
     const mapMatches = inf.on === effectiveMapAtClub(g);
     const stintMatches = dbStint != null && stintMatchesDb(stint, dbStint, locationId);
-    if (mapMatches && stintMatches) continue;
+
+    const metadata = metadataFromDetail(inf.repId);
+    const missingMetadata: Record<string, unknown> = {};
+    if (!g.manufacturer && metadata.manufacturer) missingMetadata.manufacturer = metadata.manufacturer;
+    if (!g.release_date && metadata.releaseDate) missingMetadata.releaseDate = metadata.releaseDate;
+    if (!g.ipdb_url && metadata.ipdbUrl) missingMetadata.ipdbUrl = metadata.ipdbUrl;
+    if (!g.opdb_id && metadata.opdbId) {
+      missingMetadata.opdbId = metadata.opdbId;
+      missingMetadata.opdbMatchedVia = metadata.opdbMatchedVia;
+      missingMetadata.opdbCanonicalName = metadata.opdbCanonicalName;
+    }
+    if (mapMatches && stintMatches && Object.keys(missingMetadata).length === 0) continue;
 
     updates.push({
       slug: g.slug,
       title: g.title,
       mapAtClub: inf.on,
       stint,
+      ...missingMetadata,
     });
   }
 
@@ -391,7 +445,12 @@ export function buildPinballRpcPayload(
     if (findCanonicalShort(key, inf.repId) != null) continue;
     const mname = sampleName.get(key) || key;
     const { mfr, yr } = parseYearMfr(mname);
-    const rel = yr && yr.length === 4 ? `${yr}-01-01` : null;
+    const metadata = metadataFromDetail(inf.repId);
+    const rel = typeof metadata.releaseDate === "string"
+      ? metadata.releaseDate
+      : yr && yr.length === 4
+        ? `${yr}-01-01`
+        : null;
     const parts: string[] = [];
     if (mfr && yr) parts.push(`${yr} ${mfr}.`);
     parts.push("From Pinball Map location activity (not on our site list before).");
@@ -421,6 +480,11 @@ export function buildPinballRpcPayload(
       details: deets,
       mapAtClub: inf.on,
       releaseDate: rel,
+      manufacturer: metadata.manufacturer || mfr,
+      ipdbUrl: metadata.ipdbUrl,
+      opdbId: metadata.opdbId,
+      opdbMatchedVia: metadata.opdbMatchedVia,
+      opdbCanonicalName: metadata.opdbCanonicalName,
       locationStints: [stint],
     });
   }
