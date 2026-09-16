@@ -65,12 +65,25 @@ Deno.serve(async (req) => {
       );
     }
 
+    const pinballMapApiToken = (Deno.env.get("PINBALLMAP_API_TOKEN") || "").trim();
+    if (!pinballMapApiToken) {
+      return jsonResponse(
+        {
+          ok: false,
+          error: "Missing PINBALLMAP_API_TOKEN. Add the approved Pinball Map token to the Edge Function secrets.",
+        },
+        500,
+      );
+    }
+
     const locationId = Number(Deno.env.get("PINBALLMAP_LOCATION_ID") || LOCATION_DEFAULT) || LOCATION_DEFAULT;
     const baseQs = `id=${locationId}&limit=50`;
     const rawActivityBase =
       Deno.env.get("PINBALLMAP_ACTIVITY_URL") ||
       `https://pinballmap.com/api/v1/user_submissions/location.json?${baseQs}`;
-    const activityBase = rawActivityBase.replace(/([?&])location_id=/g, "$1id=");
+    const activityUrl = new URL(rawActivityBase.replace(/([?&])location_id=/g, "$1id="));
+    activityUrl.searchParams.set("api_token", pinballMapApiToken);
+    const activityBase = activityUrl.toString();
 
     const merged: ActivityPayload = { meta: { location_id: locationId }, user_submissions: [] };
     const seen = new Set<string>();
