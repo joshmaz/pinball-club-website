@@ -417,7 +417,6 @@ export function buildPinballRpcPayload(
     const dbStint = findRpcMatchedStint(g.id, locationId, canonical.address, stintsByGameId.get(g.id) || []);
     const mapMatches = inf.on === effectiveMapAtClub(g);
     const stintMatches = dbStint != null && stintMatchesDb(stint, dbStint, locationId);
-    if (mapMatches && stintMatches) continue;
 
     const metadata = metadataFromDetail(inf.repId);
     const missingMetadata: Record<string, unknown> = {};
@@ -429,6 +428,7 @@ export function buildPinballRpcPayload(
       missingMetadata.opdbMatchedVia = metadata.opdbMatchedVia;
       missingMetadata.opdbCanonicalName = metadata.opdbCanonicalName;
     }
+    if (mapMatches && stintMatches && Object.keys(missingMetadata).length === 0) continue;
 
     updates.push({
       slug: g.slug,
