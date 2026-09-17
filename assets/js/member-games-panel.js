@@ -181,6 +181,11 @@
         text: ""
       })
     );
+    var topSaveBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-save-top" });
+    topSaveBtn.textContent = "Save changes";
+    var topActions = el("div", { className: "member-games-sticky-actions" }, [topSaveBtn]);
+    formEl.appendChild(topActions);
+    topSaveBtn.addEventListener("click", onSaveGame);
     deleteStatusEl = el("p", { className: "member-games-delete-status", id: "mg-delete-status", hidden: "hidden" });
     deleteNoteInputEl = textareaInput("mg-delete-note", "");
     deleteNoteInputEl.setAttribute("rows", "3");
@@ -437,13 +442,24 @@
     var localHelp = el("p", {
       className: "member-games-help",
       text:
-        "To add a club-owned image, first place it under assets/images/machines in the website project, then enter its filename here."
+        "Upload a club-owned JPEG, PNG, WebP, or GIF (maximum 10 MB). Photos are stored in Supabase and can coexist with other club and external images."
     });
     panel.appendChild(localHelp);
-    panel.appendChild(fieldRow("Club image filename", textInput("mg-image-local", "")));
+    panel.appendChild(fieldRow("Club photo", el("input", {
+      type: "file",
+      id: "mg-image-file",
+      className: "member-games-input",
+      accept: "image/jpeg,image/png,image/webp,image/gif"
+    })));
     panel.appendChild(fieldRow("Alt text (optional)", textInput("mg-image-alt", "")));
+    var primaryRow = el("div", { className: "member-games-field member-games-checkbox-row" });
+    var primaryCheckbox = el("input", { type: "checkbox", id: "mg-image-make-primary" });
+    primaryCheckbox.checked = true;
+    primaryRow.appendChild(primaryCheckbox);
+    primaryRow.appendChild(el("label", { for: "mg-image-make-primary", text: "Use this photo as the primary image" }));
+    panel.appendChild(primaryRow);
     var addBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-image-add-club" });
-    addBtn.textContent = "Add club image and make primary";
+    addBtn.textContent = "Upload club photo";
     addBtn.addEventListener("click", onAddClubImage);
     panel.appendChild(addBtn);
 
@@ -480,6 +496,9 @@
         );
       }
       var sourceLabel = imageRow.sourceType === "club" ? "Club-owned" : String(imageRow.sourceType || "External").toUpperCase();
+      var isUploadedClubImage = imageRow.sourceType === "club" && imageRow.metadata && imageRow.metadata.storagePath;
+      if (isUploadedClubImage) sourceLabel += " upload";
+      else if (imageRow.sourceType === "club" && imageRow.locationType === "local_asset") sourceLabel += " legacy asset";
       var stateLabel = imageRow.usageStatus === "approved" ? "approved for display" : "reference only";
       card.appendChild(
         el("p", {
@@ -504,6 +523,14 @@
           attr.appendChild(document.createTextNode(String(imageRow.attributionText)));
         }
         card.appendChild(attr);
+      }
+      if (isUploadedClubImage && imageRow.metadata.originalFilename) {
+        card.appendChild(
+          el("p", {
+            className: "member-games-image-attribution",
+            text: "Uploaded file: " + String(imageRow.metadata.originalFilename)
+          })
+        );
       }
       if (imageRow.sourceType !== "club" && imageRow.usageStatus !== "approved") {
         card.appendChild(
@@ -538,6 +565,14 @@
         });
         actions.appendChild(referenceBtn);
       }
+      if (isUploadedClubImage) {
+        var removeBtn = el("button", { type: "button", className: "members-sidebar-link member-games-image-remove" });
+        removeBtn.textContent = "Remove uploaded photo";
+        removeBtn.addEventListener("click", function () {
+          void onRemoveUploadedImage(imageRow);
+        });
+        actions.appendChild(removeBtn);
+      }
       if (actions.childNodes.length) card.appendChild(actions);
       list.appendChild(card);
     });
@@ -554,26 +589,36 @@
 
   async function onAddClubImage() {
     if (!currentGameId || !window.SNHMemberPortal) return;
-    var filename = getVal("mg-image-local");
-    if (!filename) {
-      setStatus("Enter a club image filename first.");
+    var fileInput = document.getElementById("mg-image-file");
+    var file = fileInput && fileInput.files ? fileInput.files[0] : null;
+    if (!file) {
+      setStatus("Choose a club photo first.");
       return;
     }
-    setStatus("Adding club image…");
+    setStatus("Uploading club photo…");
     try {
-      await window.SNHMemberPortal.gameImageUpsert(null, currentGameId, {
-        sourceType: "club",
-        sourceKey: "club:" + filename,
-        locationType: "local_asset",
-        locationValue: filename,
-        imageType: "game_photo",
+      var primaryInput = document.getElementById("mg-image-make-primary");
+      await window.SNHMemberPortal.gameImageUpload(currentGameId, file, {
         altText: getVal("mg-image-alt") || (currentGame() && currentGame().title) || null,
-        usageStatus: "approved",
-        makePrimary: true
+        makePrimary: !primaryInput || primaryInput.checked
       });
-      document.getElementById("mg-image-local").value = "";
+      fileInput.value = "";
       document.getElementById("mg-image-alt").value = "";
-      await refreshCurrentGameImages("Club image added and selected as primary.");
+      await refreshCurrentGameImages(primaryInput && !primaryInput.checked
+        ? "Club photo uploaded."
+        : "Club photo uploaded and selected as primary.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onRemoveUploadedImage(imageRow) {
+    if (!currentGameId || !imageRow || !window.SNHMemberPortal) return;
+    if (!window.confirm("Remove this uploaded club photo? This also deletes its stored file.")) return;
+    setStatus("Removing uploaded club photo…");
+    try {
+      var result = await window.SNHMemberPortal.gameImageDeleteUploaded(currentGameId, imageRow.id);
+      await refreshCurrentGameImages(result && result.warning ? result.warning : "Uploaded club photo removed.");
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     }
