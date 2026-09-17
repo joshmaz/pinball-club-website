@@ -15,7 +15,6 @@ test("validateAiProposalResponse accepts a minimally valid contract", () => {
         warnings: [],
       },
     ],
-    imageCandidates: [],
   };
   const errors = validateAiProposalResponse(sample);
   assert.equal(errors.length, 0);
@@ -25,7 +24,6 @@ test("validateAiProposalResponse rejects malformed payloads", () => {
   const sample = {
     proposalVersion: "2.0",
     fields: [{ field: "", warnings: "bad" }],
-    imageCandidates: {},
   };
   const errors = validateAiProposalResponse(sample);
   assert.ok(errors.length >= 3);

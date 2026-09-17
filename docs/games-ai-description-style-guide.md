@@ -10,8 +10,8 @@ House style targets for **`games.details`** when using the enrichment assistant 
 
 ## Length and shape
 
-- **Target** about **185 characters**, generally **140–220** after server-side trimming.
-- Roughly **1–3 sentences**, plain text (no bullets in the stored string).
+- **Target** about **270 characters**, generally **220–320** after server-side trimming.
+- Roughly **2–4 sentences**, plain text (no bullets in the stored string).
 
 ## Voice
 

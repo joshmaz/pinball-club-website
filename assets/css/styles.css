@@ -2413,92 +2413,22 @@ footer {
   font-size: 0.85rem;
 }
 
-.member-games-ai-images {
-  border: 1px dashed var(--border-card);
-  border-radius: 8px;
-  padding: 0.55rem 0.65rem;
+.member-games-ai-current {
+  color: var(--text-muted-2);
 }
 
-.member-games-ai-images h5 {
-  margin: 0 0 0.4rem;
-  font-size: 0.95rem;
-  color: var(--text-main);
-}
-
-.member-games-ai-images-intro {
-  margin: 0 0 0.55rem;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.member-games-ai-image-row {
-  margin-bottom: 0.5rem;
-}
-
-.member-games-ai-image-attribution {
-  margin: 0.4rem 0 0;
-  padding: 0.45rem 0.55rem;
-  max-width: 22rem;
-  font-size: 0.82rem;
-  line-height: 1.4;
-  color: var(--text-main);
+.member-games-ai-suggested {
+  padding: 0.4rem 0.55rem;
+  border-left: 3px solid var(--accent-teal);
   background: var(--bg-card-soft);
-  border-radius: 6px;
-  border-left: 3px solid var(--border-card);
-}
-
-.member-games-ai-image-attribution-label {
-  font-weight: 650;
-  color: var(--text-main);
-}
-
-.member-games-ai-image-attribution-usage {
-  margin: 0;
-}
-
-.member-games-ai-image-attribution-source {
-  margin: 0.35rem 0 0;
-  word-break: break-word;
-}
-
-.member-games-ai-image-preview {
-  width: 100%;
-  max-width: 16rem;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid var(--border-card);
-  background: var(--bg-card-deep);
-}
-
-.member-games-ai-image-placeholder {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.45rem;
-  width: 100%;
-  max-width: 16rem;
-  aspect-ratio: 4 / 3;
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: 1px dashed var(--border-card);
-  background: var(--bg-card-deep);
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  text-align: center;
-}
-
-.member-games-ai-image-placeholder-note {
-  display: block;
-}
-
-.member-games-ai-image-ref-link {
-  color: var(--accent-blue);
+  color: var(--accent-teal-soft);
   font-weight: 600;
+  line-height: 1.45;
 }
 
-.member-games-ai-image-ref-link:hover {
-  color: var(--accent-blue);
+.member-games-ai-reason {
+  color: var(--text-faint);
+  font-style: italic;
 }
 
 .member-games-images-list {

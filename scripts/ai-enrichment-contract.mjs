@@ -1,4 +1,4 @@
-export const PROPOSAL_VERSION = "1.0";
+export const PROPOSAL_VERSION = "1.1";
 
 export function validateAiProposalResponse(payload) {
   const errors = [];
@@ -29,9 +29,6 @@ export function validateAiProposalResponse(payload) {
         errors.push("Field warnings must be an array.");
       }
     }
-  }
-  if (!Array.isArray(payload.imageCandidates)) {
-    errors.push("imageCandidates must be an array.");
   }
   return errors;
 }

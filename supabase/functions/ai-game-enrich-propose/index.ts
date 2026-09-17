@@ -7,7 +7,6 @@ type GameRow = {
   slug: string;
   title: string;
   details: string | null;
-  image_filename: string | null;
   release_date: string | null;
   manufacture_date: string | null;
   manufacturer: string | null;
@@ -20,17 +19,6 @@ type GameRow = {
   kineticist_url: string | null;
   opdb_id: string | null;
   updated_at: string;
-  game_images?: Array<{
-    source_type: string;
-    location_type: string;
-    location_value: string;
-    source_url: string | null;
-    attribution_text: string | null;
-    license_name: string | null;
-    usage_status: string;
-    is_primary: boolean;
-    image_type: string | null;
-  }>;
 };
 
 type ProposalFieldKey =
@@ -56,30 +44,9 @@ type ProposalField = {
   applyByDefault: boolean;
 };
 
-type ImageCandidate = {
-  imageUrl: string;
-  sourceType: string;
-  sourceUrl: string;
-  usagePolicy: "club_owned" | "trusted_with_attribution" | "reference_only";
-  attributionRequired: boolean;
-  licenseOrUsageNote: string;
-  qualityScore: number;
-  qualityBreakdown: {
-    lighting: number;
-    focus: number;
-    playfieldFraming: number;
-    featureProminence: number;
-    penalty: number;
-  };
-  rejectionFlags: string[];
-  hardRejected: boolean;
-  reason: string;
-};
-
 type EnrichmentRequest = {
   gameId: string;
   regenerateDescription?: boolean;
-  regenerateImageCandidates?: boolean;
   runContext?: {
     requestId?: string;
     proposalVariant?: number;
@@ -87,7 +54,7 @@ type EnrichmentRequest = {
 };
 
 type EnrichmentResponse = {
-  proposalVersion: "1.0";
+  proposalVersion: "1.1";
   runId: string;
   status: ProposalStatus;
   model: { provider: string; model: string; fallbackUsed: boolean };
@@ -95,7 +62,6 @@ type EnrichmentResponse = {
   thresholds: {
     details: number;
     links: number;
-    images: number;
   };
   game: {
     id: string;
@@ -103,10 +69,8 @@ type EnrichmentResponse = {
     title: string;
   };
   fields: ProposalField[];
-  imageCandidates: ImageCandidate[];
   regenerationLimits: {
     descriptionRemaining: number;
-    imageRemaining: number;
   };
   warnings: string[];
 };
@@ -126,11 +90,9 @@ const KINETICIST_GAME_BASE = "https://www.kineticist.com/games/pinball/";
 const THRESHOLDS = {
   details: 0.68,
   links: 0.82,
-  images: 0.78,
 };
 
 const DESCRIPTION_REGEN_LIMIT = 2;
-const IMAGE_REGEN_LIMIT = 1;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -176,7 +138,6 @@ Deno.serve(async (req) => {
     const warnings: string[] = [];
     const modelResult = await buildDescriptionSuggestion(game, fallbackUsed, warnings);
     const linkFields = buildLinkSuggestions(game);
-    const imageCandidates = await buildImageCandidates(game, warnings);
 
     const fields: ProposalField[] = [
       modelResult,
@@ -184,7 +145,7 @@ Deno.serve(async (req) => {
     ];
 
     const response: EnrichmentResponse = {
-      proposalVersion: "1.0",
+      proposalVersion: "1.1",
       runId,
       status: warnings.some((w) => w.includes("unavailable")) ? "needs_review" : "ok",
       model: {
@@ -196,10 +157,8 @@ Deno.serve(async (req) => {
       thresholds: THRESHOLDS,
       game: { id: game.id, slug: game.slug, title: game.title },
       fields,
-      imageCandidates,
       regenerationLimits: {
         descriptionRemaining: DESCRIPTION_REGEN_LIMIT,
-        imageRemaining: IMAGE_REGEN_LIMIT,
       },
       warnings,
     };
@@ -253,7 +212,7 @@ async function loadGame(admin: ReturnType<typeof createClient>, gameId: string):
   const res = await admin
     .from("games")
     .select(
-      "id,slug,title,details,image_filename,release_date,manufacture_date,manufacturer,manufacturer_full_name,machine_type,display_type,player_count,pinside_url,ipdb_url,kineticist_url,opdb_id,updated_at,game_images(source_type,location_type,location_value,source_url,attribution_text,license_name,usage_status,is_primary,image_type)",
+      "id,slug,title,details,release_date,manufacture_date,manufacturer,manufacturer_full_name,machine_type,display_type,player_count,pinside_url,ipdb_url,kineticist_url,opdb_id,updated_at",
     )
     .eq("id", gameId)
     .maybeSingle();
@@ -364,7 +323,7 @@ async function buildDescriptionSuggestion(
 
 function buildDescriptionPrompt(game: GameRow, researchedContext: string): string {
   const existing = (game.details || "").trim();
-  const targetLen = 185;
+  const targetLen = 270;
 
   const structured = [
     `Title (often includes trim or edition): ${game.title}`,
@@ -386,7 +345,7 @@ function buildDescriptionPrompt(game: GameRow, researchedContext: string): strin
     "- Include manufacturer and release year in the description when available, ideally in the opening clause, so card copy matches metadata conventions.",
     "- If something is uncertain and not evidenced below, omit it or hedge (\"often described as\"; \"needs verification\") instead of guessing.",
     "- Include title-specific identity such as theme framing (for example sports, music, horror, sci-fi) when supported by supplied evidence.",
-    `- Keep it concise. Target about ${targetLen} characters (roughly 140 to 220 max).`,
+    `- Keep it concise but substantive. Target about ${targetLen} characters (roughly 220 to 320 max).`,
     "",
     "STRUCTURED CATALOG FIELDS",
     structured,
@@ -403,7 +362,7 @@ function buildDescriptionPrompt(game: GameRow, researchedContext: string): strin
 }
 
 function enforceDescriptionBrevity(suggested: string): { text: string; warnings: string[] } {
-  const maxLen = 220;
+  const maxLen = 320;
   if (suggested.length <= maxLen) return { text: suggested, warnings: [] };
 
   const sentences = suggested.match(/[^.!?]+[.!?]?/g) || [suggested];
@@ -725,53 +684,6 @@ function guessKineticistUrl(game: GameRow) {
   };
 }
 
-async function buildImageCandidates(game: GameRow, warnings: string[]): Promise<ImageCandidate[]> {
-  const rows = Array.isArray(game.game_images) ? game.game_images : [];
-  if (!rows.length) {
-    warnings.push("No persisted image associations. Use the Images panel to add a club photo or sync structured OPDB metadata.");
-    return [];
-  }
-
-  return rows
-    .map((row): ImageCandidate => {
-      const isClub = row.source_type === "club";
-      const approved = row.usage_status === "approved";
-      const playfield = row.image_type === "playfield";
-      const imageUrl = row.location_type === "local_asset"
-        ? row.location_value.startsWith("assets/")
-          ? row.location_value
-          : `assets/images/machines/${row.location_value}`
-        : row.location_value;
-      const score = isClub ? 0.9 : approved ? 0.82 : playfield ? 0.72 : 0.65;
-      return {
-        imageUrl,
-        sourceType: row.source_type,
-        sourceUrl: row.source_url || imageUrl,
-        usagePolicy: isClub ? "club_owned" : approved ? "trusted_with_attribution" : "reference_only",
-        attributionRequired: !isClub,
-        licenseOrUsageNote: isClub
-          ? "Club-owned catalog asset."
-          : approved
-            ? `${row.attribution_text || "External source"}${row.license_name ? ` · ${row.license_name}` : ""}`
-            : "Reference only; confirm reuse and hotlink permission in the Images panel before public display.",
-        qualityScore: score,
-        qualityBreakdown: {
-          lighting: isClub ? 4 : 3,
-          focus: isClub ? 4 : 3,
-          playfieldFraming: playfield ? 4 : 2,
-          featureProminence: 3,
-          penalty: approved || isClub ? 0 : 2,
-        },
-        rejectionFlags: approved || isClub ? [] : ["Reference-only image is not approved for public display."],
-        hardRejected: false,
-        reason: row.is_primary
-          ? "Current normalized primary image."
-          : "Persisted normalized image association; source and approval state come from catalog data.",
-      };
-    })
-    .sort((a, b) => b.qualityScore - a.qualityScore);
-}
-
 function mapConfidence(score: number): ProposalConfidence {
   if (score >= 0.82) return "high";
   if (score >= 0.62) return "medium";
@@ -799,13 +711,11 @@ async function writeAudit(
       pinside_url: params.game.pinside_url,
       ipdb_url: params.game.ipdb_url,
       kineticist_url: params.game.kineticist_url,
-      image_filename: params.game.image_filename,
       updated_at: params.game.updated_at,
     },
     new_data: {
       proposalVersion: params.response.proposalVersion,
       fields: params.response.fields,
-      imageCandidates: params.response.imageCandidates,
     },
     metadata: {
       runId: params.runId,
