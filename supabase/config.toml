@@ -7,7 +7,10 @@ verify_jwt = false
 [functions.ai-game-enrich-propose]
 # Member-triggered function; require authenticated JWT.
 verify_jwt = true
-# Optional: supabase secrets set OPDB_API_TOKEN for artwork thumbnails (Open Pinball Database API).
+
+[functions.opdb-image-sync]
+# Member-triggered deterministic metadata sync; no model is involved.
+verify_jwt = true
 
 [functions.photo-upload-intent]
 # Called from the member portal by photos editors. Requires a user JWT so the

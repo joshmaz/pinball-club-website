@@ -18,6 +18,7 @@
   var stintsEl = null;
   var saleEl = null;
   var manualWrapEl = null;
+  var imagesWrapEl = null;
   var gamesCache = [];
   var filteredGames = [];
   var currentGameId = null;
@@ -209,12 +210,7 @@
         textareaInput("mg-details", "")
       )
     );
-    formEl.appendChild(
-      fieldRow(
-        "Image filename",
-        textInput("mg-image", "")
-      )
-    );
+    formEl.appendChild(buildGameImagesSection());
     formEl.appendChild(
       fieldRow(
         "Release date",
@@ -420,6 +416,217 @@
   function onFormPotentiallyDirty() {
     if (suppressDirtyTracking) return;
     if (mode === "edit" || mode === "new") isDirty = true;
+  }
+
+  function buildGameImagesSection() {
+    var panel = el("div", { className: "member-games-images member-games-collapsible-panel" });
+    panel.appendChild(
+      el("p", {
+        className: "member-games-help",
+        text:
+          "Club images are approved immediately. OPDB images are imported with provenance as reference-only until an editor explicitly approves one. Choosing a club image does not remove OPDB associations."
+      })
+    );
+    panel.appendChild(el("div", { id: "mg-images-list", className: "member-games-images-list" }));
+
+    var syncBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-image-sync-opdb" });
+    syncBtn.textContent = "Sync images from OPDB";
+    syncBtn.addEventListener("click", onSyncOpdbImages);
+    panel.appendChild(syncBtn);
+
+    var localHelp = el("p", {
+      className: "member-games-help",
+      text:
+        "To add a club-owned image, first place it under assets/images/machines in the website project, then enter its filename here."
+    });
+    panel.appendChild(localHelp);
+    panel.appendChild(fieldRow("Club image filename", textInput("mg-image-local", "")));
+    panel.appendChild(fieldRow("Alt text (optional)", textInput("mg-image-alt", "")));
+    var addBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-image-add-club" });
+    addBtn.textContent = "Add club image and make primary";
+    addBtn.addEventListener("click", onAddClubImage);
+    panel.appendChild(addBtn);
+
+    imagesWrapEl = wrapCollapsible("Images", panel);
+    imagesWrapEl.addEventListener("input", function (event) {
+      event.stopPropagation();
+    });
+    imagesWrapEl.addEventListener("change", function (event) {
+      event.stopPropagation();
+    });
+    return imagesWrapEl;
+  }
+
+  function renderGameImages(images) {
+    var list = document.getElementById("mg-images-list");
+    if (!list) return;
+    list.replaceChildren();
+    var rows = Array.isArray(images) ? images : [];
+    if (!rows.length) {
+      list.appendChild(el("p", { className: "member-games-help", text: "No image associations yet." }));
+      return;
+    }
+
+    rows.forEach(function (imageRow) {
+      var card = el("div", { className: "member-games-image-card" });
+      var previewUrl = String(imageRow.displayUrl || imageRow.locationValue || "").trim();
+      if (previewUrl) {
+        card.appendChild(
+          el("img", {
+            className: "member-games-image-preview",
+            src: previewUrl,
+            alt: String(imageRow.altText || "Game image preview")
+          })
+        );
+      }
+      var sourceLabel = imageRow.sourceType === "club" ? "Club-owned" : String(imageRow.sourceType || "External").toUpperCase();
+      var stateLabel = imageRow.usageStatus === "approved" ? "approved for display" : "reference only";
+      card.appendChild(
+        el("p", {
+          className: "member-games-image-meta",
+          text: sourceLabel + " · " + stateLabel + (imageRow.isPrimary ? " · primary" : "")
+        })
+      );
+      if (imageRow.attributionText) {
+        var attr = el("p", { className: "member-games-image-attribution" });
+        attr.appendChild(document.createTextNode("Credit: "));
+        var attrUrl = String(imageRow.attributionUrl || imageRow.sourceUrl || "").trim();
+        if (attrUrl && isValidHttpUrl(attrUrl)) {
+          attr.appendChild(
+            el("a", {
+              href: attrUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              text: String(imageRow.attributionText)
+            })
+          );
+        } else {
+          attr.appendChild(document.createTextNode(String(imageRow.attributionText)));
+        }
+        card.appendChild(attr);
+      }
+      if (imageRow.sourceType !== "club" && imageRow.usageStatus !== "approved") {
+        card.appendChild(
+          el("p", {
+            className: "member-games-image-rights-note",
+            text: "Not public. Confirm reuse/hotlink permission before approval."
+          })
+        );
+      }
+
+      var actions = el("div", { className: "member-games-form-actions" });
+      if (imageRow.usageStatus === "approved" && !imageRow.isPrimary) {
+        var primaryBtn = el("button", { type: "button", className: "members-sidebar-link" });
+        primaryBtn.textContent = "Use as primary";
+        primaryBtn.addEventListener("click", function () {
+          void onSetPrimaryImage(imageRow.id);
+        });
+        actions.appendChild(primaryBtn);
+      }
+      if (imageRow.sourceType !== "club" && imageRow.usageStatus !== "approved") {
+        var approveBtn = el("button", { type: "button", className: "members-sidebar-link" });
+        approveBtn.textContent = "Approve and use as primary";
+        approveBtn.addEventListener("click", function () {
+          void onApproveExternalImage(imageRow.id);
+        });
+        actions.appendChild(approveBtn);
+      } else if (imageRow.sourceType !== "club" && imageRow.usageStatus === "approved") {
+        var referenceBtn = el("button", { type: "button", className: "members-sidebar-link" });
+        referenceBtn.textContent = "Return to reference only";
+        referenceBtn.addEventListener("click", function () {
+          void onReturnImageToReference(imageRow.id);
+        });
+        actions.appendChild(referenceBtn);
+      }
+      if (actions.childNodes.length) card.appendChild(actions);
+      list.appendChild(card);
+    });
+  }
+
+  async function refreshCurrentGameImages(statusMessage) {
+    var data = await window.SNHMemberPortal.gamesEditorLoad();
+    gamesCache = (data && data.games) || [];
+    populateCombobox();
+    var game = currentGame();
+    renderGameImages((game && game.images) || []);
+    if (statusMessage) setStatus(statusMessage);
+  }
+
+  async function onAddClubImage() {
+    if (!currentGameId || !window.SNHMemberPortal) return;
+    var filename = getVal("mg-image-local");
+    if (!filename) {
+      setStatus("Enter a club image filename first.");
+      return;
+    }
+    setStatus("Adding club image…");
+    try {
+      await window.SNHMemberPortal.gameImageUpsert(null, currentGameId, {
+        sourceType: "club",
+        sourceKey: "club:" + filename,
+        locationType: "local_asset",
+        locationValue: filename,
+        imageType: "game_photo",
+        altText: getVal("mg-image-alt") || (currentGame() && currentGame().title) || null,
+        usageStatus: "approved",
+        makePrimary: true
+      });
+      document.getElementById("mg-image-local").value = "";
+      document.getElementById("mg-image-alt").value = "";
+      await refreshCurrentGameImages("Club image added and selected as primary.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onSyncOpdbImages() {
+    if (!currentGameId || !window.SNHMemberPortal) return;
+    var savedGame = currentGame();
+    if (!savedGame || !String(savedGame.opdbId || "").trim()) {
+      setStatus("Save a valid OPDB id before syncing images.");
+      return;
+    }
+    setStatus("Syncing structured OPDB image metadata…");
+    try {
+      var result = await window.SNHMemberPortal.opdbGameImageSync(currentGameId);
+      await refreshCurrentGameImages(
+        "OPDB sync complete: " + Number(result.imported || 0) + " image association(s) imported or refreshed."
+      );
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onSetPrimaryImage(imageId) {
+    try {
+      await window.SNHMemberPortal.gameImageSetPrimary(currentGameId, imageId);
+      await refreshCurrentGameImages("Primary image updated.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onApproveExternalImage(imageId) {
+    try {
+      await window.SNHMemberPortal.gameImageUpsert(imageId, currentGameId, {
+        usageStatus: "approved",
+        makePrimary: true
+      });
+      await refreshCurrentGameImages("External image approved and selected as primary.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
+  }
+
+  async function onReturnImageToReference(imageId) {
+    try {
+      await window.SNHMemberPortal.gameImageUpsert(imageId, currentGameId, {
+        usageStatus: "reference_only"
+      });
+      await refreshCurrentGameImages("External image returned to reference-only status.");
+    } catch (err) {
+      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    }
   }
 
   function getVal(id) {
@@ -748,6 +955,7 @@
           : "";
     }
     if (manualWrapEl) manualWrapEl.hidden = mode !== "edit";
+    if (imagesWrapEl) imagesWrapEl.hidden = mode !== "edit";
     if (saleEl) saleEl.hidden = mode !== "edit";
     if (highScoresWrapEl) highScoresWrapEl.hidden = mode !== "edit";
     if (modsWrapEl) modsWrapEl.hidden = mode !== "edit";
@@ -790,7 +998,8 @@
       "mg-title",
       "mg-slug",
       "mg-details",
-      "mg-image",
+      "mg-image-local",
+      "mg-image-alt",
       "mg-release",
       "mg-mfg",
       "mg-mfr",
@@ -1725,7 +1934,7 @@
         el("p", {
           className: "member-games-help member-games-ai-images-intro",
           text:
-            "These previews are not uploaded automatically. Download an image you are allowed to use, add the file to assets/images/machines in the website project, publish that build to hosting, then type the file name into the Image field on this form and save the game. Add OPDB credit in More info or the description. Apply selected fields only updates catalog data; it does not download images from the web.",
+            "These previews come from persisted image associations. Manage source, approval, primary selection, and OPDB sync in the Images section above; AI proposals do not invent or change image metadata.",
         })
       );
       imgs.forEach(function (img, idx) {
@@ -2336,7 +2545,7 @@
     document.getElementById("mg-title").value = g.title || "";
     document.getElementById("mg-slug").value = g.slug || "";
     document.getElementById("mg-details").value = g.details || "";
-    document.getElementById("mg-image").value = g.imageFilename || "";
+    renderGameImages(g.images || []);
     document.getElementById("mg-release").value = (g.releaseDate || "").slice(0, 10);
     document.getElementById("mg-mfg").value = (g.manufactureDate || "").slice(0, 10);
     document.getElementById("mg-mfr").value = g.manufacturer || "";
@@ -2408,7 +2617,6 @@
         title: getVal("mg-title"),
         slug: getVal("mg-slug") || undefined,
         details: getVal("mg-details"),
-        imageFilename: getVal("mg-image") || null,
         releaseDate: rd ? rd : null,
         manufactureDate: md ? md : null,
         manufacturer: getVal("mg-mfr") || null,

@@ -1920,10 +1920,24 @@ footer {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  margin-top: 0.6rem;
   border-radius: 6px;
   border: 1px solid var(--border-faint);
   background: var(--bg-inset-deep);
+}
+
+.game-card-figure {
+  margin: 0.6rem 0 0;
+}
+
+.game-card-image-credit {
+  margin-top: 0.3rem;
+  color: var(--text-faint);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.game-card-image-credit a {
+  color: var(--text-muted-2);
 }
 
 .games-details {
@@ -2481,6 +2495,52 @@ footer {
 
 .member-games-ai-image-ref-link:hover {
   color: var(--accent-blue);
+}
+
+.member-games-images-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.member-games-image-card {
+  padding: 0.65rem;
+  border: 1px solid var(--border-divider);
+  border-radius: 8px;
+  background: var(--bg-card-deep);
+}
+
+.member-games-image-preview {
+  width: 100%;
+  max-width: 18rem;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  background: var(--bg-inset-deep);
+}
+
+.member-games-image-meta,
+.member-games-image-attribution,
+.member-games-image-rights-note {
+  margin: 0.4rem 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.member-games-image-meta {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.member-games-image-attribution {
+  color: var(--text-muted-2);
+  word-break: break-word;
+}
+
+.member-games-image-rights-note {
+  color: var(--status-warn-text);
 }
 
 .member-games-ai-external-link {

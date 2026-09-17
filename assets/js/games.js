@@ -65,6 +65,88 @@ function hasNonemptyString(v) {
 }
 
 /**
+ * Normalized images win; imageFilename remains the static JSON / migration
+ * fallback. Reference-only images never appear in the public catalog payload.
+ * @param {{ title?: unknown, primaryImage?: unknown, imageFilename?: unknown }} game
+ * @returns {{ url: string, altText: string, sourceType: string, attributionText: string, attributionUrl: string, licenseName: string, licenseUrl: string } | null}
+ */
+function resolveGameImage(game) {
+  if (!game || typeof game !== "object") return null;
+  const normalized = game.primaryImage;
+  if (normalized && typeof normalized === "object" && hasNonemptyString(normalized.url)) {
+    return {
+      url: String(normalized.url).trim(),
+      altText: hasNonemptyString(normalized.altText) ? String(normalized.altText).trim() : String(game.title || ""),
+      sourceType: hasNonemptyString(normalized.sourceType) ? String(normalized.sourceType).trim() : "external",
+      attributionText: hasNonemptyString(normalized.attributionText) ? String(normalized.attributionText).trim() : "",
+      attributionUrl: hasNonemptyString(normalized.attributionUrl)
+        ? String(normalized.attributionUrl).trim()
+        : hasNonemptyString(normalized.sourceUrl)
+          ? String(normalized.sourceUrl).trim()
+          : "",
+      licenseName: hasNonemptyString(normalized.licenseName) ? String(normalized.licenseName).trim() : "",
+      licenseUrl: hasNonemptyString(normalized.licenseUrl) ? String(normalized.licenseUrl).trim() : "",
+    };
+  }
+  if (!hasNonemptyString(game.imageFilename)) return null;
+  return {
+    url: `${IMAGE_BASE_PATH}/${String(game.imageFilename).trim()}`,
+    altText: String(game.title || ""),
+    sourceType: "club",
+    attributionText: "",
+    attributionUrl: "",
+    licenseName: "",
+    licenseUrl: "",
+  };
+}
+
+function createGameImageFigure(game) {
+  const selected = resolveGameImage(game);
+  if (!selected) return null;
+
+  const figure = document.createElement("figure");
+  figure.className = "game-card-figure";
+  const image = document.createElement("img");
+  image.className = "game-card-image";
+  image.src = selected.url;
+  image.alt = selected.altText;
+  image.loading = "lazy";
+  image.decoding = "async";
+  figure.appendChild(image);
+
+  if (selected.sourceType !== "club" && selected.attributionText) {
+    const credit = document.createElement("figcaption");
+    credit.className = "game-card-image-credit";
+    credit.append("Image: ");
+    if (selected.attributionUrl) {
+      const source = document.createElement("a");
+      source.href = selected.attributionUrl;
+      source.target = "_blank";
+      source.rel = "noopener";
+      source.textContent = selected.attributionText;
+      credit.appendChild(source);
+    } else {
+      credit.append(selected.attributionText);
+    }
+    if (selected.licenseName) {
+      credit.append(" · ");
+      if (selected.licenseUrl) {
+        const license = document.createElement("a");
+        license.href = selected.licenseUrl;
+        license.target = "_blank";
+        license.rel = "noopener";
+        license.textContent = selected.licenseName;
+        credit.appendChild(license);
+      } else {
+        credit.append(selected.licenseName);
+      }
+    }
+    figure.appendChild(credit);
+  }
+  return figure;
+}
+
+/**
  * @param {unknown} v
  * @returns {boolean | null}
  */
@@ -732,16 +814,8 @@ function createGamesList(games) {
     title.textContent = game.title;
     item.appendChild(title);
 
-    const filename = game.imageFilename;
-    const imagePath = filename ? `${IMAGE_BASE_PATH}/${filename}` : "";
-    if (imagePath) {
-      const image = document.createElement("img");
-      image.className = "game-card-image";
-      image.src = imagePath;
-      image.alt = game.title;
-      image.loading = "lazy";
-      item.appendChild(image);
-    }
+    const imageFigure = createGameImageFigure(game);
+    if (imageFigure) item.appendChild(imageFigure);
 
     const details = document.createElement("p");
     details.className = "games-details";
