@@ -69,6 +69,7 @@
   var pinballMapIngestStatusRowEl = null;
   var pinballMapIngestBtnEl = null;
   var pinballMapIngestBusy = false;
+  var imageUploadBusy = false;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -216,79 +217,80 @@
       )
     );
     formEl.appendChild(buildGameImagesSection());
-    formEl.appendChild(
+    var metadataPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
+    metadataPanel.appendChild(
       fieldRow(
         "Release date",
         dateInput("mg-release", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Manufacture date",
         dateInput("mg-mfg", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Manufacturer",
         textInput("mg-mfr", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Manufacturer full name",
         textInput("mg-mfrfull", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Type (em|ss|…)",
         textInput("mg-type", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Display",
         textInput("mg-display", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Player count",
         numberInput("mg-players", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Pinside URL",
         textInput("mg-pinside", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "IPDB URL",
         textInput("mg-ipdb", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "Kineticist URL",
         textInput("mg-kineticist", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "OPDB id",
         textInput("mg-opdb", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "OPDB matched via",
         textInput("mg-opdbvia", "")
       )
     );
-    formEl.appendChild(
+    metadataPanel.appendChild(
       fieldRow(
         "OPDB canonical name",
         textInput("mg-opdbcanon", "")
@@ -298,7 +300,7 @@
     var mapRow = el("p", { className: "member-games-meta" });
     mapRow.appendChild(el("strong", { text: "Map at club (read-only): " }));
     mapRow.appendChild(el("span", { id: "mg-map-at", text: "—" }));
-    formEl.appendChild(mapRow);
+    metadataPanel.appendChild(mapRow);
 
     manualWrapEl = el("div", { className: "member-games-manual" });
     manualWrapEl.appendChild(el("p", { className: "member-games-help", text: "Manual floor override (when Pinball Map is wrong or missing):" }));
@@ -310,7 +312,8 @@
     });
     manualWrapEl.appendChild(fieldRow("Override", manSel));
     manualWrapEl.appendChild(fieldRow("Override note", textInput("mg-manual-note", "")));
-    formEl.appendChild(manualWrapEl);
+    metadataPanel.appendChild(manualWrapEl);
+    formEl.appendChild(wrapCollapsible("Game metadata", metadataPanel));
 
     formEl.appendChild(buildReviewScaffolds());
 
@@ -551,10 +554,16 @@
         actions.appendChild(primaryBtn);
       }
       if (imageRow.sourceType !== "club" && imageRow.usageStatus !== "approved") {
+        var approveOnlyBtn = el("button", { type: "button", className: "members-sidebar-link" });
+        approveOnlyBtn.textContent = "Approve image";
+        approveOnlyBtn.addEventListener("click", function () {
+          void onApproveExternalImage(imageRow.id, false);
+        });
+        actions.appendChild(approveOnlyBtn);
         var approveBtn = el("button", { type: "button", className: "members-sidebar-link" });
         approveBtn.textContent = "Approve and use as primary";
         approveBtn.addEventListener("click", function () {
-          void onApproveExternalImage(imageRow.id);
+          void onApproveExternalImage(imageRow.id, true);
         });
         actions.appendChild(approveBtn);
       } else if (imageRow.sourceType !== "club" && imageRow.usageStatus === "approved") {
@@ -589,12 +598,21 @@
 
   async function onAddClubImage() {
     if (!currentGameId || !window.SNHMemberPortal) return;
+    if (imageUploadBusy) return;
     var fileInput = document.getElementById("mg-image-file");
+    var uploadBtn = document.getElementById("mg-image-add-club");
     var file = fileInput && fileInput.files ? fileInput.files[0] : null;
     if (!file) {
       setStatus("Choose a club photo first.");
       return;
     }
+    imageUploadBusy = true;
+    if (uploadBtn) {
+      uploadBtn.disabled = true;
+      uploadBtn.setAttribute("aria-busy", "true");
+      uploadBtn.textContent = "Uploading…";
+    }
+    if (fileInput) fileInput.disabled = true;
     setStatus("Uploading club photo…");
     try {
       var primaryInput = document.getElementById("mg-image-make-primary");
@@ -609,6 +627,14 @@
         : "Club photo uploaded and selected as primary.");
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    } finally {
+      imageUploadBusy = false;
+      if (uploadBtn) {
+        uploadBtn.disabled = false;
+        uploadBtn.removeAttribute("aria-busy");
+        uploadBtn.textContent = "Upload club photo";
+      }
+      if (fileInput) fileInput.disabled = false;
     }
   }
 
@@ -651,13 +677,15 @@
     }
   }
 
-  async function onApproveExternalImage(imageId) {
+  async function onApproveExternalImage(imageId, makePrimary) {
     try {
       await window.SNHMemberPortal.gameImageUpsert(imageId, currentGameId, {
         usageStatus: "approved",
-        makePrimary: true
+        makePrimary: !!makePrimary
       });
-      await refreshCurrentGameImages("External image approved and selected as primary.");
+      await refreshCurrentGameImages(makePrimary
+        ? "External image approved and selected as primary."
+        : "External image approved.");
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     }
@@ -2144,9 +2172,7 @@
   }
 
   function buildReviewScaffolds() {
-    reviewScaffoldsEl = el("div", { className: "member-games-review-scaffolds" });
-    var missing = el("section", { className: "member-games-review-card" });
-    missing.appendChild(el("h4", { text: "AI enrichment assistant" }));
+    var missing = el("section", { className: "member-games-review-card member-games-collapsible-panel" });
     missing.appendChild(
       el("p", {
         text: "Open a game, run AI refresh, then review and apply only the fields you approve."
@@ -2156,10 +2182,9 @@
       el("p", {
         className: "member-games-help",
         text:
-          "Image previews work best when this game already has a club photo filename. Listing sites often block inline thumbnails in the browser. Open Pinball Database artwork previews can be wired up separately for editors.",
+          "Image suggestions use the game's persisted image associations. Manage source, approval, primary selection, and OPDB sync in the Images section.",
       })
     );
-    aiWrapEl = missing;
     var actions = el("div", { className: "member-games-form-actions" });
     var proposeBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-refresh" });
     proposeBtn.textContent = "AI refresh current game";
@@ -2204,7 +2229,8 @@
     aiProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-proposal" });
     missing.appendChild(aiStatusEl);
     missing.appendChild(aiProposalBodyEl);
-    reviewScaffoldsEl.appendChild(missing);
+    reviewScaffoldsEl = wrapCollapsible("AI enrichment assistant", missing, "member-games-review-scaffolds");
+    aiWrapEl = reviewScaffoldsEl;
     return reviewScaffoldsEl;
   }
 
