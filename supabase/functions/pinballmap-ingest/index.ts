@@ -7,6 +7,7 @@ import {
   type DbStint,
   type MachineDetail,
 } from "./merge.ts";
+import { importOpdbImages } from "../_shared/opdb-images.ts";
 
 const LOCATION_DEFAULT = 8908;
 
@@ -191,6 +192,22 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Pinball Map supplies authoritative OPDB IDs. Resolve image metadata from
+    // OPDB's structured daily export after the game rows exist. This is
+    // best-effort so an OPDB/CDN outage never blocks floor-list ingestion.
+    const opdbIds = [...payload.updates, ...payload.creates]
+      .map((row) => String(row.opdbId || "").trim())
+      .filter(Boolean);
+    let imageSync: unknown = { requested: 0, matched: 0, imported: 0, missing: [] };
+    let imageSyncWarning: string | null = null;
+    if (opdbIds.length) {
+      try {
+        imageSync = await importOpdbImages(supabase, opdbIds);
+      } catch (syncError) {
+        imageSyncWarning = syncError instanceof Error ? syncError.message : String(syncError);
+      }
+    }
+
     const conditionPayload = buildPinballConditionPayload(activity);
     let conditionResult: unknown = { ok: true, imported: 0 };
     if (conditionPayload.rows.length) {
@@ -216,6 +233,8 @@ Deno.serve(async (req) => {
     return jsonResponse({
       ok: true,
       result: data,
+      imageSync,
+      imageSyncWarning,
       conditions: conditionResult,
       counts: {
         updates: payload.updates.length,

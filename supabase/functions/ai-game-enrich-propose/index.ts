@@ -20,14 +20,24 @@ type GameRow = {
   kineticist_url: string | null;
   opdb_id: string | null;
   updated_at: string;
+  game_images?: Array<{
+    source_type: string;
+    location_type: string;
+    location_value: string;
+    source_url: string | null;
+    attribution_text: string | null;
+    license_name: string | null;
+    usage_status: string;
+    is_primary: boolean;
+    image_type: string | null;
+  }>;
 };
 
 type ProposalFieldKey =
   | "details"
   | "pinsideUrl"
   | "ipdbUrl"
-  | "kineticistUrl"
-  | "imageFilename";
+  | "kineticistUrl";
 
 type ProposalConfidence = "low" | "medium" | "high";
 type ProposalStatus = "ok" | "needs_review" | "unavailable" | "budget_limit_reached";
@@ -122,9 +132,6 @@ const THRESHOLDS = {
 const DESCRIPTION_REGEN_LIMIT = 2;
 const IMAGE_REGEN_LIMIT = 1;
 
-/** Minimum heuristic score to treat an OPDB URL as playfield-style for previews. */
-const OPDB_PLAYFIELD_SCORE_MIN = 22;
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: CORS_HEADERS });
@@ -174,7 +181,6 @@ Deno.serve(async (req) => {
     const fields: ProposalField[] = [
       modelResult,
       ...linkFields,
-      buildImageFilenameSuggestion(game, imageCandidates),
     ];
 
     const response: EnrichmentResponse = {
@@ -247,7 +253,7 @@ async function loadGame(admin: ReturnType<typeof createClient>, gameId: string):
   const res = await admin
     .from("games")
     .select(
-      "id,slug,title,details,image_filename,release_date,manufacture_date,manufacturer,manufacturer_full_name,machine_type,display_type,player_count,pinside_url,ipdb_url,kineticist_url,opdb_id,updated_at",
+      "id,slug,title,details,image_filename,release_date,manufacture_date,manufacturer,manufacturer_full_name,machine_type,display_type,player_count,pinside_url,ipdb_url,kineticist_url,opdb_id,updated_at,game_images(source_type,location_type,location_value,source_url,attribution_text,license_name,usage_status,is_primary,image_type)",
     )
     .eq("id", gameId)
     .maybeSingle();
@@ -719,362 +725,51 @@ function guessKineticistUrl(game: GameRow) {
   };
 }
 
-/** Catalog links are usually HTML (often behind bot checks); only real image URLs work for previews. */
-function looksLikeDirectImageUrl(url: string): boolean {
-  const u = url.trim().toLowerCase();
-  if (!/^https?:\/\//.test(u)) return false;
-  return /\.(?:jpe?g|png|gif|webp|avif)(?:[\s#?]|$)/.test(u);
-}
-
-function extractIpdbNumericIdFromUrl(raw: string | null): string | null {
-  if (!raw) return null;
-  const s = raw.trim();
-  const qs = s.match(/[?&#]id=(\d{1,7})\b/i);
-  if (qs) return qs[1];
-  const path = s.match(/\/(\d{1,7})(?:\/?|[?#])/);
-  if (path) return path[1];
-  return null;
-}
-
-function collectHttpsImageUrls(value: unknown, out: Set<string>, depth: number) {
-  if (depth > 14) return;
-  if (typeof value === "string") {
-    const v = value.trim();
-    if (/^https?:\/\//i.test(v) && /\.(?:jpe?g|png|gif|webp)(\?|#|$)/i.test(v)) {
-      out.add(v);
-    }
-    return;
-  }
-  if (Array.isArray(value)) {
-    for (const item of value) collectHttpsImageUrls(item, out, depth + 1);
-    return;
-  }
-  if (value && typeof value === "object") {
-    for (const k of Object.keys(value as Record<string, unknown>)) {
-      collectHttpsImageUrls((value as Record<string, unknown>)[k], out, depth + 1);
-    }
-  }
-}
-
-type OpdbTaggedImage = { url: string; typeHints: string };
-
-/** Pull URLs from OPDB artwork blobs where type lives next to urls (paths are often opaque UUIDs). */
-function collectOpdbTaggedImages(node: unknown, depth: number, pathHint: string, out: OpdbTaggedImage[]) {
-  if (depth > 18) return;
-  if (Array.isArray(node)) {
-    for (let i = 0; i < node.length; i++) {
-      collectOpdbTaggedImages(node[i], depth + 1, `${pathHint}[${i}]`, out);
-    }
-    return;
-  }
-  if (!node || typeof node !== "object") return;
-
-  const o = node as Record<string, unknown>;
-  const hintParts: string[] = [];
-  if (pathHint && /\bplayfield\b|\bbackglass\b|\btranslite\b|\bcabinet\b|\bpromo\b|\bartwork\b/i.test(pathHint)) {
-    hintParts.push(pathHint.replace(/[\[\]0-9.]/g, " ").replace(/_/g, " "));
-  }
-  for (const key of [
-    "type",
-    "artwork_type",
-    "category",
-    "kind",
-    "label",
-    "name",
-    "description",
-    "title",
-    "slug",
-    "role",
-  ]) {
-    const v = o[key];
-    if (typeof v === "string" && v.trim()) hintParts.push(v.trim());
-  }
-
-  const urlsFromNested = extractHttpImageUrlsFromObject(o);
-  if (urlsFromNested.length) {
-    const typeHints = hintParts.join(" ").toLowerCase();
-    for (const url of urlsFromNested) {
-      out.push({ url, typeHints });
-    }
-  }
-
-  for (const k of Object.keys(o)) {
-    collectOpdbTaggedImages(o[k], depth + 1, pathHint ? `${pathHint}.${k}` : k, out);
-  }
-}
-
-function extractHttpImageUrlsFromObject(o: Record<string, unknown>): string[] {
-  const found: string[] = [];
-  const maybePush = (s: unknown) => {
-    if (typeof s !== "string") return;
-    const v = s.trim();
-    if (/^https?:\/\//i.test(v) && /\.(?:jpe?g|png|gif|webp)(\?|#|$)/i.test(v)) {
-      found.push(v);
-    }
-  };
-
-  maybePush(o.url);
-  maybePush(o.full_url);
-  maybePush(o.medium_url);
-  maybePush(o.small_url);
-  maybePush(o.large_url);
-
-  const urlsBag = o.urls;
-  if (urlsBag && typeof urlsBag === "object") {
-    for (const val of Object.values(urlsBag as Record<string, unknown>)) {
-      maybePush(val);
-    }
-  }
-
-  return found;
-}
-
-/** Positive = favors close playfield-style shots; negative = backglass, translite, promo, unknown opaque URLs. */
-function scoreOpdbImageKind(url: string, typeHints: string): number {
-  const blob = `${url.toLowerCase()} ${typeHints.toLowerCase()}`;
-  let score = 0;
-
-  const playfieldSignals =
-    /\bplayfield\b|play_field|play-field|pf_|under.?glass|field.?view|inlane|outlane|flipper|pop\s*bumper|pop.?bumper/i;
-  const strongNeg =
-    /\bbackglass\b|\btranslite\b|promotional|promo\b|flyer|poster|marquee|topper|side\s*art|coin\s*door|logo\s*sheet|instruction/i;
-
-  if (playfieldSignals.test(blob)) score += 80;
-  if (/\bplayfield\b/i.test(typeHints)) score += 40;
-
-  if (strongNeg.test(blob)) score -= 70;
-  if (/\bbackglass\b|\btranslite\b/i.test(typeHints)) score -= 65;
-
-  if (/\bcabinet\b/i.test(blob) && !/\bplayfield\b/i.test(blob)) score -= 12;
-
-  return score;
-}
-
-function resolutionRank(url: string): number {
-  const lower = url.toLowerCase();
-  if (/(?:^|[/_-])(xlarge|original|full)[./_-]/i.test(lower)) return 6;
-  if (/-large\.(jpe?g|png|gif|webp)(\?|$)/i.test(lower) || /[/_]large[./_-]/i.test(lower)) return 5;
-  if (/-medium\.(jpe?g|png|gif|webp)(\?|$)/i.test(lower) || /[/_]medium[./_-]/i.test(lower)) return 4;
-  if (/-small\.(jpe?g|png|gif|webp)(\?|$)/i.test(lower)) return 3;
-  if (/thumb|thumbnail/i.test(lower)) return 2;
-  return 3;
-}
-
-/** Collapse small/medium/large duplicates to a single best URL per artwork id. */
-function dedupeResolutionVariants(urls: string[]): string[] {
-  const groups = new Map<string, string[]>();
-  for (const raw of urls) {
-    const u = raw.trim();
-    const key = u
-      .replace(/-(?:small|medium|large|xlarge|thumb|thumbnail)\.(jpe?g|png|gif|webp)(\?.*)?$/i, ".$1")
-      .replace(/\/(?:small|medium|large|xlarge)\//gi, "/")
-      .replace(/[?#].*$/, "");
-    const arr = groups.get(key) || [];
-    arr.push(u);
-    groups.set(key, arr);
-  }
-  const out: string[] = [];
-  for (const [, variants] of groups) {
-    let best = variants[0];
-    let bestRank = -1;
-    for (const v of variants) {
-      const r = resolutionRank(v);
-      if (r > bestRank) {
-        bestRank = r;
-        best = v;
-      }
-    }
-    out.push(best);
-  }
-  return out;
-}
-
-function selectOpdbPreviewRows(payload: unknown, warnings: string[]): Array<{ url: string; score: number }> {
-  const tagged: OpdbTaggedImage[] = [];
-  collectOpdbTaggedImages(payload, 0, "", tagged);
-
-  const flat = new Set<string>();
-  collectHttpsImageUrls(payload, flat, 0);
-
-  const hintsByUrl = new Map<string, string>();
-  for (const t of tagged) {
-    const cur = hintsByUrl.get(t.url) || "";
-    hintsByUrl.set(t.url, `${cur} ${t.typeHints}`.trim());
-  }
-
-  const allUrls = [...new Set([...flat, ...hintsByUrl.keys()])];
-  const variantDeduped = dedupeResolutionVariants(allUrls);
-
-  const scored = variantDeduped.map((url) => {
-    const hints = hintsByUrl.get(url) || "";
-    return { url, score: scoreOpdbImageKind(url, hints) };
-  });
-
-  scored.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
-    return resolutionRank(b.url) - resolutionRank(a.url);
-  });
-
-  const playfieldish = scored.filter((x) => x.score >= OPDB_PLAYFIELD_SCORE_MIN);
-  const chosen = playfieldish.length ? playfieldish : scored;
-
-  if (!playfieldish.length && scored.length) {
-    warnings.push(
-      "OPDB did not label an obvious playfield photo for this title (thumbnails may be backglass or promo art). Use a club-owned playfield shot when you need the floor view.",
-    );
-  }
-
-  return chosen.slice(0, 4);
-}
-
-async function fetchOpdbJson(path: string, token: string): Promise<unknown | null> {
-  const url = new URL(`https://opdb.org${path.startsWith("/") ? path : `/${path}`}`);
-  url.searchParams.set("api_token", token);
-  const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 8000);
-  try {
-    const res = await fetch(url.toString(), {
-      signal: controller.signal,
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "snh-pinball-club/ai-game-enrich-propose",
-      },
-    });
-    if (!res.ok) return null;
-    const ct = res.headers.get("content-type") || "";
-    if (!ct.includes("json")) return null;
-    return await res.json();
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(tid);
-  }
-}
-
 async function buildImageCandidates(game: GameRow, warnings: string[]): Promise<ImageCandidate[]> {
-  const out: ImageCandidate[] = [];
-
-  if (game.image_filename) {
-    out.push({
-      imageUrl: `assets/images/machines/${game.image_filename}`,
-      sourceType: "club_asset",
-      sourceUrl: `assets/images/machines/${game.image_filename}`,
-      usagePolicy: "club_owned",
-      attributionRequired: false,
-      licenseOrUsageNote: "Club-owned existing asset.",
-      qualityScore: 0.9,
-      qualityBreakdown: { lighting: 4, focus: 4, playfieldFraming: 4, featureProminence: 4, penalty: 0 },
-      rejectionFlags: [],
-      hardRejected: false,
-      reason: "Existing club image retained as top candidate.",
-    });
+  const rows = Array.isArray(game.game_images) ? game.game_images : [];
+  if (!rows.length) {
+    warnings.push("No persisted image associations. Use the Images panel to add a club photo or sync structured OPDB metadata.");
+    return [];
   }
 
-  if (game.ipdb_url && looksLikeDirectImageUrl(game.ipdb_url)) {
-    const u = game.ipdb_url.trim();
-    out.push({
-      imageUrl: u,
-      sourceType: "direct_image_url",
-      sourceUrl: u,
-      usagePolicy: "reference_only",
-      attributionRequired: true,
-      licenseOrUsageNote: "Direct image URL in catalog; verify rights before hosting locally.",
-      qualityScore: 0.62,
-      qualityBreakdown: { lighting: 3, focus: 3, playfieldFraming: 3, featureProminence: 3, penalty: 0 },
-      rejectionFlags: [],
-      hardRejected: false,
-      reason: "Catalog URL points to an image file.",
-    });
-  }
-
-  const token = (Deno.env.get("OPDB_API_TOKEN") || "").trim();
-  if (!token) {
-    if (!game.image_filename) {
-      warnings.push(
-        "No artwork thumbnails: add a club image filename, or set OPDB_API_TOKEN on this function for Open Pinball Database previews.",
-      );
-    }
-    return out;
-  }
-
-  let payload: unknown | null = null;
-  const opdbId = game.opdb_id?.trim();
-  if (opdbId) {
-    payload = await fetchOpdbJson(`/api/machines/${encodeURIComponent(opdbId)}`, token);
-  }
-  if (!payload && game.ipdb_url) {
-    const ipdbNum = extractIpdbNumericIdFromUrl(game.ipdb_url);
-    if (ipdbNum) {
-      payload = await fetchOpdbJson(`/api/machines/ipdb/${encodeURIComponent(ipdbNum)}`, token);
-    }
-  }
-
-  if (!payload) {
-    if (!game.image_filename) {
-      warnings.push(
-        "Could not load OPDB machine JSON (check opdb id, IPDB link id=…, or OPDB token). IPDB and Kineticist web pages cannot be inlined as previews.",
-      );
-    }
-    return out;
-  }
-
-  const sortedRows = selectOpdbPreviewRows(payload, warnings);
-
-  if (!sortedRows.length) {
-    if (!game.image_filename) {
-      warnings.push("OPDB returned machine data but no hosted image URLs for this title.");
-    }
-    return out;
-  }
-
-  for (const row of sortedRows) {
-    const url = row.url;
-    const playfieldTier = row.score >= OPDB_PLAYFIELD_SCORE_MIN;
-    out.push({
-      imageUrl: url,
-      sourceType: playfieldTier ? "opdb_playfield" : "opdb_artwork",
-      sourceUrl: url,
-      usagePolicy: "trusted_with_attribution",
-      attributionRequired: true,
-      licenseOrUsageNote: "OPDB community artwork; confirm usage rights before hosting locally.",
-      qualityScore: playfieldTier ? 0.82 : 0.68,
-      qualityBreakdown: {
-        lighting: playfieldTier ? 4 : 3,
-        focus: playfieldTier ? 4 : 3,
-        playfieldFraming: playfieldTier ? 4 : 2,
-        featureProminence: playfieldTier ? 4 : 3,
-        penalty: playfieldTier ? 0 : 1,
-      },
-      rejectionFlags: playfieldTier ? [] : ["May be backglass or promo art if OPDB has no playfield upload."],
-      hardRejected: false,
-      reason: playfieldTier
-        ? "Open Pinball Database image tagged or scored as playfield-style."
-        : "Open Pinball Database artwork (verify type; prefer club playfield photo when available).",
-    });
-  }
-
-  return out;
-}
-
-function buildImageFilenameSuggestion(game: GameRow, candidates: ImageCandidate[]): ProposalField {
-  const top = candidates.find((c) => !c.hardRejected) || null;
-  const score = top ? top.qualityScore : 0.0;
-  const reviewRequired = score < THRESHOLDS.images;
-  return {
-    field: "imageFilename",
-    currentValue: game.image_filename,
-    suggestedValue: game.image_filename,
-    confidence: mapConfidence(score),
-    confidenceScore: score,
-    reason: top
-      ? "Top image candidate selected by deterministic rubric; final approval required."
-      : "No acceptable image candidate found.",
-    sourceType: top ? top.sourceType : "none",
-    sourceUrl: top ? top.sourceUrl : null,
-    warnings: top ? top.rejectionFlags : ["No candidate image was produced."],
-    reviewRequired,
-    applyByDefault: false,
-  };
+  return rows
+    .map((row): ImageCandidate => {
+      const isClub = row.source_type === "club";
+      const approved = row.usage_status === "approved";
+      const playfield = row.image_type === "playfield";
+      const imageUrl = row.location_type === "local_asset"
+        ? row.location_value.startsWith("assets/")
+          ? row.location_value
+          : `assets/images/machines/${row.location_value}`
+        : row.location_value;
+      const score = isClub ? 0.9 : approved ? 0.82 : playfield ? 0.72 : 0.65;
+      return {
+        imageUrl,
+        sourceType: row.source_type,
+        sourceUrl: row.source_url || imageUrl,
+        usagePolicy: isClub ? "club_owned" : approved ? "trusted_with_attribution" : "reference_only",
+        attributionRequired: !isClub,
+        licenseOrUsageNote: isClub
+          ? "Club-owned catalog asset."
+          : approved
+            ? `${row.attribution_text || "External source"}${row.license_name ? ` · ${row.license_name}` : ""}`
+            : "Reference only; confirm reuse and hotlink permission in the Images panel before public display.",
+        qualityScore: score,
+        qualityBreakdown: {
+          lighting: isClub ? 4 : 3,
+          focus: isClub ? 4 : 3,
+          playfieldFraming: playfield ? 4 : 2,
+          featureProminence: 3,
+          penalty: approved || isClub ? 0 : 2,
+        },
+        rejectionFlags: approved || isClub ? [] : ["Reference-only image is not approved for public display."],
+        hardRejected: false,
+        reason: row.is_primary
+          ? "Current normalized primary image."
+          : "Persisted normalized image association; source and approval state come from catalog data.",
+      };
+    })
+    .sort((a, b) => b.qualityScore - a.qualityScore);
 }
 
 function mapConfidence(score: number): ProposalConfidence {

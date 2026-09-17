@@ -670,6 +670,59 @@
     return result.data;
   }
 
+  async function gameImageUpsert(imageId, gameId, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_images_upsert", {
+      p_id: imageId || null,
+      p_game_id: gameId,
+      p_fields: fields
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function gameImageSetPrimary(gameId, imageId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_images_set_primary", {
+      p_game_id: gameId,
+      p_image_id: imageId
+    });
+    if (result.error) throw result.error;
+  }
+
+  async function opdbGameImageSync(gameId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var sessionResult = await client.auth.getSession();
+    var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+    if (!session || !session.access_token) throw new Error("You must be signed in to sync OPDB images.");
+
+    var cfg = window.SNH_CONFIG || {};
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) throw new Error("Missing Supabase configuration.");
+    var fnUrl = String(cfg.supabaseUrl).replace(/\/+$/, "") + "/functions/v1/opdb-image-sync";
+    var response = await fetch(fnUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: cfg.supabaseAnonKey,
+        Authorization: "Bearer " + session.access_token
+      },
+      body: JSON.stringify({ gameId: gameId })
+    });
+    var body = null;
+    try {
+      body = await response.json();
+    } catch (e) {
+      body = null;
+    }
+    if (!response.ok || !body || body.ok === false) {
+      throw new Error((body && body.error) || "OPDB image sync failed (" + response.status + ").");
+    }
+    return body;
+  }
+
   async function gamesUpsertStint(gameId, stint) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1274,6 +1327,9 @@
     pinballmapIngestInvoke: pinballmapIngestInvoke,
     gamesCreate: gamesCreate,
     gamesUpsert: gamesUpsert,
+    gameImageUpsert: gameImageUpsert,
+    gameImageSetPrimary: gameImageSetPrimary,
+    opdbGameImageSync: opdbGameImageSync,
     gamesUpsertStint: gamesUpsertStint,
     gamesDeleteStint: gamesDeleteStint,
     gamesSoftDelete: gamesSoftDelete,
