@@ -5,9 +5,8 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 ## Delivery status (done)
 
 - [x] Edge Function `ai-game-enrich-propose` (JWT, `games_editor` / `games_admin` / `club_admin`, audit `ai_proposal`)
-- [x] Description proposals: structured fields, existing `details`, OPDB/Pinside/IPDB **research snippets** (HTML fetch where possible), length guard (~140–220 chars), manufacturer + year in prose when metadata supports it, trim labels like `(Pro)` / `(LE)` in generated copy
+- [x] Description proposals: structured fields, existing `details`, OPDB/Pinside/IPDB **research snippets** (HTML fetch where possible), length guard (~220–320 chars), manufacturer + year in prose when metadata supports it, trim labels like `(Pro)` / `(LE)` in generated copy
 - [x] Link proposals: IPDB search fallback; **Pinside** and **Kineticist** canonical-style URLs from `slug` + title + release year when derivable
-- [x] Image candidates: read persisted normalized image associations; image URLs, source IDs, approval, and attribution come from deterministic catalog data, not the model
 - [x] Portal: `SNHMemberPortal.aiGameEnrichPropose`, proposal UI with checkboxes, external link validation, **AI block under core game fields, above stints**
 - [x] Combobox filter **Only at club today** (effective at-club: manual override, then map, then `atClub`)
 - [x] Editor UX: collapsible `<details>` sections (location stints, for sale, owner link, high scores, mods, Pingolf) **collapsed by default**; Save/Cancel remain at bottom of form
@@ -32,9 +31,9 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 
 ## Editor workflow (short)
 
-1. Open a game → **AI refresh current game** (or regenerate description / image candidates where offered).
+1. Open a game → **Attempt Metadata Enhancement** or **Attempt Description Update**.
 2. Review fields; use **Open in new tab** links to validate URLs.
-3. **Apply selected fields** only for rows you trust. Manage club images and deterministic OPDB sync in the separate **Images** section; the AI proposal cannot write image metadata.
+3. **Apply selected fields** only for rows you trust. Manage all images in the separate **Images** section through club uploads and deterministic OPDB sync.
 4. Rollback mistakes: `docs/games-ai-rollback-runbook.md`.
 
 ## Related files

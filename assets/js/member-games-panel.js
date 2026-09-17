@@ -64,7 +64,6 @@
   var aiProposalBodyEl = null;
   var aiProposalData = null;
   var aiDescriptionRegenCount = 0;
-  var aiImageRegenCount = 0;
   var aiBusy = false;
   var filterAtClubOnly = false;
   var pinballMapIngestStatusRowEl = null;
@@ -1951,9 +1950,9 @@
   }
 
   /** Prefix like "Current: " or ""; opens http(s) values in a new tab for verification. */
-  function appendAiProposalUrlParagraph(row, prefixText, rawValue) {
+  function appendAiProposalUrlParagraph(row, prefixText, rawValue, extraClass) {
     var v = String(rawValue || "").trim();
-    var p = el("p", { className: "member-games-help" });
+    var p = el("p", { className: "member-games-help" + (extraClass ? " " + extraClass : "") });
     if (prefixText) p.appendChild(document.createTextNode(prefixText));
     if (!v) {
       p.appendChild(document.createTextNode("—"));
@@ -1983,7 +1982,6 @@
   function resetAiProposalUi() {
     aiProposalData = null;
     aiDescriptionRegenCount = 0;
-    aiImageRegenCount = 0;
     if (aiProposalBodyEl) aiProposalBodyEl.replaceChildren();
     setAiStatus("");
   }
@@ -2053,13 +2051,13 @@
       var currentText = String(f.currentValue || "").trim() || "—";
       var suggestedText = String(f.suggestedValue || "").trim() || "—";
       if (isAiProposalLinkField(f.field)) {
-        appendAiProposalUrlParagraph(row, "Current: ", f.currentValue);
-        appendAiProposalUrlParagraph(row, "Suggested: ", f.suggestedValue);
+        appendAiProposalUrlParagraph(row, "Current: ", f.currentValue, "member-games-ai-current");
+        appendAiProposalUrlParagraph(row, "Suggested: ", f.suggestedValue, "member-games-ai-suggested");
       } else {
-        row.appendChild(el("p", { className: "member-games-help", text: "Current: " + currentText }));
-        row.appendChild(el("p", { className: "member-games-help", text: "Suggested: " + suggestedText }));
+        row.appendChild(el("p", { className: "member-games-help member-games-ai-current", text: "Current: " + currentText }));
+        row.appendChild(el("p", { className: "member-games-help member-games-ai-suggested", text: "Suggested: " + suggestedText }));
       }
-      if (f.reason) row.appendChild(el("p", { className: "member-games-help", text: "Reason: " + String(f.reason) }));
+      if (f.reason) row.appendChild(el("p", { className: "member-games-help member-games-ai-reason", text: "Reason: " + String(f.reason) }));
       var fw = Array.isArray(f.warnings) ? f.warnings : [];
       if (fw.length) {
         var fwul = el("ul", { className: "member-games-ai-warnings" });
@@ -2071,106 +2069,6 @@
       aiProposalBodyEl.appendChild(row);
     });
 
-    var imgs = Array.isArray(proposal.imageCandidates) ? proposal.imageCandidates : [];
-    if (imgs.length) {
-      var imgsWrap = el("div", { className: "member-games-ai-images" });
-      imgsWrap.appendChild(el("h5", { text: "Image candidates" }));
-      imgsWrap.appendChild(
-        el("p", {
-          className: "member-games-help member-games-ai-images-intro",
-          text:
-            "These previews come from persisted image associations. Manage source, approval, primary selection, and OPDB sync in the Images section above; AI proposals do not invent or change image metadata.",
-        })
-      );
-      imgs.forEach(function (img, idx) {
-        var imgRow = el("div", { className: "member-games-ai-image-row" });
-        var thumbSrc = String((img && img.imageUrl) || "").trim();
-        var thumbEl;
-        var attrNote = String((img && img.licenseOrUsageNote) || "").trim();
-        var attrReq = !!(img && img.attributionRequired);
-        var altBits = ["Candidate " + (idx + 1)];
-        if (attrReq || attrNote) altBits.push("preview for review only");
-        if (thumbSrc) {
-          thumbEl = el("img", {
-            className: "member-games-ai-image-preview",
-            alt: altBits.join(", "),
-            src: thumbSrc,
-          });
-        } else {
-          var placeholder = el("div", {
-            className: "member-games-ai-image-placeholder",
-            role: "img",
-            "aria-label": "No thumbnail for candidate " + (idx + 1),
-          });
-          placeholder.appendChild(
-            el("span", { className: "member-games-ai-image-placeholder-note", text: "No inline preview." })
-          );
-          var ref = String((img && img.sourceUrl) || "").trim();
-          if (ref && isValidHttpUrl(ref)) {
-            placeholder.appendChild(
-              el("a", {
-                className: "member-games-ai-image-ref-link",
-                href: ref,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                text: "Open reference page",
-              })
-            );
-          }
-          thumbEl = placeholder;
-        }
-        var meta = el("p", {
-          className: "member-games-help",
-          text: "Score " +
-            fmtConfidence(Number(img.qualityScore || 0)) +
-            " · " +
-            String(img.sourceType || "source") +
-            (img.attributionRequired ? " · attribution required" : "")
-        });
-        imgRow.appendChild(thumbEl);
-        imgRow.appendChild(meta);
-
-        var srcUrl = String((img && img.sourceUrl) || "").trim();
-        var showAttrBlock = !!(attrNote || attrReq || (srcUrl && isValidHttpUrl(srcUrl)));
-        if (showAttrBlock) {
-          var attrWrap = el("div", { className: "member-games-ai-image-attribution" });
-          var usageP = el("p", { className: "member-games-ai-image-attribution-usage" });
-          usageP.appendChild(el("span", { className: "member-games-ai-image-attribution-label", text: "Usage / credit: " }));
-          if (attrNote) {
-            usageP.appendChild(document.createTextNode(attrNote));
-          } else if (attrReq) {
-            usageP.appendChild(
-              document.createTextNode(
-                "Confirm license terms with the source before hosting this image on the public catalog."
-              )
-            );
-          } else {
-            usageP.appendChild(document.createTextNode("See source link below."));
-          }
-          attrWrap.appendChild(usageP);
-          if (srcUrl && isValidHttpUrl(srcUrl)) {
-            var srcP = el("p", { className: "member-games-ai-image-attribution-source" });
-            srcP.appendChild(document.createTextNode("Source: "));
-            var disp = srcUrl.length > 88 ? srcUrl.slice(0, 85) + "…" : srcUrl;
-            srcP.appendChild(
-              el("a", {
-                href: srcUrl,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                className: "member-games-ai-external-link",
-                title: srcUrl,
-                text: disp,
-              })
-            );
-            attrWrap.appendChild(srcP);
-          }
-          imgRow.appendChild(attrWrap);
-        }
-
-        imgsWrap.appendChild(imgRow);
-      });
-      aiProposalBodyEl.appendChild(imgsWrap);
-    }
   }
 
   async function runAiPropose(opts) {
@@ -2182,7 +2080,6 @@
       var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
         gameId: currentGameId,
         regenerateDescription: !!(opts && opts.regenerateDescription),
-        regenerateImageCandidates: !!(opts && opts.regenerateImageCandidates),
       });
       renderAiProposal(proposal);
       setAiStatus("AI proposal ready.");
@@ -2204,7 +2101,6 @@
       if (f.field === "ipdbUrl") out.ipdbUrl = f.suggestedValue || null;
       if (f.field === "pinsideUrl") out.pinsideUrl = f.suggestedValue || null;
       if (f.field === "kineticistUrl") out.kineticistUrl = f.suggestedValue || null;
-      if (f.field === "imageFilename") out.imageFilename = f.suggestedValue || null;
     });
     return out;
   }
@@ -2277,16 +2173,6 @@
       aiDescriptionRegenCount += 1;
       void runAiPropose({ regenerateDescription: true });
     });
-    var regenImgBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-regen-img" });
-    regenImgBtn.textContent = "Regenerate image candidates";
-    regenImgBtn.addEventListener("click", function () {
-      if (aiImageRegenCount >= 1) {
-        setAiStatus("Image regenerate limit reached for this session.");
-        return;
-      }
-      aiImageRegenCount += 1;
-      void runAiPropose({ regenerateImageCandidates: true });
-    });
     var applyBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply" });
     applyBtn.textContent = "Apply selected AI fields";
     applyBtn.addEventListener("click", function () {
@@ -2294,7 +2180,6 @@
     });
     actions.appendChild(proposeBtn);
     actions.appendChild(regenDescBtn);
-    actions.appendChild(regenImgBtn);
     actions.appendChild(applyBtn);
     missing.appendChild(actions);
     aiStatusEl = el("p", { className: "member-games-help", id: "mg-ai-status" });
