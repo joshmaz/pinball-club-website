@@ -8,6 +8,7 @@
   var appEl = null;
   var statusEl = null;
   var comboboxInputEl = null;
+  var comboboxClearEl = null;
   var comboboxPanelEl = null;
   var comboboxOptionsEl = null;
   var comboboxEmptyEl = null;
@@ -70,6 +71,8 @@
   var pinballMapIngestBtnEl = null;
   var pinballMapIngestBusy = false;
   var imageUploadBusy = false;
+  var gameSaveBusy = false;
+  var gameSaveFeedbackTimer = null;
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -419,6 +422,31 @@
 
   function setStatus(msg) {
     if (statusEl) statusEl.textContent = msg || "";
+  }
+
+  function setGameSaveButtonsState(state) {
+    if (gameSaveFeedbackTimer) {
+      window.clearTimeout(gameSaveFeedbackTimer);
+      gameSaveFeedbackTimer = null;
+    }
+    ["mg-save-top", "mg-save"].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (!btn) return;
+      btn.classList.toggle("is-success", state === "success");
+      btn.classList.toggle("is-error", state === "error");
+      btn.disabled = state === "busy";
+      if (state === "busy") btn.setAttribute("aria-busy", "true");
+      else btn.removeAttribute("aria-busy");
+      if (state === "busy") btn.textContent = "Saving…";
+      else if (state === "success") btn.textContent = "Saved ✓";
+      else if (state === "error") btn.textContent = "Save failed";
+      else btn.textContent = id === "mg-save-top" ? "Save changes" : "Save game";
+    });
+    if (state === "success" || state === "error") {
+      gameSaveFeedbackTimer = window.setTimeout(function () {
+        setGameSaveButtonsState("idle");
+      }, 1800);
+    }
   }
 
   function onFormPotentiallyDirty() {
@@ -801,6 +829,21 @@
     }
   }
 
+  function updateComboboxClearVisibility() {
+    if (!comboboxClearEl) return;
+    comboboxClearEl.hidden = !String((comboboxInputEl && comboboxInputEl.value) || "").length;
+  }
+
+  function clearGameSearch() {
+    if (!comboboxInputEl || !catalogLoaded) return;
+    comboboxInputEl.value = "";
+    updateComboboxClearVisibility();
+    comboboxActiveIndex = -1;
+    setComboboxOpen(true);
+    renderComboboxOptions();
+    comboboxInputEl.focus();
+  }
+
   function updateActiveDescendant() {
     if (!comboboxInputEl) return;
     if (comboboxActiveIndex < 0 || comboboxActiveIndex >= filteredGames.length) {
@@ -1140,12 +1183,19 @@
     setMode("idle");
     if (comboboxInputEl) {
       comboboxInputEl.value = "";
+      updateComboboxClearVisibility();
       comboboxInputEl.focus();
     }
     setComboboxOpen(false);
     renderComboboxOptions();
     resetAiProposalUi();
     if (statusMessage) setStatus(statusMessage);
+  }
+
+  function clearGameEditor() {
+    if (!confirmDiscardPartyIfDirty()) return;
+    if (!confirmDiscardIfDirty()) return;
+    enterIdleMode("Editor cleared. Search for another game when ready.");
   }
 
   function onGameSelected(gameId) {
@@ -1797,8 +1847,29 @@
     comboboxPanelEl.appendChild(pinnedAction);
     comboboxPanelEl.appendChild(comboboxEmptyEl);
     comboWrap.appendChild(comboboxInputEl);
+    comboboxClearEl = el("button", {
+      type: "button",
+      className: "member-games-combobox-clear",
+      title: "Clear search",
+      "aria-label": "Clear game search",
+      hidden: "hidden"
+    });
+    comboboxClearEl.textContent = "×";
+    comboboxClearEl.addEventListener("click", function (event) {
+      event.stopPropagation();
+      clearGameSearch();
+    });
+    comboWrap.appendChild(comboboxClearEl);
     comboWrap.appendChild(comboboxPanelEl);
     row.appendChild(comboWrap);
+    var clearEditorBtn = el("button", {
+      type: "button",
+      className: "members-sidebar-link member-games-clear-editor",
+      id: "member-games-clear-editor"
+    });
+    clearEditorBtn.textContent = "Clear editor";
+    clearEditorBtn.addEventListener("click", clearGameEditor);
+    row.appendChild(clearEditorBtn);
     wrap.appendChild(row);
     var toggleRow = el("label", { className: "member-games-help", for: "member-games-at-club-only-toggle" });
     atClubOnlyToggleEl = el("input", {
@@ -1829,6 +1900,7 @@
     });
     comboboxInputEl.addEventListener("input", function () {
       if (!catalogLoaded) return;
+      updateComboboxClearVisibility();
       setComboboxOpen(true);
       comboboxActiveIndex = -1;
       renderComboboxOptions();
@@ -2172,7 +2244,7 @@
   }
 
   function buildReviewScaffolds() {
-    var missing = el("section", { className: "member-games-review-card member-games-collapsible-panel" });
+    var missing = el("section", { className: "member-games-collapsible-panel" });
     missing.appendChild(
       el("p", {
         text: "Open a game, run AI refresh, then review and apply only the fields you approve."
@@ -2187,7 +2259,7 @@
     );
     var actions = el("div", { className: "member-games-form-actions" });
     var proposeBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-refresh" });
-    proposeBtn.textContent = "AI refresh current game";
+    proposeBtn.textContent = "Attempt Metadata Enhancement";
     proposeBtn.addEventListener("click", function () {
       if (!currentGameId || mode !== "edit") {
         setAiStatus("Select a game first.");
@@ -2196,7 +2268,7 @@
       void runAiPropose({});
     });
     var regenDescBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-regen-desc" });
-    regenDescBtn.textContent = "Regenerate description";
+    regenDescBtn.textContent = "Attempt Description Update";
     regenDescBtn.addEventListener("click", function () {
       if (aiDescriptionRegenCount >= 2) {
         setAiStatus("Description regenerate limit reached for this session.");
@@ -2610,7 +2682,10 @@
     currentGameId = gameId;
     var g = currentGame();
     if (!g) return;
-    if (comboboxInputEl) comboboxInputEl.value = g.__label || g.title || g.slug || "";
+    if (comboboxInputEl) {
+      comboboxInputEl.value = g.__label || g.title || g.slug || "";
+      updateComboboxClearVisibility();
+    }
     setMode("edit");
     suppressDirtyTracking = true;
     document.getElementById("mg-title").value = g.title || "";
@@ -2675,11 +2750,26 @@
 
   async function onSaveGame() {
     if (!window.SNHMemberPortal) return;
+    if (gameSaveBusy) return;
     var title = getVal("mg-title");
     if (!title) {
       setStatus("Title is required.");
+      setGameSaveButtonsState("error");
       return;
     }
+    if (mode !== "new" && !currentGameId) {
+      setStatus("Select a game first.");
+      setGameSaveButtonsState("error");
+      return;
+    }
+    var editingGame = mode === "edit" ? currentGame() : null;
+    if (editingGame && isGameDeleted(editingGame)) {
+      setStatus("Restore this game before saving metadata changes.");
+      setGameSaveButtonsState("error");
+      return;
+    }
+    gameSaveBusy = true;
+    setGameSaveButtonsState("busy");
     setStatus("Saving…");
     try {
       var rd = getVal("mg-release");
@@ -2707,15 +2797,6 @@
         fields.slug = getVal("mg-slug") || slugify(title);
         savedGameId = await window.SNHMemberPortal.gamesCreate(fields);
       } else {
-        if (!savedGameId) {
-          setStatus("Select a game first.");
-          return;
-        }
-        var editingGame = currentGame();
-        if (editingGame && isGameDeleted(editingGame)) {
-          setStatus("Restore this game before saving metadata changes.");
-          return;
-        }
         await window.SNHMemberPortal.gamesUpsert(savedGameId, fields);
       }
 
@@ -2750,8 +2831,12 @@
       renderComboboxOptions();
       isDirty = false;
       setStatus("Saved.");
+      setGameSaveButtonsState("success");
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+      setGameSaveButtonsState("error");
+    } finally {
+      gameSaveBusy = false;
     }
   }
 
