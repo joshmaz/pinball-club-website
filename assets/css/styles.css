@@ -2301,6 +2301,31 @@ footer {
 
 .member-games-combobox-input {
   width: 100%;
+  padding-right: 2.4rem;
+}
+
+.member-games-combobox-clear {
+  position: absolute;
+  top: 0.18rem;
+  right: 0.22rem;
+  z-index: 26;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text-muted-2);
+  background: transparent;
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.member-games-combobox-clear:hover,
+.member-games-combobox-clear:focus-visible {
+  color: var(--text-strong);
+  background: var(--bg-sidebar-hover);
 }
 
 .member-games-combobox-panel {
@@ -2357,25 +2382,6 @@ footer {
   margin: 0 0 0.35rem;
   color: var(--text-muted-2);
   font-size: 0.88rem;
-}
-
-.member-games-review-scaffolds {
-  margin: 0.5rem 0 1.1rem;
-}
-
-.member-games-review-card {
-  border: 1px solid var(--border-divider);
-  border-radius: 8px;
-  background: var(--bg-panel);
-  padding: 0.7rem 0.8rem;
-}
-
-.member-games-review-card h4 {
-  margin: 0 0 0.35rem;
-}
-
-.member-games-review-card p {
-  margin: 0.25rem 0;
 }
 
 .member-games-review-todo {
@@ -2611,6 +2617,20 @@ footer {
 .members-sidebar-link:disabled {
   cursor: wait;
   opacity: 0.65;
+}
+
+.members-sidebar-link.is-success {
+  border-color: var(--status-success-border);
+  color: var(--status-success-text);
+}
+
+.members-sidebar-link.is-error {
+  color: var(--status-error-text);
+}
+
+.member-games-clear-editor {
+  flex: 0 0 auto;
+  width: auto;
 }
 
 .member-games-sticky-actions {
