@@ -692,6 +692,76 @@
     if (result.error) throw result.error;
   }
 
+  async function gameImageUpload(gameId, file, fields) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    if (!gameId || !file) throw new Error("Choose an image file first.");
+
+    var allowedTypes = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/gif": "gif"
+    };
+    var extension = allowedTypes[file.type];
+    if (!extension) throw new Error("Use a JPEG, PNG, WebP, or GIF image.");
+    if (file.size > 10 * 1024 * 1024) throw new Error("Images must be 10 MB or smaller.");
+
+    var objectId = window.crypto && window.crypto.randomUUID
+      ? window.crypto.randomUUID()
+      : String(Date.now()) + "-" + Math.random().toString(16).slice(2);
+    var storagePath = gameId + "/" + objectId + "." + extension;
+    var upload = await client.storage.from("game-images").upload(storagePath, file, {
+      cacheControl: "3600",
+      contentType: file.type,
+      upsert: false
+    });
+    if (upload.error) throw upload.error;
+
+    try {
+      var publicResult = client.storage.from("game-images").getPublicUrl(storagePath);
+      var publicUrl = publicResult && publicResult.data ? publicResult.data.publicUrl : "";
+      if (!publicUrl) throw new Error("Supabase did not return a public image URL.");
+
+      return await gameImageUpsert(null, gameId, {
+        sourceType: "club",
+        sourceKey: "storage:" + storagePath,
+        locationType: "remote_url",
+        locationValue: publicUrl,
+        imageType: "game_photo",
+        altText: fields && fields.altText ? fields.altText : null,
+        usageStatus: "approved",
+        makePrimary: !fields || fields.makePrimary !== false,
+        metadata: {
+          storageBucket: "game-images",
+          storagePath: storagePath,
+          originalFilename: file.name,
+          contentType: file.type,
+          sizeBytes: file.size
+        }
+      });
+    } catch (err) {
+      await client.storage.from("game-images").remove([storagePath]);
+      throw err;
+    }
+  }
+
+  async function gameImageDeleteUploaded(gameId, imageId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_images_delete_uploaded", {
+      p_game_id: gameId,
+      p_image_id: imageId
+    });
+    if (result.error) throw result.error;
+
+    var storageInfo = result.data || {};
+    var cleanup = await client.storage.from(storageInfo.bucket || "game-images").remove([storageInfo.path]);
+    return cleanup.error
+      ? { warning: "The image was removed from the game, but its stored file could not be cleaned up." }
+      : { warning: null };
+  }
+
   async function opdbGameImageSync(gameId) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1329,6 +1399,8 @@
     gamesUpsert: gamesUpsert,
     gameImageUpsert: gameImageUpsert,
     gameImageSetPrimary: gameImageSetPrimary,
+    gameImageUpload: gameImageUpload,
+    gameImageDeleteUploaded: gameImageDeleteUploaded,
     opdbGameImageSync: opdbGameImageSync,
     gamesUpsertStint: gamesUpsertStint,
     gamesDeleteStint: gamesDeleteStint,

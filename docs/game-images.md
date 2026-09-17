@@ -82,10 +82,33 @@ hotlink policy. If hotlinking is disallowed but reuse is licensed, add a
 server-side download/derivative pipeline with source metadata retained. That
 would require a separate storage, bandwidth, retention, and takedown decision.
 
+## Club upload storage
+
+Migration `20260917190000_game_image_storage.sql` creates the public Supabase
+Storage bucket `game-images`. Uploaded objects use the stable convention
+`<game UUID>/<random UUID>.<validated extension>`. The bucket accepts JPEG,
+PNG, WebP, and GIF files up to 10 MB.
+
+Public reads are allowed because approved club photos render on the public
+catalog. Inserts and deletes require an authenticated member with games access;
+the database RPC that removes an association repeats the games-role and
+game-editability checks. The browser records the public URL as the normal
+`remote_url` location and stores `storageBucket`, `storagePath`, original
+filename, content type, and byte size in `metadata`. This keeps uploads in the
+existing image model and makes stored objects distinguishable from hotlinked
+external images.
+
+If association creation fails after upload, the client removes the new object.
+On removal, the database association is deleted first, a deterministic approved
+fallback becomes primary when needed, and the stored object is then deleted.
+This ordering avoids leaving a public record that points to a missing object; a
+storage cleanup failure can leave only an unreferenced object and is reported to
+the editor.
+
 ## Editor workflow
 
-- Club image: deploy the file under `assets/images/machines`, enter its filename,
-  and choose **Add club image and make primary**.
+- Club image: choose a local photo, optionally edit its alt text and whether it
+  should become primary, then choose **Upload club photo**.
 - OPDB image: save a valid OPDB ID, choose **Sync images from OPDB**, review the
   source and rights warning, then approve only after confirming permission.
 - Any approved non-primary image can be selected with **Use as primary**.
@@ -95,3 +118,19 @@ would require a separate storage, bandwidth, retention, and takedown decision.
 The AI enrichment panel now reads persisted image associations only. It neither
 discovers nor invents image URLs, IDs, provenance, attribution, or licenses.
 
+## Future legacy image migration
+
+The legacy folder currently has 89 files under `assets/images/machines`. The
+static fallback has exactly 89 nonblank `imageFilename` values, matched
+one-to-one by exact filename: there are no missing referenced files and no
+orphan files in that folder as of this change. Migration
+`20260916100000_game_images.sql` already represents these as approved club
+`local_asset` rows with source keys prefixed by `legacy:`.
+
+A later, separately reviewed migration should upload each file to
+`game-images/<game UUID>/<random UUID>.<extension>`, then update that existing
+legacy `game_images` row (rather than create a duplicate) to `remote_url`, a
+`storage:` source key, and the same storage metadata used by new uploads.
+Preserve its `id`, approval, primary flag, and alt text. Verify every public
+catalog URL before removing any repo file or clearing `games.image_filename`;
+keep the repo assets in place for at least one deployment as a rollback path.
