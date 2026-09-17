@@ -16,6 +16,8 @@
   var formEl = null;
   var stintsSectionEl = null;
   var stintsEl = null;
+  var imagesEl = null;
+  var imagesSectionEl = null;
   var saleEl = null;
   var manualWrapEl = null;
   var gamesCache = [];
@@ -211,10 +213,37 @@
     );
     formEl.appendChild(
       fieldRow(
-        "Image filename",
+        "Legacy club image filename",
         textInput("mg-image", "")
       )
     );
+    formEl.appendChild(el("p", {
+      className: "member-games-help",
+      text: "Kept for compatibility. Saving a filename also creates or selects the corresponding club-owned image record."
+    }));
+
+    imagesEl = el("div", { className: "member-games-images member-games-collapsible-panel" });
+    imagesEl.appendChild(el("p", {
+      className: "member-games-help",
+      text: "A game may keep several images. Preferred wins; otherwise club images win over attributed provider images. OPDB rows are refreshed deterministically from OPDB metadata."
+    }));
+    imagesEl.appendChild(el("div", { id: "mg-images-list", className: "member-games-sublist" }));
+    var sourceSelect = el("select", { id: "mg-image-source", className: "member-games-input" });
+    [["club", "Club-owned local file"], ["external", "Other external source"]].forEach(function (pair) {
+      var option = el("option", { value: pair[0], text: pair[1] });
+      sourceSelect.appendChild(option);
+    });
+    imagesEl.appendChild(fieldRow("Source", sourceSelect));
+    imagesEl.appendChild(fieldRow("Local filename (club source)", textInput("mg-image-new-filename", "")));
+    imagesEl.appendChild(fieldRow("Remote image URL (external source)", textInput("mg-image-new-url", "")));
+    imagesEl.appendChild(fieldRow("Source page URL", textInput("mg-image-new-source-page", "")));
+    imagesEl.appendChild(fieldRow("Attribution text", textInput("mg-image-new-attribution", "")));
+    imagesEl.appendChild(fieldRow("Attribution link", textInput("mg-image-new-attribution-url", "")));
+    var imageAdd = el("button", { type: "button", className: "members-sidebar-link", text: "Add image" });
+    imageAdd.addEventListener("click", onAddGameImage);
+    imagesEl.appendChild(imageAdd);
+    imagesSectionEl = wrapCollapsible("Images and attribution", imagesEl);
+    formEl.appendChild(imagesSectionEl);
     formEl.appendChild(
       fieldRow(
         "Release date",
@@ -772,6 +801,7 @@
     }
     if (partyLinkWrapEl) partyLinkWrapEl.hidden = mode !== "edit";
     if (stintsSectionEl) stintsSectionEl.hidden = mode !== "edit";
+    if (imagesSectionEl) imagesSectionEl.hidden = mode !== "edit";
     if (deleteStatusEl) deleteStatusEl.hidden = mode !== "edit";
     var deleteNoteRow = deleteNoteInputEl ? deleteNoteInputEl.closest(".member-games-field") : null;
     if (deleteNoteRow) deleteNoteRow.hidden = mode !== "edit";
@@ -844,6 +874,7 @@
     var ptl = document.getElementById("mg-pingolf-target-list");
     if (ptl) ptl.replaceChildren();
     renderStints([]);
+    renderGameImages([]);
     suppressDirtyTracking = false;
   }
 
@@ -2326,6 +2357,93 @@
     }
   }
 
+  function renderGameImages(images) {
+    var list = document.getElementById("mg-images-list");
+    if (!list) return;
+    list.replaceChildren();
+    if (!Array.isArray(images) || !images.length) {
+      list.appendChild(el("p", { className: "member-games-help", text: "No normalized image records yet." }));
+      return;
+    }
+    images.forEach(function (image) {
+      var row = el("div", { className: "member-games-image-row" });
+      var source = image.sourceType === "club" ? "Club-owned" : String(image.sourceType || "External").toUpperCase();
+      var locator = image.imageFilename || image.url || "";
+      row.appendChild(el("p", {
+        className: "member-games-meta",
+        text: (image.isPreferred ? "Preferred · " : "") + source + (image.imageType ? " · " + image.imageType : "") + " — " + locator
+      }));
+      if (image.attributionText) {
+        row.appendChild(el("p", { className: "member-games-help", text: "Credit: " + image.attributionText }));
+      }
+      var actions = el("div", { className: "member-games-image-actions" });
+      if (!image.isPreferred) {
+        var prefer = el("button", { type: "button", className: "members-sidebar-link", text: "Make preferred" });
+        prefer.addEventListener("click", function () { onPreferGameImage(image); });
+        actions.appendChild(prefer);
+      }
+      var archive = el("button", { type: "button", className: "members-sidebar-link", text: "Archive association" });
+      archive.addEventListener("click", function () { onArchiveGameImage(image); });
+      actions.appendChild(archive);
+      row.appendChild(actions);
+      list.appendChild(row);
+    });
+  }
+
+  async function reloadCurrentGameImages(message) {
+    var data = await window.SNHMemberPortal.gamesEditorLoad();
+    gamesCache = (data && data.games) || [];
+    populateCombobox();
+    await populateForm(currentGameId);
+    setStatus(message);
+  }
+
+  async function onAddGameImage() {
+    if (!currentGameId) return;
+    var sourceType = getVal("mg-image-source") || "club";
+    var payload = { sourceType: sourceType, isPreferred: false };
+    if (sourceType === "club") {
+      payload.imageFilename = getVal("mg-image-new-filename") || null;
+      if (!payload.imageFilename) { setStatus("A local filename is required for a club image."); return; }
+    } else {
+      payload.url = getVal("mg-image-new-url") || null;
+      payload.sourcePageUrl = getVal("mg-image-new-source-page") || null;
+      payload.attributionText = getVal("mg-image-new-attribution") || null;
+      payload.attributionUrl = getVal("mg-image-new-attribution-url") || null;
+      if (!payload.url || !payload.sourcePageUrl || !payload.attributionText || !payload.attributionUrl) {
+        setStatus("External images require an image URL, source page, attribution text, and attribution link.");
+        return;
+      }
+    }
+    setStatus("Adding image…");
+    try {
+      await window.SNHMemberPortal.gameImageUpsert(currentGameId, payload);
+      ["mg-image-new-filename", "mg-image-new-url", "mg-image-new-source-page", "mg-image-new-attribution", "mg-image-new-attribution-url"].forEach(function (id) {
+        var node = document.getElementById(id); if (node) node.value = "";
+      });
+      await reloadCurrentGameImages("Image added.");
+    } catch (err) { setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err)); }
+  }
+
+  async function onPreferGameImage(image) {
+    setStatus("Selecting preferred image…");
+    try {
+      await window.SNHMemberPortal.gameImageUpsert(currentGameId, {
+        id: image.id, sourceType: image.sourceType, isPreferred: true
+      });
+      await reloadCurrentGameImages("Preferred image updated.");
+    } catch (err) { setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err)); }
+  }
+
+  async function onArchiveGameImage(image) {
+    if (!window.confirm("Archive this image association? The underlying file or remote image will not be deleted.")) return;
+    setStatus("Archiving image association…");
+    try {
+      await window.SNHMemberPortal.gameImageArchive(currentGameId, image.id);
+      await reloadCurrentGameImages("Image association archived.");
+    } catch (err) { setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err)); }
+  }
+
   async function populateForm(gameId) {
     currentGameId = gameId;
     var g = currentGame();
@@ -2373,6 +2491,7 @@
     setButtonVisible(softDeleteBtnEl, canDelete && !deleted);
     setButtonVisible(restoreBtnEl, canDelete && deleted);
     renderStints(g.locationStints || []);
+    renderGameImages(g.images || []);
     suppressDirtyTracking = false;
     await loadSale(gameId);
     await refreshFeaturedPingolfSession();

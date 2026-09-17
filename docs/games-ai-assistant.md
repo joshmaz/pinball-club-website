@@ -15,7 +15,8 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 
 ## Not in scope yet (ideas)
 
-- [ ] Auto-download OPDB (or other) images into repo or Storage; **`image_filename` stays a manual club-hosted path**
+- [x] OPDB image metadata is synchronized deterministically by Pinball Map ingest into `game_images`; AI previews remain review aids and never invent or persist provider metadata
+- [ ] Decide whether provider terms permit caching OPDB images in repo or Storage; see `docs/game-images.md`
 - [ ] Structured field proposals (type, display, player count) from AI
 - [ ] Fixture-driven automated tests for every resolver edge case (see `games-ai-fixtures.md`)
 
@@ -35,7 +36,7 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 
 1. Open a game → **AI refresh current game** (or regenerate description / image candidates where offered).
 2. Review fields; use **Open in new tab** links to validate URLs.
-3. **Apply selected fields** only for rows you trust; image **previews** do not upload files. To use an OPDB shot: save the file under `assets/images/machines/`, deploy, set **Image filename**, save the game, add credit (e.g. in More info).
+3. **Apply selected fields** only for rows you trust. Image previews do not upload or persist files; structured OPDB image metadata is handled separately by the deterministic ingest sync. Use the Images and attribution editor to select a preferred association.
 4. Rollback mistakes: `docs/games-ai-rollback-runbook.md`.
 
 ## Related files

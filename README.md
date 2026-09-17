@@ -109,6 +109,7 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 **Public site**
 
 - `games.html` includes a footnote that credits Pinball Map and links to their site for the API-backed stint history copy.
+- Game images use normalized, attributed associations with legacy `image_filename` compatibility. Pinball Map imports with OPDB IDs can sync structured OPDB image metadata; see `docs/game-images.md`.
 
 **Operator note**
 

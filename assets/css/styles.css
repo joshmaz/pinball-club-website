@@ -1926,6 +1926,22 @@ footer {
   background: var(--bg-inset-deep);
 }
 
+.game-card-image-wrap {
+  margin: 0;
+}
+
+.game-image-credit {
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--text-muted-2);
+}
+
+.game-image-credit a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .games-details {
   margin: 0.5rem 0 0;
   color: var(--text-muted);
@@ -2579,6 +2595,17 @@ footer {
   font-size: 0.88rem;
   color: var(--text-muted-2);
   margin: 0.25rem 0;
+}
+
+.member-games-image-row {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border-divider);
+}
+
+.member-games-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .member-games-pinballmap-foot {

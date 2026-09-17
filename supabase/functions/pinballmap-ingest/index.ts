@@ -7,6 +7,7 @@ import {
   type DbStint,
   type MachineDetail,
 } from "./merge.ts";
+import { extractOpdbImagesFromExport, fetchOpdbExport } from "./opdb-images.ts";
 
 const LOCATION_DEFAULT = 8908;
 
@@ -213,10 +214,15 @@ Deno.serve(async (req) => {
       conditionResult = cond.data;
     }
 
+    // OPDB metadata is a deterministic follow-up to Pinball Map identity import.
+    // Failure is reported but does not roll back an otherwise successful catalog ingest.
+    const opdbImageResult = await syncOpdbImages(supabase);
+
     return jsonResponse({
       ok: true,
       result: data,
       conditions: conditionResult,
+      opdbImages: opdbImageResult,
       counts: {
         updates: payload.updates.length,
         creates: payload.creates.length,
@@ -228,6 +234,65 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: false, error: msg }, 500);
   }
 });
+
+async function syncOpdbImages(supabase: ReturnType<typeof createClient>) {
+  const { data: games, error } = await supabase.from("games")
+    .select("id,opdb_id")
+    .not("opdb_id", "is", null)
+    .is("deleted_at", null);
+  if (error) return { status: "error", reason: error.message, games: 0, images: 0 };
+
+  const { data: existingRows, error: existingError } = await supabase.from("game_images")
+    .select("game_id")
+    .eq("source_type", "opdb")
+    .eq("is_active", true);
+  if (existingError) return { status: "error", reason: existingError.message, games: 0, images: 0 };
+  const gamesWithOpdbImages = new Set((existingRows || []).map((row) => String(row.game_id)));
+  const pendingGames = (games || []).filter((game) => !gamesWithOpdbImages.has(String(game.id)));
+  if (!pendingGames.length) return { status: "up-to-date", games: 0, images: 0 };
+  let opdbExport: unknown;
+  try {
+    opdbExport = await fetchOpdbExport();
+  } catch (err) {
+    return { status: "error", reason: err instanceof Error ? err.message : String(err), games: 0, images: 0 };
+  }
+
+  let syncedGames = 0;
+  let syncedImages = 0;
+  const warnings: string[] = [];
+  for (const game of pendingGames) {
+    const opdbId = String(game.opdb_id || "").trim();
+    if (!opdbId) continue;
+    try {
+      const images = extractOpdbImagesFromExport(opdbExport, opdbId);
+      if (!images.length) continue;
+      const records = images.map((image) => ({
+        game_id: game.id,
+        source_type: "opdb",
+        image_url: image.url,
+        source_record_id: image.sourceRecordId,
+        source_page_url: image.sourcePageUrl,
+        image_type: image.imageType,
+        title: image.title,
+        attribution_text: "Open Pinball Database",
+        attribution_url: "https://opdb.org/",
+        width: image.width,
+        height: image.height,
+        metadata: { providerPrimary: image.providerPrimary, opdbId },
+        is_active: true,
+      }));
+      const upsert = await supabase.from("game_images").upsert(records, {
+        onConflict: "game_id,source_type,source_record_id",
+      });
+      if (upsert.error) throw upsert.error;
+      syncedGames += 1;
+      syncedImages += records.length;
+    } catch (err) {
+      warnings.push(err instanceof Error ? err.message : String(err));
+    }
+  }
+  return { status: warnings.length ? "partial" : "ok", games: syncedGames, images: syncedImages, warnings };
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {

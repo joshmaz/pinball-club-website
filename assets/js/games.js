@@ -732,15 +732,42 @@ function createGamesList(games) {
     title.textContent = game.title;
     item.appendChild(title);
 
+    const selectedImage = game && game.selectedImage && typeof game.selectedImage === "object"
+      ? game.selectedImage
+      : null;
     const filename = game.imageFilename;
-    const imagePath = filename ? `${IMAGE_BASE_PATH}/${filename}` : "";
+    const imagePath = selectedImage && hasNonemptyString(selectedImage.url)
+      ? String(selectedImage.url).trim()
+      : filename ? `${IMAGE_BASE_PATH}/${filename}` : "";
     if (imagePath) {
+      const imageWrap = document.createElement("figure");
+      imageWrap.className = "game-card-image-wrap";
       const image = document.createElement("img");
       image.className = "game-card-image";
       image.src = imagePath;
       image.alt = game.title;
       image.loading = "lazy";
-      item.appendChild(image);
+      imageWrap.appendChild(image);
+      if (selectedImage && hasNonemptyString(selectedImage.attributionText)) {
+        const credit = document.createElement("figcaption");
+        credit.className = "game-image-credit";
+        credit.appendChild(document.createTextNode("Image: "));
+        if (hasNonemptyString(selectedImage.attributionUrl)) {
+          const link = document.createElement("a");
+          link.href = String(selectedImage.attributionUrl).trim();
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = String(selectedImage.attributionText).trim();
+          credit.appendChild(link);
+        } else {
+          credit.appendChild(document.createTextNode(String(selectedImage.attributionText).trim()));
+        }
+        if (hasNonemptyString(selectedImage.licenseName)) {
+          credit.appendChild(document.createTextNode(` · ${String(selectedImage.licenseName).trim()}`));
+        }
+        imageWrap.appendChild(credit);
+      }
+      item.appendChild(imageWrap);
     }
 
     const details = document.createElement("p");

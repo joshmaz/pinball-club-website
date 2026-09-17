@@ -670,6 +670,21 @@
     return result.data;
   }
 
+  async function gameImageUpsert(gameId, image) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_image_upsert", { p_game_id: gameId, p_image: image });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function gameImageArchive(gameId, imageId) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    var result = await client.rpc("snh_game_image_archive", { p_game_id: gameId, p_image_id: imageId });
+    if (result.error) throw result.error;
+  }
+
   async function gamesUpsertStint(gameId, stint) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1274,6 +1289,8 @@
     pinballmapIngestInvoke: pinballmapIngestInvoke,
     gamesCreate: gamesCreate,
     gamesUpsert: gamesUpsert,
+    gameImageUpsert: gameImageUpsert,
+    gameImageArchive: gameImageArchive,
     gamesUpsertStint: gamesUpsertStint,
     gamesDeleteStint: gamesDeleteStint,
     gamesSoftDelete: gamesSoftDelete,
