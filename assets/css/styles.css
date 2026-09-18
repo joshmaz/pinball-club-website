@@ -1827,6 +1827,17 @@ footer {
   outline-offset: 2px;
 }
 
+.games-edit-link {
+  color: var(--accent-teal-soft);
+  text-decoration: none;
+}
+
+.games-edit-link:hover {
+  color: var(--accent-teal-soft);
+  border-color: var(--accent-teal-soft);
+  background: rgba(42, 143, 111, 0.2);
+}
+
 .games-more-info-root {
   position: fixed;
   inset: 0;
