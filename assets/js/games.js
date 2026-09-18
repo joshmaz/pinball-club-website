@@ -1,4 +1,3 @@
-const IMAGE_BASE_PATH = "assets/images/machines";
 const KINETICIST_ICON_PATH = "assets/images/icons/kineticist-k.png";
 const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 /** Rasterized from the www.ipdb.org favicon for consistency with other provider PNGs. */
@@ -65,9 +64,9 @@ function hasNonemptyString(v) {
 }
 
 /**
- * Normalized images win; imageFilename remains the static JSON / migration
- * fallback. Reference-only images never appear in the public catalog payload.
- * @param {{ title?: unknown, primaryImage?: unknown, imageFilename?: unknown }} game
+ * Public game images come from the normalized game_images resolver.
+ * Reference-only images never appear in the public catalog payload.
+ * @param {{ title?: unknown, primaryImage?: unknown }} game
  * @returns {{ url: string, altText: string, sourceType: string, attributionText: string, attributionUrl: string, licenseName: string, licenseUrl: string } | null}
  */
 function resolveGameImage(game) {
@@ -88,16 +87,7 @@ function resolveGameImage(game) {
       licenseUrl: hasNonemptyString(normalized.licenseUrl) ? String(normalized.licenseUrl).trim() : "",
     };
   }
-  if (!hasNonemptyString(game.imageFilename)) return null;
-  return {
-    url: `${IMAGE_BASE_PATH}/${String(game.imageFilename).trim()}`,
-    altText: String(game.title || ""),
-    sourceType: "club",
-    attributionText: "",
-    attributionUrl: "",
-    licenseName: "",
-    licenseUrl: "",
-  };
+  return null;
 }
 
 function createGameImageFigure(game) {

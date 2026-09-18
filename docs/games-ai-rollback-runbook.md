@@ -28,7 +28,6 @@ Restore affected fields quickly without deleting unrelated edits.
      - `ipdbUrl`
      - `pinsideUrl`
      - `kineticistUrl`
-     - `imageFilename`
 
 4. Verify
    - Reload editor and public catalog row.
@@ -42,7 +41,7 @@ Restore affected fields quickly without deleting unrelated edits.
 - Do not run blanket SQL updates against `games` without filtering by affected IDs.
 - Prefer field-level restoration over full-record rewrites.
 - Keep manual edit path available while AI propose is paused.
-- **Images:** `imageFilename` points at static `assets/images/machines/...` on the site. Roll back the filename field and replace or remove the file on the next deploy if a bad asset shipped.
+- **Images:** use the Images panel to change the normalized primary association or replace an uploaded club file. Game cards no longer resolve repository-hosted filename fallbacks.
 
 ## See also
 

@@ -1,10 +1,10 @@
 # Game image model and workflow
 
-Game images are normalized in `public.game_images`; `games.image_filename`
-remains as a compatibility field for static JSON exports and older clients.
-Migration `20260916100000_game_images.sql` backfills every nonblank legacy
-filename as an approved, primary, club-owned image. It does not delete or
-rewrite the original value.
+Game images are normalized in `public.game_images`, which is now the
+authoritative image source. Migration `20260916100000_game_images.sql`
+backfilled the former repo-hosted filenames before the files were moved to
+Supabase Storage. Migration `20260918194500_retire_legacy_game_image_fallback.sql`
+clears those compatibility values after successful production verification.
 
 ## Record model
 
@@ -12,7 +12,7 @@ Each association belongs to one game and records:
 
 - source: `club`, `opdb`, or `external`
 - stable source key (the OPDB image `group` for OPDB records)
-- delivery location: repo-local asset or HTTPS remote URL
+- delivery location: Supabase Storage public URL or another HTTPS remote URL
 - image kind and alt text
 - source page, attribution text/link, and optional license name/link
 - usage state: `reference_only` or `approved`
@@ -29,12 +29,11 @@ image cannot be primary.
 1. explicitly selected approved primary image;
 2. another approved club image;
 3. another approved external image;
-4. legacy `image_filename` fallback.
+4. no image.
 
-The view still emits `imageFilename`. The browser prefers `primaryImage` and
-falls back to `imageFilename`, so static `data/games.json` deployments continue
-to work. Selecting a repo-local club image also updates `image_filename`; an
-external primary does not erase the legacy local fallback.
+The browser renders `primaryImage` only. Static catalog exports retain the same
+normalized field; a game without an approved association renders without an
+image rather than constructing an obsolete repository path.
 
 Adding or selecting a club image never deletes OPDB associations. This makes it
 possible to replace an OPDB image publicly while retaining its provenance and
@@ -118,16 +117,14 @@ the editor.
 The AI enrichment panel now reads persisted image associations only. It neither
 discovers nor invents image URLs, IDs, provenance, attribution, or licenses.
 
-## Legacy repo image migration
+## Completed legacy repo image migration
 
-The legacy folder currently has 89 files under `assets/images/machines`. The
-static fallback has exactly 89 nonblank `imageFilename` values, matched
-one-to-one by exact filename: there are no missing referenced files and no
-orphan files in that folder as of this change. Migration
-`20260916100000_game_images.sql` already represents these as approved club
-`local_asset` rows with source keys prefixed by `legacy:`.
+The former legacy folder contained 89 files under `assets/images/machines`.
+All 89 mapped one-to-one to catalog games, were migrated into `game-images`,
+and were verified in production before the repo files were removed.
 
-Run `supabase db push` before using the migration utility, then run:
+The migration was performed from commit `e2f15d9`. To reconstruct or audit the
+one-time tooling, check out that commit. Its operational commands were:
 
 ```sh
 node --env-file=.env scripts/migrate-legacy-game-images.mjs --dry-run
@@ -156,7 +153,6 @@ the migration time. Consequently:
 3. a non-primary legacy row remains non-primary;
 4. subsequent runs detect the deterministic storage association and skip it.
 
-The public catalog and home cabinet rotation prefer `primaryImage` from the
-normalized resolver. `imageFilename` and all repo files remain as a rollback
-fallback until a separately reviewed cleanup confirms the migrated URLs in the
-target environment.
+The public catalog and home cabinet rotation now use `primaryImage` exclusively.
+The repository assets, static filename fields, and one-time migration utility
+were removed only after production verification.

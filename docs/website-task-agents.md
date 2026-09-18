@@ -64,7 +64,7 @@ Recommended audit shape:
 
 Guardrails:
 
-- require club image paths to resolve in `assets/images/machines/` when provided; use normalized `game_images` records for source, approval, primary selection, and external attribution (see `docs/game-images.md`)
+- use normalized `game_images` records for source, approval, primary selection, storage metadata, and external attribution; do not add repository-hosted game image paths (see `docs/game-images.md`)
 - normalize empty strings to null/omitted where appropriate
 - reject invalid provider URLs
 - reject date formats that are not ISO `YYYY-MM-DD`

@@ -1,5 +1,4 @@
 (function () {
-  const IMAGE_BASE_PATH = "assets/images/machines";
   const GAMES_URL = "data/games.json";
   const INTERVAL_MS = 3000;
 
@@ -23,7 +22,7 @@
 
   function resolveImage(game) {
     if (game && game.primaryImage && game.primaryImage.url) return String(game.primaryImage.url).trim();
-    return game && game.imageFilename ? IMAGE_BASE_PATH + "/" + game.imageFilename : "";
+    return "";
   }
 
   function shuffleInPlace(array) {
