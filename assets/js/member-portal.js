@@ -85,16 +85,11 @@
   var EXTERNAL_PROVIDER_MATCHPLAY = "matchplay_events";
 
   async function getSession() {
-    var client = getClient();
-    if (!client) return null;
-    var result = await client.auth.getSession();
-    return result && result.data ? result.data.session : null;
+    return window.SNHSiteAuth.getSession();
   }
 
   async function signOut() {
-    var client = getClient();
-    if (!client) return;
-    await client.auth.signOut();
+    return window.SNHSiteAuth.signOut();
   }
 
   async function updatePassword(newPassword) {
@@ -126,14 +121,7 @@
   }
 
   async function requireAuth(options) {
-    options = options || {};
-    var session = await getSession();
-    if (session && session.user) return session;
-    if (options.redirectToSignin) {
-      var next = encodeURIComponent(window.location.pathname.split("/").pop() || "members.html");
-      window.location.href = "signin.html?next=" + next;
-    }
-    return null;
+    return window.SNHSiteAuth.requireAuth(options);
   }
 
   async function applyAuthChrome(options) {
@@ -354,43 +342,11 @@
    * Returns [] if no member row, table missing, or RLS/query error.
    */
   async function fetchMemberRoles(userId) {
-    if (!userId) return [];
-    var client = getClient();
-    if (!client) return [];
-
-    var memberResult = await client.from("members").select("id").eq("user_id", userId).maybeSingle();
-    if (memberResult.error || !memberResult.data || !memberResult.data.id) {
-      return [];
-    }
-
-    var rolesResult = await client
-      .from("member_roles")
-      .select("role_slug")
-      .eq("member_id", memberResult.data.id);
-    if (rolesResult.error) {
-      return [];
-    }
-    var rows = rolesResult.data || [];
-    var out = [];
-    for (var i = 0; i < rows.length; i += 1) {
-      if (rows[i] && rows[i].role_slug) out.push(String(rows[i].role_slug));
-    }
-    return out;
+    return window.SNHSiteAuth.fetchMemberRoles(userId);
   }
 
   function memberHasAnyRole(userRoles, rolesCsv) {
-    if (!rolesCsv || !String(rolesCsv).trim()) return true;
-    var req = String(rolesCsv)
-      .split(",")
-      .map(function (s) {
-        return s.trim();
-      })
-      .filter(Boolean);
-    if (!req.length) return true;
-    for (var i = 0; i < req.length; i += 1) {
-      if (userRoles.indexOf(req[i]) !== -1) return true;
-    }
-    return false;
+    return window.SNHSiteAuth.memberHasAnyRole(userRoles, rolesCsv);
   }
 
   async function fetchMembership(userId) {
@@ -444,13 +400,7 @@
    * is purely a hint about what helpers will see. The README has the full table
    * of which sidebar section each group unlocks.
    */
-  var ROLE_GROUPS = Object.freeze({
-    MEMBERSHIP_MANAGE_ACCESS: Object.freeze(["membership_editor", "membership_admin", "club_admin"]),
-    EVENTS_MANAGE_ACCESS: Object.freeze(["events_editor", "events_admin", "club_admin"]),
-    EVENTS_DELETE_ACCESS: Object.freeze(["events_admin", "club_admin"]),
-    PHOTOS_ACCESS: Object.freeze(["photos_editor", "photos_admin", "club_admin"]),
-    GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"])
-  });
+  var ROLE_GROUPS = window.SNHSiteAuth.ROLE_GROUPS;
 
   function uniqueRoleList(roleArrays) {
     var out = [];
@@ -464,7 +414,7 @@
   }
 
   function rolesToCsv(rolesList) {
-    return (rolesList || []).join(",");
+    return window.SNHSiteAuth.rolesToCsv(rolesList);
   }
 
   /** Role slugs assignable from the member admin panel (matches portal RBAC groups). */

@@ -41,7 +41,8 @@ Keep auth and billing concerns separated:
 - `assets/css/styles.css` - shared site styles
 - `assets/js/supabase-init.js` - creates Supabase client from runtime config
 - `assets/js/games.js` - games catalog rendering, timeline/date travel, and enrichment link behavior
-- `assets/js/member-portal.js` - auth/session helpers, profile/membership helpers, member-role/RPC helpers
+- `assets/js/site-auth.js` - shared session, user-role, and capability helpers for Member Tools and progressive public-page enhancements
+- `assets/js/member-portal.js` - profile/membership helpers and member-tool RPC/API helpers (with compatibility exports for shared auth helpers)
 - `signin.html` - sign up/sign in experience
 - `members.html` - authenticated account page
 
@@ -70,7 +71,7 @@ The member dashboard sidebar shows a section if the signed-in member has any of 
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
 | Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`.                                                            |
 
-Role groups are defined in `assets/js/member-portal.js` as `SNHMemberPortal.ROLE_GROUPS`. Keep that map in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
+Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. Keep that map in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
 
 ## Games catalog (relational)
 

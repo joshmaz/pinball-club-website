@@ -24,6 +24,7 @@
     })();
   </script>
   <script src="assets/js/supabase-init.js"></script>
+  <script src="assets/js/site-auth.js"></script>
   <script src="assets/js/member-portal.js"></script>
 </head>
 <body>
@@ -323,7 +324,7 @@
       setStatusMessage("Password reset is temporarily unavailable. Please refresh and try again.");
       return;
     }
-    var session = await window.SNHMemberPortal.getSession();
+    var session = await window.SNHSiteAuth.getSession();
     if (!session || !session.user) {
       setRecoveryMode(false);
       setStatusMessage("Please sign in to continue password reset.");
