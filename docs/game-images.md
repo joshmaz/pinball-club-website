@@ -118,7 +118,7 @@ the editor.
 The AI enrichment panel now reads persisted image associations only. It neither
 discovers nor invents image URLs, IDs, provenance, attribution, or licenses.
 
-## Future legacy image migration
+## Legacy repo image migration
 
 The legacy folder currently has 89 files under `assets/images/machines`. The
 static fallback has exactly 89 nonblank `imageFilename` values, matched
@@ -127,10 +127,36 @@ orphan files in that folder as of this change. Migration
 `20260916100000_game_images.sql` already represents these as approved club
 `local_asset` rows with source keys prefixed by `legacy:`.
 
-A later, separately reviewed migration should upload each file to
-`game-images/<game UUID>/<random UUID>.<extension>`, then update that existing
-legacy `game_images` row (rather than create a duplicate) to `remote_url`, a
-`storage:` source key, and the same storage metadata used by new uploads.
-Preserve its `id`, approval, primary flag, and alt text. Verify every public
-catalog URL before removing any repo file or clearing `games.image_filename`;
-keep the repo assets in place for at least one deployment as a rollback path.
+Run `supabase db push` before using the migration utility, then run:
+
+```sh
+node --env-file=.env scripts/migrate-legacy-game-images.mjs --dry-run
+node --env-file=.env scripts/migrate-legacy-game-images.mjs --apply
+```
+
+The local `.env` must define `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+The tool matches each file through the exact `data/games.json` filename and
+game slug, then verifies the database `image_filename`. Ambiguous, missing, or
+changed mappings are reported for manual review and are never guessed.
+
+Objects use a content-derived UUID at
+`game-images/<game UUID>/<content UUID>.<detected extension>`. This follows the
+normal bucket/folder convention while making reruns deterministic. Image type
+is detected from file bytes because a few historical filename extensions do
+not match their encoded content.
+
+The service-only RPC converts the existing `legacy:` row in place to the normal
+uploaded-club representation (`remote_url`, `storage:` source key, and storage
+metadata). It preserves row ID, creation time, approval, primary flag, alt
+text, and all unrelated club/OPDB/external associations; `updated_at` records
+the migration time. Consequently:
+
+1. an explicitly selected primary is never replaced;
+2. a legacy primary remains primary after migration;
+3. a non-primary legacy row remains non-primary;
+4. subsequent runs detect the deterministic storage association and skip it.
+
+The public catalog and home cabinet rotation prefer `primaryImage` from the
+normalized resolver. `imageFilename` and all repo files remain as a rollback
+fallback until a separately reviewed cleanup confirms the migrated URLs in the
+target environment.
