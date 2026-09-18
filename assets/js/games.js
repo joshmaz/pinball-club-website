@@ -3,6 +3,25 @@ const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 /** Rasterized from the www.ipdb.org favicon for consistency with other provider PNGs. */
 const IPDB_ICON_PATH = "assets/images/icons/ipdb-favicon.png";
 const PINTIPS_ICON_PATH = "assets/images/icons/pintips-bulb.svg";
+let gamesCanManage = false;
+
+async function currentUserCanManageGames() {
+  if (!window.SNHSiteAuth) return false;
+  try {
+    const session = await window.SNHSiteAuth.getSession();
+    if (!session || !session.user) return false;
+    const roles = await window.SNHSiteAuth.fetchMemberRoles(session.user.id);
+    return window.SNHSiteAuth.can(roles, "games.manage");
+  } catch (error) {
+    console.warn("[SNH] Could not resolve Games edit access:", error);
+    return false;
+  }
+}
+
+function gameEditorHref(game) {
+  if (!gameHasCatalogUuid(game)) return "";
+  return `members.html?panel=games&game=${encodeURIComponent(String(game.id))}`;
+}
 const GAMES_URL = "data/games.json";
 const MATCHPLAY_OPDB_ENTRY_BASE_URL = "https://app.matchplay.events/opdb/entries";
 
@@ -825,7 +844,8 @@ function createGamesList(games) {
     const ipdbUrl = game.ipdbUrl;
     const pintipsUrl = getPinTipsUrl(game);
     const moreInfoEligible = !!getPublicSupabaseClient() && gameHasCatalogUuid(game);
-    if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible) {
+    const editHref = gamesCanManage ? gameEditorHref(game) : "";
+    if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible || editHref) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
 
@@ -926,6 +946,15 @@ function createGamesList(games) {
           void openGameMoreInfoModal(game);
         });
         linkRow.appendChild(moreBtn);
+      }
+
+      if (editHref) {
+        const editLink = document.createElement("a");
+        editLink.className = "games-more-info-btn games-edit-link";
+        editLink.href = editHref;
+        editLink.textContent = "Edit";
+        editLink.setAttribute("aria-label", `Edit ${game.title} in Member Tools`);
+        linkRow.appendChild(editLink);
       }
 
       item.appendChild(linkRow);
@@ -1116,6 +1145,13 @@ async function loadGames() {
 
     setTimelineControlsEnabled(!showAllMode);
     renderSnapshot(todayIso, false);
+
+    void currentUserCanManageGames().then((allowed) => {
+      if (allowed === gamesCanManage) return;
+      gamesCanManage = allowed;
+      const selected = dateInput ? normalizeIsoDateOrEmpty(dateInput.value) : "";
+      renderSnapshot(selected || todayIso, false);
+    });
   } catch (error) {
     console.error("Error loading games:", error);
     showMessage(
