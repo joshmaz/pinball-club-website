@@ -69,7 +69,8 @@
   }
 
   function currentRelativeUrl() {
-    return window.location.pathname.split("/").pop() || "members.html";
+    var pathname = window.location.pathname.split("/").pop() || "members.html";
+    return pathname + (window.location.search || "") + (window.location.hash || "");
   }
 
   async function requireAuth(options) {

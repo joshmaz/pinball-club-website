@@ -42,6 +42,7 @@ Keep auth and billing concerns separated:
 - `assets/js/supabase-init.js` - creates Supabase client from runtime config
 - `assets/js/games.js` - games catalog rendering, timeline/date travel, and enrichment link behavior
 - `assets/js/site-auth.js` - shared session, user-role, and capability helpers for Member Tools and progressive public-page enhancements
+- `assets/js/member-routes.js` - validated Member Tools panel/item routes, including direct game-editor links
 - `assets/js/member-portal.js` - profile/membership helpers and member-tool RPC/API helpers (with compatibility exports for shared auth helpers)
 - `signin.html` - sign up/sign in experience
 - `members.html` - authenticated account page
