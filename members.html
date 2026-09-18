@@ -25,6 +25,7 @@
   </script>
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/site-auth.js"></script>
+  <script src="assets/js/member-routes.js"></script>
   <script src="assets/js/member-portal.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
   <script src="assets/js/member-photos-panel.js"></script>
@@ -661,13 +662,9 @@
         panel.setAttribute("aria-hidden", on ? "false" : "true");
       }
 
-      if (!options.skipHash) {
+      if (!options.skipHistory) {
         try {
-          if (id === "profile") {
-            window.history.replaceState(null, "", window.location.pathname + window.location.search);
-          } else {
-            window.history.replaceState(null, "", window.location.pathname + window.location.search + "#" + id);
-          }
+          window.SNHMemberRoutes.replacePanel(id);
         } catch (e) {
           // ignore
         }
@@ -958,24 +955,6 @@
               : String((digestErr && digestErr.message) || digestErr));
         }
       }
-    }
-
-    function initialPanelFromHash() {
-      var raw = window.location.hash || "";
-      if (raw.indexOf("type=recovery") !== -1) return "profile";
-      var h = raw.replace(/^#/, "").trim();
-      if (
-        h === "membership" ||
-        h === "member-admin" ||
-        h === "events" ||
-        h === "photos" ||
-        h === "games" ||
-        h === "club-issues" ||
-        h === "profile"
-      ) {
-        return h;
-      }
-      return "profile";
     }
 
     function isPanelNavAvailable(panelId) {
@@ -1684,9 +1663,13 @@
     }
 
     wirePanelNav();
-    var startPanel = recoveryMode ? "profile" : initialPanelFromHash();
+    var initialRoute = recoveryMode ? { panel: "profile", gameId: "" } : window.SNHMemberRoutes.read();
+    var startPanel = initialRoute.panel;
     if (!isPanelNavAvailable(startPanel)) startPanel = "profile";
-    showMemberPanel(startPanel, { skipHash: true });
+    showMemberPanel(startPanel, {});
+    if (startPanel === "games" && initialRoute.gameId && window.snhNavigateToMemberGameEditor) {
+      void window.snhNavigateToMemberGameEditor(initialRoute.gameId);
+    }
 
     try {
       var profile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);

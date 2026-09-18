@@ -178,14 +178,8 @@
 
   function getRedirectTarget() {
     var params = new URLSearchParams(window.location.search);
-    var next = params.get("next");
-    if (!next) return "members.html";
-    if (next.indexOf("http://") === 0 || next.indexOf("https://") === 0) {
-      return "members.html";
-    }
-    if (next.indexOf("/") !== -1 || next.indexOf("\\") !== -1) {
-      return "members.html";
-    }
+    var next = String(params.get("next") || "").trim();
+    if (!/^members\.html(?:[?#].*)?$/.test(next)) return "members.html";
     return next;
   }
 

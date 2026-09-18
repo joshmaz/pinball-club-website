@@ -86,11 +86,11 @@ test("role lookup is cached and capabilities map to canonical role groups", asyn
   assert.equal(fixture.auth.can(first, "unknown.capability"), false);
 });
 
-test("requireAuth redirects anonymous users to sign in", async () => {
+test("requireAuth preserves the member route when redirecting to sign in", async () => {
   const fixture = loadSiteAuth({ session: null });
   assert.equal(await fixture.auth.requireAuth({ redirectToSignin: true }), null);
   assert.equal(
     fixture.location.href,
-    "signin.html?next=" + encodeURIComponent("members.html")
+    "signin.html?next=" + encodeURIComponent("members.html?panel=games&game=123#games")
   );
 });

@@ -1195,6 +1195,7 @@
     if (!confirmDiscardPartyIfDirty()) return;
     if (!confirmDiscardIfDirty()) return;
     enterIdleMode("Editor cleared. Search for another game when ready.");
+    if (window.SNHMemberRoutes) window.SNHMemberRoutes.setGame(null);
   }
 
   function onGameSelected(gameId) {
@@ -1208,6 +1209,7 @@
     if (!confirmDiscardPartyIfDirty()) return;
     if (!confirmDiscardIfDirty()) return;
     currentGameId = null;
+    if (window.SNHMemberRoutes) window.SNHMemberRoutes.setGame(null);
     setMode("new");
     clearFormForNewGame();
     resetAiProposalUi();
@@ -2567,6 +2569,7 @@
     currentGameId = gameId;
     var g = currentGame();
     if (!g) return;
+    if (window.SNHMemberRoutes) window.SNHMemberRoutes.setGame(g.id || gameId);
     if (comboboxInputEl) {
       comboboxInputEl.value = g.__label || g.title || g.slug || "";
       updateComboboxClearVisibility();
@@ -2892,6 +2895,15 @@
     }
     await loadCatalog();
     if (!catalogLoaded) return;
+
+    var requestedGame = gamesCache.find(function (game) {
+      return game && String(game.id) === String(gameId);
+    });
+    if (!requestedGame) {
+      if (window.SNHMemberRoutes) window.SNHMemberRoutes.setGame(null);
+      setStatus("That game could not be found. Search for another game to edit.");
+      return;
+    }
 
     if (!confirmDiscardPartyIfDirty()) return;
     if (!confirmDiscardIfDirty()) return;
