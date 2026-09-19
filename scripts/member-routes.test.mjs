@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const source = await readFile(path.join(root, "assets", "js", "member-routes.js"), "utf8");
 const GAME_ID = "123e4567-e89b-42d3-a456-426614174000";
+const EVENT_ID = "223e4567-e89b-42d3-a456-426614174001";
 
 function loadRoutes(locationOverrides = {}) {
   const location = { pathname: "/members.html", search: "", hash: "", ...locationOverrides };
@@ -27,7 +28,8 @@ test("reads a canonical game editor route", () => {
   const fixture = loadRoutes({ search: `?panel=games&game=${GAME_ID}` });
   assert.deepEqual(JSON.parse(JSON.stringify(fixture.routes.read())), {
     panel: "games",
-    gameId: GAME_ID
+    gameId: GAME_ID,
+    eventId: ""
   });
 });
 
@@ -36,8 +38,21 @@ test("accepts legacy panel hashes but ignores invalid panels and item ids", () =
   const invalid = loadRoutes({ search: "?panel=admin&game=not-a-uuid", hash: "#nope" });
   assert.deepEqual(JSON.parse(JSON.stringify(invalid.routes.read())), {
     panel: "profile",
-    gameId: ""
+    gameId: "",
+    eventId: ""
   });
+});
+
+test("reads and builds a canonical event editor route", () => {
+  const fixture = loadRoutes({ search: `?panel=events&event=${EVENT_ID}` });
+  assert.deepEqual(JSON.parse(JSON.stringify(fixture.routes.read())), {
+    panel: "events",
+    gameId: "",
+    eventId: EVENT_ID
+  });
+  assert.equal(fixture.routes.build("events"), `/members.html?panel=events&event=${EVENT_ID}`);
+  fixture.routes.setEvent(null);
+  assert.equal(fixture.replacedUrl(), "/members.html?panel=events");
 });
 
 test("builds canonical routes and removes item parameters outside their panel", () => {
@@ -69,4 +84,11 @@ test("Member Tools wires route parsing before opening the game editor", async ()
   assert.match(membersHtml, /snhNavigateToMemberGameEditor\(initialRoute\.gameId\)/);
   assert.match(gamesPanel, /SNHMemberRoutes\.setGame\(g\.id \|\| gameId\)/);
   assert.match(signinHtml, /\^members\\\.html/);
+});
+
+test("Member Tools opens event deep links through the existing event editor", async () => {
+  const membersHtml = await readFile(path.join(root, "members.html"), "utf8");
+  assert.match(membersHtml, /snhNavigateToMemberEventEditor\(initialRoute\.eventId\)/);
+  assert.match(membersHtml, /SNHMemberRoutes\.setEvent\(row\.id\)/);
+  assert.match(membersHtml, /selectEventForEdit\(row\)/);
 });
