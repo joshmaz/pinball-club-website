@@ -3,6 +3,28 @@
 // If loading fails, an on-page error message is shown with debug details.
 const EVENTS_URL = 'data/events.json';
 const EVENTS_TABLE = 'events';
+let eventsCanManage = false;
+
+async function currentUserCanManageEvents() {
+  if (!window.SNHSiteAuth) return false;
+  try {
+    const session = await window.SNHSiteAuth.getSession();
+    if (!session || !session.user) return false;
+    const roles = await window.SNHSiteAuth.fetchMemberRoles(session.user.id);
+    return window.SNHSiteAuth.can(roles, 'events.manage');
+  } catch (error) {
+    console.warn('[SNH] Could not resolve Events edit access:', error);
+    return false;
+  }
+}
+
+function eventEditorHref(event) {
+  const id = event && event.id != null ? String(event.id).trim() : '';
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    return '';
+  }
+  return `members.html?panel=events&event=${encodeURIComponent(id)}`;
+}
 
 function showMessage(container, title, details) {
   container.replaceChildren();
@@ -120,6 +142,19 @@ function createEventCard(event, options = {}) {
     link.textContent = 'View event details';
     linkP.appendChild(link);
     div.appendChild(linkP);
+  }
+
+  const editHref = eventsCanManage ? eventEditorHref(event) : '';
+  if (editHref) {
+    const actions = document.createElement('p');
+    actions.className = 'event-card-actions';
+    const editLink = document.createElement('a');
+    editLink.className = 'event-edit-link';
+    editLink.href = editHref;
+    editLink.textContent = 'Edit';
+    editLink.setAttribute('aria-label', `Edit ${event.title || event.name || 'event'} in Member Tools`);
+    actions.appendChild(editLink);
+    div.appendChild(actions);
   }
 
   return div;
@@ -406,7 +441,7 @@ async function loadEvents() {
     if (window.snhSupabase) {
       const { data, error } = await window.snhSupabase
         .from(EVENTS_TABLE)
-        .select('title,description,location,starts_at,external_url,source')
+        .select('id,title,description,location,starts_at,external_url,source')
         .or('published.eq.true,published.is.null')
         .order('starts_at', { ascending: true, nullsFirst: false });
 
@@ -427,6 +462,7 @@ async function loadEvents() {
             }
           }
           return {
+            id: row.id || '',
             title: row.title || 'Untitled Event',
             date,
             location: row.location || 'TBD',
@@ -466,6 +502,11 @@ async function loadEvents() {
     }
 
     renderEventsList(container, events);
+    void currentUserCanManageEvents().then((allowed) => {
+      if (allowed === eventsCanManage) return;
+      eventsCanManage = allowed;
+      renderEventsList(container, events);
+    });
   } catch (error) {
     console.error('Error loading events:', error);
     showMessage(

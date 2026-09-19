@@ -1559,6 +1559,28 @@ footer {
   border-color: var(--border-faint);
 }
 
+.event-card-actions {
+  margin: 0.75rem 0 0;
+  text-align: right;
+}
+
+.event-edit-link {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--accent-teal-soft);
+  border-radius: 6px;
+  color: var(--accent-teal-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.event-edit-link:hover {
+  color: var(--accent-teal-soft);
+  background: rgba(42, 143, 111, 0.2);
+  text-decoration: none;
+}
+
 .events-past-toggle {
   margin: 1.25rem 0 0;
   padding: 0.5rem 1rem;

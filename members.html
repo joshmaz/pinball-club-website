@@ -673,7 +673,7 @@
       if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
         onMemberAdminPanelShown();
       }
-      if (id === "events" && typeof onEventsPanelShown === "function") {
+      if (id === "events" && !options.skipPanelLoad && typeof onEventsPanelShown === "function") {
         onEventsPanelShown();
       }
       if (id === "photos" && typeof onPhotosPanelShown === "function") {
@@ -1344,6 +1344,7 @@
       if (memberEventsId) memberEventsId.value = "";
       if (memberEventsPublished) memberEventsPublished.checked = true;
       clearEventPhotoDigest();
+      if (window.SNHMemberRoutes) window.SNHMemberRoutes.setEvent(null);
     }
 
     function setEventsFormFromRow(row) {
@@ -1482,6 +1483,22 @@
       renderEventsPaginationMeta();
     }
 
+    function selectEventForEdit(row) {
+      if (!row || !row.id) return;
+      var rowIndex = memberEventsAllRows.findIndex(function (candidate) {
+        return candidate && String(candidate.id) === String(row.id);
+      });
+      if (rowIndex >= 0) {
+        memberEventsPage = Math.floor(rowIndex / memberEventsPageSize) + 1;
+        renderEventsPage();
+      }
+      setEventsFormFromRow(row);
+      if (window.SNHMemberRoutes) window.SNHMemberRoutes.setEvent(row.id);
+      highlightEventTableRow(row.id);
+      focusAndHighlightEventsEditor();
+      setEventsStatus("Editing: " + (row.title || "(untitled)"));
+    }
+
     onEventsPanelShown = async function () {
       if (!window.SNHMemberPortal || !window.SNHMemberPortal.listEventsForAdmin) return;
       setEventsPanelIntro(userRoles);
@@ -1498,6 +1515,25 @@
       memberEventsPage = 1;
       renderEventsPage();
       setEventsStatus("Loaded " + rows.length + " events.");
+    };
+
+    window.snhNavigateToMemberEventEditor = async function (eventId) {
+      if (!eventId) return;
+      var eventRoles =
+        (window.SNHMemberPortal.ROLE_GROUPS && window.SNHMemberPortal.ROLE_GROUPS.EVENTS_MANAGE_ACCESS) ||
+        ["events_editor", "events_admin", "club_admin"];
+      if (!window.SNHMemberPortal.memberHasAnyRole(userRoles, eventRoles)) return;
+      showMemberPanel("events", { skipPanelLoad: true });
+      await onEventsPanelShown();
+      var row = memberEventsAllRows.find(function (candidate) {
+        return candidate && String(candidate.id) === String(eventId);
+      });
+      if (!row) {
+        if (window.SNHMemberRoutes) window.SNHMemberRoutes.setEvent(null);
+        setEventsStatus("That event could not be found. Choose another event to edit.");
+        return;
+      }
+      selectEventForEdit(row);
     };
 
     onPhotosPanelShown = function () {
@@ -1611,10 +1647,7 @@
         if (!row) return;
 
         if (action === "edit") {
-          setEventsFormFromRow(row);
-          highlightEventTableRow(row.id);
-          focusAndHighlightEventsEditor();
-          setEventsStatus("Editing: " + (row.title || "(untitled)"));
+          selectEventForEdit(row);
           return;
         }
 
@@ -1653,6 +1686,7 @@
           try {
             setEventsStatus("Deleting event…");
             await window.SNHMemberPortal.deleteEventForAdmin(row.id);
+            if (window.SNHMemberRoutes) window.SNHMemberRoutes.setEvent(null);
             if (onEventsPanelShown) await onEventsPanelShown();
             setEventsStatus("Event deleted.");
           } catch (errDelete) {
@@ -1663,12 +1697,17 @@
     }
 
     wirePanelNav();
-    var initialRoute = recoveryMode ? { panel: "profile", gameId: "" } : window.SNHMemberRoutes.read();
+    var initialRoute = recoveryMode ? { panel: "profile", gameId: "", eventId: "" } : window.SNHMemberRoutes.read();
     var startPanel = initialRoute.panel;
     if (!isPanelNavAvailable(startPanel)) startPanel = "profile";
-    showMemberPanel(startPanel, {});
+    showMemberPanel(startPanel, {
+      skipPanelLoad: startPanel === "events" && !!initialRoute.eventId
+    });
     if (startPanel === "games" && initialRoute.gameId && window.snhNavigateToMemberGameEditor) {
       void window.snhNavigateToMemberGameEditor(initialRoute.gameId);
+    }
+    if (startPanel === "events" && initialRoute.eventId && window.snhNavigateToMemberEventEditor) {
+      void window.snhNavigateToMemberEventEditor(initialRoute.eventId);
     }
 
     try {

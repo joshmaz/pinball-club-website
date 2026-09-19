@@ -24,7 +24,8 @@
     panel = panel || "profile";
     return {
       panel: panel,
-      gameId: panel === "games" ? validUuid(params.get("game")) : ""
+      gameId: panel === "games" ? validUuid(params.get("game")) : "",
+      eventId: panel === "events" ? validUuid(params.get("event")) : ""
     };
   }
 
@@ -47,6 +48,16 @@
       params.delete("game");
     }
 
+    if (panel !== "events") {
+      params.delete("event");
+    } else if (Object.prototype.hasOwnProperty.call(options, "eventId")) {
+      var eventId = validUuid(options.eventId);
+      if (eventId) params.set("event", eventId);
+      else params.delete("event");
+    } else if (!validUuid(params.get("event"))) {
+      params.delete("event");
+    }
+
     var query = params.toString();
     return (loc.pathname || "members.html") + (query ? "?" + query : "");
   }
@@ -61,6 +72,10 @@
     return replacePanel("games", { gameId: gameId });
   }
 
+  function setEvent(eventId) {
+    return replacePanel("events", { eventId: eventId });
+  }
+
   window.SNHMemberRoutes = {
     PANEL_IDS: PANEL_IDS,
     validPanel: validPanel,
@@ -68,6 +83,7 @@
     read: read,
     build: build,
     replacePanel: replacePanel,
-    setGame: setGame
+    setGame: setGame,
+    setEvent: setEvent
   };
 })();
