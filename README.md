@@ -121,6 +121,12 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 
 The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional CloudFront cache invalidation.
 
+PR previews use Netlify's `snhpinballclub` project. `netlify.toml` runs the tests
+and builds a clean `dist/` directory with generated public Supabase configuration.
+See [Netlify previews and review workflow](docs/netlify-previews.md) for service
+settings, authentication redirects, and the preview → approve → merge workflow.
+Previews initially share the live Supabase project, so saved edits affect live data.
+
 The legacy Wix-era snapshot lives in `wix_archive/` (static mirror + landing page at `wix_archive/index.html`). It is included in the repo so `aws s3 sync ... --delete` does not remove it on deploy. Link to it directly as `wix_archive/index.html` (the bare `wix_archive/` directory URL does not resolve with CloudFront + the S3 REST API). Wix nav links in the mirror use relative folder URLs such as `about-us/` or `../events/`; S3 does not resolve those to `index.html`, so after mirroring run `node scripts/wix-mirror/rewrite-archive-urls.mjs` to rewrite page links to explicit `index.html` paths and inject `archive-nav-fix.js` as a runtime backup. To refresh the mirror before Wix is shut down, run `npm install` in `scripts/wix-mirror/` and `node scripts/wix-mirror/mirror.mjs` from the repo root, then run the rewrite script. That pipeline rewrites absolute `snhpinball.wixsite.com` URLs to `/wix_archive/site/...` so navigation keeps working after Wix is offline. That script rewrites absolute `snhpinball.wixsite.com` URLs to `/wix_archive/site/...` so navigation keeps working after Wix is offline. After a deploy, confirm `/wix_archive/` on the live domain and spot-check the archived home page; repeat once Wix is shut down to confirm nothing still depends on the live Wix host. On Windows, if `git add wix_archive` fails with “Filename too long”, run `git config core.longpaths true` once in this repo (mirrored asset paths can exceed the legacy path limit). The mirrored Wix home page (`wix_archive/site/.../home/index.html`) loads `archive-marquee.js` / `archive-marquee.css`, which replace the original slideshow with an eight-slide carousel (logo, six club photos, parking; duplicate logo panel for seamless looping) sourced from `static.wixstatic.com`.
 
 ## Email (Resend)

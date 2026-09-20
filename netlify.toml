@@ -1,0 +1,17 @@
+[build]
+  command = "node scripts/build-preview.mjs"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  GAMES_CATALOG_SOURCE = "db"
+
+# Preserve .html URLs used by sign-in redirects and Member Tools routing.
+[build.processing.html]
+  pretty_urls = false
+
+# /donate/ is the real page; donate.html is a legacy redirect stub.
+[[redirects]]
+  from = "/donate"
+  to = "/donate/"
+  status = 301
