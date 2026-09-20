@@ -47,6 +47,9 @@ jobs:
           --exclude ".gitignore" \
           --exclude ".github/*" \
           --exclude ".cursor/*" \
+          --exclude ".netlify/*" \
+          --exclude "dist/*" \
+          --exclude "netlify.toml" \
           --exclude "supabase/*" \
           --exclude "scripts/*" \
           --exclude "docs/*" \
