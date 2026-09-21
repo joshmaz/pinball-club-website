@@ -12,6 +12,7 @@ const publicPages = [
   "games.html",
   "merch.html",
   "resources.html",
+  "members.html",
   "donate/index.html"
 ];
 
@@ -39,4 +40,12 @@ test("the account menu provides accessible dashboard and sign-out actions", asyn
   assert.match(source, /textContent = "Sign out"/);
   assert.match(source, /SNHSiteAuth\.signOut\(\)/);
   assert.match(source, /event\.key === "Escape"/);
+});
+
+test("the member dashboard keeps its sidebar logout and redirects after menu sign-out", async () => {
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  const source = await readFile(path.join(root, "assets", "js", "site-account.js"), "utf8");
+  assert.match(html, /id="logout-btn"/);
+  assert.match(source, /window\.location\.pathname\.split\("\/"\)\.pop\(\) === "members\.html"/);
+  assert.match(source, /window\.location\.href = signinHref/);
 });
