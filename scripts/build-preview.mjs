@@ -54,7 +54,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const tests = (await readdir(path.join(repositoryRoot, 'scripts')))
       .filter((name) => name.endsWith('.test.mjs'))
       .sort().map((name) => path.join('scripts', name));
-    for (const args of [['--test', ...tests], ['scripts/check-events-duplicates.mjs']]) {
+    for (const args of [['--test', ...tests], ['scripts/check-events-duplicates.mjs'], ['scripts/snapshots.mjs', 'check']]) {
       const result = spawnSync(process.execPath, args, { cwd: repositoryRoot, stdio: 'inherit' });
       if (result.error || result.status !== 0) throw new Error('Preview validation failed.');
     }

@@ -21,9 +21,10 @@ function duplicateKey(row) {
 
 async function main() {
   const raw = await readFile(eventsPath, "utf8");
-  const rows = JSON.parse(raw);
+  const payload = JSON.parse(raw);
+  const rows = Array.isArray(payload) ? payload : payload.events;
   if (!Array.isArray(rows)) {
-    throw new Error("data/events.json must be an array.");
+    throw new Error("data/events.json must contain an events array.");
   }
 
   const seen = new Map();

@@ -1,23 +1,9 @@
 (function () {
-  const GAMES_URL = "data/games.json";
   const INTERVAL_MS = 3000;
 
-  function catalogSourceIsDb() {
-    return !!(window.SNH_CONFIG && window.SNH_CONFIG.gamesCatalogSource === "db");
-  }
-
   async function fetchGames() {
-    if (catalogSourceIsDb()) {
-      const client = window.snhSupabase;
-      if (!client || typeof client.from !== "function") throw new Error("Supabase client not available.");
-      const result = await client.from("games_catalog_v1").select("game");
-      if (result.error) throw result.error;
-      return (result.data || []).map(function (row) { return row && row.game; }).filter(Boolean);
-    }
-    const response = await fetch(GAMES_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Request failed (${response.status})`);
-    const data = await response.json();
-    return data.games || [];
+    const result = await window.SNHPublicData.loadGames();
+    return result.data;
   }
 
   function resolveImage(game) {

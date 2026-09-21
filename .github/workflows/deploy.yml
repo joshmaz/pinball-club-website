@@ -24,6 +24,9 @@ jobs:
     - name: Check events JSON for duplicates
       run: node scripts/check-events-duplicates.mjs
 
+    - name: Validate public snapshots
+      run: node scripts/snapshots.mjs check
+
     - name: Write public site config
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
