@@ -3145,3 +3145,34 @@ footer {
 #member-photos-status.is-error {
   color: var(--status-error-text);
 }
+
+/* Audit history keeps the summary compact and gives changes the full table width. */
+.member-audit-row { cursor: pointer; }
+.member-audit-row:hover, .member-audit-row.is-expanded { background: var(--bg-sidebar-hover); }
+.member-audit-row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.member-audit-detail-row[hidden] { display: none; }
+.member-audit-detail-row > td { background: var(--bg-panel); padding: 0.8rem; }
+.member-audit-toggle, .member-audit-id, .member-audit-more {
+  font: inherit; color: var(--accent-teal-soft); background: transparent; border: 0;
+  padding: 0.15rem; cursor: pointer;
+}
+.member-audit-toggle { white-space: nowrap; }
+.member-audit-id { white-space: nowrap; font-size: 0.84rem; }
+.member-audit-toggle:focus-visible, .member-audit-id:focus-visible, .member-audit-more:focus-visible,
+.member-audit-raw summary:focus-visible { outline: 2px solid var(--focus-ring); }
+.member-audit-changes { display: grid; gap: 0; min-width: 0; }
+.member-audit-change { display: grid; grid-template-columns: minmax(8rem, 1fr) minmax(0, 2fr); gap: 0.6rem;
+  padding: 0.55rem 0; border-bottom: 1px solid var(--border-divider); min-width: 0; }
+.member-audit-changes.is-comparison .member-audit-change { grid-template-columns: minmax(8rem, 1fr) repeat(2, minmax(0, 2fr)); }
+.member-audit-field { color: var(--text-main); overflow-wrap: anywhere; }
+.member-audit-side, .member-audit-value { min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.member-audit-side-label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.15rem; }
+.member-audit-more { display: block; margin-top: 0.25rem; }
+.member-audit-raw { margin-top: 0.8rem; color: var(--text-muted); }
+.member-audit-raw summary { cursor: pointer; width: fit-content; }
+.member-audit-details { max-width: none; max-height: 22rem; margin: 0.5rem 0 0; padding: 0.65rem;
+  background: var(--bg-sidebar); border: 1px solid var(--border-divider); }
+@media (max-width: 700px) {
+  .member-audit-change, .member-audit-changes.is-comparison .member-audit-change { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+  .member-audit-side { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 0.3rem; }
+}
