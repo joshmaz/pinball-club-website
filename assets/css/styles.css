@@ -1590,22 +1590,6 @@ footer {
   text-decoration: none;
 }
 
-.events-past-toggle {
-  margin: 1.25rem 0 0;
-  padding: 0.5rem 1rem;
-  font: inherit;
-  color: var(--accent-cyan-pure);
-  background: var(--bg-tab);
-  border: 1px solid var(--border-strong);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.events-past-toggle:hover {
-  color: var(--link-hover);
-  border-color: var(--border-strong);
-}
-
 .events-past-region {
   margin-top: 1rem;
 }
