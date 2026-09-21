@@ -342,6 +342,36 @@
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
 
+          <h3>Find MatchPlay tournaments</h3>
+          <p class="member-form-hint">“Token account” means the MatchPlay account that supplied the API token, which may differ from your club login. You can also search another organizer, a series, or title words such as SNHPC.</p>
+          <form id="member-matchplay-discover-form" class="members-profile-form">
+            <label for="member-matchplay-discover-scope">Find by</label>
+            <select id="member-matchplay-discover-scope">
+              <option value="mine">Token account's tournaments</option>
+              <option value="owner">Organizer MatchPlay ID</option>
+              <option value="series">Series MatchPlay ID</option>
+              <option value="title">Tournament title</option>
+            </select>
+            <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
+            <input id="member-matchplay-discover-value" type="text" hidden disabled>
+            <button type="submit">List tournaments</button>
+          </form>
+          <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
+          <div id="member-matchplay-discover-results" hidden>
+            <div class="members-admin-table-wrap">
+              <table class="members-admin-table">
+                <caption>MatchPlay tournaments</caption>
+                <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+                <tbody id="member-matchplay-discover-rows"></tbody>
+              </table>
+            </div>
+            <p class="members-admin-toolbar">
+              <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
+              <span id="member-matchplay-discover-page"></span>
+              <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
+            </p>
+          </div>
+
           <h3>Review MatchPlay tournament</h3>
           <p class="member-form-hint">Compare a MatchPlay tournament with club events. Open an existing event or prepare a new draft; neither action saves it.</p>
           <form id="member-matchplay-review-form" class="members-profile-form">
@@ -534,6 +564,18 @@
     var memberEventsPageMeta = document.getElementById("member-events-page-meta");
     var memberEventsPageSizeSelect = document.getElementById("member-events-page-size");
     var matchplayReviewForm = document.getElementById("member-matchplay-review-form");
+    var matchplayDiscoverForm = document.getElementById("member-matchplay-discover-form");
+    var matchplayDiscoverScope = document.getElementById("member-matchplay-discover-scope");
+    var matchplayDiscoverValue = document.getElementById("member-matchplay-discover-value");
+    var matchplayDiscoverValueLabel = document.getElementById("member-matchplay-discover-value-label");
+    var matchplayDiscoverStatus = document.getElementById("member-matchplay-discover-status");
+    var matchplayDiscoverResults = document.getElementById("member-matchplay-discover-results");
+    var matchplayDiscoverRows = document.getElementById("member-matchplay-discover-rows");
+    var matchplayDiscoverPrevious = document.getElementById("member-matchplay-discover-previous");
+    var matchplayDiscoverNext = document.getElementById("member-matchplay-discover-next");
+    var matchplayDiscoverPageLabel = document.getElementById("member-matchplay-discover-page");
+    var matchplayDiscoverPage = 1;
+    var matchplayDiscoverLoading = false;
     var matchplayTournamentInput = document.getElementById("member-matchplay-tournament");
     var matchplayReviewStatus = document.getElementById("member-matchplay-review-status");
     var matchplayReviewResults = document.getElementById("member-matchplay-review-results");
@@ -1568,6 +1610,99 @@
       highlightEventTableRow(row.id);
       focusAndHighlightEventsEditor();
       setEventsStatus("Editing: " + (row.title || "(untitled)"));
+    }
+
+    function syncMatchplayDiscoverScope() {
+      var scope = matchplayDiscoverScope.value;
+      var needsValue = scope !== "mine";
+      matchplayDiscoverValue.hidden = !needsValue;
+      matchplayDiscoverValue.disabled = !needsValue;
+      matchplayDiscoverValue.required = needsValue;
+      matchplayDiscoverValueLabel.hidden = !needsValue;
+      matchplayDiscoverValueLabel.textContent = scope === "title" ? "Title words" :
+        scope === "series" ? "Series MatchPlay ID" : "Organizer MatchPlay ID";
+      matchplayDiscoverValue.placeholder = scope === "title" ? "SNHPC" :
+        scope === "series" ? "6497" : "Numeric user ID";
+      matchplayDiscoverValue.value = "";
+      matchplayDiscoverResults.hidden = true;
+    }
+
+    async function loadMatchplayDiscovery(page) {
+      if (matchplayDiscoverLoading) return;
+      matchplayDiscoverLoading = true;
+      matchplayDiscoverResults.hidden = true;
+      matchplayDiscoverStatus.textContent = "Loading MatchPlay tournaments…";
+      var button = matchplayDiscoverForm.querySelector('button[type="submit"]');
+      if (button) button.disabled = true;
+      matchplayDiscoverScope.disabled = true;
+      matchplayDiscoverValue.disabled = true;
+      matchplayDiscoverPrevious.disabled = true;
+      matchplayDiscoverNext.disabled = true;
+      try {
+        var listing = await window.SNHMemberPortal.discoverMatchplayTournaments(
+          matchplayDiscoverScope.value, matchplayDiscoverValue.value.trim(), page
+        );
+        matchplayDiscoverPage = page;
+        var tournaments = Array.isArray(listing.tournaments) ? listing.tournaments : [];
+        matchplayDiscoverRows.replaceChildren();
+        tournaments.forEach(function (tournament) {
+          var row = document.createElement("tr");
+          var title = document.createElement("td");
+          title.textContent = tournament.title || "(untitled)";
+          var date = document.createElement("td");
+          date.textContent = window.SNHMemberPortal.formatDate(tournament.starts_at);
+          var organizer = document.createElement("td");
+          organizer.textContent = tournament.organizer_name || tournament.organizer_id || "—";
+          var status = document.createElement("td");
+          status.textContent = tournament.status || "—";
+          var action = document.createElement("td");
+          var review = document.createElement("button");
+          review.type = "button";
+          review.className = "members-admin-revoke";
+          review.textContent = "Review match";
+          review.setAttribute("data-matchplay-tournament-id", String(tournament.id));
+          action.appendChild(review);
+          row.append(title, date, organizer, status, action);
+          matchplayDiscoverRows.appendChild(row);
+        });
+        matchplayDiscoverPrevious.disabled = !listing.has_previous;
+        matchplayDiscoverNext.disabled = !listing.has_next;
+        matchplayDiscoverPageLabel.textContent = "Page " + matchplayDiscoverPage;
+        matchplayDiscoverResults.hidden = false;
+        matchplayDiscoverStatus.textContent = (listing.owner_label ? listing.owner_label + ": " : "") +
+          (tournaments.length ? "Showing " + tournaments.length + " tournament(s)." : "No tournaments found on this page.");
+      } catch (error) {
+        matchplayDiscoverStatus.textContent = "Could not list tournaments: " +
+          (error && error.message ? error.message : "Please try again.");
+      } finally {
+        matchplayDiscoverLoading = false;
+        if (button) button.disabled = false;
+        matchplayDiscoverScope.disabled = false;
+        matchplayDiscoverValue.disabled = matchplayDiscoverScope.value === "mine";
+      }
+    }
+
+    if (matchplayDiscoverForm) {
+      syncMatchplayDiscoverScope();
+      matchplayDiscoverScope.addEventListener("change", syncMatchplayDiscoverScope);
+      matchplayDiscoverForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        void loadMatchplayDiscovery(1);
+      });
+      matchplayDiscoverPrevious.addEventListener("click", function () {
+        if (matchplayDiscoverPage <= 1) return;
+        void loadMatchplayDiscovery(matchplayDiscoverPage - 1);
+      });
+      matchplayDiscoverNext.addEventListener("click", function () {
+        void loadMatchplayDiscovery(matchplayDiscoverPage + 1);
+      });
+      matchplayDiscoverRows.addEventListener("click", function (event) {
+        var button = event.target.closest("button[data-matchplay-tournament-id]");
+        if (!button) return;
+        matchplayTournamentInput.value = button.getAttribute("data-matchplay-tournament-id");
+        matchplayReviewForm.requestSubmit();
+        matchplayReviewForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     }
 
     if (matchplayReviewForm) {
