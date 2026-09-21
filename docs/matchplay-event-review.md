@@ -6,11 +6,13 @@ MatchPlay tournament details and suggests existing club events using the same
 MatchPlay URL, local event date, start-time proximity, and title. A same-day
 suggestion is **not** treated as a confirmed duplicate.
 
-The editor chooses an existing club event to open in the event form. Empty
-description, location, date, and external URL fields can be filled from
-MatchPlay; existing values are preserved. No club event is created or saved by
-the review itself. The editor reviews and saves any changes manually. This
-also allows a club event to be enriched without duplicating it.
+The editor can choose an existing club event to open in the event form. Its
+saved fields remain populated; empty description, location, date, and external
+URL fields can be filled from MatchPlay. If there is no matching club event,
+the editor can prepare a new unpublished draft with MatchPlay details. The
+review and draft preparation do not write to the database. The editor confirms
+that it is a club event and saves manually. This lets a club event be enriched
+without duplicating it and avoids automatically publishing off-site finals.
 
 ## Deployment
 

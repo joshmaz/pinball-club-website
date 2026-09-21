@@ -343,7 +343,7 @@
           </p>
 
           <h3>Review MatchPlay tournament</h3>
-          <p class="member-form-hint">Compare a MatchPlay tournament with club events before editing. This review does not save or create an event.</p>
+          <p class="member-form-hint">Compare a MatchPlay tournament with club events. Open an existing event or prepare a new draft; neither action saves it.</p>
           <form id="member-matchplay-review-form" class="members-profile-form">
             <label for="member-matchplay-tournament">Tournament URL or ID</label>
             <input id="member-matchplay-tournament" type="text" placeholder="https://app.matchplay.events/tournaments/228825" required>
@@ -359,6 +359,9 @@
                 <tbody id="member-matchplay-review-candidates"></tbody>
               </table>
             </div>
+            <p class="members-admin-toolbar">
+              <button type="button" class="members-sidebar-link" id="member-matchplay-create-draft">Prepare new event draft</button>
+            </p>
           </div>
 
           <h3>Create / edit event</h3>
@@ -536,6 +539,7 @@
     var matchplayReviewResults = document.getElementById("member-matchplay-review-results");
     var matchplayReviewSummary = document.getElementById("member-matchplay-review-summary");
     var matchplayReviewCandidates = document.getElementById("member-matchplay-review-candidates");
+    var matchplayCreateDraft = document.getElementById("member-matchplay-create-draft");
     var matchplayReviewData = null;
     var memberEventsCache = {};
     var memberEventsFormHighlightTimer = null;
@@ -1579,6 +1583,11 @@
           matchplayReviewData = review;
           var tournament = review.tournament || {};
           var candidates = Array.isArray(review.candidates) ? review.candidates : [];
+          var alreadyLinked = candidates.some(function (candidate) {
+            return candidate.match && candidate.match.confidence === "linked URL";
+          });
+          matchplayCreateDraft.disabled = alreadyLinked;
+          matchplayCreateDraft.title = alreadyLinked ? "This MatchPlay tournament is already linked to a club event." : "";
           matchplayReviewCandidates.replaceChildren();
           candidates.forEach(function (candidate) {
             var row = document.createElement("tr");
@@ -1592,7 +1601,7 @@
             var select = document.createElement("button");
             select.type = "button";
             select.className = "members-admin-revoke";
-            select.textContent = "Review in editor";
+            select.textContent = "Edit existing event";
             select.setAttribute("data-matchplay-event-id", String(candidate.id));
             action.appendChild(select);
             row.append(title, date, match, action);
@@ -1602,9 +1611,11 @@
             window.SNHMemberPortal.formatDate(tournament.starts_at) +
             (tournament.location ? " · " + tournament.location : "") +
             ". " + (candidates.length ? candidates.length + " possible club match(es)." :
-              "No nearby club event found. Check the date and location before creating one.");
+              "No nearby club event found. Check the date and location, then prepare a new draft if this is a club event.");
           matchplayReviewResults.hidden = false;
-          matchplayReviewStatus.textContent = "Review the matches before changing any club record.";
+          matchplayReviewStatus.textContent = alreadyLinked
+            ? "This tournament is already linked to a club event. Edit that record instead."
+            : "Review any suggested matches before preparing a new event.";
         } catch (error) {
           matchplayReviewStatus.textContent = "Could not review tournament: " +
             (error && error.message ? error.message : "Please try again.");
@@ -1636,7 +1647,24 @@
         if (memberEventsUrl && !memberEventsUrl.value.trim()) {
           memberEventsUrl.value = tournament.url || "";
         }
-        setEventsStatus("Review the suggested details and save only if they are correct. Existing values were kept.");
+        setEventsStatus("Editing the existing club event. Its saved fields remain populated; only empty fields received MatchPlay details. Review before saving.");
+      });
+    }
+
+    if (matchplayCreateDraft) {
+      matchplayCreateDraft.addEventListener("click", function () {
+        if (!matchplayReviewData || !matchplayReviewData.tournament) return;
+        var tournament = matchplayReviewData.tournament;
+        resetEventsForm();
+        if (memberEventsTitle) memberEventsTitle.value = String(tournament.title || "").slice(0, 300);
+        if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
+        if (memberEventsLocation) memberEventsLocation.value = String(tournament.location || "").slice(0, 500);
+        if (memberEventsUrl) memberEventsUrl.value = tournament.url || "";
+        if (memberEventsSource) memberEventsSource.value = "matchplay";
+        if (memberEventsDescription) memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
+        if (memberEventsPublished) memberEventsPublished.checked = false;
+        focusAndHighlightEventsEditor();
+        setEventsStatus("New unpublished draft prepared. Confirm it is a club event, review the details, then save to create it.");
       });
     }
 
