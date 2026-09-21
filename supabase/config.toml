@@ -8,6 +8,10 @@ verify_jwt = false
 # Member-triggered function; require authenticated JWT.
 verify_jwt = true
 
+[functions.matchplay-event-review]
+# Signed-in event editors can review possible matches. This function never writes events.
+verify_jwt = true
+
 [functions.opdb-image-sync]
 # Member-triggered deterministic metadata sync; no model is involved.
 verify_jwt = true
