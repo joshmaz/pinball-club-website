@@ -309,6 +309,25 @@
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
 
+          <h3>Review MatchPlay tournament</h3>
+          <p class="member-form-hint">Compare a MatchPlay tournament with club events before editing. This review does not save or create an event.</p>
+          <form id="member-matchplay-review-form" class="members-profile-form">
+            <label for="member-matchplay-tournament">Tournament URL or ID</label>
+            <input id="member-matchplay-tournament" type="text" placeholder="https://app.matchplay.events/tournaments/228825" required>
+            <button type="submit">Find club event</button>
+          </form>
+          <p id="member-matchplay-review-status" class="members-page-status" role="status" aria-live="polite"></p>
+          <div id="member-matchplay-review-results" hidden>
+            <p id="member-matchplay-review-summary"></p>
+            <div class="members-admin-table-wrap">
+              <table class="members-admin-table">
+                <caption>Possible matching club events</caption>
+                <thead><tr><th scope="col">Club event</th><th scope="col">Date</th><th scope="col">Match</th><th scope="col">Action</th></tr></thead>
+                <tbody id="member-matchplay-review-candidates"></tbody>
+              </table>
+            </div>
+          </div>
+
           <h3>Create / edit event</h3>
           <form id="member-events-form" class="members-profile-form">
             <input id="member-events-id" type="hidden">
@@ -477,6 +496,13 @@
     var memberEventsNextPage = document.getElementById("member-events-next-page");
     var memberEventsPageMeta = document.getElementById("member-events-page-meta");
     var memberEventsPageSizeSelect = document.getElementById("member-events-page-size");
+    var matchplayReviewForm = document.getElementById("member-matchplay-review-form");
+    var matchplayTournamentInput = document.getElementById("member-matchplay-tournament");
+    var matchplayReviewStatus = document.getElementById("member-matchplay-review-status");
+    var matchplayReviewResults = document.getElementById("member-matchplay-review-results");
+    var matchplayReviewSummary = document.getElementById("member-matchplay-review-summary");
+    var matchplayReviewCandidates = document.getElementById("member-matchplay-review-candidates");
+    var matchplayReviewData = null;
     var memberEventsCache = {};
     var memberEventsFormHighlightTimer = null;
     var memberEventsAllRows = [];
@@ -1497,6 +1523,80 @@
       highlightEventTableRow(row.id);
       focusAndHighlightEventsEditor();
       setEventsStatus("Editing: " + (row.title || "(untitled)"));
+    }
+
+    if (matchplayReviewForm) {
+      matchplayReviewForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        matchplayReviewData = null;
+        matchplayReviewResults.hidden = true;
+        matchplayReviewStatus.textContent = "Checking MatchPlay and club events…";
+        var button = matchplayReviewForm.querySelector('button[type="submit"]');
+        if (button) button.disabled = true;
+        try {
+          var review = await window.SNHMemberPortal.reviewMatchplayTournament(matchplayTournamentInput.value);
+          matchplayReviewData = review;
+          var tournament = review.tournament || {};
+          var candidates = Array.isArray(review.candidates) ? review.candidates : [];
+          matchplayReviewCandidates.replaceChildren();
+          candidates.forEach(function (candidate) {
+            var row = document.createElement("tr");
+            var title = document.createElement("td");
+            title.textContent = candidate.title || "(untitled)";
+            var date = document.createElement("td");
+            date.textContent = window.SNHMemberPortal.formatDate(candidate.starts_at);
+            var match = document.createElement("td");
+            match.textContent = candidate.match && candidate.match.confidence || "Possible";
+            var action = document.createElement("td");
+            var select = document.createElement("button");
+            select.type = "button";
+            select.className = "members-admin-revoke";
+            select.textContent = "Review in editor";
+            select.setAttribute("data-matchplay-event-id", String(candidate.id));
+            action.appendChild(select);
+            row.append(title, date, match, action);
+            matchplayReviewCandidates.appendChild(row);
+          });
+          matchplayReviewSummary.textContent = (tournament.title || "Tournament") + " · " +
+            window.SNHMemberPortal.formatDate(tournament.starts_at) +
+            (tournament.location ? " · " + tournament.location : "") +
+            ". " + (candidates.length ? candidates.length + " possible club match(es)." :
+              "No nearby club event found. Check the date and location before creating one.");
+          matchplayReviewResults.hidden = false;
+          matchplayReviewStatus.textContent = "Review the matches before changing any club record.";
+        } catch (error) {
+          matchplayReviewStatus.textContent = "Could not review tournament: " +
+            (error && error.message ? error.message : "Please try again.");
+        } finally {
+          if (button) button.disabled = false;
+        }
+      });
+    }
+
+    if (matchplayReviewCandidates) {
+      matchplayReviewCandidates.addEventListener("click", function (event) {
+        var button = event.target.closest("button[data-matchplay-event-id]");
+        if (!button || !matchplayReviewData) return;
+        var candidate = (matchplayReviewData.candidates || []).find(function (row) {
+          return String(row.id) === button.getAttribute("data-matchplay-event-id");
+        });
+        if (!candidate) return;
+        selectEventForEdit(candidate);
+        var tournament = matchplayReviewData.tournament || {};
+        if (memberEventsDescription && !memberEventsDescription.value.trim()) {
+          memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
+        }
+        if (memberEventsLocation && !memberEventsLocation.value.trim()) {
+          memberEventsLocation.value = tournament.location || "";
+        }
+        if (memberEventsStartsAt && !memberEventsStartsAt.value) {
+          memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
+        }
+        if (memberEventsUrl && !memberEventsUrl.value.trim()) {
+          memberEventsUrl.value = tournament.url || "";
+        }
+        setEventsStatus("Review the suggested details and save only if they are correct. Existing values were kept.");
+      });
     }
 
     onEventsPanelShown = async function () {

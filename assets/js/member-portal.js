@@ -509,6 +509,25 @@
     return Array.isArray(result.data) ? result.data : [];
   }
 
+  async function reviewMatchplayTournament(input) {
+    var client = getClient();
+    if (!client || !client.functions) throw new Error("Supabase is not available.");
+    var result = await client.functions.invoke("matchplay-event-review", {
+      body: { tournament: String(input || "").trim() }
+    });
+    if (result.error) {
+      var message = result.error.message || "Could not review MatchPlay tournament.";
+      if (result.error.context && typeof result.error.context.json === "function") {
+        try {
+          var details = await result.error.context.json();
+          if (details && details.error) message = details.error;
+        } catch (e) { /* use the original error */ }
+      }
+      throw new Error(message);
+    }
+    return result.data;
+  }
+
   async function saveEventForAdmin(eventInput) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1340,6 +1359,7 @@
     revokeMemberRole: revokeMemberRole,
     setMemberMembership: setMemberMembership,
     listEventsForAdmin: listEventsForAdmin,
+    reviewMatchplayTournament: reviewMatchplayTournament,
     saveEventForAdmin: saveEventForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
     gamesEditorLoad: gamesEditorLoad,
