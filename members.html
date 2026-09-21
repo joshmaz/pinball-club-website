@@ -42,7 +42,7 @@
     <a href="merch.html">Merch</a>
     <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
-    <a href="members.html" data-members-link aria-current="page">My Account</a>
+    <a href="signin.html" data-site-account-link>Members</a>
   </nav>
   <p id="auth-status" class="auth-status" aria-live="polite"></p>
 </header>
@@ -1005,8 +1005,7 @@
 
     await window.SNHMemberPortal.applyAuthChrome({
       statusElementId: "auth-status",
-      logoutButtonId: "logout-btn",
-      membersLinkSelector: "[data-members-link]"
+      logoutButtonId: "logout-btn"
     });
 
     var userRoles = [];
@@ -1882,8 +1881,7 @@
         applyPasswordRecoveryUi();
         await window.SNHMemberPortal.applyAuthChrome({
           statusElementId: "auth-status",
-          logoutButtonId: "logout-btn",
-          membersLinkSelector: "[data-members-link]"
+          logoutButtonId: "logout-btn"
         });
         if (window.location.hash) {
           window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
@@ -1901,6 +1899,7 @@
     }
   })();
 </script>
+<script src="assets/js/site-account.js"></script>
 
 </body>
 </html>
