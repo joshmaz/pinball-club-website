@@ -1,6 +1,6 @@
 (function () {
   var PANEL_IDS = Object.freeze([
-    "profile", "membership", "club-issues", "member-admin", "events", "photos", "games"
+    "profile", "membership", "club-issues", "member-admin", "audit-log", "events", "photos", "games"
   ]);
   var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 

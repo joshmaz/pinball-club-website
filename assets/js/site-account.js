@@ -71,6 +71,9 @@
       try {
         await window.SNHSiteAuth.signOut();
         render(null);
+        if (window.location.pathname.split("/").pop() === "members.html") {
+          window.location.href = signinHref;
+        }
       } catch (error) {
         signout.disabled = false;
         signout.textContent = "Sign out";

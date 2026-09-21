@@ -461,6 +461,23 @@
     return [];
   }
 
+  async function listAuditHistoryForAdmin(options) {
+    var client = getClient();
+    if (!client) throw new Error("Supabase is not available.");
+    options = options || {};
+    var result = await client.rpc("snh_audit_history_for_admin", {
+      p_module: options.module || null,
+      p_limit: 50,
+      p_before_created_at: options.beforeCreatedAt || null,
+      p_before_id: options.beforeId || null
+    });
+    if (result.error) throw result.error;
+    var data = result.data;
+    if (typeof data === "string") data = JSON.parse(data);
+    if (!Array.isArray(data)) throw new Error("Invalid audit history response.");
+    return data;
+  }
+
   async function grantMemberRole(memberId, roleSlug) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1355,6 +1372,7 @@
     ASSIGNABLE_MEMBER_ROLES: ASSIGNABLE_MEMBER_ROLES,
     fetchMemberAdminStats: fetchMemberAdminStats,
     listMembersForAdmin: listMembersForAdmin,
+    listAuditHistoryForAdmin: listAuditHistoryForAdmin,
     grantMemberRole: grantMemberRole,
     revokeMemberRole: revokeMemberRole,
     setMemberMembership: setMemberMembership,
