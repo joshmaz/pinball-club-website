@@ -83,6 +83,11 @@
               Member Tools
             </button>
           </li>
+          <li data-member-rbac-nav data-rbac-roles="club_admin">
+            <button type="button" class="members-sidebar-link" data-member-panel="audit-log" id="member-nav-audit-log" aria-controls="member-panel-audit-log">
+              Audit Log
+            </button>
+          </li>
           <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
             <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
               Events
@@ -299,9 +304,11 @@
             </select>
             <button type="submit">Grant role</button>
           </form>
+        </div>
 
+        <div id="member-panel-audit-log" class="member-panel" role="region" aria-labelledby="member-nav-audit-log" tabindex="-1" aria-hidden="true">
           <section id="member-audit-section" hidden aria-labelledby="member-audit-title">
-            <h3 id="member-audit-title">Recent changes</h3>
+            <h3 id="member-audit-title">Audit Log</h3>
             <p class="member-form-hint">Club admins can review changes to events, members, games, and photos.</p>
             <p class="members-admin-toolbar">
               <label for="member-audit-module">Area</label>
@@ -468,6 +475,7 @@
     var panelButtons = document.querySelectorAll("[data-member-panel]");
     var panels = document.querySelectorAll(".member-panel");
     var onMemberAdminPanelShown = null;
+    var onAuditLogPanelShown = null;
     var onEventsPanelShown = null;
     var onPhotosPanelShown = null;
     var onGamesPanelShown = null;
@@ -699,6 +707,9 @@
       if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
         onMemberAdminPanelShown();
       }
+      if (id === "audit-log" && typeof onAuditLogPanelShown === "function") {
+        onAuditLogPanelShown();
+      }
       if (id === "events" && !options.skipPanelLoad && typeof onEventsPanelShown === "function") {
         onEventsPanelShown();
       }
@@ -804,6 +815,7 @@
       var toCsv = portal.rolesToCsv || function (arr) { return (arr || []).join(","); };
       var panelRoleMap = {
         "member-admin": groups.MEMBERSHIP_MANAGE_ACCESS || ["membership_editor", "membership_admin", "club_admin"],
+        "audit-log": ["club_admin"],
         events: groups.EVENTS_MANAGE_ACCESS || ["events_editor", "events_admin", "club_admin"],
         photos: groups.PHOTOS_ACCESS || ["photos_editor", "photos_admin", "club_admin"],
         games: groups.GAMES_ACCESS || ["games_editor", "games_admin", "club_admin"]
@@ -1044,6 +1056,9 @@
     }
     applyRbacNav(userRoles);
     if (window.SNHMemberAuditPanel) window.SNHMemberAuditPanel.init(userRoles);
+    onAuditLogPanelShown = function () {
+      if (window.SNHMemberAuditPanel) void window.SNHMemberAuditPanel.load();
+    };
     setMemberAdminPanelIntro(userRoles);
     setEventsPanelIntro(userRoles);
     setPhotosPanelIntro(userRoles);
@@ -1059,7 +1074,6 @@
 
     onMemberAdminPanelShown = async function () {
       if (!window.SNHMemberPortal) return;
-      if (window.SNHMemberAuditPanel) void window.SNHMemberAuditPanel.load();
       setMemberAdminPanelIntro(userRoles);
       function setAdminStatus(msg) {
         if (memberAdminStatus) memberAdminStatus.textContent = msg || "";

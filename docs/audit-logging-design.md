@@ -26,7 +26,7 @@ separate requests, so their audit entries may be separate even for one save.
 
 `snh_audit_history_for_admin` exposes up to 100 entries at a time to
 `club_admin` only. It supports module filtering and cursor pagination; the
-Member Tools panel presents 50 entries per page. The underlying table remains
+Audit Log dashboard panel presents 50 entries per page. The underlying table remains
 unreadable by ordinary API roles. Audit history is a record of changes, not a
 rollback tool.
 The new triggers record changes made after their migrations are applied; they

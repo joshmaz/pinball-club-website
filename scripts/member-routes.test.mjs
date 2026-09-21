@@ -43,6 +43,12 @@ test("accepts legacy panel hashes but ignores invalid panels and item ids", () =
   });
 });
 
+test("reads and builds the Audit Log panel route", () => {
+  const fixture = loadRoutes({ search: "?panel=audit-log" });
+  assert.equal(fixture.routes.read().panel, "audit-log");
+  assert.equal(fixture.routes.build("audit-log"), "/members.html?panel=audit-log");
+});
+
 test("reads and builds a canonical event editor route", () => {
   const fixture = loadRoutes({ search: `?panel=events&event=${EVENT_ID}` });
   assert.deepEqual(JSON.parse(JSON.stringify(fixture.routes.read())), {
