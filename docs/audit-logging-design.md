@@ -44,7 +44,29 @@ Check that a non-club-admin account cannot call
 with production member profile values because audit checks do not need them.
 
 This is change history, not a record of page views or sign-ins. Other write
-paths and retention still need review before calling the website audit-complete.
+paths still need review before calling the website audit-complete.
+
+## Retention
+
+Keep audit entries for 12 months. The `snh-audit-retention-daily` database job
+runs at 03:15 UTC and deletes up to 5,000 entries older than 12 months per run.
+It does not archive deleted entries. The job runs under the migration role;
+browser/API roles have no direct delete access. Review the retention
+window and batch size when checking storage growth.
+
+Check the current table size (including indexes and TOAST data) and the oldest
+remaining entry in the Supabase SQL editor:
+
+```sql
+select
+  (select count(*) from public.audit_log) as entries,
+  pg_size_pretty(pg_total_relation_size('public.audit_log')) as total_size,
+  (select min(created_at) from public.audit_log) as oldest_entry;
+```
+
+Check job status in Supabase Cron or query `cron.job_run_details`. If more than
+5,000 entries become eligible per day, raise the batch size or run cleanup more
+often so the 12-month window remains effective.
 
 ## Core idea
 
@@ -183,8 +205,8 @@ Choose mode per module and document it.
 
 Plan for growth from day one:
 
-- define retention windows by module/action criticality
-- archive old partitions/rows for long-term history
+- review the 12-month retention window and cleanup batch size as usage grows
+- decide whether archival is needed before changing the deletion policy
 - monitor index/query performance as volume grows
 
 ### 7) Optional integrity verification
@@ -215,5 +237,6 @@ This keeps the audit system extensible without repeated schema redesign.
 - [x] Record member profile and external-account field names without personal
   values in audit payloads.
 - [x] Add a scoped admin history read path and change-history panel.
-- [ ] Define retention, monitoring, and exceptional maintenance procedures.
+- [x] Define 12-month retention and a bounded daily cleanup job.
+- [ ] Establish routine storage monitoring and exceptional maintenance procedures.
 - [ ] (Optional) Add an integrity checkpoint process.
