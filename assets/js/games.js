@@ -22,49 +22,21 @@ function gameEditorHref(game) {
   if (!gameHasCatalogUuid(game)) return "";
   return `members.html?panel=games&game=${encodeURIComponent(String(game.id))}`;
 }
-const GAMES_URL = "data/games.json";
 const MATCHPLAY_OPDB_ENTRY_BASE_URL = "https://app.matchplay.events/opdb/entries";
 
-/**
- * @returns {boolean}
- */
-function gamesCatalogSourceIsDb() {
-  return !!(window.SNH_CONFIG && window.SNH_CONFIG.gamesCatalogSource === "db");
-}
-
-/**
- * @returns {Promise<{ games: unknown[] }>}
- */
 async function fetchGamesCatalogPayload() {
-  if (gamesCatalogSourceIsDb()) {
-    const client = window.snhSupabase;
-    if (!client || typeof client.from !== "function") {
-      throw new Error(
-        "Supabase client not available. When GAMES_CATALOG_SOURCE=db, include config.js, supabase-js, and supabase-init.js before games.js."
-      );
+  const result = await window.SNHPublicData.loadGames();
+  const container = document.getElementById('games-list');
+  if (container) {
+    let note = document.getElementById('games-data-source-note');
+    if (!note) {
+      note = document.createElement('p');
+      note.id = 'games-data-source-note';
+      container.before(note);
     }
-    const res = await client.from("games_catalog_v1").select("game");
-    if (res.error) {
-      throw new Error(res.error.message || String(res.error));
-    }
-    const games = (res.data || [])
-      .map((row) => (row && typeof row === "object" ? row.game : null))
-      .filter(Boolean);
-    return { games };
+    note.textContent = window.SNHPublicData.sourceLabel(result);
   }
-
-  const response = await fetch(GAMES_URL, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Request failed (${response.status} ${response.statusText}) for ${GAMES_URL}`);
-  }
-  const data = await response.json();
-  if (!data || typeof data !== "object") {
-    throw new Error(`Invalid data in ${GAMES_URL}`);
-  }
-  if (!Array.isArray(data.games)) {
-    throw new Error(`Invalid data format in ${GAMES_URL}: expected a games array.`);
-  }
-  return data;
+  return { games: result.data };
 }
 
 /** Club opened Jan 2016; Pinball Map coverage starts 2017, so legacy imports often lack stint dates. */

@@ -83,11 +83,20 @@ After applying migrations, bulk-load from the repo JSON (requires **service role
 node --env-file=.env scripts/import-games-json.mjs
 ```
 
-To refresh the static fallback from DB (`games_catalog_v1` -> `data/games.json`):
+To refresh both public Games and Events snapshots from Supabase (requires
+`SUPABASE_URL` and `SUPABASE_ANON_KEY`, never the service-role key):
 
 ```bash
-node --env-file=.env scripts/export-games-json-from-supabase.mjs
+node --env-file=.env scripts/snapshots.mjs refresh
+node scripts/snapshots.mjs check
 ```
+
+Both files include schema version, source, generation time, record count, and
+stable IDs. Games, the homepage game gallery, and Events share a validated loader;
+a successful empty database result stays empty. Database failures can use saved
+JSON, with freshness shown on the Games and Events pages. See
+[public snapshots](docs/public-snapshots.md) for the contract, age checks, and the
+separate roles of curated Highlights and static Resources.
 
 ### Pinball Map (ingest, status, attribution)
 

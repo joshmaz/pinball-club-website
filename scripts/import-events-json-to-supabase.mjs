@@ -101,9 +101,10 @@ async function main() {
     : defaultEventsPath;
 
   const raw = await readFile(jsonPath, "utf8");
-  const parsed = JSON.parse(raw);
+  const payload = JSON.parse(raw);
+  const parsed = Array.isArray(payload) ? payload : payload.events;
   if (!Array.isArray(parsed)) {
-    throw new Error("Expected events JSON to be an array.");
+    throw new Error("Expected events JSON to contain an events array.");
   }
 
   const normalized = [];
