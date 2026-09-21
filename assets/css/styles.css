@@ -1252,6 +1252,46 @@ button.members-sidebar-logout.members-sidebar-link:hover {
   border-radius: 8px;
 }
 
+.members-admin-controls,
+.members-admin-editor-form {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0.75rem 0;
+}
+
+.members-admin-controls label,
+.members-admin-editor-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.members-admin-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.members-admin-search-wrap input { padding-right: 2.4rem; }
+.members-admin-search-wrap .member-games-combobox-clear { z-index: 1; }
+
+.members-admin-directory td:first-child { width: 45%; }
+.members-admin-directory td { vertical-align: middle; }
+.members-admin-directory td:first-child button { text-align: left; }
+.members-admin-editor-row td { background: var(--bg-panel); }
+.members-admin-editor { padding: 0.5rem; }
+.members-admin-editor p { margin: 0.4rem 0; }
+.members-admin-editor h4 { margin: 1rem 0 0.4rem; }
+
+@media (max-width: 600px) {
+  .members-admin-directory { font-size: 0.78rem; }
+  .members-admin-directory th,
+  .members-admin-directory td { padding: 0.35rem; }
+  .members-admin-controls input[type="search"] { max-width: 100%; }
+}
+
 .members-admin-table {
   width: 100%;
   border-collapse: collapse;
