@@ -993,6 +993,15 @@ nav a {
   border-top: 1px solid var(--border-divider);
 }
 
+.member-audit-details {
+  max-width: 42rem;
+  max-height: 20rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+
 button.members-sidebar-logout.members-sidebar-link {
   color: var(--text-muted-2);
 }

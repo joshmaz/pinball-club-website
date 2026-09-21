@@ -2,6 +2,50 @@
 
 This note captures the current audit-trail approach for SNHPC and why it scales as new modules are added.
 
+## Current coverage
+
+Games and photos write to the shared `public.audit_log` through privileged database
+functions. Event create, update, publish, unpublish, and delete operations are
+recorded by `trg_events_audit_change` on `public.events`. The event trigger covers
+both browser editor writes and service-role imports; it runs in the same
+transaction as the event mutation. Event updates record changed fields only,
+excluding operational timestamps. A service-role import has no member actor, so
+its audit row records the authentication role and the event's `source` field in
+metadata.
+
+Role grants/revocations and membership status, tier, and end-date changes are
+recorded by triggers on `member_roles` and `memberships`. Those logs include the
+target member ID, acting auth user when available, and only the relevant
+administrative fields. No profile or contact fields are copied into these logs.
+
+Member profile and external-account mutations are recorded separately with the
+actor, target member ID, action, and changed field names. Personal values such
+as names, email, profile handles, and profile URLs are intentionally omitted.
+The current profile save flow writes the member and external accounts in
+separate requests, so their audit entries may be separate even for one save.
+
+`snh_audit_history_for_admin` exposes up to 100 entries at a time to
+`club_admin` only. It supports module filtering and cursor pagination; the
+Member Tools panel presents 50 entries per page. The underlying table remains
+unreadable by ordinary API roles. Audit history is a record of changes, not a
+rollback tool.
+The new triggers record changes made after their migrations are applied; they
+do not reconstruct older event or member edits.
+
+## Migration verification
+
+After applying the migrations in timestamp order, use a club-admin account to
+edit and restore one low-impact event field. Confirm that **Member Tools → Recent
+changes** shows both entries with the expected actor and changed field. If a
+test member account is available, grant and revoke a non-admin role through
+Member Tools, then confirm those actions appear.
+Check that a non-club-admin account cannot call
+`snh_audit_history_for_admin`, even if it can open Member Tools. Avoid testing
+with production member profile values because audit checks do not need them.
+
+This is change history, not a record of page views or sign-ins. Other write
+paths and retention still need review before calling the website audit-complete.
+
 ## Core idea
 
 Use one shared audit table with a `module` identifier (for example `photos`, `members`, `events`) and JSON payloads describing what changed:
@@ -163,12 +207,13 @@ This keeps the audit system extensible without repeated schema redesign.
 
 ## Implementation checklist
 
-- [ ] Create append-only `audit_log` table and indexes.
-- [ ] Enforce no `update`/`delete` for app-facing roles.
-- [ ] Implement a trusted server-side writer path with strict validation.
-- [ ] Derive actor identity from server auth context only.
-- [ ] Add module-level redaction/allowlist rules for payload fields.
-- [ ] Define strict vs fallback write-failure behavior per module.
-- [ ] Add scoped read policies/views for audit consumers.
-- [ ] Define retention/archival policy and monitoring.
-- [ ] (Optional) Add integrity checkpoint process.
+- [x] Create the shared `audit_log` table and time/module indexes.
+- [x] Deny direct API-role access to the log.
+- [x] Record event mutations in the database transaction, using server auth
+  context for the actor and changed event fields for updates.
+- [x] Audit member role and membership changes through database triggers.
+- [x] Record member profile and external-account field names without personal
+  values in audit payloads.
+- [x] Add a scoped admin history read path and change-history panel.
+- [ ] Define retention, monitoring, and exceptional maintenance procedures.
+- [ ] (Optional) Add an integrity checkpoint process.

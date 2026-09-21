@@ -27,6 +27,7 @@
   <script src="assets/js/site-auth.js"></script>
   <script src="assets/js/member-routes.js"></script>
   <script src="assets/js/member-portal.js"></script>
+  <script src="assets/js/member-audit-panel.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
   <script src="assets/js/member-photos-panel.js"></script>
   <script src="assets/js/member-club-issues-panel.js"></script>
@@ -298,6 +299,31 @@
             </select>
             <button type="submit">Grant role</button>
           </form>
+
+          <section id="member-audit-section" hidden aria-labelledby="member-audit-title">
+            <h3 id="member-audit-title">Recent changes</h3>
+            <p class="member-form-hint">Club admins can review changes to events, members, games, and photos.</p>
+            <p class="members-admin-toolbar">
+              <label for="member-audit-module">Area</label>
+              <select id="member-audit-module">
+                <option value="">All areas</option>
+                <option value="events">Events</option>
+                <option value="members">Members</option>
+                <option value="games">Games</option>
+                <option value="photos">Photos</option>
+              </select>
+              <button type="button" class="members-sidebar-link" id="member-audit-refresh">Refresh history</button>
+            </p>
+            <p id="member-audit-status" class="members-page-status" role="status" aria-live="polite"></p>
+            <div class="members-admin-table-wrap">
+              <table class="members-admin-table">
+                <caption class="visually-hidden">Recent website changes</caption>
+                <thead><tr><th scope="col">When (ET)</th><th scope="col">Actor</th><th scope="col">Area</th><th scope="col">Action</th><th scope="col">Record</th><th scope="col">Details</th></tr></thead>
+                <tbody id="member-audit-table-body"></tbody>
+              </table>
+            </div>
+            <p class="members-admin-toolbar"><button type="button" class="members-sidebar-link" id="member-audit-older" hidden>Show older changes</button></p>
+          </section>
         </div>
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
@@ -1017,6 +1043,7 @@
       }
     }
     applyRbacNav(userRoles);
+    if (window.SNHMemberAuditPanel) window.SNHMemberAuditPanel.init(userRoles);
     setMemberAdminPanelIntro(userRoles);
     setEventsPanelIntro(userRoles);
     setPhotosPanelIntro(userRoles);
@@ -1032,6 +1059,7 @@
 
     onMemberAdminPanelShown = async function () {
       if (!window.SNHMemberPortal) return;
+      if (window.SNHMemberAuditPanel) void window.SNHMemberAuditPanel.load();
       setMemberAdminPanelIntro(userRoles);
       function setAdminStatus(msg) {
         if (memberAdminStatus) memberAdminStatus.textContent = msg || "";
