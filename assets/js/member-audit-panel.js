@@ -1,5 +1,5 @@
 (function () {
-  var section, tableBody, status, moduleSelect, olderButton;
+  var section, tableBody, status, moduleSelect, automatedCheckbox, olderButton;
   var cursor = null;
   var initialized = false;
   var allowed = false;
@@ -88,6 +88,12 @@
   }
 
   function renderDetails(cell, entry) {
+    if (entry.record_label) {
+      var recordName = document.createElement("p");
+      recordName.className = "member-audit-record-name";
+      recordName.textContent = label(entry.entity_type || "record") + ": " + entry.record_label;
+      cell.appendChild(recordName);
+    }
     var change = changes(entry);
     var fields = change.fields;
     if (fields.length) {
@@ -135,6 +141,10 @@
     } catch (_) { pre.textContent = "Raw data could not be displayed."; }
     raw.append(summary, pre);
     cell.appendChild(raw);
+    var reference = document.createElement("p");
+    reference.className = "member-audit-reference";
+    reference.textContent = "Audit entry ID: " + entry.id;
+    cell.appendChild(reference);
   }
 
   function showRow(entry) {
@@ -205,16 +215,22 @@
   async function load(older) {
     if (!allowed || !initialized || loading || !window.SNHMemberPortal) return;
     loading = true;
+    if (!older) {
+      cursor = null;
+      tableBody.replaceChildren();
+      olderButton.hidden = true;
+    }
     status.textContent = "Loading change history…";
     moduleSelect.disabled = true;
+    automatedCheckbox.disabled = true;
     if (olderButton) olderButton.disabled = true;
     try {
       var rows = await window.SNHMemberPortal.listAuditHistoryForAdmin({
         module: moduleSelect.value,
+        showAutomated: automatedCheckbox.checked,
         beforeCreatedAt: older && cursor ? cursor.created_at : null,
         beforeId: older && cursor ? cursor.id : null
       });
-      if (!older) tableBody.replaceChildren();
       rows.forEach(function (entry) { try { showRow(entry || {}); } catch (_) { /* Keep other records visible. */ } });
       if (rows.length) cursor = rows[rows.length - 1];
       else if (!older) cursor = null;
@@ -228,6 +244,7 @@
     } finally {
       loading = false;
       moduleSelect.disabled = false;
+      automatedCheckbox.disabled = false;
       olderButton.disabled = false;
     }
   }
@@ -242,9 +259,11 @@
     tableBody = document.getElementById("member-audit-table-body");
     status = document.getElementById("member-audit-status");
     moduleSelect = document.getElementById("member-audit-module");
+    automatedCheckbox = document.getElementById("member-audit-automated");
     olderButton = document.getElementById("member-audit-older");
     document.getElementById("member-audit-refresh").addEventListener("click", function () { void load(false); });
     moduleSelect.addEventListener("change", function () { void load(false); });
+    automatedCheckbox.addEventListener("change", function () { void load(false); });
     olderButton.addEventListener("click", function () { void load(true); });
   }
 

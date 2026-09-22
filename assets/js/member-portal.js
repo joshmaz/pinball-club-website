@@ -467,6 +467,7 @@
     options = options || {};
     var result = await client.rpc("snh_audit_history_for_admin", {
       p_module: options.module || null,
+      p_show_automated: options.showAutomated === true,
       p_limit: 50,
       p_before_created_at: options.beforeCreatedAt || null,
       p_before_id: options.beforeId || null
