@@ -53,7 +53,7 @@
   <div class="page-hero-inner">
     <h2 id="members-dashboard-title">Member dashboard</h2>
     <p class="page-hero-lead">Manage your club profile, membership status, and the tools you use to help keep SNH Pinball Club running.</p>
-    <p class="page-hero-note">If something looks off, email <a href="mailto:support@snhpinballclub.com">support@snhpinballclub.com</a> and we'll help sort it out.</p>
+    <p class="page-hero-note">If something looks off, email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a> and we'll help sort it out.</p>
   </div>
 </section>
 
@@ -72,6 +72,9 @@
             <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">
               Membership
             </button>
+          </li>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="door" id="member-nav-door" aria-controls="member-panel-door">Door code</button>
           </li>
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">
@@ -206,27 +209,40 @@
 
         <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
           <h3>Membership</h3>
-          <p class="member-panel-intro">Your membership standing as the treasurer has it on file. Billing self-service is not connected yet, so the treasurer updates records by hand after each payment and this view follows along.</p>
+          <p class="member-panel-intro">Everyone who registers is a Basic Member. The treasurer changes your account to Full Access Member after checking your recurring PayPal subscription.</p>
           <div class="membership-card">
-            <p><strong>Status:</strong> <span id="membership-status">Loading...</span></p>
-            <p><strong>Tier:</strong> <span id="membership-tier">Loading...</span></p>
-            <p><strong>Renews / Ends:</strong> <span id="membership-period-end">Loading...</span></p>
-            <p class="membership-card-note">Something off in your record? Email <a href="mailto:support@snhpinballclub.com">support@snhpinballclub.com</a> and we will help sort it out.</p>
+            <p><strong>Current membership:</strong> <span id="membership-status">Loading...</span></p>
+            <p class="membership-card-note">Something off in your record? Email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a> and we will help sort it out.</p>
           </div>
 
           <h4>How membership works today</h4>
-          <p>Members pay monthly or annually, in cash or by recurring PayPal, and the treasurer updates your record after each payment.</p>
+          <p>Full Access Members choose monthly or annual recurring PayPal billing. The treasurer checks subscriptions and updates membership by hand.</p>
           <ul class="membership-info-list">
             <li><strong>Monthly:</strong> $40</li>
             <li><strong>Annual:</strong> $480</li>
-            <li><strong>Pay by PayPal:</strong> <a href="https://paypal.me/snhpinball" target="_blank" rel="noopener noreferrer">paypal.me/snhpinball</a></li>
-            <li><strong>Pay in cash:</strong> hand it to the treasurer at the club</li>
+            <li>To arrange recurring PayPal billing, email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a>.</li>
           </ul>
 
           <h4>What membership gets you</h4>
-          <p>24/7 pass access to the club's pinball room on Bridge St in Nashua, with every game on free-play. Just stopping by for an event? Visitors can grab an all-day guest pass for $10 per visit.</p>
+          <p>Full Access Members have 24/7 access to the club's pinball room on Bridge St in Nashua, with every game on free-play. Just stopping by for an event? Visitors can grab an all-day guest pass for $10 per visit.</p>
 
           <p class="membership-card-note">Memberships help keep this nonprofit pinball club afloat. If you want to push the club ahead in bigger ways, a <a href="donate/">donation</a> is the most direct boost.</p>
+        </div>
+
+        <div id="member-panel-door" class="member-panel" role="region" aria-labelledby="member-nav-door" tabindex="-1" aria-hidden="true">
+          <h3>Door code</h3>
+          <div class="membership-card">
+            <p>Full Access Members can reveal the current code here.</p>
+            <button type="button" id="door-code-reveal">Reveal door code</button>
+            <p id="door-code-value" role="status" aria-live="polite"></p>
+          </div>
+          <form id="door-code-admin" class="members-profile-form" hidden>
+            <h4>Update door code</h4>
+            <label for="door-code-new">Current access code</label>
+            <input id="door-code-new" type="text" autocomplete="off" maxlength="100" required>
+            <button type="submit">Save door code</button>
+            <p id="door-code-admin-status" role="status"></p>
+          </form>
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
@@ -246,20 +262,20 @@
             <label for="member-admin-search">Search name or email</label>
             <span class="members-admin-search-wrap">
               <input id="member-admin-search" type="search" autocomplete="off">
-              <button type="button" id="member-admin-search-clear" class="member-games-combobox-clear" title="Clear search" aria-label="Clear member search" hidden>×</button>
+              <button type="button" id="member-admin-search-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear member search" hidden>×</button>
             </span>
             <label for="member-admin-directory-filter">Show</label>
             <select id="member-admin-directory-filter">
               <option value="all">All members</option>
               <option value="with-roles">Members with roles</option>
-              <option value="active">Active members</option>
-              <option value="inactive">Inactive members</option>
+              <option value="active">Full Access Members</option>
+              <option value="inactive">Basic Members</option>
             </select>
           </div>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table members-admin-directory">
               <caption class="visually-hidden">Club member directory</caption>
-              <thead><tr><th scope="col">Member</th><th scope="col">Status</th><th scope="col">Ends</th><th scope="col">Roles</th></tr></thead>
+              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Roles</th></tr></thead>
               <tbody id="member-admin-table-body"></tbody>
             </table>
           </div>
@@ -279,6 +295,7 @@
                 <option value="games">Games</option>
                 <option value="photos">Photos</option>
               </select>
+              <label for="member-audit-automated"><input type="checkbox" id="member-audit-automated"> Show automated activity</label>
               <button type="button" class="members-sidebar-link" id="member-audit-refresh">Refresh history</button>
             </p>
             <p id="member-audit-status" class="members-page-status" role="status" aria-live="polite"></p>
@@ -481,8 +498,6 @@
     var newPasswordInput = document.getElementById("new-password");
     var confirmPasswordInput = document.getElementById("confirm-password");
     var membershipStatus = document.getElementById("membership-status");
-    var membershipTier = document.getElementById("membership-tier");
-    var membershipPeriodEnd = document.getElementById("membership-period-end");
     var logoutBtn = document.getElementById("logout-btn");
     var panelButtons = document.querySelectorAll("[data-member-panel]");
     var panels = document.querySelectorAll(".member-panel");
@@ -1032,7 +1047,7 @@
     }
 
     function isPanelNavAvailable(panelId) {
-      if (panelId === "profile" || panelId === "membership") return true;
+      if (panelId === "profile" || panelId === "membership" || panelId === "door") return true;
       var btn = document.querySelector('button[data-member-panel="' + panelId + '"]');
       if (!btn) return false;
       var li = btn.closest("li");
@@ -1119,8 +1134,7 @@
     }
 
     function adminHasUnsaved() {
-      return !!adminDraft && (adminDraft.status !== adminDraft.originalStatus ||
-        adminDraft.tier !== adminDraft.originalTier || adminDraft.endDate !== adminDraft.originalEndDate);
+      return !!adminDraft && adminDraft.fullAccess !== adminDraft.originalFullAccess;
     }
 
     function adminConfirmDiscard() {
@@ -1134,16 +1148,18 @@
       return td;
     }
 
+    function memberMatchesDirectoryFilter(row, mode, query) {
+      var roles = Array.isArray(row.role_slugs) ? row.role_slugs : [];
+      var active = String(row.membership_status || "").trim().toLowerCase() === "active";
+      return (!query || [row.first_name, row.last_name, row.display_name, row.email, adminMemberName(row)].join(" ").toLowerCase().includes(query)) &&
+        (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active));
+    }
+
     function adminRender() {
       if (!memberAdminTableBody) return;
       var query = (memberAdminSearch.value || "").trim().toLowerCase();
       var mode = memberAdminDirectoryFilter.value;
-      var filtered = adminRows.filter(function (row) {
-        var roles = Array.isArray(row.role_slugs) ? row.role_slugs : [];
-        var active = String(row.membership_status || "").trim().toLowerCase() === "active";
-        return (!query || [row.first_name, row.last_name, row.display_name, row.email, adminMemberName(row)].join(" ").toLowerCase().includes(query)) &&
-          (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active));
-      });
+      var filtered = adminRows.filter(function (row) { return memberMatchesDirectoryFilter(row, mode, query); });
       var pages = Math.max(1, Math.ceil(filtered.length / 25));
       adminPage = Math.min(adminPage, pages);
       memberAdminTableBody.replaceChildren();
@@ -1163,8 +1179,7 @@
           adminRender();
         });
         nameCell.appendChild(toggle);
-        adminCell(tr, membershipStatusLabel(row.membership_status));
-        adminCell(tr, row.membership_end_date ? window.SNHMemberPortal.formatDate(row.membership_end_date) : "");
+        adminCell(tr, row.membership_status === "active" ? "Full Access Member" : "Basic Member");
         adminCell(tr, row.role_slugs && row.role_slugs.length ? row.role_slugs.length : "");
         memberAdminTableBody.appendChild(tr);
         if (adminExpandedId === row.member_id) adminRenderEditor(row);
@@ -1185,7 +1200,7 @@
       var tr = document.createElement("tr");
       tr.className = "members-admin-editor-row";
       var td = document.createElement("td");
-      td.colSpan = 4;
+      td.colSpan = 3;
       var box = document.createElement("div");
       box.className = "members-admin-editor";
       var info = document.createElement("p");
@@ -1193,43 +1208,36 @@
         (row.membership_last_updated_at ? window.SNHMemberPortal.formatDate(row.membership_last_updated_at) : "—");
       box.appendChild(info);
       var details = document.createElement("p");
-      details.textContent = "Membership: " + membershipStatusLabel(row.membership_status) +
-        " · Tier: " + (row.membership_tier || "standard") +
-        " · Ends: " + (row.membership_end_date ? window.SNHMemberPortal.formatDate(row.membership_end_date) : "—");
+      details.textContent = "Membership: " + (row.membership_status === "active" ? "Full Access Member" : "Basic Member");
       box.appendChild(details);
       if (!adminDraft || adminDraft.memberId !== row.member_id) {
-        adminDraft = {memberId: row.member_id, status: row.membership_status || "", tier: row.membership_tier || "standard",
-          endDate: membershipEndDateForInput(row.membership_end_date), originalStatus: row.membership_status || "",
-          originalTier: row.membership_tier || "standard", originalEndDate: membershipEndDateForInput(row.membership_end_date)};
+        adminDraft = {memberId: row.member_id, fullAccess: row.membership_status === "active",
+          originalFullAccess: row.membership_status === "active"};
       }
       var form = document.createElement("form");
       form.className = "members-admin-editor-form";
-      function field(label, input) { var wrap = document.createElement("label"); wrap.textContent = label; wrap.appendChild(input); form.appendChild(wrap); }
-      var status = document.createElement("select");
-      [["", "Select status"], ["active", "Active"], ["past_due", "Past due"], ["expired", "Expired"], ["canceled", "Canceled"], ["inactive", "Inactive"]].forEach(function (pair) {
-        var opt = document.createElement("option"); opt.value = pair[0]; opt.textContent = pair[1]; status.appendChild(opt);
+      var choice = document.createElement("select");
+      [["member", "Basic Member"], ["full", "Full Access Member"]].forEach(function (pair) {
+        var opt = document.createElement("option"); opt.value = pair[0]; opt.textContent = pair[1]; choice.appendChild(opt);
       });
-      status.value = adminDraft.status; status.required = true; field("Status", status);
-      var tier = document.createElement("select");
-      var tierOpt = document.createElement("option"); tierOpt.value = "standard"; tierOpt.textContent = "Standard"; tier.appendChild(tierOpt);
-      tier.value = adminDraft.tier; field("Tier", tier);
-      var end = document.createElement("input"); end.type = "date"; end.value = adminDraft.endDate; field("Ends on", end);
+      choice.value = adminDraft.fullAccess ? "full" : "member";
+      var label = document.createElement("label"); label.textContent = "Membership "; label.appendChild(choice); form.appendChild(label);
       var save = document.createElement("button"); save.type = "submit"; form.appendChild(save);
       var feedback = document.createElement("span"); feedback.setAttribute("role", "status"); form.appendChild(feedback);
       function updateDraft() {
-        adminDraft.status = status.value; adminDraft.tier = tier.value; adminDraft.endDate = end.value;
+        adminDraft.fullAccess = choice.value === "full";
         save.disabled = adminSaving || !adminHasUnsaved();
         save.textContent = adminSaving ? "Saving…" : adminHasUnsaved() ? "Save membership (unsaved changes)" : "Save membership";
         if (adminHasUnsaved()) feedback.textContent = "Unsaved membership changes";
       }
-      [status, tier, end].forEach(function (el) { el.addEventListener("change", updateDraft); el.addEventListener("input", updateDraft); });
+      [choice].forEach(function (el) { el.addEventListener("change", updateDraft); el.addEventListener("input", updateDraft); });
       updateDraft();
       form.addEventListener("submit", async function (ev) {
         ev.preventDefault(); if (adminSaving || !adminHasUnsaved()) return;
         adminSaving = true; updateDraft(); feedback.textContent = "";
         try {
-          await window.SNHMemberPortal.setMemberMembership(row.member_id, {status: adminDraft.status, tier: adminDraft.tier, endDate: adminDraft.endDate || null});
-          adminDraft.originalStatus = adminDraft.status; adminDraft.originalTier = adminDraft.tier; adminDraft.originalEndDate = adminDraft.endDate;
+          await window.SNHMemberPortal.setMemberMembership(row.member_id, {fullAccess: adminDraft.fullAccess});
+          adminDraft.originalFullAccess = adminDraft.fullAccess;
           feedback.textContent = "Membership saved.";
           await onMemberAdminPanelShown(true);
           memberAdminStatus.textContent = "Membership saved for " + adminMemberName(row) + ".";
@@ -1244,7 +1252,7 @@
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       (row.role_slugs || []).forEach(function (slug) {
         var li = document.createElement("li"); li.textContent = slug + " ";
-        if (adminMayManageRole(slug)) {
+        if (adminMayManageRole(slug) && !(slug === "club_admin" && row.email === session.user.email)) {
           var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove";
           remove.setAttribute("aria-label", "Remove " + slug + " from " + adminMemberName(row));
           remove.addEventListener("click", async function () {
@@ -1283,7 +1291,7 @@
       if (!stats || rows == null) { memberAdminStatus.textContent = "Could not load member data."; return; }
       adminRows = rows;
       memberAdminStats.replaceChildren();
-      [["Members", stats.member_count], ["Membership records", stats.membership_count], ["Active memberships", stats.active_membership_count], ["Role assignments", stats.member_roles_count]].forEach(function (pair) {
+      [["Members", stats.member_count], ["Membership records", stats.membership_count], ["Full Access Members", stats.active_membership_count], ["Role assignments", stats.member_roles_count]].forEach(function (pair) {
         var p = document.createElement("p"); p.className = "members-admin-stat";
         var strong = document.createElement("strong"); strong.textContent = String(pair[1]);
         var span = document.createElement("span"); span.textContent = pair[0]; p.append(strong, span); memberAdminStats.appendChild(p);
@@ -1953,15 +1961,24 @@
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
-    if (membership) {
-      membershipStatus.textContent = membershipStatusLabel(membership.status);
-      membershipTier.textContent = membership.tier || "Standard";
-      membershipPeriodEnd.textContent = window.SNHMemberPortal.formatDate(membership.end_date);
-    } else {
-      membershipStatus.textContent = "No membership on file yet";
-      membershipTier.textContent = "Not set";
-      membershipPeriodEnd.textContent = "Not set";
-    }
+    membershipStatus.textContent = membership && membership.status === "active" ? "Full Access Member" : "Basic Member";
+    var doorReveal = document.getElementById("door-code-reveal");
+    var doorValue = document.getElementById("door-code-value");
+    var doorAdmin = document.getElementById("door-code-admin");
+    doorAdmin.hidden = !userRoles.includes("club_admin");
+    doorReveal.addEventListener("click", async function () {
+      doorReveal.disabled = true; doorValue.textContent = "Checking access…";
+      try { doorValue.textContent = await window.SNHMemberPortal.fetchDoorCode() || "No code is set yet."; }
+      catch (err) { doorValue.textContent = "Door code unavailable: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err); }
+      finally { doorReveal.disabled = false; }
+    });
+    doorAdmin.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      var input = document.getElementById("door-code-new");
+      var output = document.getElementById("door-code-admin-status");
+      try { await window.SNHMemberPortal.setDoorCode(input.value); input.value = ""; output.textContent = "Door code saved."; }
+      catch (err) { output.textContent = window.SNHMemberPortal.getFriendlyAuthErrorMessage(err); }
+    });
 
     profileForm.addEventListener("submit", async function (event) {
       event.preventDefault();

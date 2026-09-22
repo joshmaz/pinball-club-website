@@ -9,6 +9,8 @@
   var editingId = null;
   var lastRows = [];
   var currentFilter = "open";
+  var hasManualFilterChoice = false;
+  var latestLoadId = 0;
   var gameOptionsReady = false;
   var gameOptionsCacheKey = null;
 
@@ -124,16 +126,23 @@
       btn.textContent = opt.text;
       if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
       btn.addEventListener("click", function () {
-        currentFilter = opt.key;
-        wrap.querySelectorAll(".member-club-issues-filter-btn").forEach(function (b) {
-          b.removeAttribute("aria-current");
-        });
-        btn.setAttribute("aria-current", "true");
-        renderIssueList();
+        hasManualFilterChoice = true;
+        selectFilter(opt.key);
       });
       wrap.appendChild(btn);
     });
     return wrap;
+  }
+
+  function selectFilter(key) {
+    currentFilter = key;
+    if (filterEl) {
+      filterEl.querySelectorAll(".member-club-issues-filter-btn").forEach(function (button) {
+        if (button.getAttribute("data-ci-filter") === key) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+      });
+    }
+    renderIssueList();
   }
 
   function buildShell() {
@@ -339,7 +348,7 @@
     listEl.replaceChildren();
     var filtered = lastRows.filter(function (r) {
       if (currentFilter === "all") return true;
-      return String(r.status || "").toLowerCase() === currentFilter;
+      return noteStatus(r) === currentFilter;
     });
     if (filtered.length === 0) {
       listEl.appendChild(
@@ -408,16 +417,30 @@
     }
   }
 
+  function noteStatus(row) {
+    return String((row && row.status) || "").trim().toLowerCase();
+  }
+
+  function defaultFilterForRows(rows) {
+    if (rows.some(function (row) { return noteStatus(row) === "open"; })) return "open";
+    if (rows.some(function (row) { return noteStatus(row) === "in_progress"; })) return "in_progress";
+    return "open";
+  }
+
   async function loadList() {
     if (!listEl || !window.SNHMemberPortal) return;
+    var loadId = ++latestLoadId;
     setStatus("Loading issues…");
     try {
       var rows = await window.SNHMemberPortal.clubIssuesList();
+      if (loadId !== latestLoadId) return;
       var arr = Array.isArray(rows) ? rows : [];
       lastRows = arr;
-      renderIssueList();
+      if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(arr));
+      else renderIssueList();
       setStatus("Loaded " + arr.length + " issue(s).");
     } catch (err) {
+      if (loadId !== latestLoadId) return;
       listEl.replaceChildren();
       listEl.appendChild(
         el("p", {

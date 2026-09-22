@@ -467,6 +467,7 @@
     options = options || {};
     var result = await client.rpc("snh_audit_history_for_admin", {
       p_module: options.module || null,
+      p_show_automated: options.showAutomated === true,
       p_limit: 50,
       p_before_created_at: options.beforeCreatedAt || null,
       p_before_id: options.beforeId || null
@@ -502,15 +503,26 @@
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
     var payload = fields || {};
-    var statusValue = String(payload.status || "").trim().toLowerCase();
-    var tierValue = String(payload.tier || "").trim() || "standard";
-    var endDateValue = payload.endDate || null;
+    var statusValue = payload.fullAccess ? "active" : "inactive";
+    var tierValue = "standard";
+    var endDateValue = null;
     var result = await client.rpc("snh_set_member_membership", {
       p_member_id: memberId,
       p_status: statusValue,
       p_tier: tierValue,
       p_end_date: endDateValue || null
     });
+    if (result.error) throw result.error;
+  }
+
+  async function fetchDoorCode() {
+    var result = await getClient().rpc("snh_get_door_code");
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function setDoorCode(value) {
+    var result = await getClient().rpc("snh_set_door_code", {p_code: String(value || "").trim()});
     if (result.error) throw result.error;
   }
 
@@ -1384,6 +1396,8 @@
     grantMemberRole: grantMemberRole,
     revokeMemberRole: revokeMemberRole,
     setMemberMembership: setMemberMembership,
+    fetchDoorCode: fetchDoorCode,
+    setDoorCode: setDoorCode,
     listEventsForAdmin: listEventsForAdmin,
     reviewMatchplayTournament: reviewMatchplayTournament,
     discoverMatchplayTournaments: discoverMatchplayTournaments,
