@@ -118,12 +118,6 @@
         <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
           <h3>Profile</h3>
           <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. Anything you save here stays with the club and isn't shared with other members yet.</p>
-          <div class="membership-card member-door-feature">
-            <p><strong>Current membership:</strong> <span id="profile-membership-status">Loading...</span></p>
-            <h4>Door code</h4>
-            <p>Need to get in? Full Access Members can reveal the current code.</p>
-            <button type="button" id="door-code-open" class="members-sidebar-link">Open door code</button>
-          </div>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
 
           <form id="profile-form" class="members-profile-form">
@@ -1965,9 +1959,6 @@
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
     membershipStatus.textContent = membership && membership.status === "active" ? "Full Access Member" : "Member";
-    document.getElementById("profile-membership-status").textContent = membershipStatus.textContent;
-
-    document.getElementById("door-code-open").addEventListener("click", function () { showMemberPanel("door", {}); });
     var doorReveal = document.getElementById("door-code-reveal");
     var doorValue = document.getElementById("door-code-value");
     var doorAdmin = document.getElementById("door-code-admin");

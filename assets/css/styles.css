@@ -3253,6 +3253,4 @@ footer {
   .member-audit-side { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 0.3rem; }
 }
 
-.member-door-feature { margin: 1.25rem 0; border-left: 4px solid var(--accent, #e7a53b); }
-.member-door-feature .members-sidebar-link { display: inline-block; width: auto; min-height: 44px; }
 #door-code-value { overflow-wrap: anywhere; font-size: 1.25rem; font-weight: 700; }
