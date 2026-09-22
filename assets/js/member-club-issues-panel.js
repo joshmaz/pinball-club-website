@@ -9,6 +9,7 @@
   var editingId = null;
   var lastRows = [];
   var currentFilter = "open";
+  var initialFilterPending = true;
   var gameOptionsReady = false;
   var gameOptionsCacheKey = null;
 
@@ -124,16 +125,23 @@
       btn.textContent = opt.text;
       if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
       btn.addEventListener("click", function () {
-        currentFilter = opt.key;
-        wrap.querySelectorAll(".member-club-issues-filter-btn").forEach(function (b) {
-          b.removeAttribute("aria-current");
-        });
-        btn.setAttribute("aria-current", "true");
-        renderIssueList();
+        initialFilterPending = false;
+        selectFilter(opt.key);
       });
       wrap.appendChild(btn);
     });
     return wrap;
+  }
+
+  function selectFilter(key) {
+    currentFilter = key;
+    if (filterEl) {
+      filterEl.querySelectorAll(".member-club-issues-filter-btn").forEach(function (button) {
+        if (button.getAttribute("data-ci-filter") === key) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+      });
+    }
+    renderIssueList();
   }
 
   function buildShell() {
@@ -415,7 +423,17 @@
       var rows = await window.SNHMemberPortal.clubIssuesList();
       var arr = Array.isArray(rows) ? rows : [];
       lastRows = arr;
-      renderIssueList();
+      if (initialFilterPending) {
+        initialFilterPending = false;
+        if (!arr.some(function (row) { return String(row.status || "").toLowerCase() === "open"; }) &&
+            arr.some(function (row) { return String(row.status || "").toLowerCase() === "in_progress"; })) {
+          selectFilter("in_progress");
+        } else {
+          renderIssueList();
+        }
+      } else {
+        renderIssueList();
+      }
       setStatus("Loaded " + arr.length + " issue(s).");
     } catch (err) {
       listEl.replaceChildren();
