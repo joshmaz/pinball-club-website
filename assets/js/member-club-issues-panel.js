@@ -9,7 +9,8 @@
   var editingId = null;
   var lastRows = [];
   var currentFilter = "open";
-  var initialFilterPending = true;
+  var hasManualFilterChoice = false;
+  var latestLoadId = 0;
   var gameOptionsReady = false;
   var gameOptionsCacheKey = null;
 
@@ -125,7 +126,7 @@
       btn.textContent = opt.text;
       if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
       btn.addEventListener("click", function () {
-        initialFilterPending = false;
+        hasManualFilterChoice = true;
         selectFilter(opt.key);
       });
       wrap.appendChild(btn);
@@ -347,7 +348,7 @@
     listEl.replaceChildren();
     var filtered = lastRows.filter(function (r) {
       if (currentFilter === "all") return true;
-      return String(r.status || "").toLowerCase() === currentFilter;
+      return noteStatus(r) === currentFilter;
     });
     if (filtered.length === 0) {
       listEl.appendChild(
@@ -416,26 +417,30 @@
     }
   }
 
+  function noteStatus(row) {
+    return String((row && row.status) || "").trim().toLowerCase();
+  }
+
+  function defaultFilterForRows(rows) {
+    if (rows.some(function (row) { return noteStatus(row) === "open"; })) return "open";
+    if (rows.some(function (row) { return noteStatus(row) === "in_progress"; })) return "in_progress";
+    return "open";
+  }
+
   async function loadList() {
     if (!listEl || !window.SNHMemberPortal) return;
+    var loadId = ++latestLoadId;
     setStatus("Loading issues…");
     try {
       var rows = await window.SNHMemberPortal.clubIssuesList();
+      if (loadId !== latestLoadId) return;
       var arr = Array.isArray(rows) ? rows : [];
       lastRows = arr;
-      if (initialFilterPending) {
-        initialFilterPending = false;
-        if (!arr.some(function (row) { return String(row.status || "").toLowerCase() === "open"; }) &&
-            arr.some(function (row) { return String(row.status || "").toLowerCase() === "in_progress"; })) {
-          selectFilter("in_progress");
-        } else {
-          renderIssueList();
-        }
-      } else {
-        renderIssueList();
-      }
+      if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(arr));
+      else renderIssueList();
       setStatus("Loaded " + arr.length + " issue(s).");
     } catch (err) {
+      if (loadId !== latestLoadId) return;
       listEl.replaceChildren();
       listEl.appendChild(
         el("p", {
