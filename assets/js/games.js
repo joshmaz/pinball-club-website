@@ -499,6 +499,7 @@ const gameMoreInfoUi = {
   bodyEl: /** @type {HTMLElement | null} */ (null),
   lastFocus: /** @type {HTMLElement | null} */ (null),
   onKeyDown: /** @type {((e: KeyboardEvent) => void) | null} */ (null),
+  requestId: 0,
 };
 
 function ensureGameMoreInfoModal() {
@@ -563,21 +564,8 @@ function formatMoneyFromCents(cents) {
 /**
  * @param {unknown} payload
  */
-function renderGameMoreInfoSections(payload) {
-  ensureGameMoreInfoModal();
-  const body = gameMoreInfoUi.bodyEl;
-  if (!body) {
-    return;
-  }
-  body.replaceChildren();
-
-  if (payload == null || typeof payload !== "object") {
-    const p = document.createElement("p");
-    p.className = "games-more-info-empty";
-    p.textContent = "Details are not available for this game.";
-    body.appendChild(p);
-    return;
-  }
+function renderGameMoreInfoSections(payload, body, kind) {
+  if (!payload || typeof payload !== "object") return;
 
   const highScores = payload.highScores;
   const pingolfTargets = payload.pingolfTargets;
@@ -602,7 +590,7 @@ function renderGameMoreInfoSections(payload) {
     any = true;
   }
 
-  if (Array.isArray(highScores) && highScores.length > 0) {
+  if (kind === "play" && Array.isArray(highScores) && highScores.length > 0) {
     const ul = document.createElement("ul");
     ul.className = "games-more-info-list";
     for (const row of highScores) {
@@ -622,7 +610,7 @@ function renderGameMoreInfoSections(payload) {
     addSection("High scores", ul);
   }
 
-  if (Array.isArray(pingolfTargets) && pingolfTargets.length > 0) {
+  if (kind === "play" && Array.isArray(pingolfTargets) && pingolfTargets.length > 0) {
     const ul = document.createElement("ul");
     ul.className = "games-more-info-list";
     for (const row of pingolfTargets) {
@@ -638,7 +626,7 @@ function renderGameMoreInfoSections(payload) {
     addSection("Pingolf", ul);
   }
 
-  if (Array.isArray(partySummaries) && partySummaries.some((x) => hasNonemptyString(x))) {
+  if (kind === "overview" && Array.isArray(partySummaries) && partySummaries.some((x) => hasNonemptyString(x))) {
     const ul = document.createElement("ul");
     ul.className = "games-more-info-list";
     for (const line of partySummaries) {
@@ -650,7 +638,7 @@ function renderGameMoreInfoSections(payload) {
     addSection("Owners & lenders", ul);
   }
 
-  if (saleListingPublic && typeof saleListingPublic === "object") {
+  if (kind === "overview" && saleListingPublic && typeof saleListingPublic === "object") {
     const p = document.createElement("p");
     p.className = "games-more-info-sale";
     const bits = [];
@@ -673,7 +661,7 @@ function renderGameMoreInfoSections(payload) {
     addSection("For sale", p);
   }
 
-  if (Array.isArray(customMods) && customMods.length > 0) {
+  if (kind === "overview" && Array.isArray(customMods) && customMods.length > 0) {
     const ul = document.createElement("ul");
     ul.className = "games-more-info-list";
     for (const row of customMods) {
@@ -698,15 +686,11 @@ function renderGameMoreInfoSections(payload) {
     addSection("Custom mods", ul);
   }
 
-  if (!any) {
-    const p = document.createElement("p");
-    p.className = "games-more-info-empty";
-    p.textContent = "No additional details on file.";
-    body.appendChild(p);
-  }
+  return any;
 }
 
 function closeGameMoreInfoModal() {
+  gameMoreInfoUi.requestId += 1;
   if (gameMoreInfoUi.onKeyDown) {
     document.removeEventListener("keydown", gameMoreInfoUi.onKeyDown);
     gameMoreInfoUi.onKeyDown = null;
@@ -720,32 +704,138 @@ function closeGameMoreInfoModal() {
   gameMoreInfoUi.lastFocus = null;
 }
 
-/**
- * @param {{ title?: string, id?: string }} game
- */
-async function openGameMoreInfoModal(game) {
-  const client = getPublicSupabaseClient();
-  if (!client || !gameHasCatalogUuid(game)) {
-    return;
+function addGameProfileLink(row, label, url) {
+  if (!hasNonemptyString(url)) return;
+  const link = document.createElement("a");
+  link.href = String(url);
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = label;
+  row.appendChild(link);
+}
+
+function renderGameProfile(game, payload, error) {
+  const body = gameMoreInfoUi.bodyEl;
+  if (!body) return;
+  const selectedLabel = body.querySelector('[role="tab"][aria-selected="true"]')?.textContent;
+  body.replaceChildren();
+  const tabs = document.createElement("div");
+  tabs.className = "games-profile-tabs";
+  tabs.setAttribute("role", "tablist");
+  tabs.setAttribute("aria-label", "Game profile sections");
+  const panels = [];
+  function addTab(label, panel) {
+    const index = panels.length;
+    const tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "games-profile-tab";
+    tab.id = `games-profile-tab-${index}`;
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-controls", `games-profile-panel-${index}`);
+    panel.id = `games-profile-panel-${index}`;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", tab.id);
+    tab.textContent = label;
+    tabs.appendChild(tab);
+    panels.push({ tab, panel });
+    tab.addEventListener("click", () => activate(index));
+    tab.addEventListener("keydown", (event) => {
+      const next = event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
+      if (next === null) return;
+      event.preventDefault();
+      activate((next + panels.length) % panels.length);
+      panels[(next + panels.length) % panels.length].tab.focus();
+    });
   }
+  function activate(index) {
+    panels.forEach(({ tab, panel }, i) => {
+      tab.setAttribute("aria-selected", String(i === index));
+      tab.tabIndex = i === index ? 0 : -1;
+      panel.hidden = i !== index;
+    });
+  }
+
+  const overview = document.createElement("div");
+  overview.className = "games-profile-panel";
+  const figure = createGameImageFigure(game);
+  if (hasNonemptyString(game.details)) {
+    const section = document.createElement("section");
+    section.className = "games-more-info-section";
+    const heading = document.createElement("h4");
+    heading.textContent = "Description";
+    const details = document.createElement("p");
+    details.textContent = String(game.details);
+    section.append(heading, details);
+    overview.appendChild(section);
+  }
+  const stints = formatLocationStints(game.locationStints);
+  if (stints) {
+    const section = document.createElement("section");
+    section.className = "games-more-info-section";
+    const heading = document.createElement("h4");
+    heading.textContent = "Club stints";
+    const list = document.createElement("ul");
+    list.className = "games-more-info-list";
+    for (const line of stints.split("\n")) {
+      const item = document.createElement("li");
+      item.textContent = line;
+      list.appendChild(item);
+    }
+    section.append(heading, list);
+    overview.appendChild(section);
+  }
+  const links = document.createElement("div");
+  links.className = "games-profile-links";
+  addGameProfileLink(links, "Kineticist", game.kineticistUrl);
+  addGameProfileLink(links, "Pinside", game.pinsideUrl);
+  addGameProfileLink(links, "IPDB", game.ipdbUrl);
+  addGameProfileLink(links, "PinTips", getPinTipsUrl(game));
+  if (links.childElementCount) {
+    const section = document.createElement("section");
+    section.className = "games-more-info-section";
+    const heading = document.createElement("h4");
+    heading.textContent = "Explore this game";
+    const description = document.createElement("p");
+    description.className = "games-profile-links-description";
+    description.textContent = "Find more game details, community information, and playing tips through these sites.";
+    section.append(heading, description, links);
+    overview.appendChild(section);
+  }
+  renderGameMoreInfoSections(payload, overview, "overview");
+  if (error) {
+    const note = document.createElement("p");
+    note.className = "games-more-info-error";
+    note.textContent = "Additional game information could not be loaded.";
+    overview.appendChild(note);
+  }
+  addTab("Overview", overview);
+
+  if (figure) {
+    const photos = document.createElement("div");
+    photos.className = "games-profile-panel games-profile-photos";
+    photos.appendChild(figure);
+    addTab("Photos", photos);
+  }
+  const play = document.createElement("div");
+  play.className = "games-profile-panel";
+  if (renderGameMoreInfoSections(payload, play, "play")) addTab("Play", play);
+  body.appendChild(tabs);
+  panels.forEach(({ panel }) => body.appendChild(panel));
+  activate(Math.max(0, panels.findIndex(({ tab }) => tab.textContent === selectedLabel)));
+}
+
+/** @param {{ title?: string, id?: string }} game */
+async function openGameMoreInfoModal(game) {
   ensureGameMoreInfoModal();
   const root = gameMoreInfoUi.root;
   const titleEl = gameMoreInfoUi.titleEl;
-  const bodyEl = gameMoreInfoUi.bodyEl;
   const dialog = gameMoreInfoUi.dialog;
-  if (!root || !titleEl || !bodyEl || !dialog) {
-    return;
-  }
-
+  if (!root || !titleEl || !dialog) return;
+  const requestId = ++gameMoreInfoUi.requestId;
   gameMoreInfoUi.lastFocus = /** @type {HTMLElement} */ (document.activeElement);
   root.hidden = false;
   titleEl.textContent = game.title ? `More about ${game.title}` : "Game details";
-  bodyEl.replaceChildren();
-  const loading = document.createElement("p");
-  loading.className = "games-more-info-loading";
-  loading.textContent = "Loading…";
-  bodyEl.appendChild(loading);
-
+  renderGameProfile(game, null, false);
   gameMoreInfoUi.onKeyDown = (ev) => {
     if (ev.key === "Escape") {
       ev.preventDefault();
@@ -753,33 +843,19 @@ async function openGameMoreInfoModal(game) {
     }
   };
   document.addEventListener("keydown", gameMoreInfoUi.onKeyDown);
+  dialog.querySelector(".games-more-info-close")?.focus();
 
-  const closeBtn = dialog.querySelector(".games-more-info-close");
-  if (closeBtn && typeof closeBtn.focus === "function") {
-    closeBtn.focus();
-  }
-
+  const client = getPublicSupabaseClient();
+  if (!client || !gameHasCatalogUuid(game)) return;
   try {
     const res = await client.rpc("snh_public_game_more_info", { p_game_id: game.id });
-    if (res.error) {
-      throw new Error(res.error.message || String(res.error));
-    }
+    if (res.error) throw new Error(res.error.message || String(res.error));
     let data = res.data;
-    if (typeof data === "string") {
-      try {
-        data = JSON.parse(data);
-      } catch {
-        data = null;
-      }
-    }
-    renderGameMoreInfoSections(data);
+    if (typeof data === "string") data = JSON.parse(data);
+    if (!root.hidden && requestId === gameMoreInfoUi.requestId) renderGameProfile(game, data, false);
   } catch (err) {
     console.error("More Info RPC failed:", err);
-    bodyEl.replaceChildren();
-    const p = document.createElement("p");
-    p.className = "games-more-info-error";
-    p.textContent = err instanceof Error ? err.message : "Could not load details right now.";
-    bodyEl.appendChild(p);
+    if (!root.hidden && requestId === gameMoreInfoUi.requestId) renderGameProfile(game, null, true);
   }
 }
 
@@ -800,7 +876,22 @@ function createGamesList(games) {
     item.appendChild(title);
 
     const imageFigure = createGameImageFigure(game);
-    if (imageFigure) item.appendChild(imageFigure);
+    if (imageFigure) {
+      const image = imageFigure.querySelector(".game-card-image");
+      if (image) {
+        const imageButton = document.createElement("button");
+        imageButton.type = "button";
+        imageButton.className = "game-card-image-button";
+        imageButton.setAttribute("aria-label", `More info about ${game.title}`);
+        imageButton.setAttribute("aria-haspopup", "dialog");
+        imageButton.addEventListener("click", () => {
+          void openGameMoreInfoModal(game);
+        });
+        image.replaceWith(imageButton);
+        imageButton.appendChild(image);
+      }
+      item.appendChild(imageFigure);
+    }
 
     const details = document.createElement("p");
     details.className = "games-details";
@@ -819,7 +910,7 @@ function createGamesList(games) {
     const pinsideUrl = game.pinsideUrl;
     const ipdbUrl = game.ipdbUrl;
     const pintipsUrl = getPinTipsUrl(game);
-    const moreInfoEligible = !!getPublicSupabaseClient() && gameHasCatalogUuid(game);
+    const moreInfoEligible = true;
     const editHref = gamesCanManage ? gameEditorHref(game) : "";
     if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible || editHref) {
       const linkRow = document.createElement("div");
