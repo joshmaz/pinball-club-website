@@ -16,6 +16,8 @@ This document tracks moving the games catalog from `data/games.json` into Supaba
 
 **Follow-up delivered after Phase 2:** game soft-delete + restore. Deleted games are excluded from `games_catalog_v1` (public), while member editor still shows them with delete metadata and restore controls.
 
+**Content follow-up:** Populate PinGolf targets for more games through the existing member games editor so the public game profile’s Play tab appears on those games. Use verified targets; no new schema or behavior is needed.
+
 ## Implemented (Phase 2 baseline)
 
 ### Database (migrations)

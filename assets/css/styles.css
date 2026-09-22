@@ -2046,6 +2046,53 @@ footer {
   color: var(--text-main);
 }
 
+.games-profile-tabs {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--border-card);
+  margin-bottom: 1rem;
+}
+
+.games-profile-tab {
+  padding: 0.45rem 0.7rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.games-profile-tab[aria-selected="true"] {
+  border-bottom-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.games-profile-tab:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: -2px;
+}
+
+.games-profile-panel[hidden] { display: none; }
+.games-profile-panel .game-card-figure { margin: 0 0 0.8rem; }
+.games-profile-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
+.game-card-image-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.game-card-image-button:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+}
+
+.games-profile-photos .game-card-image { aspect-ratio: auto; object-fit: contain; }
+.games-profile-links-description { margin: 0 0 0.5rem; }
+
 .games-more-info-section {
   margin-top: 1rem;
 }
