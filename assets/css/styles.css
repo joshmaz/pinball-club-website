@@ -1272,10 +1272,46 @@ button.members-sidebar-logout.members-sidebar-link:hover {
   position: relative;
   display: inline-flex;
   align-items: center;
+  flex: 0 1 20rem;
+  min-width: 0;
 }
 
-.members-admin-search-wrap input { padding-right: 2.4rem; }
-.members-admin-search-wrap .member-games-combobox-clear { z-index: 1; }
+.members-admin-search-wrap input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding-right: 2rem;
+}
+
+.members-admin-search-wrap input::-webkit-search-cancel-button { appearance: none; }
+
+.members-admin-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted-2);
+  font: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.members-admin-search-clear[hidden] { display: none; }
+.members-admin-search-clear:hover,
+.members-admin-search-clear:focus-visible {
+  color: var(--text-strong);
+  background: var(--bg-sidebar-hover);
+}
 
 .members-admin-directory td:first-child { width: 45%; }
 .members-admin-directory td { vertical-align: middle; }
