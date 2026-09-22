@@ -1148,16 +1148,18 @@
       return td;
     }
 
+    function memberMatchesDirectoryFilter(row, mode, query) {
+      var roles = Array.isArray(row.role_slugs) ? row.role_slugs : [];
+      var active = String(row.membership_status || "").trim().toLowerCase() === "active";
+      return (!query || [row.first_name, row.last_name, row.display_name, row.email, adminMemberName(row)].join(" ").toLowerCase().includes(query)) &&
+        (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active));
+    }
+
     function adminRender() {
       if (!memberAdminTableBody) return;
       var query = (memberAdminSearch.value || "").trim().toLowerCase();
       var mode = memberAdminDirectoryFilter.value;
-      var filtered = adminRows.filter(function (row) {
-        var roles = Array.isArray(row.role_slugs) ? row.role_slugs : [];
-        var active = String(row.membership_status || "").trim().toLowerCase() === "active";
-        return (!query || [row.first_name, row.last_name, row.display_name, row.email, adminMemberName(row)].join(" ").toLowerCase().includes(query)) &&
-          (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active));
-      });
+      var filtered = adminRows.filter(function (row) { return memberMatchesDirectoryFilter(row, mode, query); });
       var pages = Math.max(1, Math.ceil(filtered.length / 25));
       adminPage = Math.min(adminPage, pages);
       memberAdminTableBody.replaceChildren();
