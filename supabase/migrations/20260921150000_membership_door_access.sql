@@ -22,14 +22,6 @@ begin
 end;
 $$;
 
-create or replace function public.snh_is_assignable_member_role(p_role_slug text)
-returns boolean language sql stable set search_path = public as $$
-  select coalesce(btrim(lower(p_role_slug)), '') = any (array[
-    'club_admin','membership_editor','membership_admin','events_editor','events_admin',
-    'photos_editor','photos_admin','games_editor','games_admin','door_access'
-  ]::text[]);
-$$;
-
 -- Protect the final club administrator even from cascading member deletion.
 create or replace function public.snh_protect_club_admin()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -69,14 +61,13 @@ declare v_code text;
 begin
   if not exists (
     select 1 from public.members m
-    join public.member_roles r on r.member_id = m.id and r.role_slug = 'door_access'
     join lateral (
       select status from public.memberships ms where ms.member_id = m.id
       order by ms.created_at desc, ms.id desc limit 1
     ) ms on true
     where m.user_id = auth.uid() and ms.status = 'active'
   ) then
-    raise exception 'door access requires Full Access Membership and door privilege' using errcode = '42501';
+    raise exception 'door access requires Full Access Membership' using errcode = '42501';
   end if;
   select code into v_code from public.snh_door_secret where singleton = true;
   return v_code;

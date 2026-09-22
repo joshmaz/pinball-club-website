@@ -121,7 +121,7 @@
           <div class="membership-card member-door-feature">
             <p><strong>Current membership:</strong> <span id="profile-membership-status">Loading...</span></p>
             <h4>Door code</h4>
-            <p>Need to get in? Full Access Members with door access can reveal the current code.</p>
+            <p>Need to get in? Full Access Members can reveal the current code.</p>
             <button type="button" id="door-code-open" class="members-sidebar-link">Open door code</button>
           </div>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
@@ -238,7 +238,7 @@
         <div id="member-panel-door" class="member-panel" role="region" aria-labelledby="member-nav-door" tabindex="-1" aria-hidden="true">
           <h3>Door code</h3>
           <div class="membership-card">
-            <p>Full Access Members with door access can reveal the current code here.</p>
+            <p>Full Access Members can reveal the current code here.</p>
             <button type="button" id="door-code-reveal">Reveal door code</button>
             <p id="door-code-value" role="status" aria-live="polite"></p>
           </div>
@@ -281,7 +281,7 @@
           <div class="members-admin-table-wrap">
             <table class="members-admin-table members-admin-directory">
               <caption class="visually-hidden">Club member directory</caption>
-              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Access</th><th scope="col">Roles</th></tr></thead>
+              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Roles</th></tr></thead>
               <tbody id="member-admin-table-body"></tbody>
             </table>
           </div>
@@ -1183,7 +1183,6 @@
         });
         nameCell.appendChild(toggle);
         adminCell(tr, row.membership_status === "active" ? "Full Access Member" : "Member");
-        adminCell(tr, (row.role_slugs || []).includes("door_access") ? "Door access" : "—");
         adminCell(tr, row.role_slugs && row.role_slugs.length ? row.role_slugs.length : "");
         memberAdminTableBody.appendChild(tr);
         if (adminExpandedId === row.member_id) adminRenderEditor(row);
@@ -1204,7 +1203,7 @@
       var tr = document.createElement("tr");
       tr.className = "members-admin-editor-row";
       var td = document.createElement("td");
-      td.colSpan = 4;
+      td.colSpan = 3;
       var box = document.createElement("div");
       box.className = "members-admin-editor";
       var info = document.createElement("p");
