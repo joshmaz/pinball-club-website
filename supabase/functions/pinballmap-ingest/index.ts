@@ -67,6 +67,28 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Browser runs carry a user JWT; cron sends the same key in Authorization and apikey.
+    // Verify manual callers before using the elevated ingest client or attributing audit.
+    const authorization = req.headers.get("Authorization") || "";
+    const bearer = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
+    const requestApiKey = (req.headers.get("apikey") || "").trim();
+    let manualActorUserId: string | null = null;
+    if (bearer && bearer !== requestApiKey) {
+      const verifier = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+      const authResult = await verifier.auth.getUser(bearer);
+      const user = authResult.data.user;
+      if (authResult.error || !user) return jsonResponse({ ok: false, error: "Invalid user token" }, 401);
+      const roles = await verifier.from("members")
+        .select("id,member_roles!inner(role_slug)")
+        .eq("user_id", user.id)
+        .in("member_roles.role_slug", ["games_editor", "games_admin", "club_admin"])
+        .limit(1);
+      if (roles.error || !(roles.data || []).length) {
+        return jsonResponse({ ok: false, error: "Games access required" }, 403);
+      }
+      manualActorUserId = user.id;
+    }
+
     const pinballMapApiToken = (Deno.env.get("PINBALLMAP_API_TOKEN") || "").trim();
     if (!pinballMapApiToken) {
       return jsonResponse(
@@ -174,6 +196,7 @@ Deno.serve(async (req) => {
 
     const games = (gameRows || []) as unknown as DbGame[];
     const payload = buildPinballRpcPayload(activity, games, stintsByGameId);
+    if (manualActorUserId) (payload as Record<string, unknown>).manual_actor_user_id = manualActorUserId;
 
     const { data, error } = await supabase.rpc("snh_pinballmap_upsert_from_activity", {
       p_payload: payload,
@@ -205,6 +228,20 @@ Deno.serve(async (req) => {
         imageSync = await importOpdbImages(supabase, opdbIds);
       } catch (syncError) {
         imageSyncWarning = syncError instanceof Error ? syncError.message : String(syncError);
+        try {
+          const warningAudit = await supabase.from("audit_log").insert({
+            module: "games",
+            action: "error",
+            actor_user_id: manualActorUserId,
+            entity_type: "pinballmap_image_sync",
+            entity_id: String(locationId),
+            new_data: { warning: imageSyncWarning, opdb_ids: opdbIds },
+            metadata: { trigger: manualActorUserId ? "manual" : "scheduled" },
+          });
+          if (warningAudit.error) imageSyncWarning += ` (audit unavailable: ${warningAudit.error.message})`;
+        } catch (auditError) {
+          imageSyncWarning += ` (audit unavailable: ${auditError instanceof Error ? auditError.message : String(auditError)})`;
+        }
       }
     }
 

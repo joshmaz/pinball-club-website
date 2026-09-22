@@ -1759,7 +1759,7 @@
     pinballMapIngestBtnEl.disabled = true;
     pinballMapIngestBtnEl.textContent = "Running ingest…";
     try {
-      await window.SNHMemberPortal.pinballmapIngestInvoke();
+      var ingestResult = await window.SNHMemberPortal.pinballmapIngestInvoke();
       if (isDirty) {
         setStatus(
           "Pinball Map ingest finished. Save or discard your edits, then search again if you need a fresh catalog view."
@@ -1768,6 +1768,9 @@
         await loadCatalog();
       }
       await refreshPinballMapIngestStatus();
+      if (ingestResult && ingestResult.imageSyncWarning) {
+        setStatus("Pinball Map ingest finished, but OPDB images could not sync: " + ingestResult.imageSyncWarning);
+      }
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     } finally {

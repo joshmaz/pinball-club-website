@@ -37,7 +37,7 @@ function showMessage(container, title, details) {
   container.appendChild(card);
 }
 
-function setDataSourceNote(container, result) {
+function setDataSourceNote(container, result, allowed) {
   if (!container) return;
   let note = document.getElementById('events-data-source-note');
   if (!note) {
@@ -46,7 +46,8 @@ function setDataSourceNote(container, result) {
     note.className = 'events-data-source-note';
     container.parentNode.insertBefore(note, container);
   }
-  note.textContent = window.SNHPublicData.sourceLabel(result);
+  note.hidden = !allowed;
+  if (allowed) note.textContent = window.SNHPublicData.sourceLabel(result);
 }
 
 function startOfToday() {
@@ -417,10 +418,11 @@ async function loadEvents() {
   try {
     const result = await window.SNHPublicData.loadEvents();
     const events = result.data;
-    setDataSourceNote(container, result);
+    setDataSourceNote(container, result, false);
 
     renderEventsList(container, events);
     void currentUserCanManageEvents().then((allowed) => {
+      setDataSourceNote(container, result, allowed);
       if (allowed === eventsCanManage) return;
       eventsCanManage = allowed;
       renderEventsList(container, events);

@@ -34,7 +34,11 @@ async function fetchGamesCatalogPayload() {
       note.id = 'games-data-source-note';
       container.before(note);
     }
-    note.textContent = window.SNHPublicData.sourceLabel(result);
+    note.hidden = true;
+    void currentUserCanManageGames().then((allowed) => {
+      note.hidden = !allowed;
+      if (allowed) note.textContent = window.SNHPublicData.sourceLabel(result);
+    });
   }
   return { games: result.data };
 }
