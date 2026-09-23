@@ -326,7 +326,7 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
     panel.hidden = selectedIndex === null;
     hint.textContent = selectedIndex === null
       ? 'Select a year to show past events.'
-      : `Select ${pastByYearList[selectedIndex].year} again to hide past events.`;
+      : 'Click the highlighted year to hide past events.';
 
     if (selectedIndex !== null) {
       const { year, events } = pastByYearList[selectedIndex];

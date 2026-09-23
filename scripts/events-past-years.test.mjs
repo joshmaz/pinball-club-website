@@ -67,7 +67,7 @@ test('past years open, navigate, and collapse with correct selection and boundar
 
   tabs[0].click();
   assert.equal(displayed(), '2026');
-  assert.equal(hint.textContent, 'Select 2026 again to hide past events.');
+  assert.equal(hint.textContent, 'Click the highlighted year to hide past events.');
   assert.equal(panel.hidden, false);
   assert.equal(panel.children.length, 3);
   assert.deepEqual(selected(), [tabs[0]]);
@@ -79,7 +79,7 @@ test('past years open, navigate, and collapse with correct selection and boundar
   assert.deepEqual(selected(), [tabs[2]]);
   newer.click();
   assert.equal(displayed(), '2025');
-  assert.equal(hint.textContent, 'Select 2025 again to hide past events.');
+  assert.equal(hint.textContent, 'Click the highlighted year to hide past events.');
   older.click();
   older.click();
   assert.equal(displayed(), '2016');
@@ -98,7 +98,7 @@ test('past years open, navigate, and collapse with correct selection and boundar
 
   tabs[1].click();
   assert.equal(displayed(), '2025');
-  assert.equal(hint.textContent, 'Select 2025 again to hide past events.');
+  assert.equal(hint.textContent, 'Click the highlighted year to hide past events.');
   assert.deepEqual(selected(), [tabs[1]]);
   assert.equal(newer.disabled, false);
   assert.equal(older.disabled, false);
