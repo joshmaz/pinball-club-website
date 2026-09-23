@@ -17,7 +17,7 @@
 .club-games .games-list { grid-template-columns: repeat(auto-fill,minmax(min(290px,100%),1fr)); gap: 1.25rem; align-items: start; }
 .club-games .games-list-item { display: flex; flex-direction: column; padding: 1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); min-width: 0; }
 .club-games .games-list-item .game-card-figure { order: -1; margin: 0 0 1rem; }
-.club-games .game-card-image { display: block; aspect-ratio: 4 / 3; object-fit: contain; background: var(--club-soft); border: 0; }
+.club-games .game-card-image { display: block; aspect-ratio: 4 / 3; object-fit: cover; object-position: center; background: var(--club-soft); border: 0; }
 .club-games .game-card-image-credit { font-size: .68rem; line-height: 1.5; }
 .games-card-heading { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; }
 .games-card-heading h3 { color: var(--club-ink); margin: 0; font-size: 1.25rem; line-height: 1.25; letter-spacing: -.025em; }

@@ -47,6 +47,6 @@
 }
 .home-floor { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; border-top: 1px solid var(--club-line); }
 .club-home #gallery { height: 320px; max-width: 100%; margin: 0; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); }
-.club-home #gallery img { object-fit: contain; }
+.club-home #gallery img { object-fit: cover; object-position: center; }
 #gallery-pause { padding: .6rem .8rem; min-height: 44px; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-teal); font: inherit; }
 @media(max-width:600px) { .home-floor { grid-template-columns: 1fr; } }
