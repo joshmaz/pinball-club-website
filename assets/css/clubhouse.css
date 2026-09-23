@@ -124,3 +124,17 @@ html.clubhouse {
 .club-form-section legend { padding: 0 .35rem; color: var(--club-ink); font-weight: 700; font-size: 1.05rem; }
 
 .club-page-note { color: var(--club-muted); font-size: .85rem; max-width: 45rem; }
+
+/* Shared two-row header: navigation above utilities, beside the official logo. */
+.club-header-links { display: flex; flex-direction: column; align-items: flex-end; gap: .65rem; min-width: 0; }
+.club-header-utilities { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .7rem 1rem; }
+.club-header-utilities .club-theme-label { flex-direction: row; align-items: center; margin: 0; }
+.club-header-utilities [data-site-account-actions] { display: contents; }
+.club-header-utilities .site-account-signout { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; font-size: .75rem; cursor: pointer; }
+.club-header-utilities .site-account-signout:disabled { cursor: wait; color: var(--club-muted); }
+.site-account-status { color: var(--club-danger); font-size: .75rem; max-width: 24rem; }
+.site-account-status:empty { display: none; }
+@media(max-width:800px) {
+  .club-header-links { align-items: center; }
+  .club-header-utilities { justify-content: center; }
+}

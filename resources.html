@@ -16,7 +16,8 @@
     <a class="club-skip" href="#resources-main">Skip to content</a>
     <header>
         <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
-        <nav aria-label="Main navigation">
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html">Games</a>
@@ -25,6 +26,13 @@
             <a href="about.html">About</a>
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
     </header>
     <main id="resources-main">
         <section class="club-page-heading" aria-labelledby="resources-hero-title">
@@ -33,9 +41,6 @@
                 <p class="club-lead">Leagues, reference sites, parts suppliers, and major events, curated for quick lookup.</p>
                 <p class="club-page-note">Living the pinball dream, one resource at a time.</p>
             </div>
-            <label class="club-theme-label" for="club-theme">Appearance
-                <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
-            </label>
         </section>
         <section class="content">
             <p class="resources-intro resources-intro-lead"><strong>New here?</strong> Start with <a href="#nepl">NEPL</a> (league at our location), then browse suppliers and shows below.</p>

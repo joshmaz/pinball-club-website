@@ -16,7 +16,8 @@
 <a class="club-skip" href="#games-main">Skip to content</a>
     <header>
         <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
-        <nav aria-label="Main navigation">
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html" aria-current="page">Games</a>
@@ -25,13 +26,17 @@
             <a href="about.html">About</a>
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
     </header>
     <main id="games-main">
         <section class="club-page-heading" aria-labelledby="games-hero-title">
           <div><p class="club-eyebrow">The SNHPC collection</p><h1 id="games-hero-title">Our games.<br><span>Every era. Every flipper.</span></h1><p class="club-lead">From classic EMs to modern multiball monsters. Discover what’s on the floor and the machines that shaped our club.</p></div>
-          <label class="club-theme-label" for="club-theme">Appearance
-  <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
-</label>
         </section>
         <section class="content" aria-label="Club machine lineup">
             <p class="games-note">By default this page shows machines currently at SNHPC. Use the timeline to travel backward and see which games were on the floor at a point in club history.</p>

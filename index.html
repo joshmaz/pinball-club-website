@@ -19,7 +19,8 @@
 <a class="club-skip" href="#home-main">Skip to content</a>
     <header>
         <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="160"></a>
-        <nav aria-label="Main navigation">
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
             <a href="index.html" aria-current="page">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html">Games</a>
@@ -28,15 +29,16 @@
             <a href="about.html">About</a>
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
     </header>
 
 <main id="home-main">
-  <div class="club-toolbar">
-    <p class="club-eyebrow">Southern New Hampshire Pinball Club</p>
-    <label class="club-theme-label" for="club-theme">Appearance
-      <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
-    </label>
-  </div>
   <section class="home-concept-hero" aria-labelledby="home-title">
     <div class="home-concept-copy">
       <p class="club-eyebrow">Nashua, New Hampshire / Est. 2016</p>

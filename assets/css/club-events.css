@@ -40,10 +40,3 @@
   .events-toolbar { align-items: flex-start; }
 }
 .clubhouse .events-past-year-hint { color: var(--club-muted); font-size: .85rem; margin: -.25rem 0 1rem; }
-
-/* Keep appearance beside the heading without losing the welcome card. */
-.events-intro-side { align-self: start; display: grid; gap: 1.25rem; }
-.events-intro-side .club-theme-label { justify-self: end; margin-top: .8rem; }
-@media(max-width:800px) {
-  .events-intro-side .club-theme-label { justify-self: start; margin: 0; flex-direction: row; align-items: center; }
-}

@@ -16,7 +16,8 @@
     <a class="club-skip" href="#merch-main">Skip to content</a>
     <header>
         <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
-        <nav aria-label="Main navigation">
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html">Games</a>
@@ -25,6 +26,13 @@
             <a href="about.html">About</a>
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
     </header>
     <main id="merch-main">
         <section class="club-page-heading" aria-labelledby="merch-hero-title">
@@ -33,9 +41,6 @@
                 <p class="club-lead">The online store is still in the shop, but club gear is alive and well.</p>
                 <p class="club-page-note">Shirts, koozies, stickers, pins, and hoodies are currently available by request.</p>
             </div>
-            <label class="club-theme-label" for="club-theme">Appearance
-                <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
-            </label>
         </section>
         <section class="content merch-content">
             <p class="merch-intro">We are working on a new checkout flow as we continue improving membership and payment tooling. Until that is live, use the options below to claim gear and we will coordinate pickup (or event handoff) with you directly.</p>
