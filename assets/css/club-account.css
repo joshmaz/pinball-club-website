@@ -12,8 +12,6 @@
 .club-account .member-panel > :is(h2,h3) { font-size: 1.5rem; letter-spacing: -.03em; margin: 0 0 .5rem; }
 .club-account .member-panel-intro { max-width: 70ch; color: var(--club-muted); font-size: .88rem; line-height: 1.65; margin-bottom: 1.25rem; }
 .club-account .members-profile-form { max-width: none; gap: 1.3rem; margin: 1.3rem 0; }
-.club-form-section { min-width: 0; margin: 0; padding: 1.3rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); display: grid; gap: .7rem; }
-.club-form-section legend { padding: 0 .35rem; color: var(--club-ink); font-weight: 700; font-size: 1.05rem; }
 #profile-form > .club-form-section { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
 #profile-form > .club-form-section > p, #profile-form .club-field { grid-column: 1 / -1; }
 #profile-form .club-field:has(#member-first-name), #profile-form .club-field:has(#member-last-name) { grid-column: auto; }
