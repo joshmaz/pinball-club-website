@@ -290,10 +290,15 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
 
   let selectedIndex = null;
 
+  const hint = document.createElement('p');
+  hint.id = 'events-past-year-hint';
+  hint.className = 'events-past-year-hint';
+
   const nav = document.createElement('div');
   nav.className = 'events-past-year-nav';
   nav.setAttribute('role', 'group');
   nav.setAttribute('aria-label', 'Browse past events by year');
+  nav.setAttribute('aria-describedby', hint.id);
 
   const btnLeft = document.createElement('button');
   btnLeft.type = 'button';
@@ -319,6 +324,9 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
   function renderYearCards() {
     panel.replaceChildren();
     panel.hidden = selectedIndex === null;
+    hint.textContent = selectedIndex === null
+      ? 'Select a year to show past events.'
+      : `Select ${pastByYearList[selectedIndex].year} again to hide past events.`;
 
     if (selectedIndex !== null) {
       const { year, events } = pastByYearList[selectedIndex];
@@ -390,6 +398,7 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
   nav.appendChild(tabsWrap);
   nav.appendChild(btnRight);
 
+  region.appendChild(hint);
   region.appendChild(nav);
   region.appendChild(panel);
 

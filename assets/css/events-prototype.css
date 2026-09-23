@@ -100,3 +100,5 @@ html.events-prototype {
 @media (prefers-reduced-motion: reduce) {
   .events-prototype *, .events-prototype *::before, .events-prototype *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+
+.events-prototype .events-past-year-hint { color: var(--club-muted); font-size: .85rem; margin: -.25rem 0 1rem; }
