@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse club-account">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +9,8 @@
   <title>SNHPC - My Account</title>
   <script src="assets/js/theme.js"></script>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/clubhouse.css">
+  <link rel="stylesheet" href="assets/css/club-account.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -33,10 +35,11 @@
   <script src="assets/js/member-club-issues-panel.js"></script>
 </head>
 <body>
+<a class="club-skip" href="#account-main">Skip to content</a>
 
 <header>
-  <h1>Southern New Hampshire Pinball Club</h1>
-  <nav>
+  <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+  <nav aria-label="Main navigation">
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
     <a href="games.html">Games</a>
@@ -45,23 +48,19 @@
     <a href="about.html">About</a>
     <a href="signin.html" data-site-account-link>Members</a>
   </nav>
-  <p id="auth-status" class="auth-status" aria-live="polite"></p>
 </header>
 
-<section class="page-hero page-hero--members" aria-labelledby="members-dashboard-title">
-  <div class="page-hero-backdrop" aria-hidden="true"></div>
-  <div class="page-hero-inner">
-    <h2 id="members-dashboard-title">Member dashboard</h2>
-    <p class="page-hero-lead">Manage your club profile, membership status, and the tools you use to help keep SNH Pinball Club running.</p>
-    <p class="page-hero-note">If something looks off, email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a> and we'll help sort it out.</p>
-  </div>
-</section>
-
-<main>
+<main id="account-main">
+  <section class="club-page-heading club-page-heading--quiet" aria-labelledby="members-dashboard-title">
+    <div><p class="club-eyebrow">Your club account</p><h1 id="members-dashboard-title">My Account</h1><p class="club-lead">Your profile, membership, and the tools you use to keep the club running.</p><p id="auth-status" class="auth-status" aria-live="polite"></p></div>
+    <label class="club-theme-label" for="club-theme">Appearance
+  <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+</label>
+  </section>
   <section class="content members-dashboard">
     <div class="members-layout">
       <nav class="members-sidebar" aria-label="Member dashboard sections">
-        <p class="members-sidebar-title">Dashboard</p>
+        <p class="members-sidebar-title">Your account</p>
         <ul class="members-sidebar-list">
           <li>
             <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">
@@ -112,70 +111,91 @@
             </button>
           </li>
         </ul>
+        <p class="account-help">Need a hand?<br><a href="mailto:info@snhpinballclub.com">Contact the club</a></p>
       </nav>
 
       <div class="members-panels">
         <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
-          <h3>Profile</h3>
+          <h2>Profile</h2>
           <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. Anything you save here stays with the club and isn't shared with other members yet.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
 
           <form id="profile-form" class="members-profile-form">
-            <h3>Account</h3>
+            <fieldset class="club-form-section"><legend>Account basics</legend>
             <p class="member-panel-helper">Basic info the club uses to recognize you.</p>
 
-            <label for="member-email">Email</label>
+              <div class="club-field">
+                <label for="member-email">Email</label>
             <input id="member-email" type="email" disabled>
 
-            <label for="member-first-name">First name</label>
-            <input id="member-first-name" type="text" maxlength="80" placeholder="Your first name">
+              </div>
+              <div class="club-field">
+                <label for="member-first-name">First name</label>
+            <input id="member-first-name" autocomplete="given-name" type="text" maxlength="80" placeholder="Your first name">
 
-            <label for="member-last-name">Last name</label>
-            <input id="member-last-name" type="text" maxlength="80" placeholder="Your last name">
+              </div>
+              <div class="club-field">
+                <label for="member-last-name">Last name</label>
+            <input id="member-last-name" autocomplete="family-name" type="text" maxlength="80" placeholder="Your last name">
 
-            <label for="member-display-name">Display name</label>
-            <input id="member-display-name" type="text" maxlength="60" placeholder="How should the club display your name?">
+              </div>
+              <div class="club-field">
+                <label for="member-display-name">Display name</label>
+            <input id="member-display-name" autocomplete="nickname" type="text" maxlength="60" placeholder="How should the club display your name?">
 
-            <label for="member-avatar-url">Avatar image URL (HTTPS)</label>
-            <p class="member-form-hint">Direct HTTPS link to a square photo you have rights to use.</p>
-            <input id="member-avatar-url" type="url" maxlength="500" placeholder="https://…" inputmode="url" autocomplete="photo">
+              </div>
+              <div class="club-field">
+                <label for="member-avatar-url">Avatar image URL (HTTPS)</label>
+            <p class="member-form-hint" id="member-avatar-url-help">Direct HTTPS link to a square photo you have rights to use.</p>
+            <input aria-describedby="member-avatar-url-help" id="member-avatar-url" type="url" maxlength="500" placeholder="https://…" inputmode="url" autocomplete="photo">
             <div class="members-avatar-preview-wrap">
               <img id="member-avatar-preview" class="members-avatar-preview" src="" alt="" hidden width="72" height="72">
             </div>
 
-            <h3>Pinball profiles</h3>
+              </div>
+            </fieldset>
+            <fieldset class="club-form-section"><legend>Pinball profiles</legend>
             <p class="member-panel-helper">Optional identifiers that link your club account to tournament results, event tools, leaderboards, and other club features as we build them. All optional, and nothing here is shared automatically with other members.</p>
 
-            <label for="member-ifpa-number">IFPA player number</label>
-            <p class="member-form-hint">Connects your IFPA profile and competitive history. The digits from your profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
+              <div class="club-field">
+                <label for="member-ifpa-number">IFPA player number</label>
+            <p class="member-form-hint" id="member-ifpa-number-help">Connects your IFPA profile and competitive history. The digits from your profile on <a href="https://www.ifpapinball.com/" target="_blank" rel="noopener noreferrer">ifpapinball.com</a>.</p>
             <div class="members-inline-link-row">
-              <input id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
+              <input aria-describedby="member-ifpa-number-help" id="member-ifpa-number" type="text" maxlength="12" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 12345" autocomplete="off" spellcheck="false">
               <p class="members-link-preview" id="member-ifpa-link-wrap" hidden>
                 <a id="member-ifpa-link" target="_blank" rel="noopener noreferrer">View profile</a>
               </p>
             </div>
 
-            <label for="member-stern-insider-username">Stern Insider username</label>
-            <p class="member-form-hint">Useful for Stern-connected events, scores, and future club features.</p>
-            <input id="member-stern-insider-username" type="text" maxlength="80" placeholder="e.g. player123" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="club-field">
+                <label for="member-stern-insider-username">Stern Insider username</label>
+            <p class="member-form-hint" id="member-stern-insider-username-help">Useful for Stern-connected events, scores, and future club features.</p>
+            <input aria-describedby="member-stern-insider-username-help" id="member-stern-insider-username" type="text" maxlength="80" placeholder="e.g. player123" autocomplete="off" spellcheck="false">
 
-            <label for="member-matchplay-player-id">MatchPlay player ID</label>
-            <p class="member-form-hint">Connects your profile with <a href="https://app.matchplay.events/" target="_blank" rel="noopener noreferrer">MatchPlay</a> events and tournament results.</p>
+              </div>
+              <div class="club-field">
+                <label for="member-matchplay-player-id">MatchPlay player ID</label>
+            <p class="member-form-hint" id="member-matchplay-player-id-help">Connects your profile with <a href="https://app.matchplay.events/" target="_blank" rel="noopener noreferrer">MatchPlay</a> events and tournament results.</p>
             <div class="members-inline-link-row">
-              <input id="member-matchplay-player-id" type="text" maxlength="80" placeholder="e.g. 17938" autocomplete="off" spellcheck="false">
+              <input aria-describedby="member-matchplay-player-id-help" id="member-matchplay-player-id" type="text" maxlength="80" placeholder="e.g. 17938" autocomplete="off" spellcheck="false">
               <p class="members-link-preview" id="member-matchplay-link-wrap" hidden>
                 <a id="member-matchplay-link" target="_blank" rel="noopener noreferrer">View profile</a>
               </p>
             </div>
 
-            <h3>Privacy</h3>
+              </div>
+            </fieldset>
+            <section class="account-privacy" aria-labelledby="account-privacy-title"><h3 id="account-privacy-title">Privacy</h3>
             <p class="member-panel-helper">Storing the details above is separate from showing them to other members. The club doesn't have a member-facing profile view yet, so nothing in your profile is shared. Sharing controls will live in this section once that view exists.</p>
 
-            <button type="submit">Save profile</button>
+            </section>
+            <div class="account-save"><button type="submit">Save profile</button></div>
           </form>
 
-          <h3>Password</h3>
           <form id="password-form" class="members-profile-form">
+            <fieldset class="club-form-section"><legend>Password</legend>
+            <p class="member-panel-helper" id="password-help">Use at least 8 characters. Your current password is required unless you’re using a password-reset link.</p>
             <label id="current-password-label" for="current-password">Current password</label>
             <input
               id="current-password"
@@ -186,7 +206,7 @@
 
             <label for="new-password">New password</label>
             <input
-              id="new-password"
+              id="new-password" aria-describedby="password-help"
               type="password"
               autocomplete="new-password"
               minlength="8"
@@ -203,12 +223,13 @@
             >
 
             <button type="submit">Update password</button>
+            </fieldset>
           </form>
           <p id="password-status" aria-live="polite" class="members-page-status"></p>
         </div>
 
         <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
-          <h3>Membership</h3>
+          <h2>Membership</h2>
           <p class="member-panel-intro">Everyone who registers is a Basic Member. The treasurer changes your account to Full Access Member after checking your recurring PayPal subscription.</p>
           <div class="membership-card">
             <p><strong>Current membership:</strong> <span id="membership-status">Loading...</span></p>
@@ -230,7 +251,7 @@
         </div>
 
         <div id="member-panel-door" class="member-panel" role="region" aria-labelledby="member-nav-door" tabindex="-1" aria-hidden="true">
-          <h3>Door code</h3>
+          <h2>Door code</h2>
           <div class="membership-card">
             <p>Full Access Members can reveal the current code here.</p>
             <button type="button" id="door-code-reveal">Reveal door code</button>
@@ -246,7 +267,7 @@
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
-          <h3>Member Tools</h3>
+          <h2>Member Tools</h2>
           <p id="member-admin-intro" class="member-panel-intro">Look up members, see at-a-glance stats, and manage who has access to which tools. Use this to onboard a new helper, hand off a role, or check on a member record before answering a question.</p>
           <p id="member-admin-access" class="member-panel-access-note" hidden></p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
@@ -311,7 +332,7 @@
         </div>
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
-          <h3>Events</h3>
+          <h2>Events</h2>
           <p id="member-events-intro" class="member-panel-intro">Keep the public events calendar accurate. Add tournaments, open houses, and league nights, edit details if plans change, and unpublish anything that gets cancelled. Anything you publish here lands on the public Events page right away.</p>
           <p id="member-events-access" class="member-panel-access-note" hidden></p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
@@ -445,7 +466,7 @@
         </div>
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
-          <h3>Photos</h3>
+          <h2>Photos</h2>
           <p id="member-photos-intro" class="member-panel-intro">Curate the club photo gallery: organize albums, upload originals, write captions and alt text, and publish what should appear on the public site. Originals stay private; only published derivatives are publicly visible.</p>
           <p id="member-photos-access" class="member-panel-access-note" hidden></p>
           <p id="member-photos-status" class="members-page-status" aria-live="polite"></p>
@@ -453,14 +474,14 @@
         </div>
 
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
-          <h3>Games</h3>
+          <h2>Games</h2>
           <p id="member-games-intro" class="member-panel-intro">Keep the club's game list current: add a machine when it lands on the floor, update floor and maintenance details, link owner parties, and make sure the catalog reflects what members will actually see at the club.</p>
           <p id="member-games-access" class="member-panel-access-note" hidden></p>
           <div id="member-games-app" class="member-games-app" aria-live="polite"></div>
         </div>
 
         <div id="member-panel-club-issues" class="member-panel" role="region" aria-labelledby="member-nav-club-issues" tabindex="-1" aria-hidden="true">
-          <h3>Club &amp; machine notes</h3>
+          <h2>Club &amp; machine notes</h2>
           <p class="member-panel-intro">A shared place to track machine issues, floor notes, and club tasks so other helpers know what needs attention. Some machine-condition notes arrive from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a> submissions; others are filed here in the portal. Every signed-in member can read the list and add a note. Each note shows who or what submitted it when that is known. Members with a portal helper role (events, photos, games, or membership) can edit existing notes and move status between Incoming, In progress, and Resolved.</p>
           <div id="member-club-issues-app" class="member-club-issues-app" aria-live="polite"></div>
         </div>
@@ -570,12 +591,12 @@
     var profileFormBaseline = null;
     var profileFormSaving = false;
 
-    function setPageStatus(message) {
-      if (pageStatus) pageStatus.textContent = message;
+    function setPageStatus(message, tone) {
+      if (pageStatus) { pageStatus.textContent = message; pageStatus.dataset.tone = tone || "info"; }
     }
 
-    function setPasswordStatus(message) {
-      if (passwordStatus) passwordStatus.textContent = message;
+    function setPasswordStatus(message, tone) {
+      if (passwordStatus) { passwordStatus.textContent = message; passwordStatus.dataset.tone = tone || "info"; }
     }
 
     function setEventsStatus(message) {
@@ -1990,7 +2011,7 @@
       var displayName = displayNameInput.value.trim();
       var avatarVal = avatarUrlInput ? avatarUrlInput.value.trim() : "";
       if (!isAllowedHttpUrl(avatarVal)) {
-        setPageStatus("Please enter a valid http(s) avatar URL, or leave that field blank.");
+        setPageStatus("Please enter a valid http(s) avatar URL, or leave that field blank.", "error");
         return;
       }
       try {
@@ -2008,12 +2029,12 @@
           ifpa_player_id: ifpaNumberInput ? ifpaNumberInput.value : ""
         });
         profileFormBaseline = readProfileFormState();
-        setPageStatus("Profile saved.");
+        setPageStatus("Profile saved.", "success");
         syncAvatarPreview();
         syncIfpaProfileLink();
         syncMatchplayProfileLink();
       } catch (err) {
-        setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+        setPageStatus("Could not save profile: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err), "error");
       } finally {
         profileFormSaving = false;
         syncProfileSubmitButton();
@@ -2028,19 +2049,19 @@
       var confirmPassword = confirmPasswordInput.value;
 
       if (!newPassword || !confirmPassword) {
-        setPasswordStatus("Enter and confirm your new password.");
+        setPasswordStatus("Enter and confirm your new password.", "error");
         return;
       }
       if (!recoveryMode && !currentPassword) {
-        setPasswordStatus("Enter your current password, then enter and confirm your new password.");
+        setPasswordStatus("Enter your current password, then enter and confirm your new password.", "error");
         return;
       }
       if (newPassword.length < 8) {
-        setPasswordStatus("Password must be at least 8 characters.");
+        setPasswordStatus("Password must be at least 8 characters.", "error");
         return;
       }
       if (newPassword !== confirmPassword) {
-        setPasswordStatus("Password confirmation does not match.");
+        setPasswordStatus("Password confirmation does not match.", "error");
         return;
       }
 
@@ -2055,7 +2076,7 @@
           );
         }
         passwordForm.reset();
-        setPasswordStatus("Password updated successfully.");
+        setPasswordStatus("Password updated successfully.", "success");
         recoveryMode = false;
         applyPasswordRecoveryUi();
         await window.SNHMemberPortal.applyAuthChrome({
@@ -2066,7 +2087,7 @@
           window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
         }
       } catch (err) {
-        setPasswordStatus("Could not update password: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+        setPasswordStatus("Could not update password: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err), "error");
       }
     });
 
@@ -2080,5 +2101,6 @@
 </script>
 <script src="assets/js/site-account.js"></script>
 
+<script src="assets/js/clubhouse.js"></script>
 </body>
 </html>

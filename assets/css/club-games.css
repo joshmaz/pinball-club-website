@@ -1,0 +1,48 @@
+/* Artwork-first collection cards and a quiet catalog toolbar. */
+.club-games .games-note { max-width: 65ch; font-size: .95rem; }
+.club-games .games-timeline-controls { background: var(--club-surface); padding: 1.5rem; border-color: var(--club-line); border-radius: var(--club-radius); }
+.club-games .games-timeline-label { color: var(--club-teal); font: 700 .8rem/1.5 var(--club-display); text-transform: uppercase; letter-spacing: .07em; }
+.club-games .games-timeline-range { accent-color: var(--club-teal); min-height: 32px; cursor: pointer; }
+.club-games .games-timeline-date-input-row { gap: .7rem; font-size: .85rem; }
+.club-games .games-timeline-date-input-row :is(input[type="date"],button) { font: inherit; min-height: 44px; padding: .6rem .8rem; }
+.club-games .games-timeline-date-input-row button { color: var(--club-teal); font-weight: 650; }
+.club-games .games-show-all-toggle { min-height: 44px; margin-left: auto; }
+.club-games .games-show-all-toggle input { width: 20px; height: 20px; }
+.club-games .games-timeline-status { font-size: .85rem; margin-top: 1rem; }
+.games-collection-toolbar { display: flex; gap: 2rem; align-items: flex-start; justify-content: space-between; margin: 1.5rem 0; }
+.games-search { flex: 1; max-width: 30rem; }
+#games-search-status { margin: 0; font-size: .8rem; color: var(--club-muted); }
+.games-legend { margin: 0; font-size: .75rem; color: var(--club-muted); line-height: 1.9; }
+.games-history-label { font: 700 .68rem var(--club-display); text-transform: uppercase; }
+.club-games .games-list { grid-template-columns: repeat(auto-fill,minmax(min(290px,100%),1fr)); gap: 1.25rem; align-items: start; }
+.club-games .games-list-item { display: flex; flex-direction: column; padding: 1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); min-width: 0; }
+.club-games .games-list-item .game-card-figure { order: -1; margin: 0 0 1rem; }
+.club-games .game-card-image { display: block; aspect-ratio: 4 / 3; object-fit: contain; background: var(--club-soft); border: 0; }
+.club-games .game-card-image-credit { font-size: .68rem; line-height: 1.5; }
+.games-card-heading { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; }
+.games-card-heading h3 { color: var(--club-ink); margin: 0; font-size: 1.25rem; line-height: 1.25; letter-spacing: -.025em; }
+.club-games .games-status-badge { background: var(--club-success-surface); color: var(--club-success); border: 1px solid var(--club-success); border-radius: 3px; font: 700 .65rem/1.5 var(--club-display); padding: .2rem .4rem; letter-spacing: .07em; }
+.club-games .games-status-badge--history { background: var(--club-soft); color: var(--club-muted); border-color: var(--club-line); }
+.club-games .games-details { font-size: .85rem; line-height: 1.65; }
+.games-history { border-top: 1px solid var(--club-line); margin-top: .8rem; }
+.games-history summary { cursor: pointer; padding: .7rem 0; font-size: .78rem; color: var(--club-teal); min-height: 44px; }
+.club-games .games-location-stints { margin: 0 0 .7rem; font-size: .78rem; line-height: 1.6; }
+.club-games .games-actions { justify-content: flex-start; gap: .5rem; margin-top: .5rem; }
+.club-games .games-provider-link { width: 44px; height: 44px; padding: .5rem; background: var(--club-soft); }
+.club-games .games-more-info-btn { min-height: 44px; padding: .6rem .8rem; background: var(--club-soft); color: var(--club-teal); font-size: .78rem; margin: 0; }
+.club-games .games-edit-link { background: transparent; }
+.club-games .games-more-info-dialog { max-width: 46rem; background: var(--club-surface); padding: 1.5rem; border-radius: var(--club-radius); }
+.club-games .games-more-info-title { font-size: 1.5rem; letter-spacing: -.03em; }
+.club-games .games-profile-tabs { flex-wrap: wrap; }
+.club-games .games-profile-tab, .club-games .games-more-info-close { min-height: 44px; font: inherit; font-size: .85rem; }
+.club-games .games-profile-tab[aria-selected="true"] { font-weight: 700; }
+.club-games .games-more-info-body { line-height: 1.65; }
+.club-games .games-footnote { border-top: 1px solid var(--club-line); padding-top: 1.5rem; margin-top: 2rem; font-size: .78rem; line-height: 1.65; }
+@media(max-width:650px) {
+ .games-collection-toolbar { flex-direction: column; gap: 1rem; }
+ .games-search { width: 100%; max-width: none; }
+ .club-games .games-show-all-toggle { margin-left: 0; width: 100%; }
+ .club-games .games-timeline-controls { padding: 1rem; }
+ .club-games .games-more-info-dialog { margin: 2vh .5rem; max-height: 96vh; padding: 1rem; }
+}
+.club-games .games-timeline-date-input-row :is(input[type="date"],button) { border-color: var(--club-control-line); }

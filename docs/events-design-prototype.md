@@ -1,44 +1,53 @@
-# Events: clubhouse / retro digital experiment
+# SNHPC clubhouse redesign branch
 
-Branch base: main `6e6691a`, including merged reconciliation PR #98. The recovered audit styling and regression test are present. This branch does not depend on an outstanding reconciliation PR.
+The existing `codex/events-clubhouse-prototype` branch is an evolving site-design experiment. Initial work started from main `6e6691a`, after reconciliation PR #98 was merged. Subsequent commits preserve that work and add independently revertible refinements. Do not merge automatically.
 
-## Scope and architecture
+## Normal routes and scope
 
-The existing site is static HTML, a shared `assets/css/styles.css` token sheet, and plain browser JavaScript. `events.js` owns the public calendar, year navigator, capability-gated editor links, and photo spotlight. `public-data.js` loads live public events with the existing JSON snapshot fallback. Those loading, authorization, and archive contracts are unchanged.
+- `index.html`: the redesigned homepage, promoted from the initial comparison study. The comparison wrapper and duplicate `home-prototype.html` are removed. All original homepage link destinations, contact/location details, current-club status, dynamic photo highlights/lightbox, data-driven machine gallery, and shared account menu remain. Old contradictory reopening copy is replaced by the already-established open-club copy. The machine slideshow has a pause/play control and respects reduced motion and background tabs.
+- `events.html`: existing date-led cards, year archive, dynamic selected-year hint, data loading, photo spotlight, provider-labeled links, and authorized edit actions remain. Only shared foundation names changed in this increment.
+- `games.html`: artwork-first responsive cards, semantic titles, current/history badges with an explanatory legend, native expandable location histories, larger controls, and search within the selected timeline lineup. Timeline/date/all-history behavior, sorting, live/snapshot loading, image attribution, provider links, tabbed dialogs, and permission-gated editor routes are retained.
+- `members.html`: My Account on its existing route. Quieter heading/navigation, semantic profile fieldsets, paired name inputs, associated helper text, password grouping, readable membership card, and textual success/error notices. Existing fields, saves, recovery flow, role-gated tools, deep links, door-code behavior, server authorization, and membership semantics remain.
 
-Only Events loads `events-prototype.css` and `events-prototype.js`; its root class scopes the new token palette. Existing shared CSS and theme.js are unchanged. There is one card DOM for both themes. The existing synchronous theme controller supports light/dark/system via `snh-theme` local storage, tracks system changes, and sets color-scheme before paint. The Events selector calls its public API; the existing icon-only toggle is hidden on Events. The preference remains shared with the rest of the site, whose appearance stays unchanged except for that existing theme behavior.
+Resources, Merch, About, sign-in and other routes are not redesigned. No new database schema, integration, backend query, authentication bypass, or production fixture is added.
 
-`--club-bg`, `--club-surface`, `--club-soft`, `--club-ink`, `--club-muted`, `--club-teal`, `--club-line`, and `--club-amber` define deliberate light/dark pairs with CSS light-dark(), consistent with the existing browser baseline. Light uses warm off-white and navy with deep teal; dark uses navy with pale text/cyan and limited amber labels. Selected existing tokens are mapped to these values. Radius, spacing, and monospace display font are tokens too. System sans-serif remains the body font; no external font download. Monospace dates and small labels provide the digital character.
+## Shared design pieces
 
-Changes: Events-only brand/navigation layout, editorial introduction, welcome panel, explicit theme selector, date-led compact cards, semantic full dates, readable metadata and complete descriptions, provider-labeled external links, contained event images, and restyled archive controls. Photo highlights retain their existing behavior. Member edit actions remain plain and permission-gated. Focus rings, a skip link, 44px controls, responsive cards, textual statuses and reduced-motion scrolling are included.
+`assets/css/clubhouse.css` is an opt-in foundation loaded after the legacy stylesheet by the four redesigned routes, identified by the `clubhouse` root class. It extracts/renames the earlier Events foundation rather than adding a competing palette. Page-specific composition lives in `home.css`, `club-games.css`, and `club-account.css`; existing Events rules remain in the foundation for now.
 
-## Brand inventory
+The `--club-*` semantic tokens cover warm-neutral/navy light and navy/cyan dark surfaces, text, teal, amber, borders, control boundaries, success/error palettes, radius, spacing, and monospace display typography. Relevant legacy variables are mapped to these values so existing components inherit the system. System sans-serif is used for body/forms; local monospace is limited to display labels and status/date treatments. No external fonts.
 
-Existing assets inspected before editing:
-- `SNHPC_logo_color.png` (511×461): used as the header home link, entire image at natural aspect ratio.
+Unchanged `theme.js` resolves Light/Dark/System synchronously and persists explicit preferences under `snh-theme`. `clubhouse.js` binds the same labeled native Appearance selector on all four pages and follows changes to the controller's preference. There is one DOM per page, not duplicated light/dark markup. Preferences are shared across this preview's pages; production is a separate storage origin. The existing CSS light-dark() browser baseline is unchanged.
+
+New reusable patterns include an optional quiet page heading, labeled search/control field, semantic fieldset surface, compact application sidebar, membership/status card, and success/error notice. Game cards use the same surfaces with little ornament so the images dominate. Native details/summary exposes location history without hiding or truncating the underlying data. Search matches all entered words against the currently selected lineup's title/description, preserving timeline membership and ordering.
+
+## Brand assets
+
+Inventory inspected before the initial design:
+- `SNHPC_logo_color.png` (511×461): entire header image, natural aspect ratio.
 - `SNHPC_logo_mono.png` (613×612): available, unused.
 - `snhpc_logo_small.png` (613×613): available, unused.
-- `snhpc_logo_small_cropped.png` (442×201): existing footer asset, kept exactly as supplied. No new crop.
+- `snhpc_logo_small_cropped.png` (442×201): existing footer asset retained exactly; no new crop.
 - `snhpc_original-logo.jpg`: historical asset, unused.
 
-Partner/event artwork includes Pintastic, NEPL, lobster, and American Pinball Warrior assets; these are not substitutes for the club identity. No artwork files changed; no filters, recoloring, transforms, cropping or generated logos.
+All artwork bytes are unchanged. Logos have no filters, recoloring, cropping, transformation, or generated substitute. A neutral backing behind the full header asset keeps the navy artwork legible in dark mode. The homepage's existing `snhpc_club02.jpg` is captioned as archive photography, not represented as a current venue photo. Machine artwork and attribution come from the existing catalog pipeline.
 
-## Real data and deferred modeling
+## Data intentionally deferred
 
-No sample events, links, migrations, or writes are introduced. `eventPresentationLinks` accepts optional presentation input `externalLinks: [{url, label?}]`, and appends/deduplicates today's single `event.url`. Known hostnames receive Match Play / Facebook / Discord labels; other HTTP(S) URLs are labeled Event details. Unsafe schemes are omitted. Optional multi-link input is exercised only by tests; current production loader still supplies one URL. Future schema/editor/export work must deliberately supply the array, with server-side validation and authorization. Nothing is secretly fabricated from a title or club social URL.
+Events still receives a single URL from its production loader. Its isolated presentation adapter accepts optional `externalLinks: [{url, label?}]`, appends/deduplicates the legacy URL, labels known HTTP(S) hosts, and rejects unsafe schemes. Multiple links occur only in tests until a separate schema/editor/export change is approved. No event links are fabricated.
 
-The current public loader/snapshot supplies calendar dates, not reliable times. Cards explicitly say Time not listed unless presentation input supplies `time`. Existing free-text details remain fully visible. Proper time/zone and all-day semantics need a separate data contract; do not render midnight placeholders as start times.
+Public event records supply calendar dates without reliable start times. Cards retain “Time not listed” unless explicit presentation time is supplied. Database timestamp/timezone/all-day semantics remain a separate contract decision. Existing event descriptions remain complete. Payment automation, Discord connections, notifications, and new account integrations are not implemented.
 
-## Extending or rejecting
+## Validation and review
 
-To extend later, promote approved semantic tokens to shared CSS, then opt in one page at a time. Extract common card/link conventions only where useful; keep member/admin layouts neutral and dense. Review time and multi-link modeling separately. To reject, close the PR/delete its branch. Production remains unchanged; no database or content cleanup is needed. Other pages in the preview remain direct visual comparisons. Preview and production use separate browser storage origins.
+The normal `node scripts/build-preview.mjs` pipeline runs all `scripts/*.test.mjs`, duplicate-event validation, public-snapshot checks and the static build. Local builds use placeholder public Supabase settings and exercise real checked-in snapshot fallback. No separate repository lint command exists; JavaScript/inline-script syntax checks and `git diff --check` supplement the build.
 
-## Validation
+Browser review covers desktop/mobile light and dark, normal Home/Events/Games routes, search including no-results/clear and all-history, timeline selection, game dialog tabs/Escape/focus return, account field grouping, membership, role-gated navigation, simulated save success/error, and recovery layout. Account interactions use a temporary localhost-only fixture with fake data and stubbed writes; it is removed by the final clean build and is never committed or deployed. Live authenticated writes, role changes, door-code access and payment operations are not exercised.
 
-Run the normal `node scripts/build-preview.mjs` pipeline with public Supabase configuration. It runs every `scripts/*.test.mjs`, duplicate-event validation, public snapshot checks, and the static build. Local validation uses placeholder public settings, so live featured photos require the configured Netlify preview. The new tests cover safe multiple-link presentation and System/explicit persisted theme behavior. Existing archive-navigation and authorization tests still run. There is no separate repository lint command; use `git diff --check` plus JavaScript syntax checks.
+## Before wider rollout
 
-Verified locally: all 18 test files pass, snapshot/duplicate checks and build pass, JavaScript syntax and diff whitespace checks pass. Browser inspection covered desktop light/dark, 390px and 320px mobile widths without horizontal overflow, year selection/previous year/collapse, explicit theme after reload, System selection, and visible keyboard focus. Measured primary text/accent contrast pairs exceed 5.2:1 in both palettes. Live signed-in editing and photo RPC require the configured preview; their existing code paths are retained, with authorization covered by the repository tests.
+Extract Events-only rules out of the shared foundation; reconcile the remaining legacy token aliases; standardize header/footer markup with the site's build approach; and consolidate older admin inputs/status helpers onto the new field/control/notice patterns. Verify less common privileged panels and full authenticated workflows with club reviewers. Improve remaining legacy page designs incrementally, rather than importing this opt-in foundation everywhere at once.
 
-## Optional homepage study (requested during review)
+The branch stays separate from production. Each increment is a new commit; reverting the homepage/Games/account increment restores the preceding Events/homepage study without database or content cleanup.
 
-`home-prototype.html` is a standalone, noindex homepage mock-up. `index.html` and navigation from all existing pages stay unchanged. The mock-up reuses the Events palette and theme selector plus `home-prototype.css`, with the original color logo and footer asset unchanged. Its hero uses the existing `snhpc_club02.jpg`, explicitly captioned as archive photography, not a claim about the current venue. Existing club highlights/lightbox and account controls are reused. The layout explores a hero, current-status strip, three discovery cards, visit information, highlights, and support/contact sections. Copy uses the repository's open-club status/address and omits contradictory older reopening language; final homepage copy remains subject to review. This page is an opt-in visual study, not a replacement of the production homepage. Its token CSS still has the prototype Events name until a broader design system is approved.
+Latest increment validation: all 19 test files, snapshot/duplicate checks, build, syntax and whitespace checks passed. Four normal-route asset references resolve; the old homepage route and local account fixture are absent from the final build. All original homepage link destinations are retained. Home/Events fit at 320px; Games/account were reviewed at 390px without horizontal overflow. Signed-out `members.html` still redirects to sign-in. The shared logo backing and stronger input borders were checked as presentation changes only.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse club-games">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +9,14 @@
     <title>SNHPC - Our Games</title>
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/clubhouse.css">
+  <link rel="stylesheet" href="assets/css/club-games.css">
 </head>
 <body>
+<a class="club-skip" href="#games-main">Skip to content</a>
     <header>
-        <h1>Southern New Hampshire Pinball Club</h1>
-        <nav>
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+        <nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html" aria-current="page">Games</a>
@@ -23,18 +26,18 @@
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
     </header>
-    <main>
-        <section class="page-hero page-hero--games" aria-labelledby="games-hero-title">
-            <div class="page-hero-backdrop" aria-hidden="true"></div>
-            <div class="page-hero-inner">
-                <h2 id="games-hero-title">Our game library</h2>
-                <p class="page-hero-lead">Every machine that's passed through SNHPC, from classic EMs to modern multiball monsters.</p>
-            </div>
+    <main id="games-main">
+        <section class="club-page-heading" aria-labelledby="games-hero-title">
+          <div><p class="club-eyebrow">The SNHPC collection</p><h1 id="games-hero-title">Our games.<br><span>Every era. Every flipper.</span></h1><p class="club-lead">From classic EMs to modern multiball monsters. Discover what’s on the floor and the machines that shaped our club.</p></div>
+          <label class="club-theme-label" for="club-theme">Appearance
+  <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+</label>
         </section>
         <section class="content" aria-label="Club machine lineup">
             <p class="games-note">By default this page shows machines currently at SNHPC. Use the timeline to travel backward and see which games were on the floor at a point in club history.</p>
             <p id="games-transition-banner" class="games-transition-banner" hidden>We're between locations; games will return soon at our new venue. You can still explore our historical lineup by sliding the timeline or checking "Show all games."</p>
             <div class="games-timeline-controls" aria-label="Games timeline controls">
+                <h2 class="club-section-title">Explore the lineup</h2>
                 <label class="games-timeline-label" for="games-timeline-range">Timeline</label>
                 <input id="games-timeline-range" class="games-timeline-range" type="range" min="0" max="0" step="1" value="0" aria-describedby="games-timeline-status">
                 <div class="games-timeline-axis-labels" aria-hidden="true">
@@ -51,6 +54,10 @@
                     </label>
                 </div>
                 <p id="games-timeline-status" class="games-note games-timeline-status" aria-live="polite"></p>
+            </div>
+            <div class="games-collection-toolbar">
+              <div class="club-field games-search"><label for="games-search">Search this lineup</label><input id="games-search" type="search" placeholder="Game title or description" aria-describedby="games-search-status"><p id="games-search-status" role="status"></p></div>
+              <p class="games-legend"><span class="games-status-badge">At club</span> = here today<br><span class="games-history-label">Club history</span> = previously at SNHPC<br>Location dates show each machine’s time at the club.</p>
             </div>
             <div id="games-list" aria-label="Club pinball machines active on the selected timeline date"></div>
             <p class="games-footnote">Historical stint dates come mainly from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a> location activity we sync through their public API. Thanks to the Pinball Map project for maintaining open, community-sourced pinball location data. Because SNHPC predates Pinball Map coverage, some older periods use generalized date ranges when exact dates are unavailable.</p>
@@ -69,5 +76,6 @@
     <script src="assets/js/public-data.js"></script>
     <script src="assets/js/games.js"></script>
     <script src="assets/js/site-account.js"></script>
+<script src="assets/js/clubhouse.js"></script>
 </body>
 </html>

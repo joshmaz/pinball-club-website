@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="events-prototype">
+<html lang="en" class="clubhouse">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +9,15 @@
     <title>SNHPC - Events</title>
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/events-prototype.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
     <script src="assets/js/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
-    <a class="events-skip" href="#events-main">Skip to calendar</a>
+    <a class="club-skip" href="#events-main">Skip to calendar</a>
     <header>
-        <a class="events-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="160"></a>
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="160"></a>
         <nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html" aria-current="page">Events</a>
@@ -31,13 +31,13 @@
     <main id="events-main">
         <section class="events-intro" aria-labelledby="events-hero-title">
             <div>
-                <p class="events-eyebrow">Southern New Hampshire Pinball Club / Calendar</p>
+                <p class="club-eyebrow">Southern New Hampshire Pinball Club / Calendar</p>
                 <h1 id="events-hero-title">Good games.<br><span>Great company.</span></h1>
-                <p class="events-lead">League nights, tournaments, and a little friendly competition. Find your next reason to play.</p>
-                <a class="events-jump" href="#events-container">Find an event <span aria-hidden="true">↘</span></a>
+                <p class="club-lead">League nights, tournaments, and a little friendly competition. Find your next reason to play.</p>
+                <a class="club-button" href="#events-container">Find an event <span aria-hidden="true">↘</span></a>
             </div>
             <aside class="events-club-note" aria-label="Welcome to the club">
-                <p class="events-eyebrow">Meet at the flippers</p>
+                <p class="club-eyebrow">Meet at the flippers</p>
                 <p class="events-display">ALL SKILL<br>LEVELS.<br>ONE CLUB.</p>
                 <p>We’re open and playing. Come for an event. Stay for the company.</p>
                 <a href="about.html">Plan your visit <span aria-hidden="true">↗</span></a>
@@ -45,9 +45,9 @@
         </section>
         <section class="content" aria-label="Club events">
             <div class="events-toolbar">
-                <p class="events-eyebrow">The club calendar</p>
-                <label class="events-theme-label" for="events-theme">Appearance
-                    <select id="events-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+                <p class="club-eyebrow">The club calendar</p>
+                <label class="club-theme-label" for="club-theme">Appearance
+                    <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
                 </label>
             </div>
 
@@ -79,7 +79,7 @@
     <script src="assets/js/site-auth.js"></script>
     <script src="assets/js/public-data.js"></script>
     <script src="assets/js/events.js"></script>
-    <script src="assets/js/events-prototype.js"></script>
+    <script src="assets/js/clubhouse.js"></script>
     <script src="assets/js/site-account.js"></script>
 </body>
 </html>
