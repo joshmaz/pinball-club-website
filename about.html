@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse club-public club-about">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +9,14 @@
     <title>SNHPC - About</title>
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
+    <link rel="stylesheet" href="assets/css/club-public.css">
 </head>
 <body>
+    <a class="club-skip" href="#about-main">Skip to content</a>
     <header>
-        <h1>Southern New Hampshire Pinball Club</h1>
-        <nav>
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+        <nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html">Games</a>
@@ -23,14 +26,16 @@
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
     </header>
-    <main>
-        <section class="page-hero page-hero--about" aria-labelledby="about-hero-title">
-            <div class="page-hero-backdrop" aria-hidden="true"></div>
-            <div class="page-hero-inner">
-                <h2 id="about-hero-title">About the club</h2>
-                <p class="page-hero-lead">A member-driven pinball community built on maintenance, competition, and shared knowledge.</p>
-                <p class="page-hero-note">From warehouse roots to our new home at 48 Bridge St, Unit 3A, we keep machines playable and the community growing.</p>
+    <main id="about-main">
+        <section class="club-page-heading" aria-labelledby="about-hero-title">
+            <div>
+                <h1 id="about-hero-title">About the club</h1>
+                <p class="club-lead">A member-driven pinball community built on maintenance, competition, and shared knowledge.</p>
+                <p class="club-page-note">From warehouse roots to our new home at 48 Bridge St, Unit 3A, we keep machines playable and the community growing.</p>
             </div>
+            <label class="club-theme-label" for="club-theme">Appearance
+                <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+            </label>
         </section>
         <section class="content">
                 
@@ -90,5 +95,6 @@
     <script src="assets/js/supabase-init.js"></script>
     <script src="assets/js/site-auth.js"></script>
     <script src="assets/js/site-account.js"></script>
+    <script src="assets/js/clubhouse.js"></script>
 </body>
 </html>

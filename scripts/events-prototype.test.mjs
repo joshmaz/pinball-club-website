@@ -50,7 +50,13 @@ test('existing theme controller follows System and persists an explicit override
   app = loadTheme(false);
   assert.equal(app.theme.get(), 'dark');
   assert.equal(app.attrs.get('data-theme-resolved'), 'dark');
+  app.media.matches = true; app.media.change();
+  app.media.matches = false; app.media.change();
+  assert.equal(app.attrs.get('data-theme-resolved'), 'dark', 'explicit override ignores OS changes');
   app.theme.set('system');
   assert.equal(saved.has('snh-theme'), false);
+  app.media.matches = true; app.media.change();
+  assert.equal(app.attrs.get('data-theme-resolved'), 'dark', 'System resumes following OS changes');
+  app.media.matches = false; app.media.change();
   assert.equal(app.attrs.get('data-theme-resolved'), 'light');
 });

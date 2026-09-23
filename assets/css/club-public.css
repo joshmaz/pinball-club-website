@@ -1,0 +1,35 @@
+/* Public collections and editorial content reuse clubhouse tokens and headings. */
+.club-public .club-page-note { color: var(--club-muted); font-size: .85rem; max-width: 45rem; }
+.club-public .content { font-size: .95rem; line-height: 1.7; overflow-wrap: anywhere; }
+.club-public .content > h3 { font-size: 1.3rem; letter-spacing: -.025em; margin: 2rem 0 1rem; }
+.club-public :is(.resource-card, .merch-item, .home-highlight-card) {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  box-shadow: none;
+}
+.club-public :is(.resources-grid, .merch-grid) { grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr)); gap: 1.25rem; align-items: start; }
+.club-public :is(.resource-card-title, .merch-item h3) { color: var(--club-ink); font-size: 1.25rem; line-height: 1.35; letter-spacing: -.025em; }
+.club-public :is(.resource-card-summary, .resource-card-description, .merch-item p) { font-size: .85rem; line-height: 1.65; }
+.club-public .resources-intro { max-width: 75ch; color: var(--club-muted); }
+.club-public .resources-toolbar { border-top: 1px solid var(--club-line); padding: 1.25rem 0; margin-top: 1.5rem; }
+.club-public .resources-filter-btn { min-height: 44px; border-color: var(--club-control-line); border-radius: var(--club-radius); font-size: .85rem; }
+.club-public .resources-filter-btn--active { border-color: var(--club-teal); font-weight: 700; }
+.club-public .resources-category { background: transparent; border: 0; border-top: 1px solid var(--club-line); border-radius: 0; padding: 0 0 1.5rem; min-width: 0; }
+.club-public .resources-category > summary { min-height: 44px; padding: 1rem 0; }
+.club-public .resources-category-title { color: var(--club-ink); font-size: 1.3rem; letter-spacing: -.025em; }
+.club-public .resources-category-empty { color: var(--club-muted); }
+.club-public .resource-card-short-label { background: var(--club-soft); color: var(--club-teal); font: 700 .7rem/1.5 var(--club-display); }
+.club-public .resource-card-image { object-fit: contain; background: var(--club-soft); }
+.club-public .resource-card-permalink-anchor { min-width: 44px; min-height: 44px; }
+/* Show complete product artwork, including printed club branding. */
+.club-public .merch-item-image { object-fit: contain; height: auto; aspect-ratio: 4 / 3; padding: .5rem; background: var(--club-logo-surface); border-color: var(--club-line); }
+.club-public .merch-intro { max-width: 75ch; }
+.club-public .merch-steps { max-width: 70ch; }
+.club-about .content > p { max-width: 75ch; }
+.club-about .home-highlights-grid { margin: 1.5rem 0 2rem; gap: 1.25rem; }
+.club-about .home-highlight-card { padding: 0; }
+.club-about .home-highlight-card figcaption { color: var(--club-muted); font-size: .8rem; }
+.club-about .contact-block { padding: 1.25rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); }

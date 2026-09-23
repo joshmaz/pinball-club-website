@@ -12,15 +12,15 @@ test('normal homepage retains dynamic content and no duplicate comparison route'
   await assert.rejects(access(new URL('../home-prototype.html',import.meta.url)), {code:'ENOENT'});
 });
 
-test('all four normal routes share the theme selector without changing other pages', async () => {
-  for (const page of ['index.html','events.html','games.html','members.html']) {
+test('all seven approved routes share the theme selector without changing other pages', async () => {
+  for (const page of ['index.html','events.html','games.html','members.html','resources.html','merch.html','about.html']) {
     const html = await read(page);
     assert.match(html,/assets\/css\/clubhouse\.css/);
     assert.match(html,/assets\/js\/clubhouse\.js/);
     assert.equal((html.match(/id="club-theme"/g)||[]).length,1);
     assert.match(html,/SNHPC_logo_color\.png/);
   }
-  for (const page of ['merch.html','resources.html']) assert.doesNotMatch(await read(page),/clubhouse\.(css|js)/);
+  for (const page of ['signin.html','donate/index.html']) assert.doesNotMatch(await read(page),/clubhouse\.(css|js)/);
 });
 
 test('game search is case-insensitive, conjunctive, nonmutating and preserves lineup order', async () => {
