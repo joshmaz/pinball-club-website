@@ -1,8 +1,7 @@
 /* Public collections and editorial content reuse clubhouse tokens and headings. */
-.club-public .club-page-note { color: var(--club-muted); font-size: .85rem; max-width: 45rem; }
 .club-public .content { font-size: .95rem; line-height: 1.7; overflow-wrap: anywhere; }
 .club-public .content > h3 { font-size: 1.3rem; letter-spacing: -.025em; margin: 2rem 0 1rem; }
-.club-public :is(.resource-card, .merch-item, .home-highlight-card) {
+.club-public :is(.resource-card, .merch-item, .home-highlight-card, .donate-impact-item) {
   min-width: 0;
   padding: 1rem;
   border: 1px solid var(--club-line);
@@ -10,9 +9,9 @@
   background: var(--club-surface);
   box-shadow: none;
 }
-.club-public :is(.resources-grid, .merch-grid) { grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr)); gap: 1.25rem; align-items: start; }
-.club-public :is(.resource-card-title, .merch-item h3) { color: var(--club-ink); font-size: 1.25rem; line-height: 1.35; letter-spacing: -.025em; }
-.club-public :is(.resource-card-summary, .resource-card-description, .merch-item p) { font-size: .85rem; line-height: 1.65; }
+.club-public :is(.resources-grid, .merch-grid, .donate-impact) { grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr)); gap: 1.25rem; align-items: start; }
+.club-public :is(.resource-card-title, .merch-item h3, .donate-impact-item h3) { color: var(--club-ink); font-size: 1.25rem; line-height: 1.35; letter-spacing: -.025em; }
+.club-public :is(.resource-card-summary, .resource-card-description, .merch-item p, .donate-impact-item p) { font-size: .85rem; line-height: 1.65; }
 .club-public .resources-intro { max-width: 75ch; color: var(--club-muted); }
 .club-public .resources-toolbar { border-top: 1px solid var(--club-line); padding: 1.25rem 0; margin-top: 1.5rem; }
 .club-public .resources-filter-btn { min-height: 44px; border-color: var(--club-control-line); border-radius: var(--club-radius); font-size: .85rem; }
@@ -33,3 +32,5 @@
 .club-about .home-highlight-card { padding: 0; }
 .club-about .home-highlight-card figcaption { color: var(--club-muted); font-size: .8rem; }
 .club-about .contact-block { padding: 1.25rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); }
+
+.club-donate .content > p, .club-donate .donate-levels { max-width: 75ch; }

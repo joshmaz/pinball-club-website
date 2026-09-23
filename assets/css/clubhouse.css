@@ -77,7 +77,7 @@ html.clubhouse {
 .club-theme-label select { font: inherit; color: var(--club-ink); background: var(--club-surface); border: 1px solid var(--club-line); padding: .6rem; border-radius: var(--club-radius); min-height: 44px; }
 .clubhouse :is(a, button, select, input, textarea, summary):focus-visible { outline: 3px solid var(--club-teal); outline-offset: 4px; }
 .clubhouse footer { color: var(--club-muted); font-size: .8rem; padding: 2rem; }
-.clubhouse .footer-logo { width: 100px; height: auto; }
+.clubhouse .footer-logo { width: 120px; height: auto; padding: .5rem; border-radius: var(--club-radius); background: var(--club-logo-surface); }
 .club-skip { position: absolute; left: 1rem; top: -8rem; z-index: 2000; padding: 1rem; background: var(--club-surface); }
 .club-skip:focus { top: 1rem; }
 @media (max-width: 800px) {
@@ -122,3 +122,5 @@ html.clubhouse {
 /* Shared fieldset surface; account layout stays in club-account.css. */
 .club-form-section { min-width: 0; margin: 0; padding: 1.3rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); display: grid; gap: .7rem; }
 .club-form-section legend { padding: 0 .35rem; color: var(--club-ink); font-weight: 700; font-size: 1.05rem; }
+
+.club-page-note { color: var(--club-muted); font-size: .85rem; max-width: 45rem; }
