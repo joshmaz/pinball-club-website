@@ -50,3 +50,6 @@
 .club-home #gallery img { object-fit: cover; object-position: center; }
 #gallery-pause { padding: .6rem .8rem; min-height: 44px; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-teal); font: inherit; }
 @media(max-width:600px) { .home-floor { grid-template-columns: 1fr; } }
+
+/* The shared header already supplies the top-level divider. */
+.club-home .club-toolbar { border-bottom: 0; }
