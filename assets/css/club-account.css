@@ -55,3 +55,22 @@
 .club-account .members-profile-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) { border-color: var(--club-control-line); }
 .club-account .members-admin-controls :is(input:not([type="checkbox"]),select,button) { border: 1px solid var(--club-control-line); background: var(--club-surface); color: var(--club-ink); border-radius: var(--club-radius); font: inherit; font-size: .85rem; padding: .55rem .7rem; }
 .club-account .members-admin-controls .members-admin-search-clear { padding: 0; }
+
+/* Tool panels use the same control sizes and surfaces as the account forms.
+   Keep visibility, selection, layout and authorization with existing components. */
+.club-account :is(.member-games-input, .member-games-textarea, .members-profile-form textarea, .members-profile-form select, .member-photos-asset-meta input, .member-photos-asset-meta select) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: .6rem .7rem;
+  border: 1px solid var(--club-control-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+  font: inherit;
+  font-size: .85rem;
+}
+.club-account :is(.member-games-collapsible-summary, .member-audit-raw summary) { min-height: 44px; padding-block: .6rem; }
+.club-account :is(.member-games-party-fields-shell, .member-club-issues-card, .member-photos-main-col, .member-photos-album-form, .member-photos-asset) { border-radius: var(--club-radius); background: var(--club-surface); border-color: var(--club-line); }
+.club-account .member-photos-grid { grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr)); }
+.club-account .member-photos-album-list-item.is-active button { background: var(--club-soft); border-color: var(--club-teal); }
