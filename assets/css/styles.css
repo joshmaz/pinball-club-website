@@ -3292,6 +3292,8 @@ footer {
 .member-audit-side-label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.15rem; }
 .member-audit-more { display: block; margin-top: 0.25rem; }
 .member-audit-raw { margin-top: 0.8rem; color: var(--text-muted); }
+.member-audit-record-name { margin: 0 0 0.6rem; font-weight: 600; overflow-wrap: anywhere; }
+.member-audit-reference { margin: 0.8rem 0 0; color: var(--text-muted); font-size: 0.78rem; overflow-wrap: anywhere; }
 .member-audit-raw summary { cursor: pointer; width: fit-content; }
 .member-audit-details { max-width: none; max-height: 22rem; margin: 0.5rem 0 0; padding: 0.65rem;
   background: var(--bg-sidebar); border: 1px solid var(--border-divider); }
