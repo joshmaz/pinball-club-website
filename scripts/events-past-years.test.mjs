@@ -49,12 +49,14 @@ test('past years open, navigate, and collapse with correct selection and boundar
   }));
   context.renderPastEventsYearNavigator(region, years);
 
-  const [nav, panel] = region.children;
+  const [hint, nav, panel] = region.children;
   const [newer, tabsWrap, older] = nav.children;
   const tabs = tabsWrap.children;
   const selected = () => tabs.filter((tab) => tab.classList.contains('events-past-year-tab-selected'));
   const displayed = () => panel.children.find((child) => child.tagName === 'h3')?.textContent;
 
+  assert.equal(hint.textContent, 'Select a year to show past events.');
+  assert.equal(nav.getAttribute('aria-describedby'), hint.id);
   assert.equal(tabs.length, 4);
   assert.equal(panel.hidden, true);
   assert.equal(panel.children.length, 0);
@@ -65,6 +67,7 @@ test('past years open, navigate, and collapse with correct selection and boundar
 
   tabs[0].click();
   assert.equal(displayed(), '2026');
+  assert.equal(hint.textContent, 'Click the highlighted year to hide past events.');
   assert.equal(panel.hidden, false);
   assert.equal(panel.children.length, 3);
   assert.deepEqual(selected(), [tabs[0]]);
@@ -76,6 +79,7 @@ test('past years open, navigate, and collapse with correct selection and boundar
   assert.deepEqual(selected(), [tabs[2]]);
   newer.click();
   assert.equal(displayed(), '2025');
+  assert.equal(hint.textContent, 'Click the highlighted year to hide past events.');
   older.click();
   older.click();
   assert.equal(displayed(), '2016');
@@ -89,10 +93,12 @@ test('past years open, navigate, and collapse with correct selection and boundar
   assert.ok(tabs.every((tab) => tab.getAttribute('aria-pressed') === 'false'));
   assert.equal(newer.disabled, true);
   assert.equal(older.disabled, true);
-  assert.equal(region.children[0], nav);
+  assert.equal(hint.textContent, 'Select a year to show past events.');
+  assert.equal(region.children[1], nav);
 
   tabs[1].click();
   assert.equal(displayed(), '2025');
+  assert.equal(hint.textContent, 'Click the highlighted year to hide past events.');
   assert.deepEqual(selected(), [tabs[1]]);
   assert.equal(newer.disabled, false);
   assert.equal(older.disabled, false);

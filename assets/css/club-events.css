@@ -1,0 +1,42 @@
+/* Calendar-only composition, date cards and archive navigation. */
+.events-intro { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; align-items: center; padding: 3.5rem 0; }
+.events-intro h1 { font-size: clamp(2.6rem, 5.8vw, 4.5rem); line-height: 1.06; letter-spacing: -.055em; margin: 1rem 0; }
+.events-intro h1 span { color: var(--club-teal); }
+.events-club-note { padding: 1.4rem; border: 1px solid var(--club-line); border-top: 4px solid var(--club-teal); border-radius: var(--club-radius); background: var(--club-soft); }
+.events-club-note .events-display { font: 900 2.35rem/1.1 var(--club-display); letter-spacing: -.06em; margin: 1.1rem 0; color: var(--club-ink); }
+.events-club-note > p:not([class]) { color: var(--club-muted); font-size: .85rem; }
+.events-club-note a { font-size: .85rem; font-weight: 650; }
+.events-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-top: 1px solid var(--club-line); padding: 1.25rem 0 2rem; }
+.clubhouse .events-upcoming-heading, .clubhouse .events-past-heading { font-size: 1.6rem; letter-spacing: -.03em; }
+.clubhouse .events-upcoming-meta { margin-bottom: 1.25rem; }
+.clubhouse #events-container .event-card { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 1.5rem; padding: 1.35rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); margin-bottom: .8rem; }
+.clubhouse #events-container .event-card:not(:has(.event-date-block)) { display: block; }
+.event-date-block { align-self: start; display: flex; flex-direction: column; align-items: center; padding: .75rem .4rem; background: var(--club-soft); border-top: 3px solid var(--club-teal); border-radius: 0 0 var(--club-radius) var(--club-radius); font-family: var(--club-display); color: var(--club-teal); }
+.event-date-month { text-transform: uppercase; font-size: .8rem; letter-spacing: .1em; font-weight: 700; }
+.event-date-day { font-size: 2.4rem; font-weight: 700; line-height: 1.2; letter-spacing: -.07em; }
+.event-date-year { font-size: .7rem; color: var(--club-muted); }
+.clubhouse .event-card-badge { padding: 0; border: 0; border-radius: 0; background: none; color: var(--club-amber); font: 700 .68rem/1.5 var(--club-display); letter-spacing: .1em; margin: 0 0 .25rem; }
+.clubhouse .event-card--past .event-card-badge { color: var(--club-muted); }
+.event-card-body { min-width: 0; overflow-wrap: anywhere; }
+.clubhouse .event-card h3 { font-size: 1.22rem; line-height: 1.35; margin: 0 0 .5rem; letter-spacing: -.02em; }
+.event-card-meta, .event-card-location { font-size: .85rem; color: var(--club-muted); margin: .25rem 0; }
+.event-card-description { font-size: .92rem; line-height: 1.65; white-space: pre-line; max-width: 75ch; margin: .8rem 0; }
+.event-external-links { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin: .65rem 0 0; font-size: .83rem; font-weight: 650; }
+.event-external-links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: .2em; }
+.event-card-image { display: block; max-width: 100%; width: 240px; height: auto; margin-top: 1rem; }
+.clubhouse .event-card-actions { text-align: left; }
+.clubhouse .event-edit-link { min-height: 44px; padding: .5rem .8rem; }
+.clubhouse .events-past-region { border-top: 1px solid var(--club-line); margin-top: 2.5rem; padding-top: 2rem; }
+.clubhouse .events-past-year-tab, .clubhouse .events-past-year-arrow { min-height: 44px; font-family: var(--club-display); }
+.clubhouse .events-past-year-tab-selected { border: 2px solid var(--club-teal); font-weight: bold; }
+.clubhouse .event-spotlight { background: var(--club-surface); border-color: var(--club-line); box-shadow: none; }
+@media (max-width: 800px) {
+  .events-intro { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 0; }
+  .events-club-note { display: none; }
+}
+@media (max-width: 480px) {
+  .clubhouse #events-container .event-card { grid-template-columns: 58px minmax(0, 1fr); gap: .8rem; padding: 1rem .7rem; }
+  .event-date-day { font-size: 1.85rem; }
+  .events-toolbar { align-items: flex-start; }
+}
+.clubhouse .events-past-year-hint { color: var(--club-muted); font-size: .85rem; margin: -.25rem 0 1rem; }

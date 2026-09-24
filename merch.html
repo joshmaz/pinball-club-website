@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse club-public club-merch">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +9,15 @@
     <title>SNHPC - Merch</title>
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
+    <link rel="stylesheet" href="assets/css/club-public.css">
 </head>
 <body>
+    <a class="club-skip" href="#merch-main">Skip to content</a>
     <header>
-        <h1>Southern New Hampshire Pinball Club</h1>
-        <nav>
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html">Events</a>
             <a href="games.html">Games</a>
@@ -22,14 +26,20 @@
             <a href="about.html">About</a>
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
     </header>
-    <main>
-        <section class="page-hero page-hero--merch" aria-labelledby="merch-hero-title">
-            <div class="page-hero-backdrop" aria-hidden="true"></div>
-            <div class="page-hero-inner">
-                <h2 id="merch-hero-title">SNHPC merch</h2>
-                <p class="page-hero-lead">The online store is still in the shop, but club gear is alive and well.</p>
-                <p class="page-hero-note">Shirts, koozies, stickers, pins, and hoodies are currently available by request.</p>
+    <main id="merch-main">
+        <section class="club-page-heading" aria-labelledby="merch-hero-title">
+            <div>
+                <h1 id="merch-hero-title">SNHPC merch</h1>
+                <p class="club-lead">The online store is still in the shop, but club gear is alive and well.</p>
+                <p class="club-page-note">Shirts, koozies, stickers, pins, and hoodies are currently available by request.</p>
             </div>
         </section>
         <section class="content merch-content">
@@ -80,7 +90,7 @@
 
             <h3>How to order right now</h3>
             <ol class="merch-steps">
-                <li>Email <a href="mailto:support@snhpinballclub.com">support@snhpinballclub.com</a>, or message us on <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">Facebook</a> or <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>.</li>
+                <li>Email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a>, or message us on <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">Facebook</a> or <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>.</li>
                 <li>Tell us what you want (item + quantity, and shirt size if needed).</li>
                 <li>We will confirm availability, total, and meetup/pickup details.</li>
             </ol>
@@ -98,5 +108,6 @@
     <script src="assets/js/supabase-init.js"></script>
     <script src="assets/js/site-auth.js"></script>
     <script src="assets/js/site-account.js"></script>
+    <script src="assets/js/clubhouse.js"></script>
 </body>
 </html>

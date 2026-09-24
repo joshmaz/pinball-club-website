@@ -9,3 +9,9 @@ A broader RBAC review should consider these existing scopes separately:
 - Member Tools still returns the full directory, including email and roles, to all three membership management roles. Pagination and search here are client side; consider server side pagination and a narrower read scope for large clubs.
 
 Direct RPC checks require a running local Supabase stack with seeded member accounts. This environment does not provide Docker access, so those checks could not run here.
+
+## Future Full Access approval requirement (2026-09-23)
+
+A paid account must receive human approval before it can access Full Access resources, including the door code. Payment alone must not grant that access. Plan the approval and revocation workflow and enforce approval when serving protected resources, not only when displaying navigation.
+
+Consider showing the club code of ethics when the door code is revealed. The wording and whether acknowledgment is required remain decisions for the club. This is a future requirement only; no approval workflow, access-policy changes, or code-of-ethics UI are implemented in this visual cleanup.

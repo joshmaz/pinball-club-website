@@ -1,0 +1,78 @@
+/* Quiet application patterns; existing panel navigation and access gates remain. */
+.club-account .auth-status { color: var(--club-muted); font-size: .8rem; margin: .5rem 0 0; text-align: left; }
+.club-account .members-layout { max-width: none; grid-template-columns: 11rem minmax(0,1fr); gap: 2rem; padding: 0; }
+.club-account .members-sidebar { padding: .75rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.club-account .members-sidebar-title { color: var(--club-muted); font: 700 .7rem/1.5 var(--club-display); padding: .4rem; }
+.club-account .members-sidebar-link { background: transparent; border-color: transparent; border-radius: 4px; min-height: 44px; font-size: .85rem; padding: .65rem .7rem; }
+.club-account .members-sidebar-link.is-active { border-color: var(--club-line); border-left: 3px solid var(--club-teal); background: var(--club-soft); color: var(--club-teal); font-weight: 700; }
+.club-account .members-sidebar-link:hover { background: var(--club-soft); }
+.account-help { font-size: .75rem; line-height: 1.7; color: var(--club-muted); margin: 1.2rem .4rem .4rem; }
+.club-account .members-panels { min-width: 0; }
+.club-account .member-panel { padding: 0; background: transparent; border: 0; }
+.club-account .member-panel > :is(h2,h3) { font-size: 1.5rem; letter-spacing: -.03em; margin: 0 0 .5rem; }
+.club-account .member-panel-intro { max-width: 70ch; color: var(--club-muted); font-size: .88rem; line-height: 1.65; margin-bottom: 1.25rem; }
+.club-account .members-profile-form { max-width: none; gap: 1.3rem; margin: 1.3rem 0; }
+#profile-form > .club-form-section { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+#profile-form > .club-form-section > p, #profile-form .club-field { grid-column: 1 / -1; }
+#profile-form .club-field:has(#member-first-name), #profile-form .club-field:has(#member-last-name) { grid-column: auto; }
+.club-account .member-panel-helper { font-size: .83rem; color: var(--club-muted); line-height: 1.6; margin: 0; }
+.club-account .member-form-hint { font-size: .76rem; color: var(--club-muted); line-height: 1.6; margin: 0; }
+.club-account .members-profile-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) { min-width: 0; width: 100%; min-height: 44px; font-size: .9rem; border-color: var(--club-line); }
+.club-account .members-profile-form input:disabled { color: var(--club-muted); background: var(--club-soft); }
+.club-account .members-profile-form label { font-size: .85rem; font-weight: 650; }
+.club-account .members-profile-form button, .club-account #door-code-reveal { min-height: 44px; padding: .65rem 1rem; border: 1px solid var(--club-teal); border-radius: var(--club-radius); background: var(--club-soft); color: var(--club-teal); font: 650 .85rem/1.5 system-ui, sans-serif; cursor: pointer; }
+.club-account .members-profile-form button:disabled { color: var(--club-muted); border-color: var(--club-line); cursor: not-allowed; }
+.club-account .members-inline-link-row { flex-wrap: wrap; }
+.club-account .members-link-preview { font-size: .8rem; }
+.account-privacy { padding: 1rem 1.3rem; border-left: 3px solid var(--club-line); }
+.account-privacy h3 { margin: 0 0 .5rem; font-size: .95rem; }
+.account-save { display: flex; align-items: center; }
+.club-account .members-page-status:not(:empty) { padding: .8rem 1rem; border: 1px solid var(--club-line); border-left: 3px solid var(--club-teal); border-radius: var(--club-radius); background: var(--club-soft); font-size: .85rem; }
+.club-account .members-page-status[data-tone="success"] { background: var(--club-success-surface); color: var(--club-success); border-color: var(--club-success); }
+.club-account .members-page-status[data-tone="error"] { background: var(--club-danger-surface); color: var(--club-danger); border-color: var(--club-danger); }
+.club-account .membership-card { background: var(--club-surface); border: 1px solid var(--club-line); border-top: 3px solid var(--club-teal); border-radius: var(--club-radius); padding: 1.4rem; }
+.club-account #membership-status { display: block; font-size: 1.5rem; font-weight: 700; margin: .5rem 0; letter-spacing: -.025em; color: var(--club-ink); }
+.club-account .membership-card-note, .club-account .membership-info-list { color: var(--club-muted); font-size: .85rem; line-height: 1.65; }
+.club-account .members-admin-stats { gap: .75rem; }
+.club-account .members-admin-stat { background: var(--club-surface); border-color: var(--club-line); border-radius: var(--club-radius); }
+.club-account .members-admin-controls { gap: .6rem; }
+.club-account .members-admin-controls :is(input,select,button) { min-height: 44px; }
+.club-account .members-admin-table-wrap { max-width: 100%; }
+.club-account .members-admin-table { font-size: .82rem; }
+@media(max-width:850px) {
+ .club-account .members-layout { grid-template-columns: minmax(0,1fr); gap: 1.5rem; }
+ .club-account .members-sidebar { position: static; }
+ .club-account .members-sidebar-list { flex-direction: row; flex-wrap: wrap; gap: .3rem; }
+ .club-account .members-sidebar-list li { flex: 1 1 8rem; }
+ .club-account .members-sidebar-logout-wrap { margin: 0; padding: 0; border: 0; }
+ .account-help { margin: .5rem .4rem; }
+}
+@media(max-width:480px) {
+ #profile-form > .club-form-section { grid-template-columns: 1fr; padding: 1rem; }
+ .club-form-section { padding: 1rem; }
+ .club-account .members-inline-link-row input { width: 100%; }
+}
+.club-account .members-profile-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) { border-color: var(--club-control-line); }
+.club-account .members-admin-controls :is(input:not([type="checkbox"]),select,button) { border: 1px solid var(--club-control-line); background: var(--club-surface); color: var(--club-ink); border-radius: var(--club-radius); font: inherit; font-size: .85rem; padding: .55rem .7rem; }
+.club-account .members-admin-controls .members-admin-search-clear { padding: 0; }
+
+/* Tool panels use the same control sizes and surfaces as the account forms.
+   Keep visibility, selection, layout and authorization with existing components. */
+.club-account :is(.member-games-input, .member-games-textarea, .members-profile-form textarea, .members-profile-form select, .member-photos-asset-meta input, .member-photos-asset-meta select) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: .6rem .7rem;
+  border: 1px solid var(--club-control-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+  font: inherit;
+  font-size: .85rem;
+}
+.club-account :is(.member-games-collapsible-summary, .member-audit-raw summary) { min-height: 44px; padding-block: .6rem; }
+.club-account :is(.member-games-party-fields-shell, .member-club-issues-card, .member-photos-main-col, .member-photos-album-form, .member-photos-asset) { border-radius: var(--club-radius); background: var(--club-surface); border-color: var(--club-line); }
+.club-account .member-photos-grid { grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr)); }
+.club-account .member-photos-album-list-item.is-active button { background: var(--club-soft); border-color: var(--club-teal); }
+
+.club-account #member-page-status:empty { margin: 0; }

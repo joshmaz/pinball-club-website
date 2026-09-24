@@ -871,9 +871,16 @@ function createGamesList(games) {
       item.classList.add("games-list-item--at-club");
     }
 
-    const title = document.createElement("strong");
+    const heading = document.createElement("div");
+    heading.className = "games-card-heading";
+    const title = document.createElement("h3");
     title.textContent = game.title;
-    item.appendChild(title);
+    heading.appendChild(title);
+    const badge = document.createElement("span");
+    badge.className = isAtClub ? "games-status-badge" : "games-status-badge games-status-badge--history";
+    badge.textContent = isAtClub ? "At club" : "Club history";
+    heading.appendChild(badge);
+    item.appendChild(heading);
 
     const imageFigure = createGameImageFigure(game);
     if (imageFigure) {
@@ -903,7 +910,13 @@ function createGamesList(games) {
       const stintsEl = document.createElement("p");
       stintsEl.className = "games-location-stints";
       stintsEl.textContent = stintsText;
-      item.appendChild(stintsEl);
+      const history = document.createElement("details");
+      history.className = "games-history";
+      const summary = document.createElement("summary");
+      summary.textContent = "Location history";
+      history.appendChild(summary);
+      history.appendChild(stintsEl);
+      item.appendChild(history);
     }
 
     const kineticistUrl = game.kineticistUrl;
@@ -915,13 +928,6 @@ function createGamesList(games) {
     if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible || editHref) {
       const linkRow = document.createElement("div");
       linkRow.className = "games-actions";
-
-      if (isAtClub) {
-        const badge = document.createElement("span");
-        badge.className = "games-status-badge";
-        badge.textContent = "At club";
-        linkRow.appendChild(badge);
-      }
 
       if (kineticistUrl) {
         const kineticistLink = document.createElement("a");
@@ -1061,11 +1067,28 @@ function showMessage(container, title, details) {
   container.appendChild(card);
 }
 
+// Search narrows the selected timeline lineup; it never changes catalog data or sort order.
+function filterGamesByQuery(games, query) {
+  const terms = String(query || "").trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  return games.filter(game => {
+    const text = `${game.title || ""} ${game.details || ""}`.toLocaleLowerCase();
+    return terms.every(term => text.includes(term));
+  });
+}
+
 function renderGamesList(games) {
   const container = document.getElementById("games-list");
-  if (container) {
-    container.replaceChildren(createGamesList(games));
+  const search = document.getElementById("games-search");
+  const status = document.getElementById("games-search-status");
+  const filtered = filterGamesByQuery(games, search ? search.value : "");
+  if (status) status.textContent = `${filtered.length} of ${games.length} games in this lineup`;
+  if (!container) return;
+  if (!filtered.length) {
+    showMessage(container, games.length ? "No matching games" : "No games on this date",
+      games.length ? "Try a different title or description, or clear your search." : "Choose another date or show all games to explore the club’s history.");
+    return;
   }
+  container.replaceChildren(createGamesList(filtered));
 }
 
 async function loadGames() {
@@ -1096,6 +1119,13 @@ async function loadGames() {
     let priorGames = [];
     let hasRenderedSnapshot = false;
     let showAllMode = false;
+    let currentLineup = [];
+    function renderLineup(games) {
+      currentLineup = games;
+      renderGamesList(games);
+    }
+    const search = document.getElementById("games-search");
+    if (search) search.addEventListener("input", () => renderGamesList(currentLineup));
 
     if (transitionBanner) {
       transitionBanner.hidden = hasAnyAtClub;
@@ -1107,7 +1137,7 @@ async function loadGames() {
      */
     function renderSnapshot(selectedIso, fromCustomDate) {
       if (showAllMode) {
-        renderGamesList(sorted);
+        renderLineup(sorted);
         if (timelineStatus) {
           timelineStatus.textContent = hasAnyAtClub
             ? `All history \u00b7 ${sorted.length} games`
@@ -1123,15 +1153,7 @@ async function loadGames() {
       const added = activeGames.filter((game) => !previousTitles.has(String(game.title))).length;
       const removed = priorGames.filter((game) => !activeTitles.has(String(game.title))).length;
       priorGames = activeGames;
-      if (activeGames.length === 0) {
-        showMessage(
-          container,
-          "Between locations",
-          "No games were active at the club on this date."
-        );
-      } else {
-        renderGamesList(activeGames);
-      }
+      renderLineup(activeGames);
 
       if (timelineStatus) {
         const lead = selectedIso === todayIso ? "Now" : formatDateLabel(selectedIso);

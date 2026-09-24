@@ -73,68 +73,111 @@ function parseEventDate(dateStr) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+// Presentation-only adapter. Current data has one URL; future providers may supply
+// externalLinks: [{ url, label? }]. No schema, write path, or fabricated links.
+function eventPresentationLinks(event) {
+  const candidates = [...(Array.isArray(event.externalLinks) ? event.externalLinks : []), { url: event.url }];
+  const seen = new Set();
+  return candidates.flatMap((item) => {
+    try {
+      const url = new URL(String(item?.url || ''));
+      if (!['https:', 'http:'].includes(url.protocol) || seen.has(url.href)) return [];
+      seen.add(url.href);
+      const host = url.hostname.toLowerCase();
+      const belongsTo = (domain) => host === domain || host.endsWith('.' + domain);
+      const provider = belongsTo('matchplay.events') ? 'Match Play'
+        : belongsTo('facebook.com') || belongsTo('fb.me') ? 'Facebook'
+        : belongsTo('discord.com') || belongsTo('discord.gg') ? 'Discord' : 'Event details';
+      return [{ url: url.href, label: String(item.label || provider) }];
+    } catch { return []; }
+  });
+}
+
 function createEventCard(event, options = {}) {
   const { isUpcoming = false } = options;
   const div = document.createElement('div');
   div.className = 'event-card';
   div.classList.add(isUpcoming ? 'event-card--upcoming' : 'event-card--past');
 
-  if (isUpcoming) {
-    const badge = document.createElement('p');
-    badge.className = 'event-card-badge';
-    badge.textContent = 'Upcoming';
-    div.appendChild(badge);
+  const date = parseEventDate(event.date);
+  const dateBlock = document.createElement('div');
+  dateBlock.className = 'event-date-block';
+  dateBlock.setAttribute('aria-hidden', 'true');
+  for (const [className, value] of [
+    ['event-date-month', date ? date.toLocaleDateString('en-US', { month: 'short' }) : 'Date'],
+    ['event-date-day', date ? String(date.getDate()).padStart(2, '0') : 'TBD'],
+    ['event-date-year', date ? String(date.getFullYear()) : 'To come'],
+  ]) {
+    const part = document.createElement('span');
+    part.className = className;
+    part.textContent = value;
+    dateBlock.appendChild(part);
   }
+  div.appendChild(dateBlock);
+  const body = document.createElement('div');
+  body.className = 'event-card-body';
+  div.appendChild(body);
 
-  const imageUrl = event.imageUrl;
-  if (imageUrl != null && String(imageUrl).trim() !== '') {
-    const img = document.createElement('img');
-    img.src = String(imageUrl);
-    img.alt = `${event.title || event.name || 'Event'} image`;
-    img.loading = 'lazy';
-    img.referrerPolicy = 'no-referrer';
-    img.style.width = '100%';
-    img.style.height = 'auto';
-    img.style.borderRadius = '8px';
-    img.style.marginBottom = '0.75rem';
-    div.appendChild(img);
-  }
-
+  const badge = document.createElement('p');
+  badge.className = 'event-card-badge';
+  badge.textContent = isUpcoming ? 'Upcoming' : 'Past event';
+  body.appendChild(badge);
   const h3 = document.createElement('h3');
   h3.textContent = event.title || event.name || 'Untitled Event';
-  div.appendChild(h3);
+  body.appendChild(h3);
 
   const dateP = document.createElement('p');
-  const dateStrong = document.createElement('strong');
-  dateStrong.textContent = 'Date: ';
-  dateP.appendChild(dateStrong);
-  dateP.appendChild(document.createTextNode(String(event.date || 'TBD')));
-  div.appendChild(dateP);
+  dateP.className = 'event-card-meta';
+  const time = document.createElement('time');
+  if (date) time.setAttribute('datetime', String(event.date));
+  time.textContent = date
+    ? date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+    : 'Date to be announced';
+  dateP.appendChild(time);
+  // Public data currently supplies a calendar date, not a reliable start time.
+  // Preserve any explicit presentation time; never infer midnight as a start time.
+  dateP.appendChild(document.createTextNode(` · ${event.time || 'Time not listed'}`));
+  body.appendChild(dateP);
 
   const locP = document.createElement('p');
+  locP.className = 'event-card-location';
   const locStrong = document.createElement('strong');
   locStrong.textContent = 'Location: ';
   locP.appendChild(locStrong);
   locP.appendChild(document.createTextNode(String(event.location || 'TBD')));
-  div.appendChild(locP);
+  body.appendChild(locP);
 
-  const desc = event.description;
-  if (desc != null && String(desc).trim() !== '') {
+  if (event.description != null && String(event.description).trim() !== '') {
     const descP = document.createElement('p');
-    descP.textContent = String(desc);
-    div.appendChild(descP);
+    descP.className = 'event-card-description';
+    descP.textContent = String(event.description);
+    body.appendChild(descP);
   }
 
-  const eventUrl = event.url;
-  if (eventUrl != null && String(eventUrl).trim() !== '') {
+  const links = eventPresentationLinks(event);
+  if (links.length) {
     const linkP = document.createElement('p');
-    const link = document.createElement('a');
-    link.href = String(eventUrl);
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = 'View event details';
-    linkP.appendChild(link);
-    div.appendChild(linkP);
+    linkP.className = 'event-external-links';
+    for (const item of links) {
+      const link = document.createElement('a');
+      link.href = item.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = item.label + ' ↗';
+      link.setAttribute('aria-label', `${item.label} for ${event.title || event.name || 'event'} (opens in a new tab)`);
+      linkP.appendChild(link);
+    }
+    body.appendChild(linkP);
+  }
+
+  if (event.imageUrl != null && String(event.imageUrl).trim() !== '') {
+    const img = document.createElement('img');
+    img.src = String(event.imageUrl);
+    img.alt = `${event.title || event.name || 'Event'} image`;
+    img.loading = 'lazy';
+    img.referrerPolicy = 'no-referrer';
+    img.className = 'event-card-image';
+    body.appendChild(img);
   }
 
   const editHref = eventsCanManage ? eventEditorHref(event) : '';
@@ -147,7 +190,7 @@ function createEventCard(event, options = {}) {
     editLink.textContent = 'Edit';
     editLink.setAttribute('aria-label', `Edit ${event.title || event.name || 'event'} in Member Tools`);
     actions.appendChild(editLink);
-    div.appendChild(actions);
+    body.appendChild(actions);
   }
 
   return div;
@@ -247,10 +290,15 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
 
   let selectedIndex = null;
 
+  const hint = document.createElement('p');
+  hint.id = 'events-past-year-hint';
+  hint.className = 'events-past-year-hint';
+
   const nav = document.createElement('div');
   nav.className = 'events-past-year-nav';
   nav.setAttribute('role', 'group');
   nav.setAttribute('aria-label', 'Browse past events by year');
+  nav.setAttribute('aria-describedby', hint.id);
 
   const btnLeft = document.createElement('button');
   btnLeft.type = 'button';
@@ -276,6 +324,9 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
   function renderYearCards() {
     panel.replaceChildren();
     panel.hidden = selectedIndex === null;
+    hint.textContent = selectedIndex === null
+      ? 'Select a year to show past events.'
+      : 'Click the highlighted year to hide past events.';
 
     if (selectedIndex !== null) {
       const { year, events } = pastByYearList[selectedIndex];
@@ -302,9 +353,9 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
         const tabBounds = tabButtons[i].getBoundingClientRect();
         const wrapBounds = tabsWrap.getBoundingClientRect();
         if (tabBounds.left < wrapBounds.left) {
-          tabsWrap.scrollBy({ left: tabBounds.left - wrapBounds.left, behavior: 'smooth' });
+          tabsWrap.scrollBy({ left: tabBounds.left - wrapBounds.left, behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         } else if (tabBounds.right > wrapBounds.right) {
-          tabsWrap.scrollBy({ left: tabBounds.right - wrapBounds.right, behavior: 'smooth' });
+          tabsWrap.scrollBy({ left: tabBounds.right - wrapBounds.right, behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         }
       }
     }
@@ -347,6 +398,7 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
   nav.appendChild(tabsWrap);
   nav.appendChild(btnRight);
 
+  region.appendChild(hint);
   region.appendChild(nav);
   region.appendChild(panel);
 

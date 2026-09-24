@@ -1,0 +1,15 @@
+/* Existing authentication and recovery forms; presentation only. */
+.signin-layout { display: grid; grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); align-items: start; gap: 2rem; }
+.signin-access { padding: 1.5rem; border: 1px solid var(--club-line); border-top: 3px solid var(--club-teal); border-radius: var(--club-radius); background: var(--club-surface); min-width: 0; }
+.club-signin .members-auth-form { max-width: none; margin: 0; gap: 1rem; }
+.club-signin .members-auth-form button { min-height: 44px; width: 100%; padding: .65rem 1rem; border: 1px solid var(--club-teal); border-radius: var(--club-radius); color: var(--club-teal); background: var(--club-soft); font: 650 .85rem/1.5 system-ui, sans-serif; }
+.club-signin .members-auth-form button:disabled { color: var(--club-muted); border-color: var(--club-line); }
+.club-signin .members-auth-form input:disabled { background: var(--club-soft); color: var(--club-muted); }
+.club-signin-status:not(:empty) { border-top: 1px solid var(--club-line); padding-top: 1rem; margin: 1rem 0 0; font-size: .85rem; color: var(--club-ink); overflow-wrap: anywhere; }
+.club-signin .signin-prose { min-width: 0; font-size: .9rem; }
+.club-signin .signin-prose p { line-height: 1.7; color: var(--club-muted); }
+.club-signin .signin-prose h2 { margin: 0 0 .5rem; font-size: 1.3rem; letter-spacing: -.025em; }
+.club-signin .signin-prose h3 { font-size: 1rem; margin: 1.25rem 0 .45rem; }
+.club-signin .members-signin-callout { border-radius: var(--club-radius); }
+@media(max-width:800px) { .signin-layout { grid-template-columns: minmax(0, 1fr); } }
+@media(max-width:480px) { .signin-access { padding: 1rem; } }

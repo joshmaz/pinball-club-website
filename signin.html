@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse club-signin">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +9,8 @@
   <title>Sign in - SNHPC members</title>
   <script src="assets/js/theme.js"></script>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/clubhouse.css">
+  <link rel="stylesheet" href="assets/css/club-signin.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -28,43 +30,93 @@
   <script src="assets/js/member-portal.js"></script>
 </head>
 <body>
+<a class="club-skip" href="#signin-main">Skip to sign-in</a>
 
 <header>
-  <h1>Southern New Hampshire Pinball Club</h1>
-  <nav>
+  <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+  <div class="club-header-links">
+<nav aria-label="Main navigation">
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
     <a href="games.html">Games</a>
     <a href="merch.html">Merch</a>
     <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
-    <a href="signin.html" data-members-link aria-current="page">Members</a>
+    <a href="signin.html" data-members-link data-site-account-link aria-current="page">Members</a>
   </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
 </header>
 
-<main>
+<main id="signin-main">
 
-<section class="page-hero page-hero--members" aria-labelledby="members-hero-title">
-  <div class="page-hero-backdrop" aria-hidden="true"></div>
-  <div class="page-hero-inner">
-    <h2 id="members-hero-title">Member sign-in</h2>
-    <p class="page-hero-lead">Hop in. The member portal is where we run the club online: games, events, machine issues, photos, and more as we keep building.</p>
-    <p class="page-hero-note">New here? Create an account (it’s free), confirm your email, then sign in below. Takes a minute.</p>
+<section class="club-page-heading club-page-heading--quiet" aria-labelledby="members-hero-title">
+  <div class="signin-heading-copy">
+    <h1 id="members-hero-title">Member sign-in</h1>
+    <p class="club-lead">Hop in. The member portal is where we run the club online: games, events, machine issues, photos, and more as we keep building.</p>
+    <p class="club-page-note">New here? Create an account (it’s free), confirm your email, then sign in below. Takes a minute.</p>
   </div>
 </section>
 
+<div class="signin-layout">
+<section class="signin-access" aria-label="Sign in or create a free account">
+  <form id="auth-form" class="members-auth-form">
+    <div class="club-field">
+      <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="Email" />
+    </div>
+    <div class="club-field">
+      <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
+    </div>
+    <button id="login-btn" type="submit">Login</button>
+    <button id="signup-btn" type="button">Sign Up</button>
+    <button id="forgot-password-btn" type="button">Forgot Password</button>
+  </form>
+  <form id="password-reset-form" class="members-auth-form" hidden>
+    <div class="club-field">
+      <label for="reset-password">New password</label>
+    <input
+      id="reset-password"
+      type="password"
+      autocomplete="new-password"
+      placeholder="New password"
+      minlength="8"
+      required
+    />
+    </div>
+    <div class="club-field">
+      <label for="reset-password-confirm">Confirm new password</label>
+    <input
+      id="reset-password-confirm"
+      type="password"
+      autocomplete="new-password"
+      placeholder="Confirm new password"
+      minlength="8"
+      required
+    />
+    </div>
+    <button id="reset-password-btn" type="submit">Set New Password</button>
+  </form>
+  <p class="club-signin-status" id="status" aria-live="polite"></p>
+</section>
 <section class="content signin-prose">
-  <h3>Glad you’re here</h3>
+  <h2>Glad you’re here</h2>
   <p>
     If you play with us at SNHPC, or you’re thinking about it, this page is how you get into the
-    member portal. <strong>New here?</strong> Enter your email and password below and click
+    member portal. <strong>New here?</strong> Enter your email and password in the form and click
     <strong>Sign Up</strong>. We will send a short confirmation message to that address; open the
     link in it to verify your email, then come back here and use <strong>Login</strong> with the same
     email and password. <strong>Already set up?</strong> Just log in. No secret handshake required,
     just don’t tilt the form.
   </p>
 
-  <h4>Your account on this site</h4>
+  <h3>Your account on this site</h3>
   <p class="members-signin-callout">
     <strong>Creating and using an account on this website is free.</strong> That’s just your login
     and profile here. It is not the same thing as optional paid floor membership through the club’s
@@ -76,7 +128,7 @@
     Not live yet. We’ll shout when it ships.
   </p>
 
-  <h4>What’s in the member portal</h4>
+  <h3>What’s in the member portal</h3>
   <p>
     Behind this sign-in, the club runs a lot of day-to-day work: <strong>games</strong> catalog and
     floor history, <strong>events</strong>, <strong>machine issue</strong> reports (Pinball Map
@@ -86,7 +138,7 @@
     open more tools over time as it makes sense.
   </p>
 
-  <h4>New chapter, new website</h4>
+  <h3>New chapter, new website</h3>
   <p>
     SNHPC is writing a fresh chapter at a new home, and this site is part of that story. It’ll get
     better looking; right now we’re chasing <strong>function first</strong> so the lineup, calendar,
@@ -94,7 +146,7 @@
     still a workshop, not a showroom.
   </p>
 
-  <h4>How you can help</h4>
+  <h3>How you can help</h3>
   <p>
     We’re a nonprofit, member-driven club, and <strong>volunteers</strong> keep the lights on.
     Whether you like wrenching games, tinkering with the web, or helping keep a steady cadence of
@@ -102,34 +154,9 @@
     board member or volunteer lead at league or open play if you want to pitch in.
   </p>
 
-  <form id="auth-form" class="members-auth-form">
-    <input id="email" type="email" autocomplete="email" placeholder="Email" />
-    <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
-    <button id="login-btn" type="submit">Login</button>
-    <button id="signup-btn" type="button">Sign Up</button>
-    <button id="forgot-password-btn" type="button">Forgot Password</button>
-  </form>
-  <form id="password-reset-form" class="members-auth-form" hidden>
-    <input
-      id="reset-password"
-      type="password"
-      autocomplete="new-password"
-      placeholder="New password"
-      minlength="8"
-      required
-    />
-    <input
-      id="reset-password-confirm"
-      type="password"
-      autocomplete="new-password"
-      placeholder="Confirm new password"
-      minlength="8"
-      required
-    />
-    <button id="reset-password-btn" type="submit">Set New Password</button>
-  </form>
-  <p id="status" aria-live="polite"></p>
+
 </section>
+</div>
 
 </main>
 
@@ -415,5 +442,7 @@
   }
 </script>
 
+<script src="assets/js/site-account.js"></script>
+<script src="assets/js/clubhouse.js"></script>
 </body>
 </html>

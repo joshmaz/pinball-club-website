@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +9,18 @@
     <title>SNHPC - Events</title>
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
+    <link rel="stylesheet" href="assets/css/club-events.css">
     <script src="assets/js/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
+    <a class="club-skip" href="#events-main">Skip to calendar</a>
     <header>
-        <h1>Southern New Hampshire Pinball Club</h1>
-        <nav>
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
             <a href="index.html">Home</a>
             <a href="events.html" aria-current="page">Events</a>
             <a href="games.html">Games</a>
@@ -25,19 +29,34 @@
             <a href="about.html">About</a>
             <a href="signin.html" data-site-account-link>Members</a>
         </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
     </header>
-    <main>
-        <section class="page-hero page-hero--events" aria-labelledby="events-hero-title">
-            <div class="page-hero-backdrop" aria-hidden="true"></div>
-            <div class="page-hero-inner">
-                <h2 id="events-hero-title">Club calendar</h2>
-                <p class="page-hero-lead">Tournaments, leagues, open houses, and archives of seasons past.</p>
-                <p class="page-hero-note">Explore what is coming up, then browse past events by year.</p>
+    <main id="events-main">
+        <section class="events-intro" aria-labelledby="events-hero-title">
+            <div>
+                <p class="club-eyebrow">Southern New Hampshire Pinball Club / Calendar</p>
+                <h1 id="events-hero-title">Good games.<br><span>Great company.</span></h1>
+                <p class="club-lead">League nights, tournaments, and a little friendly competition. Find your next reason to play.</p>
+                <a class="club-button" href="#events-container">Find an event <span aria-hidden="true">↘</span></a>
             </div>
+            <aside class="events-club-note" aria-label="Welcome to the club">
+                <p class="club-eyebrow">Meet at the flippers</p>
+                <p class="events-display">ALL SKILL<br>LEVELS.<br>ONE CLUB.</p>
+                <p>We’re open and playing. Come for an event. Stay for the company.</p>
+                <a href="about.html">Plan your visit <span aria-hidden="true">↗</span></a>
+            </aside>
         </section>
-        <section class="content">
-            <p>We&rsquo;re open and playing! Regular events and league nights are underway at the club. Come see what&rsquo;s next below, stop by for an event, and play some pinball with us.</p>
-            <p>Browse <strong>upcoming</strong> and <strong>past events</strong> below. For ten years of history, explore past seasons by year.</p>
+        <section class="content" aria-label="Club events">
+            <div class="events-toolbar">
+                <p class="club-eyebrow">The club calendar</p>
+
+            </div>
 
             <!-- Dynamic event content will be injected here by events.js -->
             <div id="events-container"></div>
@@ -67,6 +86,7 @@
     <script src="assets/js/site-auth.js"></script>
     <script src="assets/js/public-data.js"></script>
     <script src="assets/js/events.js"></script>
+    <script src="assets/js/clubhouse.js"></script>
     <script src="assets/js/site-account.js"></script>
 </body>
 </html>

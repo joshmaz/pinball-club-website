@@ -1,127 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="clubhouse club-home">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#0f1216">
-  <meta name="description" content="Southern New Hampshire Pinball Club: nonprofit pinball community in Nashua. Visit our new location at 48 Bridge St, Unit 3A, plus leagues, tournaments, events, games, and membership.">
-  <title>SNHPC - Home</title>
-  <script src="assets/js/theme.js"></script>
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <script src="assets/js/config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="assets/js/supabase-init.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#0f1216">
+    <meta name="description" content="Southern New Hampshire Pinball Club: nonprofit pinball community in Nashua. Visit our new location at 48 Bridge St, Unit 3A, plus leagues, tournaments, events, games, and membership.">
+    <title>SNHPC - Home</title>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <script src="assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="assets/js/supabase-init.js"></script>
 </head>
 <body>
-
-<header>
-  <h1>Southern New Hampshire Pinball Club</h1>
-  <nav>
-    <a href="index.html" aria-current="page">Home</a>
-    <a href="events.html">Events</a>
-    <a href="games.html">Games</a>
-    <a href="merch.html">Merch</a>
-    <a href="resources.html">Resources</a>
-    <a href="about.html">About</a>
-    <a href="signin.html" data-site-account-link>Members</a>
-  </nav>
-</header>
-
-<section class="page-hero page-hero--home" aria-labelledby="home-hero-title">
-  <div class="page-hero-backdrop" aria-hidden="true"></div>
-  <div class="page-hero-inner">
-    <h2 id="home-hero-title">Flip with Honor, Drain with Pride</h2>
-    <img src="assets/images/SNHPC_logo_color.png" alt="SNH Pinball Club Logo" class="logo">
-    <p class="page-hero-lead">Southern New Hampshire&rsquo;s nonprofit pinball community: leagues, tournaments, and open play.</p>
-    <p class="page-hero-note">Our new home is at 48 Bridge St, Unit 3A in Nashua. Full club programming has returned; see <a href="events.html">Events</a> for the latest.</p>
+<a class="club-skip" href="#home-main">Skip to content</a>
+    <header>
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="160"></a>
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
+            <a href="index.html" aria-current="page">Home</a>
+            <a href="events.html">Events</a>
+            <a href="games.html">Games</a>
+            <a href="merch.html">Merch</a>
+            <a href="resources.html">Resources</a>
+            <a href="about.html">About</a>
+            <a href="signin.html" data-site-account-link>Members</a>
+        </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
   </div>
-</section>
+    </header>
 
-<main>
-<section class="content content--home">
-  <div class="home-status" role="region" aria-labelledby="home-status-title">
-    <h3 id="home-status-title">Right now</h3>
-    <p>We&rsquo;re open and excited to be hosting events again! We&rsquo;ve wrapped up NPC Season 3 and are kicking off New England Pinball League Season 38. Come on by, flip some games, meet some folks, and have a flipping good time.</p>
-  </div>
-
-  <h3 class="home-heading">Welcome</h3>
-  <p>We&rsquo;re a member-driven club built on keeping games playable, sharing repair know-how, and welcoming anyone who loves silverball, from classic EM to the newest titles. Competitive players, casual flippers, and folks learning repairs are all at home here. <strong>Membership</strong> helps sustain the club through this transition; unlimited access to the space returns when we reopen in a new home. <a href="about.html">Read our story</a> for how it works and where we came from.</p>
-
-  <h3 class="home-heading">Explore</h3>
-  <div class="home-explore-grid" aria-label="Site sections">
-    <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="events.html">Events</a></h4>
-      <p>Calendar, past seasons, and what&rsquo;s coming when we&rsquo;re back in a space.</p>
-    </article>
-    <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="games.html">Games</a></h4>
-      <p>What&rsquo;s on the floor and what has rotated through over the years.</p>
-    </article>
-    <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="merch.html">Merch</a></h4>
-      <p>Club shirts, koozies, and how to grab gear while checkout is in progress.</p>
-    </article>
-    <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="resources.html">Resources</a></h4>
-      <p>Leagues, suppliers, shows, and links we use every week.</p>
-    </article>
-    <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="about.html">About</a></h4>
-      <p>Nonprofit roots, NEPL, and the road to our next home.</p>
-    </article>
-    <article class="home-explore-card">
-      <h4 class="home-explore-card-title"><a href="signin.html">Members</a></h4>
-      <p>Sign in, manage membership, and access member tools.</p>
-    </article>
-  </div>
-
-  <h3 class="home-heading">Stay connected</h3>
-  <p>Day-to-day club chat happens on <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>, so join us there to keep up with the club. <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">Facebook</a> remains our public channel for broader updates.</p>
-
-  <h3 class="home-heading">How to find us</h3>
-  <p>Find us at <strong>48 Bridge St, Unit 3A, Nashua, NH</strong>. Use <a href="https://maps.google.com/?q=48+Bridge+St+Unit+3A+Nashua+NH" target="_blank" rel="noopener noreferrer">Google Maps directions</a>. The club is on the third floor, at the top of the staircase. An elevator is also available.</p>
-
-  <h3 class="home-heading">Club highlights</h3>
-  <p>A few snapshots from league nights, tournaments, and club hangouts while we build toward reopening.</p>
-  <div id="home-highlights-grid" class="home-highlights-grid" aria-label="Club highlight photos"></div>
-  <noscript><p>Enable JavaScript to view rotating highlight photos.</p></noscript>
-
-  <h3 class="home-heading">Support the move</h3>
-  <p>A brighter, more sustainable home takes memberships, donations, and plenty of volunteer energy. Contributions help with the move, day-to-day operations, and staying connected as a community. If you can help us get there, we&rsquo;d love it.</p>
-  <p class="home-support-actions">
-    <a href="donate/" class="cta-button">Support the club</a>
-    <a href="about.html">More about the transition</a>
-  </p>
-
-  <h3 class="home-heading">From the floor</h3>
-  <p>A rotating taste of machines we&rsquo;ve had on site. <a href="games.html">See the full games list</a> for current titles.</p>
-  <div id="gallery">
-    <img id="gallery-image" src="" alt="Pinball machine from the club collection">
-  </div>
-
-  <h3 class="home-heading">Contact</h3>
-  <p class="contact-preface">The club is volunteer-run; we typically reply within a few business days.</p>
-  <ul class="contact-block">
-    <li><span class="contact-block-label">Location</span> 48 Bridge St, Unit 3A, Nashua, NH</li>
-    <li><span class="contact-block-label">Email</span> <a href="mailto:support@snhpinballclub.com">support@snhpinballclub.com</a></li>
-    <li><span class="contact-block-label">Phone</span> <a href="tel:+16034868659">(603) 486-8659</a></li>
-  </ul>
-</section>
+<main id="home-main">
+  <section class="home-concept-hero" aria-labelledby="home-title">
+    <div class="home-concept-copy">
+      <p class="club-eyebrow">Nashua, New Hampshire / Est. 2016</p>
+      <h1 id="home-title">Flip with honor.<br><span>Drain with pride.</span></h1>
+      <p class="club-lead">A nonprofit pinball club. A room full of possibilities. A community that makes every game better.</p>
+      <div class="home-concept-actions"><a class="club-button" href="events.html">Find your next game <span aria-hidden="true">↗</span></a><a href="#visit">Plan a visit ↓</a></div>
+      <p class="home-concept-location">48 Bridge St, Unit 3A · Nashua, NH</p>
+    </div>
+    <figure class="home-concept-photo">
+      <img src="https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/photos-public/club/snh/7f3e05a8-5595-4d09-be63-53a1712c9f12/d5b1e902-de00-44fc-8d55-9409e257c1f1/web-2efd87a4ca7a.jpg" alt="Players at a row of pinball machines during NPC league night" width="1600" height="900">
+      <figcaption><span>NPC league night</span><span class="home-photo-tag">Keep the silverball rolling</span></figcaption>
+    </figure>
+  </section>
+  <section class="home-concept-status" aria-labelledby="home-status-title">
+    <h2 id="home-status-title">Open &amp; playing</h2>
+    <p>We’re open and hosting events again! NPC Season 3 has wrapped up, and New England Pinball League Season 38 is underway. Come flip some games and meet some folks.</p>
+    <a href="events.html">See what’s coming up ↗</a>
+  </section>
+  <section class="home-concept-section" aria-labelledby="home-explore-title">
+    <p class="club-eyebrow">Find your people. Find your game.</p>
+    <h2 id="home-explore-title">There’s a place for you here.</h2>
+    <div class="home-concept-grid">
+      <article><h3>Make a night of it.</h3><p>Leagues, tournaments, and friendly competition. See what’s next and explore seasons past.</p><a href="events.html">Explore events ↗</a></article>
+      <article><h3>Meet the machines.</h3><p>From classic electromechanical games to newer titles. Explore the collection and what’s on the floor.</p><a href="games.html">Browse the games ↗</a></article>
+      <article><h3>More than a high score.</h3><p>We’re member-driven: keeping games playable, sharing repair know-how, and welcoming fellow pinball fans.</p><a href="about.html">Get to know the club ↗</a></article>
+    </div>
+  </section>
+  <section id="visit" class="home-concept-visit" aria-labelledby="visit-title">
+    <div><p class="club-eyebrow">Your next stop</p><h2 id="visit-title">Come for the pinball.<br>Stay for the people.</h2><p>Competitive players, casual flippers, and folks learning repairs are all at home here.</p><a href="events.html">Check the calendar before your visit ↗</a></div>
+    <div class="home-concept-address"><h3>Find us in Nashua</h3><p><strong>48 Bridge St, Unit 3A</strong><br>Nashua, New Hampshire</p><p>Third floor, at the top of the staircase.<br>An elevator is also available.</p><a href="https://maps.google.com/?q=48+Bridge+St+Unit+3A+Nashua+NH" target="_blank" rel="noopener noreferrer">Get directions ↗</a></div>
+  </section>
+  <section class="home-concept-section" aria-labelledby="highlights-title">
+    <p class="club-eyebrow">Life at the club</p><h2 id="highlights-title">Good games. Better memories.</h2>
+    <p>Snapshots from league nights, tournaments, and club hangouts.</p>
+    <div id="home-highlights-grid" class="home-highlights-grid" aria-label="Club highlight photos"></div>
+    <noscript><p>Enable JavaScript to view the club’s highlight photos.</p></noscript>
+  </section>
+  <section class="home-concept-section home-floor" aria-labelledby="home-floor-title">
+    <div><p class="club-eyebrow">From the floor</p><h2 id="home-floor-title">A collection with history.</h2><p>A rotating taste of machines we’ve had on site. <a href="games.html">See the full games list</a> for current titles.</p><button type="button" id="gallery-pause" aria-pressed="false" hidden>Pause slideshow</button></div>
+    <div id="gallery"><img id="gallery-image" src="" alt="Pinball machine from the club collection"></div>
+  </section>
+  <section class="home-concept-bottom" aria-label="Connect and support">
+    <div><h2>Keep in touch.</h2><p>Day-to-day chat on Discord. Club updates on Facebook.</p><p><a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Join Discord ↗</a> · <a href="https://www.facebook.com/snhpinball" target="_blank" rel="noopener noreferrer">Facebook ↗</a></p><p>The club is volunteer-run; we typically reply within a few business days.</p><p><a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a><br><a href="mailto:support@snhpinballclub.com">support@snhpinballclub.com</a><br><a href="tel:+16034868659">(603) 486-8659</a></p></div>
+    <div><h2>Keep it rolling.</h2><p>Memberships, donations, and volunteer energy help sustain the games and the community around them.</p><a class="club-button" href="donate/">Support the club ↗</a><p><a href="merch.html">Club merch</a> · <a href="resources.html">Pinball resources</a> · <a href="signin.html">Member sign-in</a></p></div>
+  </section>
 </main>
-
+<footer><img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo"><p>©2026 Southern New Hampshire Pinball Club</p><a href="donate/">Support the club</a> · <a href="mailto:support@snhpinballclub.com">Contact</a> · <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a></footer>
+<script src="assets/js/clubhouse.js"></script>
 <script src="assets/js/public-data.js"></script>
 <script src="assets/js/home-gallery.js"></script>
 <script src="assets/js/home-highlights.js"></script>
 <script src="assets/js/site-auth.js"></script>
 <script src="assets/js/site-account.js"></script>
-
-<footer>
-  <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
-  <p class="footer-links"><a href="donate/">Support the club</a> · <a href="mailto:support@snhpinballclub.com">Contact</a> · <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a></p>
-  <p class="footer-note">Club chat lives on <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>, so come join us there.</p>
-  <p>©2026 Southern New Hampshire Pinball Club</p>
-</footer>
-
 </body>
 </html>
