@@ -1923,7 +1923,7 @@
       if (recoveryMode) {
         setPageStatus("Finish resetting your password below.");
       } else {
-        setPageStatus("Signed in and ready.");
+        setPageStatus("");
       }
     } catch (err) {
       emailInput.value = session.user.email || "";

@@ -2,7 +2,8 @@
 .home-concept-hero { display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 3rem; padding: 2.5rem 0; }
 .home-concept-copy h1 { font-size: clamp(2.6rem, 5.1vw, 4.1rem); letter-spacing: -.06em; line-height: 1.07; margin: 1rem 0; }
 .home-concept-copy h1 span { color: var(--club-teal); }
-.home-concept-actions { display: flex; flex-wrap: wrap; gap: 1.4rem; align-items: center; font-size: .9rem; }
+.home-concept-actions { display: flex; flex-wrap: wrap; gap: 1.4rem; align-items: baseline; font-size: .9rem; }
+.home-concept-actions .club-button { margin-top: 0; }
 .home-concept-location { margin-top: 1.6rem; font: .74rem/1.5 var(--club-display); color: var(--club-muted); }
 .home-concept-photo { margin: 0; border: 1px solid var(--club-line); border-radius: var(--club-radius); overflow: hidden; background: var(--club-surface); }
 .home-concept-photo img { width: 100%; height: 430px; object-fit: cover; object-position: center 60%; display: block; }
@@ -50,3 +51,8 @@
 .club-home #gallery img { object-fit: cover; object-position: center; }
 #gallery-pause { padding: .6rem .8rem; min-height: 44px; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-teal); font: inherit; }
 @media(max-width:600px) { .home-floor { grid-template-columns: 1fr; } }
+
+/* Keep eight desktop snapshots in balanced rows, with four on mobile. */
+.club-home .home-highlights-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .club-home .home-highlights-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 400px) { .club-home .home-highlights-grid { grid-template-columns: 1fr; } }

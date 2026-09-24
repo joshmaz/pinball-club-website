@@ -74,3 +74,5 @@
 .club-account :is(.member-games-party-fields-shell, .member-club-issues-card, .member-photos-main-col, .member-photos-album-form, .member-photos-asset) { border-radius: var(--club-radius); background: var(--club-surface); border-color: var(--club-line); }
 .club-account .member-photos-grid { grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr)); }
 .club-account .member-photos-album-list-item.is-active button { background: var(--club-soft); border-color: var(--club-teal); }
+
+.club-account #member-page-status:empty { margin: 0; }
