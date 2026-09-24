@@ -19,8 +19,7 @@
 .home-concept-section > p:not([class]) { color: var(--club-muted); }
 .home-concept-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
 .home-concept-grid article { display: flex; flex-direction: column; padding: 1.4rem; border: 1px solid var(--club-line); background: var(--club-surface); border-radius: var(--club-radius); }
-.home-concept-index { color: var(--club-amber); font: 700 .7rem/1.5 var(--club-display); letter-spacing: .06em; }
-.home-concept-grid h3 { font-size: 1.2rem; margin: 1rem 0 .5rem; }
+.home-concept-grid h3 { font-size: 1.2rem; margin: 0 0 .5rem; }
 .home-concept-grid p { color: var(--club-muted); font-size: .9rem; line-height: 1.65; margin: 0 0 1rem; }
 .home-concept-grid a { margin-top: auto; font-size: .85rem; font-weight: 650; padding: .5rem 0; }
 .home-concept-visit { display: grid; grid-template-columns: 1.3fr 1fr; gap: 3rem; padding: 2rem; background: var(--club-soft); border-radius: var(--club-radius); }
