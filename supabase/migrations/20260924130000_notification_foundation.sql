@@ -22,6 +22,7 @@ create index notification_outbox_due_idx on public.notification_outbox (availabl
   where status in ('pending', 'sending');
 alter table public.notification_outbox enable row level security;
 revoke all on public.notification_outbox from anon, authenticated;
+grant select on public.notification_outbox to service_role;
 
 create or replace function private.snh_queue_member_signup()
 returns trigger language plpgsql security definer set search_path = '' as $$
