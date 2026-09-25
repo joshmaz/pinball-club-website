@@ -109,3 +109,28 @@ those UTC calendar dates without claiming a known time. The current schema canno
 distinguish a genuine midnight-UTC start from that placeholder; resolving that
 ambiguity requires explicit time precision metadata. Local midnight at other UTC
 offsets remains a known time. No separate presentation `time` field is used.
+
+### Historical time recovery
+
+See `event-time-recovery-proposal.md` and its JSON companion for the September 25,
+2026 review set. This is a proposal, not a migration: no database updates have
+been applied. Regenerate it with:
+
+```bash
+python3 scripts/prepare-event-time-recovery.py /path/to/event-audit.json docs/event-time-recovery-proposal.json
+```
+
+The input audit contains `checkedAt` and an `unknown` array of public event rows.
+Monday league and Wednesday knockout defaults use the user's confirmed 7:30 PM
+America/New_York rule; off-weekday exceptions remain for review. Verified source
+times are identified separately. Any eventual application must update by UUID,
+compare the old timestamp, modify only `starts_at`, and record applied changes.
+Do not run the legacy bulk upsert for recovery: it can overwrite descriptions,
+publication state, and other edits. Refresh the public snapshot after recovery.
+
+Both Facebook importers now retain explicit offset-bearing start timestamps as
+`starts_at`; the database JSON importer prefers that canonical value over `date`.
+Date-only source data still uses the documented legacy placeholder. Ambiguous
+full timestamps without a timezone offset are rejected instead of guessed.
+The legacy import key retains the original calendar date when available so a
+winter evening's UTC date rollover does not change its deduplication identity.

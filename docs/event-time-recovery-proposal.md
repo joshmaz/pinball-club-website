@@ -1,0 +1,227 @@
+# Event time recovery proposal
+
+129 proposed updates; 85 records still require review.
+
+No database records have been changed. Proposed times use America/New_York with the historical daylight-saving offset. Updates must match UUID and expected timestamp, modify starts_at only, and skip any record changed since this audit.
+
+Defaults were confirmed by the user. Facebook evidence was read on September 25, 2026; these local club times are interpreted in America/New_York. Recurring dates are not inferred from another occurrence.
+
+## Proposed updates
+
+- **2026-03-02 — NEPL Season 36 - Week 8**: 19:30 New York → `2026-03-03T00:30:00Z`. User-confirmed Monday league default. UUID: `3e1653ea-3413-49b5-9743-e9d4da4fa756`.
+- **2026-02-16 — NEPL Season 36 - Week 6**: 19:30 New York → `2026-02-17T00:30:00Z`. User-confirmed Monday league default. UUID: `db8cfad2-e6df-45e2-8042-6ac4be3dbcad`.
+- **2026-02-02 — NEPL Season 36 - Week 5**: 19:30 New York → `2026-02-03T00:30:00Z`. User-confirmed Monday league default. UUID: `db80b48b-dfb1-4b1c-ab6b-39feca4f874f`.
+- **2026-01-26 — NEPL Season 36 - Week 4**: 19:30 New York → `2026-01-27T00:30:00Z`. User-confirmed Monday league default. UUID: `e86f2906-e673-44db-a0db-d9e156a2a396`.
+- **2026-01-19 — NEPL Season 36 - Week 3**: 19:30 New York → `2026-01-20T00:30:00Z`. User-confirmed Monday league default. UUID: `111829a1-0534-4c7f-9b88-d78017a8027a`.
+- **2026-01-12 — NEPL Season 36 - Week 2**: 19:30 New York → `2026-01-13T00:30:00Z`. User-confirmed Monday league default. UUID: `f9d43b7b-9bef-4a77-b31c-7e41240915f7`.
+- **2026-01-05 — NEPL Season 36 - Week 1**: 19:30 New York → `2026-01-06T00:30:00Z`. User-confirmed Monday league default. UUID: `c016fcf3-e30b-426e-a9dc-9ff2d188b8a9`.
+- **2024-10-21 — NEPL Season 33 - Week 8**: 19:30 New York → `2024-10-21T23:30:00Z`. User-confirmed Monday league default. UUID: `69cceab7-d772-4c59-aa28-91607078eade`.
+- **2024-10-14 — NEPL Season 33 - Week 7**: 19:30 New York → `2024-10-14T23:30:00Z`. User-confirmed Monday league default. UUID: `27d14911-348a-4b75-946e-1fcfd138d2d7`.
+- **2024-10-07 — NEPL Season 33 - Week 6**: 19:30 New York → `2024-10-07T23:30:00Z`. User-confirmed Monday league default. UUID: `179d293d-ec64-451f-8ad2-be83380ff62a`.
+- **2024-09-30 — NEPL Season 33 - Week 5**: 19:30 New York → `2024-09-30T23:30:00Z`. User-confirmed Monday league default. UUID: `760b08f1-b5cd-4c7a-811a-297215b20814`.
+- **2024-09-23 — NEPL Season 33 - Week 4**: 19:30 New York → `2024-09-23T23:30:00Z`. User-confirmed Monday league default. UUID: `edd77e86-e1d7-47ab-aa06-6e2ce49a4730`.
+- **2024-09-16 — NEPL Season 33 - Week 3**: 19:30 New York → `2024-09-16T23:30:00Z`. User-confirmed Monday league default. UUID: `b7776183-4478-452d-ae77-d1b0ba351823`.
+- **2024-09-09 — NEPL Season 33 - Week 2**: 19:30 New York → `2024-09-09T23:30:00Z`. User-confirmed Monday league default. UUID: `a4eb65e6-cf9d-4bc5-9b7e-2d6e33fdb41f`.
+- **2024-09-02 — NEPL Season 33 - Week 1**: 19:30 New York → `2024-09-02T23:30:00Z`. User-confirmed Monday league default. UUID: `19d7270e-d232-486d-a94b-3607eae1a12d`.
+- **2023-09-04 — New England Pinball League Week 1**: 19:30 New York → `2023-09-04T23:30:00Z`. User-confirmed Monday league default. UUID: `53571fef-fbc6-4895-93a2-3a8964e00ba1`.
+- **2023-03-22 — Wednesday Night KnockOut**: 19:30 New York → `2023-03-22T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `4dd783d9-32b9-43de-b514-761434ad6a0b`.
+- **2023-03-08 — Wednesday Night KnockOut**: 19:30 New York → `2023-03-09T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `ae7974e0-1f20-48cf-8ebb-c0c930345844`.
+- **2023-01-25 — Wesnesday Knockout**: 19:30 New York → `2023-01-26T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `86cebb0d-6c01-4fa5-bf1f-884cf67cb8ce`.
+- **2023-01-11 — Wesnesday Knockout**: 19:30 New York → `2023-01-12T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `ae7b3429-1ece-4831-8e71-87c042901b4c`.
+- **2023-01-02 — Southern NH Pinball League - Season 3**: 19:30 New York → `2023-01-03T00:30:00Z`. User-confirmed Monday league default. UUID: `e5f8c9f0-0acb-4b51-9845-3e3de0ce99e1`.
+- **2022-12-28 — Wesnesday Knockout**: 19:30 New York → `2022-12-29T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `4899c2c9-4930-4724-b388-938c4338afe5`.
+- **2022-12-19 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-12-20T00:30:00Z`. User-confirmed Monday league default. UUID: `2fb75e8d-7a6c-47f4-be2a-5780b3ef8fdf`.
+- **2022-12-14 — Wesnesday Knockout**: 19:30 New York → `2022-12-15T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `e9743055-9744-41fd-b024-7fdd43a26f9f`.
+- **2022-12-12 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-12-13T00:30:00Z`. User-confirmed Monday league default. UUID: `a4af90f9-6e33-4559-82c9-e68ce9507e30`.
+- **2022-12-05 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-12-06T00:30:00Z`. User-confirmed Monday league default. UUID: `4fcc4172-f74d-4f7c-9824-7721e58a8fb4`.
+- **2022-11-30 — Wesnesday Knockout**: 19:30 New York → `2022-12-01T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `cb7fed16-5ba8-41b6-9ff8-f9f668c30318`.
+- **2022-11-28 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-11-29T00:30:00Z`. User-confirmed Monday league default. UUID: `a4eb01b4-e956-4a91-906e-af09d2e7deb5`.
+- **2022-11-21 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-11-22T00:30:00Z`. User-confirmed Monday league default. UUID: `5a5b6a71-bae1-46f0-a4d2-f5939cc0eeb6`.
+- **2022-11-16 — Wesnesday Knockout**: 19:30 New York → `2022-11-17T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `93e56087-6b08-4307-b25b-72ca7e789702`.
+- **2022-11-14 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-11-15T00:30:00Z`. User-confirmed Monday league default. UUID: `9d57107d-95c5-40f8-8aa2-ba07300fa60c`.
+- **2022-11-07 — Southern NH Pinball League - Season 3**: 19:30 New York → `2022-11-08T00:30:00Z`. User-confirmed Monday league default. UUID: `260c0256-7555-4370-9be3-36cd33943cb2`.
+- **2022-05-11 — Wednesday Night Knockout**: 19:30 New York → `2022-05-11T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `7a5bb22c-8d5a-4d64-aae5-4e878967901c`.
+- **2022-04-20 — Wednesday Night Knockout**: 19:30 New York → `2022-04-20T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `7ba879aa-08c8-49b0-828f-5850df45527a`.
+- **2022-04-11 — Southern NH Pinball League**: 19:30 New York → `2022-04-11T23:30:00Z`. User-confirmed Monday league default. UUID: `c7bcac41-02da-4e19-8449-92bcffa5adf5`.
+- **2022-04-06 — Wednesday Night Knockout**: 19:30 New York → `2022-04-06T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c3e27c9b-26c8-49f3-975a-f71cd4301564`.
+- **2022-04-04 — Southern NH Pinball League**: 19:30 New York → `2022-04-04T23:30:00Z`. User-confirmed Monday league default. UUID: `f41188a1-e9d7-42af-aa7d-a01f75d9812d`.
+- **2022-03-28 — Southern NH Pinball League**: 19:30 New York → `2022-03-28T23:30:00Z`. User-confirmed Monday league default. UUID: `6b996a4e-8544-416b-b66f-a79ac3a20e84`.
+- **2022-03-23 — Wednesday Night Knockout**: 19:30 New York → `2022-03-23T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `7e166e6b-8f18-4098-a146-982b6a8a426e`.
+- **2022-03-21 — Southern NH Pinball League**: 19:30 New York → `2022-03-21T23:30:00Z`. User-confirmed Monday league default. UUID: `4c258c0a-4f8a-40ac-9c35-eaee5ac3e4e0`.
+- **2022-03-14 — Southern NH Pinball League**: 19:30 New York → `2022-03-14T23:30:00Z`. User-confirmed Monday league default. UUID: `c268a135-a5c8-4464-b261-402bb5ace6fd`.
+- **2022-03-07 — Southern NH Pinball League**: 19:30 New York → `2022-03-08T00:30:00Z`. User-confirmed Monday league default. UUID: `77678a81-bf60-4d50-a094-dff099c63d82`.
+- **2022-03-02 — Wednesday Night Knockout**: 19:30 New York → `2022-03-03T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `f6287032-a2c7-4c3e-945a-e04d6aed04ce`.
+- **2022-02-28 — Southern NH Pinball League**: 19:30 New York → `2022-03-01T00:30:00Z`. User-confirmed Monday league default. UUID: `f7fcf209-c702-4205-91be-3579552ea95b`.
+- **2022-02-21 — Southern NH Pinball League**: 19:30 New York → `2022-02-22T00:30:00Z`. User-confirmed Monday league default. UUID: `1d31c841-395d-49e5-bd9b-4b39f421da6d`.
+- **2022-02-16 — Wednesday Night Knockout**: 19:30 New York → `2022-02-17T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c52ee41a-9792-479c-8d25-a6d4862da1b2`.
+- **2022-02-02 — Wednesday Night Knockout**: 19:30 New York → `2022-02-03T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `cdbf2378-29be-4a30-8f1c-582bb9335b45`.
+- **2022-01-19 — Wednesday Night Knockout**: 19:30 New York → `2022-01-20T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `b69d4de9-6d63-4755-b91a-84c7db98b7e9`.
+- **2022-01-05 — Wednesday Night Knockout**: 19:30 New York → `2022-01-06T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `4578d4b0-1beb-43f5-b84c-55346875d3f4`.
+- **2020-03-04 — Wednesday Night Knock-Out**: 19:30 New York → `2020-03-05T00:30:00Z`. Verified Facebook event header. UUID: `b6994b80-c0fb-4bd8-9800-a5ea6e6e0721`.
+- **2020-02-19 — Wednesday Night Knock-Out**: 19:30 New York → `2020-02-20T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `09523b42-dd70-435f-bf99-7a9fc878a79d`.
+- **2020-02-12 — Wednesday Night Knock-Out**: 19:30 New York → `2020-02-13T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `45e1e392-d305-4a91-a125-76d995c6dfc1`.
+- **2020-02-05 — Wednesday Night Knock-Out**: 19:30 New York → `2020-02-06T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c54dca75-bf27-44b8-8f11-04403f7a67db`.
+- **2020-01-22 — Wednesday Night Knock-Out**: 19:30 New York → `2020-01-23T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `a578467b-4db0-4e00-90b6-4fc4446fdd93`.
+- **2020-01-08 — Wednesday Night Knock-Out**: 19:30 New York → `2020-01-09T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c4431113-890d-4dee-bf57-d8da5cea71ab`.
+- **2019-12-18 — Wednesday Night Knock-Out**: 19:30 New York → `2019-12-19T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `962e392f-8927-4815-9a59-57c14be0a610`.
+- **2019-12-11 — Wednesday Night Knock-Out**: 19:30 New York → `2019-12-12T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `51daed31-4352-4eb5-81d1-7a0d2470c279`.
+- **2019-12-04 — Wednesday Night Knock-Out**: 19:30 New York → `2019-12-05T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `8f4f14a3-6968-49af-8125-afa4954ec07e`.
+- **2019-11-13 — Wednesday Night Knock-Out**: 19:30 New York → `2019-11-14T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `b806e4df-0471-437a-9533-9c4e417cb07f`.
+- **2019-10-30 — Wednesday Night Knock-Out**: 19:30 New York → `2019-10-30T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `050f87c8-1534-4e7e-83c6-0b34e21dddcc`.
+- **2019-10-21 — NEPL Season 22**: 19:30 New York → `2019-10-21T23:30:00Z`. User-confirmed Monday league default. UUID: `152d20bc-f054-4b6e-9698-4e3bdd9d7b44`.
+- **2019-10-16 — Wednesday Night Knock-Out**: 19:30 New York → `2019-10-16T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `831b5722-a9d7-4d14-9e48-3bbf94a5f00d`.
+- **2019-10-14 — NEPL Season 22**: 19:30 New York → `2019-10-14T23:30:00Z`. User-confirmed Monday league default. UUID: `a7bf6393-d910-4931-91ff-4b7893b7c4f8`.
+- **2019-10-07 — NEPL Season 22**: 19:30 New York → `2019-10-07T23:30:00Z`. User-confirmed Monday league default. UUID: `4299c74f-1b45-4c89-93ba-1f1ef607eb28`.
+- **2019-10-02 — Wednesday Night Knock-Out**: 19:30 New York → `2019-10-02T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `8e51c93e-698e-4f3d-bbd1-b7c34de5b8cb`.
+- **2019-09-30 — NEPL Season 22**: 19:30 New York → `2019-09-30T23:30:00Z`. User-confirmed Monday league default. UUID: `58adf5dd-050f-43bd-9133-6bdaf0d7f443`.
+- **2019-09-23 — NEPL Season 22**: 19:30 New York → `2019-09-23T23:30:00Z`. User-confirmed Monday league default. UUID: `23c4c6e4-07c4-448f-a29f-b02e773c2f23`.
+- **2019-09-18 — Wednesday Night Knock-Out**: 19:30 New York → `2019-09-18T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `dec0aadd-0d09-4e08-a64e-81ad9d3393d0`.
+- **2019-09-16 — NEPL Season 22**: 19:30 New York → `2019-09-16T23:30:00Z`. User-confirmed Monday league default. UUID: `09b3f837-2f28-4321-8f7e-7cfdd7399d1f`.
+- **2019-09-09 — NEPL Season 22**: 19:30 New York → `2019-09-09T23:30:00Z`. User-confirmed Monday league default. UUID: `646b7631-5fcd-482c-8109-deba577e4314`.
+- **2019-09-02 — NEPL Season 22**: 19:30 New York → `2019-09-02T23:30:00Z`. User-confirmed Monday league default. UUID: `c9717034-ee42-41ba-b9aa-79df7713e015`.
+- **2019-08-28 — Wednesday Night Knock-Out**: 19:30 New York → `2019-08-28T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `11982c3e-7199-4cd5-94f9-da966ddf3a8d`.
+- **2019-08-14 — Wednesday Night Knock-Out**: 19:30 New York → `2019-08-14T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `01615060-979b-4b28-9152-bc4749a5892e`.
+- **2019-07-24 — Wednesday Night Knock-Out**: 19:30 New York → `2019-07-24T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `58e96ef5-2200-4005-bc94-808afdf03bfe`.
+- **2019-07-10 — Wednesday Night Knock-Out**: 19:30 New York → `2019-07-10T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `a694db33-6b0d-4d79-940e-94846e0e4c63`.
+- **2019-06-19 — Wednesday Night Knock-Out**: 19:30 New York → `2019-06-19T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c4844391-d7e6-4aff-ab3c-b818f0ace3d8`.
+- **2019-06-05 — Wednesday Night Knock-Out**: 19:30 New York → `2019-06-05T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `9c6bf013-f91e-4568-b833-56c40439bd30`.
+- **2019-05-22 — Wednesday Night Knock-Out**: 19:30 New York → `2019-05-22T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `5f806304-ae58-4862-a0fa-3fbb7ed5956b`.
+- **2019-05-08 — Wednesday Night Knock-Out**: 19:30 New York → `2019-05-08T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c6f616eb-e27d-4b7e-b871-ab289a1756a4`.
+- **2019-04-24 — Wednesday Night Knock-Out**: 19:30 New York → `2019-04-24T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `e82c4fdb-c088-4510-b472-c566cab39fe3`.
+- **2019-04-10 — Wednesday Night Knock-Out**: 19:30 New York → `2019-04-10T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `5748bc6d-ea52-4294-997e-b398996194d7`.
+- **2019-03-27 — Wednesday Night Knock-Out**: 19:30 New York → `2019-03-27T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `70cef0e1-cb00-4402-a714-ae59e734fbd0`.
+- **2019-03-13 — Wednesday Night Knock-Out**: 19:30 New York → `2019-03-13T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `90e3f153-f2ad-427f-a432-4e0dcc5b92ba`.
+- **2019-02-27 — Wednesday Night Knock-Out**: 19:30 New York → `2019-02-28T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `d9aa715c-a23f-422e-ba55-cb3e62bf9c53`.
+- **2019-02-13 — Wednesday Night Knock-Out**: 19:30 New York → `2019-02-14T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `148ecc3a-0a1e-437e-a525-e563e1395ae2`.
+- **2019-01-30 — Wednesday Night Knock-Out**: 19:30 New York → `2019-01-31T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `080a7a5c-dd8d-455a-99b3-74b2d1b05820`.
+- **2019-01-16 — Wednesday Night Knock-Out**: 19:30 New York → `2019-01-17T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `93a97e57-7e7f-492c-b87a-983f7f24de7f`.
+- **2019-01-02 — Wednesday Night Knock-Out**: 19:30 New York → `2019-01-03T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `8a2c00aa-0d27-4721-930c-1fb83a21dcbe`.
+- **2018-12-12 — Wednesday Night Knock-Out**: 19:30 New York → `2018-12-13T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `e5f34bf6-bc96-4f66-9f08-6d8aa16bd016`.
+- **2018-11-28 — Wednesday Night Knock-Out**: 19:30 New York → `2018-11-29T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `ba6315b4-8d84-48a3-8998-6566b7b5ea47`.
+- **2018-11-14 — Wednesday Night Knock-Out**: 19:30 New York → `2018-11-15T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `0f534be8-7faf-4a85-aeef-0de4feac81f4`.
+- **2018-10-31 — Wednesday Night Knock-Out**: 19:30 New York → `2018-10-31T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `46552b17-c12a-481c-a8aa-7e9fba7cb02a`.
+- **2018-10-17 — Wednesday Night Knock-Out**: 19:30 New York → `2018-10-17T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `2cd1ab0b-f40a-458b-8c20-84afc319448d`.
+- **2018-10-03 — Wednesday Night Knock-Out**: 19:30 New York → `2018-10-03T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `706a2231-502b-4e2a-b5b9-3e91fe65a3cb`.
+- **2018-09-19 — Wednesday Night Knock-Out**: 19:30 New York → `2018-09-19T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `487e1adf-920c-433d-a2da-1148892bd4c0`.
+- **2018-06-13 — Wednesday Night Knockout**: 19:30 New York → `2018-06-13T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `c5a8b9cf-86be-434c-8f1b-62dec689f69e`.
+- **2018-05-30 — Wednesday Night Knockout**: 19:30 New York → `2018-05-30T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `80647bab-8a5f-42fc-8ac9-3b6c7ce97d72`.
+- **2018-05-28 — NEPL Week 4**: 19:30 New York → `2018-05-28T23:30:00Z`. User-confirmed Monday league default. UUID: `cebbb7d1-87eb-4e57-9921-bb29e1c92770`.
+- **2018-05-16 — Wednesday Night Knockout**: 19:30 New York → `2018-05-16T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `98729f8e-77a6-4dda-ae9e-673eed5e593a`.
+- **2018-05-07 — NEPL Week 1 at SNH**: 19:30 New York → `2018-05-07T23:30:00Z`. User-confirmed Monday league default. UUID: `18fe1e8f-dc2a-4c86-8374-a3e0b383598d`.
+- **2018-05-02 — Wednesday Night Knockout**: 19:30 New York → `2018-05-02T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `4ad089a0-23a8-4511-96fd-1db83620f11f`.
+- **2018-04-18 — Wednesday Night Knockout**: 19:30 New York → `2018-04-18T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `3ad60309-f088-4d35-b8ba-aee6a215e440`.
+- **2018-04-04 — Wednesday Night Knockout**: 19:30 New York → `2018-04-04T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `1f63f193-3b65-4430-9782-48ce2f0c7de7`.
+- **2018-03-28 — Wednesday Night Knockout**: 19:30 New York → `2018-03-28T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `67347c23-ee6c-4af5-a4f1-b4973ae84fe0`.
+- **2018-03-14 — Wednesday Night Knockout**: 19:30 New York → `2018-03-14T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `cdd30b4d-e6e3-4b31-bc6f-1c445f16973f`.
+- **2018-02-21 — Wednesday Night Knockout!**: 19:30 New York → `2018-02-22T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `257eec78-a803-4f8d-b921-c7b8b25c92e9`.
+- **2018-01-24 — Wednesday Night Knock-Out!**: 19:30 New York → `2018-01-25T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `7c351903-87b7-4851-b750-be6aaef1d25b`.
+- **2018-01-10 — Wednesday Night Knock-Out!**: 19:30 New York → `2018-01-11T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `b8d725b7-35c5-4b93-b236-a5a4953f460b`.
+- **2017-12-27 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-12-28T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `2011c41d-397c-409a-90ca-72b2127ac477`.
+- **2017-12-13 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-12-14T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `b0ebde0e-e83f-436e-a516-dfd48fbdb6d3`.
+- **2017-11-29 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-11-30T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `f5cdc2a2-bd76-49b4-8eca-dbaefdd7c7c7`.
+- **2017-11-15 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-11-16T00:30:00Z`. User-confirmed Wednesday knockout default. UUID: `f57bab81-e9a9-458d-a51e-5890f4f38c7d`.
+- **2017-11-01 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-11-01T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `2d7cc859-c02b-451c-936f-dc5cf555285b`.
+- **2017-10-18 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-10-18T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `a88ca2b8-a476-4dbf-8233-f55a371e86e0`.
+- **2017-10-04 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-10-04T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `77d4ec89-6b19-40b2-a144-5fa0cf7acddb`.
+- **2017-09-20 — Wednesday Night Knock-Out!**: 19:30 New York → `2017-09-20T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `1325777d-5e82-4a96-a980-8fde58f0daf5`.
+- **2017-09-11 — NEPL Week #1**: 19:30 New York → `2017-09-11T23:30:00Z`. User-confirmed Monday league default. UUID: `32cd63e7-9f3d-463a-926e-a3dc48fb7a6d`.
+- **2017-09-06 — Wednesday Night Knockouts!**: 19:30 New York → `2017-09-06T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `1174d28a-878d-409d-a575-10df4ce93b38`.
+- **2017-08-23 — Wednesday Night Knockout!**: 19:30 New York → `2017-08-23T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `3903928f-ea81-417b-9ef1-964835a2512e`.
+- **2017-08-09 — Wednesday Night Knockout!**: 19:30 New York → `2017-08-09T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `1bf5cead-0067-4b37-93d8-95975100becb`.
+- **2017-07-26 — Wednesday Night Knockout!**: 19:30 New York → `2017-07-26T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `83fc32af-c83d-4bc1-aeb9-9fbcb1e7eaa7`.
+- **2017-07-12 — Wednesday Night Knockout!**: 19:30 New York → `2017-07-12T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `06289e9c-9331-437a-82ab-296121f8df50`.
+- **2017-06-28 — Wednesday Night Knockout**: 19:30 New York → `2017-06-28T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `4f5777cb-4e54-48a1-a98f-670f254346cb`.
+- **2017-06-14 — Wednesday Night Knockout**: 19:30 New York → `2017-06-14T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `ba1096ba-26cc-46b7-87cb-ef12ca497cde`.
+- **2017-05-31 — Wednesday Night Knockout**: 19:30 New York → `2017-05-31T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `4303cdb5-a252-48f8-bece-351cb7e5d20b`.
+- **2017-05-17 — Wednesday Night Knockout**: 19:30 New York → `2017-05-17T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `9e0d1f09-0e4c-4346-9f90-5224edab492c`.
+- **2017-04-26 — Wednesday Night Knockout**: 19:30 New York → `2017-04-26T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `bd92375f-92c0-4294-b058-12ca34df3ed3`.
+- **2017-04-12 — Wednesday Night Knockout**: 19:30 New York → `2017-04-12T23:30:00Z`. User-confirmed Wednesday knockout default. UUID: `b3b329c0-7426-4304-98ca-c3892f689be4`.
+- **2016-01-30 — Grand Opening Tournament**: 12:00 New York → `2016-01-30T17:00:00Z`. Verified Facebook event header. UUID: `21c40393-4962-4b98-ad70-9655ba6601fe`.
+
+## Needs review
+
+- **2026-04-26 — Clean Sweep and Memory Lap**: Verify original listing; no confirmed rule applies.
+- **2026-04-25 — Last Call Load-Out Party**: Verify original listing; no confirmed rule applies.
+- **2026-04-19 — Get-Your-Tools Day**: Verify original listing; no confirmed rule applies.
+- **2026-04-18 — Take Your Pin Home from the Club Day**: Verify original listing; no confirmed rule applies.
+- **2026-04-11 — American Pinball Warrior Tournament**: Verify original listing; no confirmed rule applies.
+- **2026-03-04 — NEPL Season 36 - Week 7 Makeup**: Verify original listing; no confirmed rule applies. [Original listing](https://nepl.org/schedule)
+- **2026-01-02 — Friday Night Yankee Swap!!!**: Facebook header: 7 PM; description: doors 7:15, tournament 7:45/8 PM. Review intended start.. [Original listing](https://www.facebook.com/events/1876569622934171/)
+- **2025-01-03 — Yankee Swap Pinball Frenzy Jan 3rd**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/601337932424914/)
+- **2024-09-27 — Flipping It Old School end of the month pingolf tournament**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/3161470803987725/)
+- **2024-05-17 — Party at the Club Friday the 17th - Gauntlet, Stall Ball, Tommy Dollars, Games Galore!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/298555306623630/)
+- **2024-03-30 — Pinball, Paws, Pints, & Pizza**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1434100163885378/)
+- **2024-03-30 — Pinball, Paws, Pints & Pizza!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/842578741218967/)
+- **2024-03-29 — HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/940631717625251/)
+- **2024-03-22 — HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/940631717625251/)
+- **2024-03-21 — Weekly Knock-Out**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/452673533794888/)
+- **2024-03-15 — HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/940631717625251/)
+- **2024-03-08 — HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/940631717625251/)
+- **2024-03-01 — HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/940631717625251/)
+- **2024-02-16 — Split Flipper K.O. XO**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/905900081163404/)
+- **2024-01-28 — SUNDAY FUNDAY IFPA TOURNAMENT**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1293681197927481/)
+- **2024-01-12 — Casino Night / Pinball Poker / Tommy Dollar$ / Stall Ball**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/6969233849825839/)
+- **2023-12-29 — Friday Night Yankee Swap - OUT!!!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/2089234988108062/)
+- **2023-09-24 — SNHPC Open House - Play For Free!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/294954429925260/)
+- **2023-06-25 — SNHPC - End Of Month Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/2293874750780836/)
+- **2023-06-04 — SNHPC - End Of Month Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/953491376055965/)
+- **2023-04-30 — SNHPC - End Of Month Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1612779935853821/)
+- **2023-03-26 — SNHPC - End Of Month Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/5453653054738594/)
+- **2023-02-26 — SNHPC - End Of Month Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/633107778571119/)
+- **2023-01-29 — SNHPC - End Of Month Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/832374577854311/)
+- **2022-04-24 — Sunday PinGolf**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1026469584633906/)
+- **2022-04-03 — Sunday PinGold**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/346131550860870/)
+- **2022-02-13 — Sunday PinGolf**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/467988854862959/)
+- **2022-01-09 — Sunday PinGolf**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/415891776993998/)
+- **2021-12-19 — Sunday Knockout at SNHPC**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/464393988522587/)
+- **2021-12-12 — Open House**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/396901612121096/)
+- **2021-07-23 — Friday Pin-Golf!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/563026604883189/)
+- **2021-06-11 — Friday Pin-Golf!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/345324980343412/)
+- **2020-02-01 — Pin Football!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/167722441176542/)
+- **2019-12-14 — Pin Football**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/2417065645176588/)
+- **2018-12-21 — Yankee Knockout**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/405363330000673/)
+- **2018-12-17 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/358364441390154/)
+- **2018-12-10 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/358364441390154/)
+- **2018-12-03 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/358364441390154/)
+- **2018-12-01 — SNHPC Pin-Football**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/250978292247894/)
+- **2018-11-26 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/358364441390154/)
+- **2018-10-27 — Pintoberfest 666**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/281850349307165/)
+- **2018-08-27 — Pinball!Pinball!Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/634691796896349/)
+- **2018-08-20 — Pinball!Pinball!Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/634691796896349/)
+- **2018-08-13 — Pinball!Pinball!Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/634691796896349/)
+- **2018-08-06 — Pinball!Pinball!Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/634691796896349/)
+- **2018-07-23 — Pinball!Pinball!Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/634691796896349/)
+- **2018-07-16 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/154684165387150/)
+- **2018-07-09 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/154684165387150/)
+- **2018-07-02 — Pinball! Pinball! Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/154684165387150/)
+- **2018-04-25 — Pinball, Pinball, Pinball!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/793736934145630/)
+- **2018-02-08 — Wednesday Night Knockout! (on a Thursday!)**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/152162058835947/)
+- **2018-01-20 — 2017-18 IFPA New Hampshire Championship!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/179921149273691/)
+- **2018-01-03 — American Pinball Warrior**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/393406807763220/)
+- **2017-12-15 — SNH Monthly PinGolf!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/680262798828604/)
+- **2017-12-09 — Pin-Football**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1280501638721379/)
+- **2017-11-25 — One Good Ball Charity Tournament**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1873514319343064/)
+- **2017-11-17 — SNH Monthly PinGolf!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/680262798828604/)
+- **2017-10-21 — Pintoberfest V: A New Beginning**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/337862546660376/)
+- **2017-10-20 — SNH Monthly PinGolf!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/680262798828604/)
+- **2017-09-15 — SNHPC Monthly PinGolf**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/114032355957407/)
+- **2017-08-18 — SNH Monthly PinGolf!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/113659145928015/)
+- **2017-07-21 — SNH Monthly Pin Golf**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/479769672371177/)
+- **2017-07-03 — July 3rd BBQ**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/118708592066455/)
+- **2017-06-17 — Carnage at the Club - The Trash Talker 3 Qualifier**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1680300058931237/)
+- **2017-06-16 — SNH Monthly Pinmasters**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1559479384075706/)
+- **2017-06-10 — Critical Hit at SNH Pinball Club**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/803924176441579/)
+- **2017-06-07 — Critical Hit Format Test**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/297923020658032/)
+- **2017-05-12 — SNH Monthly Pinmasters Pingolf**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/184249738762724/)
+- **2017-04-21 — Pin-Golf Throwdown**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/489592621432094/)
+- **2017-02-17 — The Club's Friday Night Fights PinGolf Throwdown**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/557442601127164/)
+- **2017-01-20 — The Club's Friday Night Fights PinGolf Throwdown**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/233438680413548/)
+- **2017-01-14 — Pinball Poker at SNHPC**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/912530625548138/)
+- **2016-12-16 — The Club's Friday Night Fights PinGolf Throwdown**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1317458638285581/)
+- **2016-11-18 — It's the F--ing Catalina Beer Mixer and Pingolf Tournament**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1155056244589041/)
+- **2016-09-09 — The Club's Friday Night Fights PinGolf Throwdown**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1775094596066345/)
+- **2016-08-12 — SNHPC Monthly Pingolf Tournament**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1097007570365022/)
+- **2016-07-15 — SNHPC Monthy Pin-Golf tournament**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1735784030032125/)
+- **2016-06-18 — NEPL Finals After Party**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/225416184517747/)
+- **2016-06-14 — Split flipper fun tournament**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/1152739198131621/)
+- **2016-05-31 — 5/31 Fun Night!**: Verify original listing; no confirmed rule applies. [Original listing](https://www.facebook.com/events/568343053368803/)
