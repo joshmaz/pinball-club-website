@@ -29,10 +29,16 @@ Two separate integration paths share the same Resend account and API key:
 
 ## App notifications (first slice)
 
-`20260924130000_notification_foundation.sql` adds a private-to-clients outbox. When a
-signed-in user creates their first `members` profile, it queues one signup alert
+`20260924130000_notification_foundation.sql` adds a private-to-clients outbox.
+`20260925020000_queue_notifications_from_auth_signup.sql` connects it to the
+Auth account-creation function, which creates a member before a signed-in session
+exists. New Auth accounts (including accounts created through Auth administration)
+and signed-in users creating their first profile queue one signup alert
 for each existing account with `membership_editor`, `membership_admin`, or
-`club_admin`. Profile edits and administrative imports do not queue alerts.
+`club_admin`. Profile edits and direct member-table imports do not queue alerts.
+The migration does not backfill accounts created before it was applied; test with
+a fresh account after deployment. At least one existing eligible recipient must
+have a valid email address.
 Duplicate role assignments do not create duplicate alerts. The notice describes
 the website account and does not imply paid membership.
 
