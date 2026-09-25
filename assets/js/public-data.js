@@ -59,7 +59,7 @@
       date = new Date(row.starts_at).toISOString().slice(0, 10);
     }
     return {
-      id: row.id, title: row.title, date, location: row.location || 'TBD',
+      id: row.id, title: row.title, date, starts_at: row.starts_at || null, location: row.location || 'TBD',
       description: row.description || '', url: row.external_url || '', source: row.source || 'supabase',
     };
   }

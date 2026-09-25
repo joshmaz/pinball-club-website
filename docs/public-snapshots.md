@@ -99,3 +99,13 @@ current data during an outage. Automated refresh is the next mitigation.
 Add manual/scheduled refresh automation that opens a snapshot-update PR, reports
 export/validation failures, and applies an agreed freshness threshold. No workflow
 in this foundation PR automatically refreshes data or writes directly to `main`.
+
+Event snapshots now preserve the canonical `starts_at` timestamp. Cards use it
+for both local date and time, matching the editor's browser-local conversion;
+`date` remains available for older date-only snapshots. Existing snapshots without
+`starts_at` keep showing “Time not listed” until refreshed. The legacy migration
+and JSON importer encoded date-only values as midnight UTC, so cards preserve
+those UTC calendar dates without claiming a known time. The current schema cannot
+distinguish a genuine midnight-UTC start from that placeholder; resolving that
+ambiguity requires explicit time precision metadata. Local midnight at other UTC
+offsets remains a known time. No separate presentation `time` field is used.
