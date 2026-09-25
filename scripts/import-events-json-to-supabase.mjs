@@ -125,6 +125,8 @@ async function main() {
       description: cleanText(row.description, 4000),
       location: cleanText(row.location, 500),
       starts_at: startsAt,
+      ...(typeof row.all_day === "boolean" ? { all_day: row.all_day } : {}),
+      ...(typeof row.time_known === "boolean" ? { time_known: row.time_known } : {}),
       external_url: safeUrl(row.url || row.external_url),
       source: cleanText(row.source, 80) || "json_backfill",
       published: true,

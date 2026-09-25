@@ -47,8 +47,15 @@ test('date-only UTC placeholders, legacy snapshots, nulls and malformed times re
 
 
 test('verified midnight UTC recovery displays the actual local time without reclassifying placeholders', () => {
-  const event = { id: 'dd356feb-cffd-4d29-8318-57ae8082e887', starts_at: '2018-12-22T00:00:00Z', date: '2018-12-22' };
+  const event = { id: 'dd356feb-cffd-4d29-8318-57ae8082e887', time_known: true, starts_at: '2018-12-22T00:00:00Z', date: '2018-12-22' };
   assert.match(text(context.createEventCard(event)), /Friday, December 21, 2018 · 7:00 PM/);
-  assert.equal(context.eventTimeLabel({ ...event, id: 'another-event' }), 'Time not listed');
-  assert.equal(context.eventTimeLabel({ ...event, starts_at: '2018-12-23T00:00:00Z' }), 'Time not listed');
+  assert.equal(context.eventTimeLabel({ ...event, time_known: null }), 'Time not listed');
+  assert.equal(context.eventTimeLabel({ ...event, time_known: false }), 'Time not listed');
+});
+
+
+test('all-day events preserve calendar dates and do not show a clock time', () => {
+  const event = data.eventFromRow({ ...row, starts_at: '2026-04-18T00:00:00Z', all_day: true, time_known: false });
+  assert.match(text(context.createEventCard(event)), /Saturday, April 18, 2026 · All day/);
+  assert.doesNotMatch(text(context.createEventCard(event)), /Time not listed|PM|AM/);
 });

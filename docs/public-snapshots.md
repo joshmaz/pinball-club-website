@@ -134,3 +134,18 @@ Date-only source data still uses the documented legacy placeholder. Ambiguous
 full timestamps without a timezone offset are rejected instead of guessed.
 The legacy import key retains the original calendar date when available so a
 winter evening's UTC date rollover does not change its deduplication identity.
+
+
+### Explicit event time precision (September 25 recovery completion)
+
+`all_day` and nullable `time_known` are now carried by the public reader and
+snapshot exporter. All-day values preserve the UTC calendar date and render
+“All day.” `time_known: true` renders the canonical timestamp even at midnight
+UTC; false keeps “Time not listed.” Null retains legacy precision inference.
+The event editor offers an all-day date input and preserves precision when the
+schedule is unchanged. Its publish toggle preserves both fields.
+
+Migration `20260925180000_event_time_precision.sql` was applied and recorded
+before these readers were deployed. The former UUID-specific midnight exception
+has been removed. All eight remaining records were resolved by the user's
+corrections; see `event-time-recovery-completed.md`.

@@ -531,7 +531,7 @@
     if (!client) return null;
     var result = await client
       .from("events")
-      .select("id,title,description,location,starts_at,external_url,source,published,updated_at")
+      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known")
       .order("starts_at", { ascending: false, nullsFirst: false })
       .limit(500);
     if (result.error) return null;
@@ -577,6 +577,8 @@
       source: eventInput.source || "manual",
       published: !!eventInput.published
     };
+    if (typeof eventInput.all_day === "boolean") payload.all_day = eventInput.all_day;
+    if (Object.prototype.hasOwnProperty.call(eventInput, "time_known")) payload.time_known = eventInput.time_known;
     if (eventInput.id) {
       payload.id = eventInput.id;
     }

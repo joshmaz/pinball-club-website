@@ -85,6 +85,7 @@ function normalizeEvent(evt) {
     name: evt.name || 'Untitled Event',
     date: normalizeDate(evt.startDate),
     starts_at: evt.startDate && /T/.test(evt.startDate) ? canonicalStart(evt.startDate) : null,
+    time_known: !!(evt.startDate && /T/.test(evt.startDate)),
     location: normalizeLocation(evt.location),
     description: evt.description || '',
     url: evt.url || '',

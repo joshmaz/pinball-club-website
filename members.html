@@ -395,6 +395,7 @@
             <label for="member-events-title">Title</label>
             <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
 
+            <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
             <label for="member-events-starts-at">Starts at (local)</label>
             <input id="member-events-starts-at" type="datetime-local">
 
@@ -540,6 +541,8 @@
     var memberEventsForm = document.getElementById("member-events-form");
     var memberEventsId = document.getElementById("member-events-id");
     var memberEventsTitle = document.getElementById("member-events-title");
+    var memberEventsAllDay = document.getElementById("member-events-all-day");
+    var memberEventsOriginalSchedule = null;
     var memberEventsStartsAt = document.getElementById("member-events-starts-at");
     var memberEventsLocation = document.getElementById("member-events-location");
     var memberEventsUrl = document.getElementById("member-events-url");
@@ -1307,9 +1310,21 @@
     });
     window.addEventListener("beforeunload", function (ev) { if (adminHasUnsaved()) { ev.preventDefault(); ev.returnValue = ""; } });
 
+    function setEventDateInputMode(allDay) {
+      if (!memberEventsStartsAt) return;
+      var value = memberEventsStartsAt.value;
+      memberEventsStartsAt.type = allDay ? "date" : "datetime-local";
+      memberEventsStartsAt.value = value ? (allDay ? value.slice(0, 10) : value.slice(0, 10) + "T00:00") : "";
+    }
+    if (memberEventsAllDay) memberEventsAllDay.addEventListener("change", function () {
+      setEventDateInputMode(memberEventsAllDay.checked);
+    });
+
     function resetEventsForm() {
       if (!memberEventsForm) return;
       memberEventsForm.reset();
+      memberEventsOriginalSchedule = null;
+      if (memberEventsStartsAt) memberEventsStartsAt.type = "datetime-local";
       if (memberEventsId) memberEventsId.value = "";
       if (memberEventsPublished) memberEventsPublished.checked = true;
       clearEventPhotoDigest();
@@ -1320,7 +1335,12 @@
       if (!row || !memberEventsForm) return;
       if (memberEventsId) memberEventsId.value = String(row.id || "");
       if (memberEventsTitle) memberEventsTitle.value = row.title || "";
-      if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(row.starts_at);
+      if (memberEventsAllDay) memberEventsAllDay.checked = !!row.all_day;
+      if (memberEventsStartsAt) {
+        memberEventsStartsAt.type = row.all_day ? "date" : "datetime-local";
+        memberEventsStartsAt.value = row.all_day ? String(row.starts_at || "").slice(0, 10) : toLocalDateTimeInputValue(row.starts_at);
+        memberEventsOriginalSchedule = { value: memberEventsStartsAt.value, all_day: !!row.all_day, time_known: row.time_known };
+      }
       if (memberEventsLocation) memberEventsLocation.value = row.location || "";
       if (memberEventsUrl) memberEventsUrl.value = row.external_url || "";
       if (memberEventsSource) memberEventsSource.value = row.source || "";
@@ -1376,7 +1396,7 @@
         tdTitle.textContent = row.title || "(untitled)";
 
         var tdDate = document.createElement("td");
-        tdDate.textContent = window.SNHMemberPortal.formatDate(row.starts_at);
+        tdDate.textContent = row.all_day ? String(row.starts_at || "").slice(0, 10) + " · All day" : window.SNHMemberPortal.formatDate(row.starts_at);
 
         var tdLoc = document.createElement("td");
         tdLoc.textContent = row.location || "—";
@@ -1774,10 +1794,15 @@
           setEventsStatus("Title is required.");
           return;
         }
+        var allDay = !!(memberEventsAllDay && memberEventsAllDay.checked);
+        var startValue = memberEventsStartsAt ? memberEventsStartsAt.value : "";
+        var unchangedSchedule = memberEventsOriginalSchedule && memberEventsOriginalSchedule.value === startValue && memberEventsOriginalSchedule.all_day === allDay;
         var payload = {
+          all_day: allDay,
+          time_known: allDay ? false : (unchangedSchedule ? memberEventsOriginalSchedule.time_known : !!startValue),
           id: trimOrEmpty(memberEventsId ? memberEventsId.value : ""),
           title: title,
-          starts_at: toIsoOrNull(memberEventsStartsAt ? memberEventsStartsAt.value : ""),
+          starts_at: allDay ? (startValue ? startValue + "T00:00:00Z" : null) : toIsoOrNull(startValue),
           location: trimOrEmpty(memberEventsLocation ? memberEventsLocation.value : ""),
           external_url: trimOrEmpty(memberEventsUrl ? memberEventsUrl.value : ""),
           source: trimOrEmpty(memberEventsSource ? memberEventsSource.value : "") || "manual",
@@ -1818,6 +1843,8 @@
               id: row.id,
               title: row.title || "Untitled Event",
               starts_at: row.starts_at || null,
+              all_day: !!row.all_day,
+              time_known: row.time_known,
               location: row.location || "",
               external_url: row.external_url || "",
               source: row.source || "manual",

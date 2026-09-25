@@ -77,7 +77,7 @@ test('both browser and exporter pagination respect server caps smaller than requ
     env, fetchImpl: async (url, options) => {
       const query = new URL(url).searchParams;
       assert.equal(query.get('or'), '(published.eq.true,published.is.null)');
-      assert.equal(query.get('select'), 'id,title,description,location,starts_at,external_url,source');
+      assert.equal(query.get('select'), 'id,title,description,location,starts_at,external_url,source,all_day,time_known');
       assert.equal(query.get('offset'), String(calls));
       assert.equal(options.headers.apikey, env.SUPABASE_ANON_KEY);
       assert.equal(options.headers.Authorization, undefined);

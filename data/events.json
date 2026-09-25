@@ -3,7 +3,7 @@
     "schemaVersion": 1,
     "dataset": "events",
     "source": "events",
-    "generatedAt": "2026-09-25T18:46:53.201Z",
+    "generatedAt": "2026-09-25T19:05:28.759Z",
     "recordCount": 236
   },
   "events": [
@@ -13,6 +13,8 @@
       "date": "2016-01-30",
       "starts_at": "2016-01-30T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1671383923132082/",
       "source": "facebook"
@@ -23,6 +25,8 @@
       "date": "2016-05-31",
       "starts_at": "2016-05-31T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/568343053368803/",
       "source": "facebook"
@@ -33,6 +37,8 @@
       "date": "2016-06-14",
       "starts_at": "2016-06-14T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1152739198131621/",
       "source": "facebook"
@@ -43,6 +49,8 @@
       "date": "2016-06-18",
       "starts_at": "2016-06-18T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/225416184517747/",
       "source": "facebook"
@@ -53,6 +61,8 @@
       "date": "2016-07-15",
       "starts_at": "2016-07-15T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1735784030032125/",
       "source": "facebook"
@@ -63,6 +73,8 @@
       "date": "2016-08-12",
       "starts_at": "2016-08-12T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1097007570365022/",
       "source": "facebook"
@@ -73,6 +85,8 @@
       "date": "2016-09-09",
       "starts_at": "2016-09-09T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1775094596066345/",
       "source": "facebook"
@@ -83,6 +97,8 @@
       "date": "2016-11-18",
       "starts_at": "2016-11-18T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1155056244589041/",
       "source": "facebook"
@@ -93,6 +109,8 @@
       "date": "2016-12-16",
       "starts_at": "2016-12-16T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1317458638285581/",
       "source": "facebook"
@@ -103,6 +121,8 @@
       "date": "2017-01-14",
       "starts_at": "2017-01-14T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/912530625548138/",
       "source": "facebook"
@@ -113,6 +133,8 @@
       "date": "2017-01-20",
       "starts_at": "2017-01-20T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/233438680413548/",
       "source": "facebook"
@@ -123,6 +145,8 @@
       "date": "2017-02-17",
       "starts_at": "2017-02-17T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/557442601127164/",
       "source": "facebook"
@@ -133,6 +157,8 @@
       "date": "2017-04-12",
       "starts_at": "2017-04-12T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/279167795860539/",
       "source": "facebook"
@@ -143,6 +169,8 @@
       "date": "2017-04-21",
       "starts_at": "2017-04-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/489592621432094/",
       "source": "facebook"
@@ -153,6 +181,8 @@
       "date": "2017-04-26",
       "starts_at": "2017-04-26T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/453245395025788/",
       "source": "facebook"
@@ -163,6 +193,8 @@
       "date": "2017-05-12",
       "starts_at": "2017-05-12T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/184249738762724/",
       "source": "facebook"
@@ -173,6 +205,8 @@
       "date": "2017-05-17",
       "starts_at": "2017-05-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1321255927922087/",
       "source": "facebook"
@@ -183,6 +217,8 @@
       "date": "2017-05-31",
       "starts_at": "2017-05-31T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/130235634205015/",
       "source": "facebook"
@@ -193,6 +229,8 @@
       "date": "2017-06-07",
       "starts_at": "2017-06-07T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/297923020658032/",
       "source": "facebook"
@@ -203,6 +241,8 @@
       "date": "2017-06-10",
       "starts_at": "2017-06-10T15:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/803924176441579/",
       "source": "facebook"
@@ -213,6 +253,8 @@
       "date": "2017-06-14",
       "starts_at": "2017-06-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/559966861059086/",
       "source": "facebook"
@@ -223,6 +265,8 @@
       "date": "2017-06-16",
       "starts_at": "2017-06-16T23:30:00+00:00",
       "location": "134 Haines St, Nashua, NH 03060-4000, United States",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1559479384075706/",
       "source": "facebook"
@@ -233,6 +277,8 @@
       "date": "2017-06-17",
       "starts_at": "2017-06-17T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1680300058931237/",
       "source": "facebook"
@@ -243,6 +289,8 @@
       "date": "2017-06-28",
       "starts_at": "2017-06-28T23:30:00+00:00",
       "location": "TBD",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1409717702455789/",
       "source": "facebook"
@@ -253,6 +301,8 @@
       "date": "2017-07-03",
       "starts_at": "2017-07-03T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/118708592066455/",
       "source": "facebook"
@@ -263,6 +313,8 @@
       "date": "2017-07-12",
       "starts_at": "2017-07-12T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/125720771362155/",
       "source": "facebook"
@@ -273,6 +325,8 @@
       "date": "2017-07-21",
       "starts_at": "2017-07-21T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/479769672371177/",
       "source": "facebook"
@@ -283,6 +337,8 @@
       "date": "2017-07-26",
       "starts_at": "2017-07-26T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1592656324109146/",
       "source": "facebook"
@@ -293,6 +349,8 @@
       "date": "2017-08-09",
       "starts_at": "2017-08-09T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/157514358157341/",
       "source": "facebook"
@@ -303,6 +361,8 @@
       "date": "2017-08-18",
       "starts_at": "2017-08-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/113659145928015/",
       "source": "facebook"
@@ -313,6 +373,8 @@
       "date": "2017-08-23",
       "starts_at": "2017-08-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1753172168309763/",
       "source": "facebook"
@@ -323,6 +385,8 @@
       "date": "2017-09-06",
       "starts_at": "2017-09-06T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/218873018647021/",
       "source": "facebook"
@@ -333,6 +397,8 @@
       "date": "2017-09-11",
       "starts_at": "2017-09-11T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/476670796039500/",
       "source": "facebook"
@@ -343,6 +409,8 @@
       "date": "2017-09-15",
       "starts_at": "2017-09-15T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/114032355957407/",
       "source": "facebook"
@@ -353,6 +421,8 @@
       "date": "2017-09-20",
       "starts_at": "2017-09-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -363,6 +433,8 @@
       "date": "2017-10-04",
       "starts_at": "2017-10-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -373,6 +445,8 @@
       "date": "2017-10-18",
       "starts_at": "2017-10-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -383,6 +457,8 @@
       "date": "2017-10-20",
       "starts_at": "2017-10-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/680262798828604/",
       "source": "facebook"
@@ -393,6 +469,8 @@
       "date": "2017-10-21",
       "starts_at": "2017-10-21T14:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/337862546660376/",
       "source": "facebook"
@@ -403,6 +481,8 @@
       "date": "2017-11-01",
       "starts_at": "2017-11-01T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -413,6 +493,8 @@
       "date": "2017-11-16",
       "starts_at": "2017-11-16T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -423,6 +505,8 @@
       "date": "2017-11-18",
       "starts_at": "2017-11-18T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/680262798828604/",
       "source": "facebook"
@@ -433,6 +517,8 @@
       "date": "2017-11-25",
       "starts_at": "2017-11-25T15:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1873514319343064/",
       "source": "facebook"
@@ -443,6 +529,8 @@
       "date": "2017-11-30",
       "starts_at": "2017-11-30T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -453,6 +541,8 @@
       "date": "2017-12-09",
       "starts_at": "2017-12-09T15:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1280501638721379/",
       "source": "facebook"
@@ -463,6 +553,8 @@
       "date": "2017-12-14",
       "starts_at": "2017-12-14T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -473,6 +565,8 @@
       "date": "2017-12-16",
       "starts_at": "2017-12-16T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/680262798828604/",
       "source": "facebook"
@@ -483,6 +577,8 @@
       "date": "2017-12-28",
       "starts_at": "2017-12-28T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -493,6 +589,8 @@
       "date": "2018-01-04",
       "starts_at": "2018-01-04T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/393406807763220/",
       "source": "facebook"
@@ -503,6 +601,8 @@
       "date": "2018-01-11",
       "starts_at": "2018-01-11T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/387974378296983/",
       "source": "facebook"
@@ -513,6 +613,8 @@
       "date": "2018-01-20",
       "starts_at": "2018-01-20T15:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/179921149273691/",
       "source": "facebook"
@@ -523,6 +625,8 @@
       "date": "2018-01-25",
       "starts_at": "2018-01-25T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/704367899899178/",
       "source": "facebook"
@@ -533,6 +637,8 @@
       "date": "2018-02-08",
       "starts_at": "2018-02-08T23:30:00+00:00",
       "location": "TBD",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/152162058835947/",
       "source": "facebook"
@@ -543,6 +649,8 @@
       "date": "2018-02-22",
       "starts_at": "2018-02-22T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/209717936433486/",
       "source": "facebook"
@@ -553,6 +661,8 @@
       "date": "2018-03-14",
       "starts_at": "2018-03-14T23:30:00+00:00",
       "location": "134 Haines St, Nashua, NH 03060-4000, United States",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/400764077015487/",
       "source": "facebook"
@@ -563,6 +673,8 @@
       "date": "2018-03-28",
       "starts_at": "2018-03-28T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -573,6 +685,8 @@
       "date": "2018-04-04",
       "starts_at": "2018-04-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -583,6 +697,8 @@
       "date": "2018-04-18",
       "starts_at": "2018-04-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -593,6 +709,8 @@
       "date": "2018-04-25",
       "starts_at": "2018-04-25T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/793736934145630/",
       "source": "facebook"
@@ -603,6 +721,8 @@
       "date": "2018-05-02",
       "starts_at": "2018-05-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -613,6 +733,8 @@
       "date": "2018-05-07",
       "starts_at": "2018-05-07T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/579613725729777/",
       "source": "facebook"
@@ -623,6 +745,8 @@
       "date": "2018-05-16",
       "starts_at": "2018-05-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -633,6 +757,8 @@
       "date": "2018-05-28",
       "starts_at": "2018-05-28T23:30:00+00:00",
       "location": "TBD",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/159844478197949/",
       "source": "facebook"
@@ -643,6 +769,8 @@
       "date": "2018-05-30",
       "starts_at": "2018-05-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -653,6 +781,8 @@
       "date": "2018-06-13",
       "starts_at": "2018-06-13T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -663,6 +793,8 @@
       "date": "2018-07-02",
       "starts_at": "2018-07-02T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/154684165387150/",
       "source": "facebook"
@@ -673,6 +805,8 @@
       "date": "2018-07-09",
       "starts_at": "2018-07-09T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/154684165387150/",
       "source": "facebook"
@@ -683,6 +817,8 @@
       "date": "2018-07-16",
       "starts_at": "2018-07-16T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/154684165387150/",
       "source": "facebook"
@@ -693,6 +829,8 @@
       "date": "2018-07-23",
       "starts_at": "2018-07-23T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -703,6 +841,8 @@
       "date": "2018-08-06",
       "starts_at": "2018-08-06T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -713,6 +853,8 @@
       "date": "2018-08-13",
       "starts_at": "2018-08-13T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -723,6 +865,8 @@
       "date": "2018-08-20",
       "starts_at": "2018-08-20T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -733,6 +877,8 @@
       "date": "2018-08-27",
       "starts_at": "2018-08-27T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -743,6 +889,8 @@
       "date": "2018-09-19",
       "starts_at": "2018-09-19T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -753,6 +901,8 @@
       "date": "2018-10-03",
       "starts_at": "2018-10-03T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -763,6 +913,8 @@
       "date": "2018-10-17",
       "starts_at": "2018-10-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -773,6 +925,8 @@
       "date": "2018-10-27",
       "starts_at": "2018-10-27T14:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/281850349307165/",
       "source": "facebook"
@@ -783,6 +937,8 @@
       "date": "2018-10-31",
       "starts_at": "2018-10-31T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -793,6 +949,8 @@
       "date": "2018-11-15",
       "starts_at": "2018-11-15T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -803,6 +961,8 @@
       "date": "2018-11-26",
       "starts_at": "2018-11-26T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -813,6 +973,8 @@
       "date": "2018-11-29",
       "starts_at": "2018-11-29T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -823,6 +985,8 @@
       "date": "2018-12-01",
       "starts_at": "2018-12-01T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/250978292247894/",
       "source": "facebook"
@@ -833,6 +997,8 @@
       "date": "2018-12-03",
       "starts_at": "2018-12-03T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -843,6 +1009,8 @@
       "date": "2018-12-10",
       "starts_at": "2018-12-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -853,6 +1021,8 @@
       "date": "2018-12-13",
       "starts_at": "2018-12-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -863,6 +1033,8 @@
       "date": "2018-12-17",
       "starts_at": "2018-12-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -873,6 +1045,8 @@
       "date": "2018-12-22",
       "starts_at": "2018-12-22T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/405363330000673/",
       "source": "facebook"
@@ -883,6 +1057,8 @@
       "date": "2019-01-03",
       "starts_at": "2019-01-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -893,6 +1069,8 @@
       "date": "2019-01-17",
       "starts_at": "2019-01-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -903,6 +1081,8 @@
       "date": "2019-01-31",
       "starts_at": "2019-01-31T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -913,6 +1093,8 @@
       "date": "2019-02-14",
       "starts_at": "2019-02-14T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -923,6 +1105,8 @@
       "date": "2019-02-28",
       "starts_at": "2019-02-28T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -933,6 +1117,8 @@
       "date": "2019-03-13",
       "starts_at": "2019-03-13T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -943,6 +1129,8 @@
       "date": "2019-03-27",
       "starts_at": "2019-03-27T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -953,6 +1141,8 @@
       "date": "2019-04-10",
       "starts_at": "2019-04-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -963,6 +1153,8 @@
       "date": "2019-04-24",
       "starts_at": "2019-04-24T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -973,6 +1165,8 @@
       "date": "2019-05-08",
       "starts_at": "2019-05-08T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -983,6 +1177,8 @@
       "date": "2019-05-22",
       "starts_at": "2019-05-22T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -993,6 +1189,8 @@
       "date": "2019-06-05",
       "starts_at": "2019-06-05T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1003,6 +1201,8 @@
       "date": "2019-06-19",
       "starts_at": "2019-06-19T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1013,6 +1213,8 @@
       "date": "2019-07-10",
       "starts_at": "2019-07-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1023,6 +1225,8 @@
       "date": "2019-07-24",
       "starts_at": "2019-07-24T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1033,6 +1237,8 @@
       "date": "2019-08-14",
       "starts_at": "2019-08-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1043,6 +1249,8 @@
       "date": "2019-08-28",
       "starts_at": "2019-08-28T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1053,6 +1261,8 @@
       "date": "2019-09-02",
       "starts_at": "2019-09-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1063,6 +1273,8 @@
       "date": "2019-09-09",
       "starts_at": "2019-09-09T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1073,6 +1285,8 @@
       "date": "2019-09-16",
       "starts_at": "2019-09-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1083,6 +1297,8 @@
       "date": "2019-09-18",
       "starts_at": "2019-09-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1093,6 +1309,8 @@
       "date": "2019-09-23",
       "starts_at": "2019-09-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1103,6 +1321,8 @@
       "date": "2019-09-30",
       "starts_at": "2019-09-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1113,6 +1333,8 @@
       "date": "2019-10-02",
       "starts_at": "2019-10-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1123,6 +1345,8 @@
       "date": "2019-10-07",
       "starts_at": "2019-10-07T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1133,6 +1357,8 @@
       "date": "2019-10-14",
       "starts_at": "2019-10-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1143,6 +1369,8 @@
       "date": "2019-10-16",
       "starts_at": "2019-10-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1153,6 +1381,8 @@
       "date": "2019-10-21",
       "starts_at": "2019-10-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1163,6 +1393,8 @@
       "date": "2019-10-30",
       "starts_at": "2019-10-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1173,6 +1405,8 @@
       "date": "2019-11-14",
       "starts_at": "2019-11-14T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1183,6 +1417,8 @@
       "date": "2019-12-05",
       "starts_at": "2019-12-05T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1193,6 +1429,8 @@
       "date": "2019-12-12",
       "starts_at": "2019-12-12T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1203,6 +1441,8 @@
       "date": "2019-12-14",
       "starts_at": "2019-12-14T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/2417065645176588/",
       "source": "facebook"
@@ -1213,6 +1453,8 @@
       "date": "2019-12-19",
       "starts_at": "2019-12-19T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1223,6 +1465,8 @@
       "date": "2020-01-09",
       "starts_at": "2020-01-09T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1233,6 +1477,8 @@
       "date": "2020-01-23",
       "starts_at": "2020-01-23T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1243,6 +1489,8 @@
       "date": "2020-02-01",
       "starts_at": "2020-02-01T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/167722441176542/",
       "source": "facebook"
@@ -1253,6 +1501,8 @@
       "date": "2020-02-06",
       "starts_at": "2020-02-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1263,6 +1513,8 @@
       "date": "2020-02-13",
       "starts_at": "2020-02-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1273,6 +1525,8 @@
       "date": "2020-02-20",
       "starts_at": "2020-02-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1283,6 +1537,8 @@
       "date": "2020-03-05",
       "starts_at": "2020-03-05T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1293,6 +1549,8 @@
       "date": "2021-06-11",
       "starts_at": "2021-06-11T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/345324980343412/",
       "source": "facebook"
@@ -1303,6 +1561,8 @@
       "date": "2021-07-23",
       "starts_at": "2021-07-23T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/563026604883189/",
       "source": "facebook"
@@ -1313,6 +1573,8 @@
       "date": "2021-12-12",
       "starts_at": "2021-12-12T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/396901612121096/",
       "source": "facebook"
@@ -1323,6 +1585,8 @@
       "date": "2021-12-19",
       "starts_at": "2021-12-19T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/464393988522587/",
       "source": "facebook"
@@ -1333,6 +1597,8 @@
       "date": "2022-01-06",
       "starts_at": "2022-01-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1343,6 +1609,8 @@
       "date": "2022-01-09",
       "starts_at": "2022-01-09T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/415891776993998/",
       "source": "facebook"
@@ -1353,6 +1621,8 @@
       "date": "2022-01-20",
       "starts_at": "2022-01-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1363,6 +1633,8 @@
       "date": "2022-02-03",
       "starts_at": "2022-02-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1373,6 +1645,8 @@
       "date": "2022-02-13",
       "starts_at": "2022-02-13T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/467988854862959/",
       "source": "facebook"
@@ -1383,6 +1657,8 @@
       "date": "2022-02-17",
       "starts_at": "2022-02-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1393,6 +1669,8 @@
       "date": "2022-02-22",
       "starts_at": "2022-02-22T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1403,6 +1681,8 @@
       "date": "2022-03-01",
       "starts_at": "2022-03-01T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1413,6 +1693,8 @@
       "date": "2022-03-03",
       "starts_at": "2022-03-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1423,6 +1705,8 @@
       "date": "2022-03-08",
       "starts_at": "2022-03-08T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1433,6 +1717,8 @@
       "date": "2022-03-14",
       "starts_at": "2022-03-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1443,6 +1729,8 @@
       "date": "2022-03-21",
       "starts_at": "2022-03-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1453,6 +1741,8 @@
       "date": "2022-03-23",
       "starts_at": "2022-03-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/716055506235950/",
       "source": "facebook"
@@ -1463,6 +1753,8 @@
       "date": "2022-03-28",
       "starts_at": "2022-03-28T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1473,6 +1765,8 @@
       "date": "2022-04-03",
       "starts_at": "2022-04-03T16:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/346131550860870/",
       "source": "facebook"
@@ -1483,6 +1777,8 @@
       "date": "2022-04-04",
       "starts_at": "2022-04-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1493,6 +1789,8 @@
       "date": "2022-04-06",
       "starts_at": "2022-04-06T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/716055506235950/",
       "source": "facebook"
@@ -1503,6 +1801,8 @@
       "date": "2022-04-11",
       "starts_at": "2022-04-11T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1513,6 +1813,8 @@
       "date": "2022-04-20",
       "starts_at": "2022-04-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/716055506235950/",
       "source": "facebook"
@@ -1521,8 +1823,10 @@
       "id": "6ea337e3-e28c-40af-9af9-d776b76f5a1a",
       "title": "Sunday PinGolf",
       "date": "2022-04-24",
-      "starts_at": "2022-04-24T00:00:00+00:00",
+      "starts_at": "2022-04-24T16:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1026469584633906/",
       "source": "facebook"
@@ -1533,6 +1837,8 @@
       "date": "2022-05-11",
       "starts_at": "2022-05-11T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1085520402040968/",
       "source": "facebook"
@@ -1543,6 +1849,8 @@
       "date": "2022-11-08",
       "starts_at": "2022-11-08T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1553,6 +1861,8 @@
       "date": "2022-11-15",
       "starts_at": "2022-11-15T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1563,6 +1873,8 @@
       "date": "2022-11-17",
       "starts_at": "2022-11-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1573,6 +1885,8 @@
       "date": "2022-11-22",
       "starts_at": "2022-11-22T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1583,6 +1897,8 @@
       "date": "2022-11-29",
       "starts_at": "2022-11-29T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1593,6 +1909,8 @@
       "date": "2022-12-01",
       "starts_at": "2022-12-01T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1603,6 +1921,8 @@
       "date": "2022-12-06",
       "starts_at": "2022-12-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1613,6 +1933,8 @@
       "date": "2022-12-13",
       "starts_at": "2022-12-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1623,6 +1945,8 @@
       "date": "2022-12-15",
       "starts_at": "2022-12-15T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1633,6 +1957,8 @@
       "date": "2022-12-20",
       "starts_at": "2022-12-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1643,6 +1969,8 @@
       "date": "2022-12-29",
       "starts_at": "2022-12-29T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1653,6 +1981,8 @@
       "date": "2023-01-03",
       "starts_at": "2023-01-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1663,6 +1993,8 @@
       "date": "2023-01-12",
       "starts_at": "2023-01-12T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1673,6 +2005,8 @@
       "date": "2023-01-26",
       "starts_at": "2023-01-26T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1683,6 +2017,8 @@
       "date": "2023-01-29",
       "starts_at": "2023-01-29T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/832374577854311/",
       "source": "facebook"
@@ -1693,6 +2029,8 @@
       "date": "2023-02-26",
       "starts_at": "2023-02-26T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/633107778571119/",
       "source": "facebook"
@@ -1703,6 +2041,8 @@
       "date": "2023-03-09",
       "starts_at": "2023-03-09T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1230152134267181/",
       "source": "facebook"
@@ -1713,6 +2053,8 @@
       "date": "2023-03-22",
       "starts_at": "2023-03-22T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1230152134267181/",
       "source": "facebook"
@@ -1723,6 +2065,8 @@
       "date": "2023-03-26",
       "starts_at": "2023-03-26T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/5453653054738594/",
       "source": "facebook"
@@ -1733,6 +2077,8 @@
       "date": "2023-04-30",
       "starts_at": "2023-04-30T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1612779935853821/",
       "source": "facebook"
@@ -1743,6 +2089,8 @@
       "date": "2023-06-04",
       "starts_at": "2023-06-04T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/953491376055965/",
       "source": "facebook"
@@ -1753,6 +2101,8 @@
       "date": "2023-06-25",
       "starts_at": "2023-06-25T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/2293874750780836/",
       "source": "facebook"
@@ -1763,6 +2113,8 @@
       "date": "2023-09-04",
       "starts_at": "2023-09-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/891314705745358/",
       "source": "facebook"
@@ -1773,6 +2125,8 @@
       "date": "2023-09-24",
       "starts_at": "2023-09-24T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/294954429925260/",
       "source": "facebook"
@@ -1783,6 +2137,8 @@
       "date": "2023-12-30",
       "starts_at": "2023-12-30T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/2089234988108062/",
       "source": "facebook"
@@ -1793,6 +2149,8 @@
       "date": "2024-01-13",
       "starts_at": "2024-01-13T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/6969233849825839/",
       "source": "facebook"
@@ -1803,6 +2161,8 @@
       "date": "2024-01-28",
       "starts_at": "2024-01-28T16:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1293681197927481/",
       "source": "facebook"
@@ -1813,6 +2173,8 @@
       "date": "2024-02-17",
       "starts_at": "2024-02-17T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/905900081163404/",
       "source": "facebook"
@@ -1823,6 +2185,8 @@
       "date": "2024-03-02",
       "starts_at": "2024-03-02T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1833,6 +2197,8 @@
       "date": "2024-03-09",
       "starts_at": "2024-03-09T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1843,6 +2209,8 @@
       "date": "2024-03-15",
       "starts_at": "2024-03-15T23:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1853,6 +2221,8 @@
       "date": "2024-03-21",
       "starts_at": "2024-03-21T23:30:00+00:00",
       "location": "134 Haines St, Nashua, NH, United States, New Hampshire 03060",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/452673533794888/",
       "source": "facebook"
@@ -1863,6 +2233,8 @@
       "date": "2024-03-22",
       "starts_at": "2024-03-22T23:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1873,6 +2245,8 @@
       "date": "2024-03-29",
       "starts_at": "2024-03-29T23:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1883,6 +2257,8 @@
       "date": "2024-03-30",
       "starts_at": "2024-03-30T18:00:00+00:00",
       "location": "Rockingham Brewing Company",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1434100163885378/",
       "source": "facebook"
@@ -1893,6 +2269,8 @@
       "date": "2024-03-30",
       "starts_at": "2024-03-30T18:00:00+00:00",
       "location": "1 Corporate Park Dr, Unit 1, Derry, NH, United States, New Hampshire 03038",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/842578741218967/",
       "source": "facebook"
@@ -1903,6 +2281,8 @@
       "date": "2024-05-17",
       "starts_at": "2024-05-17T23:15:00+00:00",
       "location": "134 Haines St, Nashua, NH",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/298555306623630/",
       "source": "facebook"
@@ -1913,6 +2293,8 @@
       "date": "2024-09-02",
       "starts_at": "2024-09-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted the opening night of NEPL Season 33 at Southern New Hampshire Pinball Club in Nashua.",
       "url": "https://www.facebook.com/events/1202149160826500/",
       "source": "facebook"
@@ -1923,6 +2305,8 @@
       "date": "2024-09-09",
       "starts_at": "2024-09-09T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 2 of NEPL Season 33 at the club as players returned for the second session of the season.",
       "url": "",
       "source": "NEPL"
@@ -1933,6 +2317,8 @@
       "date": "2024-09-16",
       "starts_at": "2024-09-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 3 of NEPL Season 33 at Southern New Hampshire Pinball Club for another Monday league night in Nashua.",
       "url": "",
       "source": "NEPL"
@@ -1943,6 +2329,8 @@
       "date": "2024-09-23",
       "starts_at": "2024-09-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 4 of NEPL Season 33 at the club as Southern New Hampshire Pinball Club kept the season rolling.",
       "url": "",
       "source": "NEPL"
@@ -1953,6 +2341,8 @@
       "date": "2024-09-27",
       "starts_at": "2024-09-27T22:00:00+00:00",
       "location": "134 Haines St, Nashua, NH",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/3161470803987725/",
       "source": "facebook"
@@ -1963,6 +2353,8 @@
       "date": "2024-09-30",
       "starts_at": "2024-09-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 5 of NEPL Season 33 at Southern New Hampshire Pinball Club for another full night of league competition.",
       "url": "",
       "source": "NEPL"
@@ -1973,6 +2365,8 @@
       "date": "2024-10-07",
       "starts_at": "2024-10-07T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 6 of NEPL Season 33 at the club as the fall league schedule continued in Nashua.",
       "url": "",
       "source": "NEPL"
@@ -1983,6 +2377,8 @@
       "date": "2024-10-14",
       "starts_at": "2024-10-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 7 of NEPL Season 33 at Southern New Hampshire Pinball Club for another Monday night of league play in Nashua.",
       "url": "",
       "source": "NEPL"
@@ -1993,6 +2389,8 @@
       "date": "2024-10-21",
       "starts_at": "2024-10-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "Hosted Week 8 of NEPL Season 33 at the club as Southern New Hampshire Pinball Club wrapped up its regular season league nights.",
       "url": "",
       "source": "NEPL"
@@ -2003,6 +2401,8 @@
       "date": "2025-01-04",
       "starts_at": "2025-01-04T00:15:00+00:00",
       "location": "134 Haines St, Nashua, NH",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/601337932424914/",
       "source": "facebook"
@@ -2010,9 +2410,11 @@
     {
       "id": "b5d0d0bd-e472-469c-9244-28c0c1cb1dc8",
       "title": "Friday Night Yankee Swap!!!",
-      "date": "2026-01-02",
-      "starts_at": "2026-01-02T00:00:00+00:00",
+      "date": "2026-01-03",
+      "starts_at": "2026-01-03T00:30:00+00:00",
       "location": "Nashua, NH",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://www.facebook.com/events/1876569622934171/",
       "source": "facebook"
@@ -2023,6 +2425,8 @@
       "date": "2026-01-06",
       "starts_at": "2026-01-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2033,6 +2437,8 @@
       "date": "2026-01-13",
       "starts_at": "2026-01-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2043,6 +2449,8 @@
       "date": "2026-01-20",
       "starts_at": "2026-01-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2053,6 +2461,8 @@
       "date": "2026-01-27",
       "starts_at": "2026-01-27T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2063,6 +2473,8 @@
       "date": "2026-02-03",
       "starts_at": "2026-02-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2073,6 +2485,8 @@
       "date": "2026-02-17",
       "starts_at": "2026-02-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2083,6 +2497,8 @@
       "date": "2026-03-03",
       "starts_at": "2026-03-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2090,9 +2506,11 @@
     {
       "id": "65e397eb-6156-48e3-bc66-8dc447ebef6f",
       "title": "NEPL Season 36 - Week 7 Makeup",
-      "date": "2026-03-04",
-      "starts_at": "2026-03-04T00:00:00+00:00",
+      "date": "2026-03-05",
+      "starts_at": "2026-03-05T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -2101,9 +2519,11 @@
       "id": "2f66cb2f-65ab-47aa-bd74-a2b86198e334",
       "title": "American Pinball Warrior Tournament",
       "date": "2026-04-11",
-      "starts_at": "2026-04-11T00:00:00+00:00",
+      "starts_at": "2026-04-11T23:30:00+00:00",
       "location": "Pintastic- Club Rooms",
-      "description": "A fun event to compete in!",
+      "all_day": false,
+      "time_known": true,
+      "description": "A fun event to compete in!\n\nSessions started at 7:30 PM and 9:45 PM (America/New_York).",
       "url": "",
       "source": "manual"
     },
@@ -2113,6 +2533,8 @@
       "date": "2026-04-18",
       "starts_at": "2026-04-18T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
       "description": "Bring a vehicle, claim your machine, and get your pin safely home before move-out.",
       "url": "",
       "source": "manual"
@@ -2123,6 +2545,8 @@
       "date": "2026-04-19",
       "starts_at": "2026-04-19T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
       "description": "Collect your stored tools, parts, bins, and personal gear. If it is yours, this is the day to grab it.",
       "url": "",
       "source": "manual"
@@ -2133,6 +2557,8 @@
       "date": "2026-04-25",
       "starts_at": "2026-04-25T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
       "description": "Final big pickup push with buddy carries and good vibes. Help clear remaining personal items before vacating.",
       "url": "",
       "source": "manual"
@@ -2143,6 +2569,8 @@
       "date": "2026-04-26",
       "starts_at": "2026-04-26T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
       "description": "Final retrieval window and clean sweep day before we hand over the space.",
       "url": "",
       "source": "manual"
@@ -2153,6 +2581,8 @@
       "date": "2026-04-30",
       "starts_at": "2026-04-30T21:00:00+00:00",
       "location": "Haines St location",
+      "all_day": false,
+      "time_known": null,
       "description": "Last day of the lease, everything needs to be gone by EOD.",
       "url": "",
       "source": "manual"
@@ -2163,6 +2593,8 @@
       "date": "2026-06-19",
       "starts_at": "2026-06-19T20:00:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "The club will be open Friday, June 19th from 7:00 - 11:00 pm and running an American Pinball Warrior event during this time. \n\nThe event consists of 5 machines with an objective on each. Your goals is to complete the objective on each machine as fast as possible to get the lowest time. If you miss an objective you do not get a time. The lowest time at the end of the night gets to pick from our box of prizes (trans-lights, mugs, shirts...) \n\nEveryone gets 2 free attempts with admission. Extra attempts are $2 each or 3/$5.",
       "url": "",
       "source": "manual"
@@ -2173,6 +2605,8 @@
       "date": "2026-07-06",
       "starts_at": "2026-07-06T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Curious about Crokinole? Always wanted to check out the Southern New Hampshire Pinball Club?\nNow's your chance to do both!\nJoin us for a fun, casual evening where you can learn one of the world's most addictive tabletop games while enjoying an incredible collection of pinball machines. Whether you've never played Crokinole or you're looking to sharpen your game before league season, everyone is welcome.\n✅ FREE Event\n✅ No experience necessary\n✅ Learn to play Crokinole\n✅ Play pinball throughout the evening\n✅ Meet local players and make new friends\n\nWe'll have experienced players teaching the basics, plenty of boards available, and lots of opportunities to jump right into games. In just a few minutes you'll be sinking 20s and wondering why you didn't discover Crokinole sooner.\nBring a friend, bring your family, or just bring your curiosity—we'll provide everything you need to play.\nSee you on July 6!\nFlick. Flip. Have Fun.\nLearn more:\n\nNew England Crokinole League: necrokinole.com\nSouthern New Hampshire Pinball Club: https://www.snhpinballclub.com",
       "url": "https://www.facebook.com/share/1HEifCAXsr/",
       "source": "manual"
@@ -2183,6 +2617,8 @@
       "date": "2026-07-13",
       "starts_at": "2026-07-13T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254778",
       "source": "matchplay"
@@ -2193,6 +2629,8 @@
       "date": "2026-07-20",
       "starts_at": "2026-07-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254779",
       "source": "matchplay"
@@ -2203,6 +2641,8 @@
       "date": "2026-07-24",
       "starts_at": "2026-07-24T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "Testa will be hosting a Flipper Frenzy event!  Come one come all. \n\n$5 for members\n\nNon members $15 ($10 covers admission, $5 for the event) \n\nPrize given to the winner!",
       "url": "https://facebook.com/events/s/flipper-frenzy-in-the-club/27451420311217389/",
       "source": "manual"
@@ -2213,6 +2653,8 @@
       "date": "2026-07-27",
       "starts_at": "2026-07-27T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254780",
       "source": "matchplay"
@@ -2223,6 +2665,8 @@
       "date": "2026-08-03",
       "starts_at": "2026-08-03T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254781",
       "source": "matchplay"
@@ -2233,6 +2677,8 @@
       "date": "2026-08-10",
       "starts_at": "2026-08-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254782",
       "source": "matchplay"
@@ -2243,6 +2689,8 @@
       "date": "2026-08-17",
       "starts_at": "2026-08-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254783",
       "source": "matchplay"
@@ -2253,6 +2701,8 @@
       "date": "2026-08-24",
       "starts_at": "2026-08-24T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/254784",
       "source": "matchplay"
@@ -2263,6 +2713,8 @@
       "date": "2026-08-31",
       "starts_at": "2026-08-31T23:02:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/270134",
       "source": "matchplay"
@@ -2273,6 +2725,8 @@
       "date": "2026-08-31",
       "starts_at": "2026-08-31T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
       "description": "Northeast Pinball Challenge at SNHPC",
       "url": "https://app.matchplay.events/tournaments/270143",
       "source": "matchplay"
@@ -2283,6 +2737,8 @@
       "date": "2026-09-14",
       "starts_at": "2026-09-14T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "NEPL Season 38 - see NEPL.ORG for details.",
       "url": "https://app.matchplay.events/tournaments/272599",
       "source": "manual"
@@ -2293,6 +2749,8 @@
       "date": "2026-09-19",
       "starts_at": "2026-09-19T17:00:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "Doors at 12 PM\nTournament starts at 1 PM\n\nQualifiers: 7 Rounds of Group Match Play Scoring: IFPA scoring (7/5/3/1)\nTop 8 will make finals\nFinals: Fast Ladder\nCash prizes For Top 4\n\nPlayer Limit: 20\n*All games set to Freeplay\n$20 tournament fee - $10 house fee (SNHPC Members: No House Fee)",
       "url": "",
       "source": "manual"
@@ -2303,6 +2761,8 @@
       "date": "2026-09-21",
       "starts_at": "2026-09-21T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "NEPL Season 38 - see NEPL.ORG for details.",
       "url": "https://app.matchplay.events/tournaments/273945",
       "source": "manual"
@@ -2313,6 +2773,8 @@
       "date": "2026-09-28",
       "starts_at": "2026-09-28T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "",
       "url": "",
       "source": "manual"
@@ -2323,6 +2785,8 @@
       "date": "2026-10-05",
       "starts_at": "2026-10-05T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "",
       "url": "",
       "source": "manual"
@@ -2333,6 +2797,8 @@
       "date": "2026-10-12",
       "starts_at": "2026-10-12T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "",
       "url": "",
       "source": "manual"
@@ -2343,6 +2809,8 @@
       "date": "2026-10-19",
       "starts_at": "2026-10-19T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "",
       "url": "",
       "source": "manual"
@@ -2353,6 +2821,8 @@
       "date": "2026-10-26",
       "starts_at": "2026-10-26T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "",
       "url": "",
       "source": "manual"
@@ -2363,6 +2833,8 @@
       "date": "2026-11-03",
       "starts_at": "2026-11-03T00:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
       "description": "",
       "url": "",
       "source": "manual"
