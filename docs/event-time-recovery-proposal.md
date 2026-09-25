@@ -1,3 +1,5 @@
+> Applied September 25, 2026. This is the original review proposal; see [completed recovery](event-time-recovery-completed.md) for the final result and remaining exceptions.
+
 # Event time recovery proposal
 
 129 proposed updates; 85 records still require review.

@@ -44,3 +44,11 @@ test('date-only UTC placeholders, legacy snapshots, nulls and malformed times re
   }
   assert.match(text(context.createEventCard(data.eventFromRow({ ...row, starts_at: null }))), /Date to be announced · Time not listed/);
 });
+
+
+test('verified midnight UTC recovery displays the actual local time without reclassifying placeholders', () => {
+  const event = { id: 'dd356feb-cffd-4d29-8318-57ae8082e887', starts_at: '2018-12-22T00:00:00Z', date: '2018-12-22' };
+  assert.match(text(context.createEventCard(event)), /Friday, December 21, 2018 · 7:00 PM/);
+  assert.equal(context.eventTimeLabel({ ...event, id: 'another-event' }), 'Time not listed');
+  assert.equal(context.eventTimeLabel({ ...event, starts_at: '2018-12-23T00:00:00Z' }), 'Time not listed');
+});

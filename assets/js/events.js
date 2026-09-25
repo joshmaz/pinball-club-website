@@ -82,20 +82,28 @@ function eventStart(event) {
   return start;
 }
 
-function eventHasKnownTime(start) {
+// Verified recovery evidence disambiguates this actual midnight-UTC start.
+// Match both UUID and instant so a later edit cannot inherit stale precision.
+// Source: https://www.facebook.com/events/405363330000673/ (Dec 21, 2018, 7 PM New York).
+const verifiedMidnightStarts = {
+  'dd356feb-cffd-4d29-8318-57ae8082e887': '2018-12-22T00:00:00.000Z',
+};
+
+function eventHasKnownTime(start, event) {
+  if (start && event && verifiedMidnightStarts[event.id] === start.toISOString()) return true;
   return start && (start.getUTCHours() !== 0 || start.getUTCMinutes() !== 0 ||
     start.getUTCSeconds() !== 0 || start.getUTCMilliseconds() !== 0);
 }
 
 function eventCalendarDate(event) {
   const start = eventStart(event);
-  if (eventHasKnownTime(start)) return start;
+  if (eventHasKnownTime(start, event)) return start;
   return parseEventDate(start ? start.toISOString().slice(0, 10) : event.date);
 }
 
 function eventTimeLabel(event) {
   const start = eventStart(event);
-  return eventHasKnownTime(start)
+  return eventHasKnownTime(start, event)
     ? start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
     : 'Time not listed';
 }
