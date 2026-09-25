@@ -30,3 +30,8 @@ verify_jwt = true
 # Called from the member portal to unpublish or delete an asset (admin role
 # for delete). Requires a user JWT.
 verify_jwt = true
+
+[functions.notification-dispatch]
+# A scheduled server caller supplies NOTIFICATION_DISPATCH_SECRET. JWT verification
+# is disabled so the function can use a dedicated secret without a user session.
+verify_jwt = false
