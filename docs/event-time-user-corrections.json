@@ -1,0 +1,126 @@
+{
+  "status": "applied_and_verified",
+  "date": "2026-09-25",
+  "timezone": "America/New_York",
+  "user_corrections": [
+    {
+      "id": "dcaf080b-e3de-4303-923c-d9801e1f8643",
+      "title": "Clean Sweep and Memory Lap",
+      "before": {
+        "starts_at": "2026-04-26T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "all_day": true,
+        "time_known": false
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "80e807e8-ee49-4302-9a90-9f51770e0f74",
+      "title": "Last Call Load-Out Party",
+      "before": {
+        "starts_at": "2026-04-25T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "all_day": true,
+        "time_known": false
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "2cb52f4f-7ab2-4df3-a56a-3775147903e3",
+      "title": "Get-Your-Tools Day",
+      "before": {
+        "starts_at": "2026-04-19T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "all_day": true,
+        "time_known": false
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "fa612384-7c6d-427d-a2ee-05d6420dfacc",
+      "title": "Take Your Pin Home from the Club Day",
+      "before": {
+        "starts_at": "2026-04-18T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "all_day": true,
+        "time_known": false
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "2f66cb2f-65ab-47aa-bd74-a2b86198e334",
+      "title": "American Pinball Warrior Tournament",
+      "before": {
+        "starts_at": "2026-04-11T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null,
+        "description": "A fun event to compete in!"
+      },
+      "after": {
+        "starts_at": "2026-04-11T23:30:00Z",
+        "all_day": false,
+        "time_known": true,
+        "description": "A fun event to compete in!\n\nSessions started at 7:30 PM and 9:45 PM (America/New_York)."
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "65e397eb-6156-48e3-bc66-8dc447ebef6f",
+      "title": "NEPL Season 36 - Week 7 Makeup",
+      "before": {
+        "starts_at": "2026-03-04T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "starts_at": "2026-03-05T00:30:00Z",
+        "all_day": false,
+        "time_known": true
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "b5d0d0bd-e472-469c-9244-28c0c1cb1dc8",
+      "title": "Friday Night Yankee Swap!!!",
+      "before": {
+        "starts_at": "2026-01-02T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "starts_at": "2026-01-03T00:30:00Z",
+        "all_day": false,
+        "time_known": true
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    },
+    {
+      "id": "6ea337e3-e28c-40af-9af9-d776b76f5a1a",
+      "title": "Sunday PinGolf",
+      "before": {
+        "starts_at": "2022-04-24T00:00:00+00:00",
+        "all_day": false,
+        "time_known": null
+      },
+      "after": {
+        "starts_at": "2022-04-24T16:30:00Z",
+        "all_day": false,
+        "time_known": true
+      },
+      "basis": "User-confirmed correction, September 25, 2026"
+    }
+  ],
+  "previously_recovered_times_marked_known": 206
+}

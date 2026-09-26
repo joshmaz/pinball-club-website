@@ -3,15 +3,23 @@
     "schemaVersion": 1,
     "dataset": "events",
     "source": "events",
-    "generatedAt": "2026-09-21T00:01:26.322Z",
-    "recordCount": 226
+    "generatedAt": "2026-09-26T14:53:44.178Z",
+    "recordCount": 236
   },
   "events": [
     {
       "id": "21c40393-4962-4b98-ad70-9655ba6601fe",
       "title": "Grand Opening Tournament",
       "date": "2016-01-30",
+      "starts_at": "2016-01-30T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1671383923132082/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1671383923132082/",
       "source": "facebook"
@@ -20,7 +28,15 @@
       "id": "1f51473b-a9d4-4762-8852-1a1e327fdde0",
       "title": "5/31 Fun Night!",
       "date": "2016-05-31",
+      "starts_at": "2016-05-31T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/568343053368803/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/568343053368803/",
       "source": "facebook"
@@ -29,7 +45,15 @@
       "id": "30ce3384-a1a2-41c3-8fb9-a5cc58fa757a",
       "title": "Split flipper fun tournament",
       "date": "2016-06-14",
+      "starts_at": "2016-06-14T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1152739198131621/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1152739198131621/",
       "source": "facebook"
@@ -38,7 +62,15 @@
       "id": "d3ce0cb6-57ce-49f3-a6ca-5af3e338cdeb",
       "title": "NEPL Finals After Party",
       "date": "2016-06-18",
+      "starts_at": "2016-06-18T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/225416184517747/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/225416184517747/",
       "source": "facebook"
@@ -47,7 +79,15 @@
       "id": "d8e13b5d-ae12-47a6-a1f8-5b6605bc0ad6",
       "title": "SNHPC Monthy Pin-Golf tournament",
       "date": "2016-07-15",
+      "starts_at": "2016-07-15T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1735784030032125/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1735784030032125/",
       "source": "facebook"
@@ -56,7 +96,15 @@
       "id": "5479ba7d-3abc-4e0d-ab44-520b34d3f08b",
       "title": "SNHPC Monthly Pingolf Tournament",
       "date": "2016-08-12",
+      "starts_at": "2016-08-12T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1097007570365022/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1097007570365022/",
       "source": "facebook"
@@ -65,7 +113,15 @@
       "id": "3da785bc-7aae-46b6-9437-396eaa85166e",
       "title": "The Club's Friday Night Fights PinGolf Throwdown",
       "date": "2016-09-09",
+      "starts_at": "2016-09-09T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1775094596066345/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1775094596066345/",
       "source": "facebook"
@@ -74,7 +130,15 @@
       "id": "bcca4695-2165-4ee8-aa5a-bf4a8995d764",
       "title": "It's the F--ing Catalina Beer Mixer and Pingolf Tournament",
       "date": "2016-11-18",
+      "starts_at": "2016-11-18T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1155056244589041/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1155056244589041/",
       "source": "facebook"
@@ -83,7 +147,15 @@
       "id": "5f312cfd-99c2-4cef-9d45-a030f20daddd",
       "title": "The Club's Friday Night Fights PinGolf Throwdown",
       "date": "2016-12-16",
+      "starts_at": "2016-12-16T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1317458638285581/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1317458638285581/",
       "source": "facebook"
@@ -92,7 +164,15 @@
       "id": "c4a31493-a92f-4ce2-acfa-a651b83215b5",
       "title": "Pinball Poker at SNHPC",
       "date": "2017-01-14",
+      "starts_at": "2017-01-14T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/912530625548138/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/912530625548138/",
       "source": "facebook"
@@ -101,7 +181,15 @@
       "id": "286a811c-de09-4d9e-8295-2e16ea4a0c57",
       "title": "The Club's Friday Night Fights PinGolf Throwdown",
       "date": "2017-01-20",
+      "starts_at": "2017-01-20T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/233438680413548/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/233438680413548/",
       "source": "facebook"
@@ -110,7 +198,15 @@
       "id": "bc2d9ecc-9603-43f8-a72f-f032fbfda064",
       "title": "The Club's Friday Night Fights PinGolf Throwdown",
       "date": "2017-02-17",
+      "starts_at": "2017-02-17T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/557442601127164/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/557442601127164/",
       "source": "facebook"
@@ -119,7 +215,15 @@
       "id": "b3b329c0-7426-4304-98ca-c3892f689be4",
       "title": "Wednesday Night Knockout",
       "date": "2017-04-12",
+      "starts_at": "2017-04-12T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/279167795860539/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/279167795860539/",
       "source": "facebook"
@@ -128,7 +232,15 @@
       "id": "678d1651-3432-449c-a579-e5d2302cbd46",
       "title": "Pin-Golf Throwdown",
       "date": "2017-04-21",
+      "starts_at": "2017-04-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/489592621432094/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/489592621432094/",
       "source": "facebook"
@@ -137,7 +249,15 @@
       "id": "bd92375f-92c0-4294-b058-12ca34df3ed3",
       "title": "Wednesday Night Knockout",
       "date": "2017-04-26",
+      "starts_at": "2017-04-26T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/453245395025788/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/453245395025788/",
       "source": "facebook"
@@ -146,7 +266,15 @@
       "id": "3a544973-6987-41a4-8fce-db4c6ff8a7d7",
       "title": "SNH Monthly Pinmasters Pingolf",
       "date": "2017-05-12",
+      "starts_at": "2017-05-12T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/184249738762724/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/184249738762724/",
       "source": "facebook"
@@ -155,7 +283,15 @@
       "id": "9e0d1f09-0e4c-4346-9f90-5224edab492c",
       "title": "Wednesday Night Knockout",
       "date": "2017-05-17",
+      "starts_at": "2017-05-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1321255927922087/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1321255927922087/",
       "source": "facebook"
@@ -164,7 +300,15 @@
       "id": "4303cdb5-a252-48f8-bece-351cb7e5d20b",
       "title": "Wednesday Night Knockout",
       "date": "2017-05-31",
+      "starts_at": "2017-05-31T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/130235634205015/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/130235634205015/",
       "source": "facebook"
@@ -173,7 +317,15 @@
       "id": "080f72a3-f475-437a-b457-cb8850f971bf",
       "title": "Critical Hit Format Test",
       "date": "2017-06-07",
+      "starts_at": "2017-06-07T23:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/297923020658032/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/297923020658032/",
       "source": "facebook"
@@ -182,7 +334,15 @@
       "id": "a805b0dc-48b9-4f37-9e66-13a0bb6c06dd",
       "title": "Critical Hit at SNH Pinball Club",
       "date": "2017-06-10",
+      "starts_at": "2017-06-10T15:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/803924176441579/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/803924176441579/",
       "source": "facebook"
@@ -191,7 +351,15 @@
       "id": "ba1096ba-26cc-46b7-87cb-ef12ca497cde",
       "title": "Wednesday Night Knockout",
       "date": "2017-06-14",
+      "starts_at": "2017-06-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/559966861059086/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/559966861059086/",
       "source": "facebook"
@@ -200,7 +368,15 @@
       "id": "433695cf-252b-45a0-85f1-daccbc81f123",
       "title": "SNH Monthly Pinmasters",
       "date": "2017-06-16",
+      "starts_at": "2017-06-16T23:30:00+00:00",
       "location": "134 Haines St, Nashua, NH 03060-4000, United States",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1559479384075706/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1559479384075706/",
       "source": "facebook"
@@ -209,7 +385,15 @@
       "id": "e86cbdac-0cfd-4ffd-9161-8928dbcb1628",
       "title": "Carnage at the Club - The Trash Talker 3 Qualifier",
       "date": "2017-06-17",
+      "starts_at": "2017-06-17T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1680300058931237/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1680300058931237/",
       "source": "facebook"
@@ -218,7 +402,15 @@
       "id": "4f5777cb-4e54-48a1-a98f-670f254346cb",
       "title": "Wednesday Night Knockout",
       "date": "2017-06-28",
+      "starts_at": "2017-06-28T23:30:00+00:00",
       "location": "TBD",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1409717702455789/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1409717702455789/",
       "source": "facebook"
@@ -227,7 +419,15 @@
       "id": "480c6269-dcb9-4cc4-a5f7-dc94f2d4c1f7",
       "title": "July 3rd BBQ",
       "date": "2017-07-03",
+      "starts_at": "2017-07-03T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/118708592066455/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/118708592066455/",
       "source": "facebook"
@@ -236,7 +436,15 @@
       "id": "06289e9c-9331-437a-82ab-296121f8df50",
       "title": "Wednesday Night Knockout!",
       "date": "2017-07-12",
+      "starts_at": "2017-07-12T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/125720771362155/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/125720771362155/",
       "source": "facebook"
@@ -245,7 +453,15 @@
       "id": "7868a161-f309-471d-9ebd-a8a8092fd2f0",
       "title": "SNH Monthly Pin Golf",
       "date": "2017-07-21",
+      "starts_at": "2017-07-21T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/479769672371177/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/479769672371177/",
       "source": "facebook"
@@ -254,7 +470,15 @@
       "id": "83fc32af-c83d-4bc1-aeb9-9fbcb1e7eaa7",
       "title": "Wednesday Night Knockout!",
       "date": "2017-07-26",
+      "starts_at": "2017-07-26T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1592656324109146/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1592656324109146/",
       "source": "facebook"
@@ -263,7 +487,15 @@
       "id": "1bf5cead-0067-4b37-93d8-95975100becb",
       "title": "Wednesday Night Knockout!",
       "date": "2017-08-09",
+      "starts_at": "2017-08-09T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/157514358157341/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/157514358157341/",
       "source": "facebook"
@@ -272,7 +504,15 @@
       "id": "dd1fe20a-4710-4610-aec0-be159db213f3",
       "title": "SNH Monthly PinGolf!",
       "date": "2017-08-18",
+      "starts_at": "2017-08-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/113659145928015/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/113659145928015/",
       "source": "facebook"
@@ -281,7 +521,15 @@
       "id": "3903928f-ea81-417b-9ef1-964835a2512e",
       "title": "Wednesday Night Knockout!",
       "date": "2017-08-23",
+      "starts_at": "2017-08-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1753172168309763/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1753172168309763/",
       "source": "facebook"
@@ -290,7 +538,15 @@
       "id": "1174d28a-878d-409d-a575-10df4ce93b38",
       "title": "Wednesday Night Knockouts!",
       "date": "2017-09-06",
+      "starts_at": "2017-09-06T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/218873018647021/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/218873018647021/",
       "source": "facebook"
@@ -299,7 +555,15 @@
       "id": "32cd63e7-9f3d-463a-926e-a3dc48fb7a6d",
       "title": "NEPL Week #1",
       "date": "2017-09-11",
+      "starts_at": "2017-09-11T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/476670796039500/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/476670796039500/",
       "source": "facebook"
@@ -308,7 +572,15 @@
       "id": "e226b052-720b-43ad-ae33-fd76817abc96",
       "title": "SNHPC Monthly PinGolf",
       "date": "2017-09-15",
+      "starts_at": "2017-09-15T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/114032355957407/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/114032355957407/",
       "source": "facebook"
@@ -317,7 +589,15 @@
       "id": "1325777d-5e82-4a96-a980-8fde58f0daf5",
       "title": "Wednesday Night Knock-Out!",
       "date": "2017-09-20",
+      "starts_at": "2017-09-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -326,7 +606,15 @@
       "id": "77d4ec89-6b19-40b2-a144-5fa0cf7acddb",
       "title": "Wednesday Night Knock-Out!",
       "date": "2017-10-04",
+      "starts_at": "2017-10-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -335,7 +623,15 @@
       "id": "a88ca2b8-a476-4dbf-8233-f55a371e86e0",
       "title": "Wednesday Night Knock-Out!",
       "date": "2017-10-18",
+      "starts_at": "2017-10-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -344,7 +640,15 @@
       "id": "184a15e4-f601-4df4-b79e-dc983af823c2",
       "title": "SNH Monthly PinGolf!",
       "date": "2017-10-20",
+      "starts_at": "2017-10-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/680262798828604/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/680262798828604/",
       "source": "facebook"
@@ -353,7 +657,15 @@
       "id": "c07f4cd9-6bab-42dd-a206-b2a90218e900",
       "title": "Pintoberfest V: A New Beginning",
       "date": "2017-10-21",
+      "starts_at": "2017-10-21T14:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/337862546660376/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/337862546660376/",
       "source": "facebook"
@@ -362,7 +674,15 @@
       "id": "2d7cc859-c02b-451c-936f-dc5cf555285b",
       "title": "Wednesday Night Knock-Out!",
       "date": "2017-11-01",
+      "starts_at": "2017-11-01T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -370,8 +690,16 @@
     {
       "id": "f57bab81-e9a9-458d-a51e-5890f4f38c7d",
       "title": "Wednesday Night Knock-Out!",
-      "date": "2017-11-15",
+      "date": "2017-11-16",
+      "starts_at": "2017-11-16T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -379,8 +707,16 @@
     {
       "id": "3bbc41e7-d325-4520-91fb-47364f93636e",
       "title": "SNH Monthly PinGolf!",
-      "date": "2017-11-17",
+      "date": "2017-11-18",
+      "starts_at": "2017-11-18T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/680262798828604/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/680262798828604/",
       "source": "facebook"
@@ -389,7 +725,15 @@
       "id": "ed0db042-ac4c-41c9-b9fe-3efdc6a45729",
       "title": "One Good Ball Charity Tournament",
       "date": "2017-11-25",
+      "starts_at": "2017-11-25T15:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1873514319343064/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1873514319343064/",
       "source": "facebook"
@@ -397,8 +741,16 @@
     {
       "id": "f5cdc2a2-bd76-49b4-8eca-dbaefdd7c7c7",
       "title": "Wednesday Night Knock-Out!",
-      "date": "2017-11-29",
+      "date": "2017-11-30",
+      "starts_at": "2017-11-30T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -407,7 +759,15 @@
       "id": "24ee4c5e-171a-41d0-b672-97817183995e",
       "title": "Pin-Football",
       "date": "2017-12-09",
+      "starts_at": "2017-12-09T15:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1280501638721379/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1280501638721379/",
       "source": "facebook"
@@ -415,8 +775,16 @@
     {
       "id": "b0ebde0e-e83f-436e-a516-dfd48fbdb6d3",
       "title": "Wednesday Night Knock-Out!",
-      "date": "2017-12-13",
+      "date": "2017-12-14",
+      "starts_at": "2017-12-14T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -424,8 +792,16 @@
     {
       "id": "b84d3822-4a55-4c8c-8325-d9792ddf81ed",
       "title": "SNH Monthly PinGolf!",
-      "date": "2017-12-15",
+      "date": "2017-12-16",
+      "starts_at": "2017-12-16T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/680262798828604/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/680262798828604/",
       "source": "facebook"
@@ -433,8 +809,16 @@
     {
       "id": "2011c41d-397c-409a-90ca-72b2127ac477",
       "title": "Wednesday Night Knock-Out!",
-      "date": "2017-12-27",
+      "date": "2017-12-28",
+      "starts_at": "2017-12-28T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/360115557750906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/360115557750906/",
       "source": "facebook"
@@ -442,8 +826,16 @@
     {
       "id": "ca903c49-8f63-4dbb-92a6-56c22c49e3d7",
       "title": "American Pinball Warrior",
-      "date": "2018-01-03",
+      "date": "2018-01-04",
+      "starts_at": "2018-01-04T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/393406807763220/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/393406807763220/",
       "source": "facebook"
@@ -451,8 +843,16 @@
     {
       "id": "b8d725b7-35c5-4b93-b236-a5a4953f460b",
       "title": "Wednesday Night Knock-Out!",
-      "date": "2018-01-10",
+      "date": "2018-01-11",
+      "starts_at": "2018-01-11T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/387974378296983/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/387974378296983/",
       "source": "facebook"
@@ -461,7 +861,15 @@
       "id": "19e76ca5-7920-4d13-93a6-c00a3074830c",
       "title": "2017-18 IFPA New Hampshire Championship!",
       "date": "2018-01-20",
+      "starts_at": "2018-01-20T15:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/179921149273691/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/179921149273691/",
       "source": "facebook"
@@ -469,8 +877,16 @@
     {
       "id": "7c351903-87b7-4851-b750-be6aaef1d25b",
       "title": "Wednesday Night Knock-Out!",
-      "date": "2018-01-24",
+      "date": "2018-01-25",
+      "starts_at": "2018-01-25T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/704367899899178/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/704367899899178/",
       "source": "facebook"
@@ -479,7 +895,15 @@
       "id": "24d9ede0-2344-4570-a52a-6d883a617859",
       "title": "Wednesday Night Knockout! (on a Thursday!)",
       "date": "2018-02-08",
+      "starts_at": "2018-02-08T23:30:00+00:00",
       "location": "TBD",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/152162058835947/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/152162058835947/",
       "source": "facebook"
@@ -487,8 +911,16 @@
     {
       "id": "257eec78-a803-4f8d-b921-c7b8b25c92e9",
       "title": "Wednesday Night Knockout!",
-      "date": "2018-02-21",
+      "date": "2018-02-22",
+      "starts_at": "2018-02-22T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/209717936433486/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/209717936433486/",
       "source": "facebook"
@@ -497,7 +929,15 @@
       "id": "cdd30b4d-e6e3-4b31-bc6f-1c445f16973f",
       "title": "Wednesday Night Knockout",
       "date": "2018-03-14",
+      "starts_at": "2018-03-14T23:30:00+00:00",
       "location": "134 Haines St, Nashua, NH 03060-4000, United States",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/400764077015487/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/400764077015487/",
       "source": "facebook"
@@ -506,7 +946,15 @@
       "id": "67347c23-ee6c-4af5-a4f1-b4973ae84fe0",
       "title": "Wednesday Night Knockout",
       "date": "2018-03-28",
+      "starts_at": "2018-03-28T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -515,7 +963,15 @@
       "id": "1f63f193-3b65-4430-9782-48ce2f0c7de7",
       "title": "Wednesday Night Knockout",
       "date": "2018-04-04",
+      "starts_at": "2018-04-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -524,7 +980,15 @@
       "id": "3ad60309-f088-4d35-b8ba-aee6a215e440",
       "title": "Wednesday Night Knockout",
       "date": "2018-04-18",
+      "starts_at": "2018-04-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -533,7 +997,15 @@
       "id": "0d992aca-5b1c-4013-9a20-39a459a44035",
       "title": "Pinball, Pinball, Pinball!",
       "date": "2018-04-25",
+      "starts_at": "2018-04-25T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/793736934145630/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/793736934145630/",
       "source": "facebook"
@@ -542,7 +1014,15 @@
       "id": "4ad089a0-23a8-4511-96fd-1db83620f11f",
       "title": "Wednesday Night Knockout",
       "date": "2018-05-02",
+      "starts_at": "2018-05-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -551,7 +1031,15 @@
       "id": "18fe1e8f-dc2a-4c86-8374-a3e0b383598d",
       "title": "NEPL Week 1 at SNH",
       "date": "2018-05-07",
+      "starts_at": "2018-05-07T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/579613725729777/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/579613725729777/",
       "source": "facebook"
@@ -560,7 +1048,15 @@
       "id": "98729f8e-77a6-4dda-ae9e-673eed5e593a",
       "title": "Wednesday Night Knockout",
       "date": "2018-05-16",
+      "starts_at": "2018-05-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -569,7 +1065,15 @@
       "id": "cebbb7d1-87eb-4e57-9921-bb29e1c92770",
       "title": "NEPL Week 4",
       "date": "2018-05-28",
+      "starts_at": "2018-05-28T23:30:00+00:00",
       "location": "TBD",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/159844478197949/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/159844478197949/",
       "source": "facebook"
@@ -578,7 +1082,15 @@
       "id": "80647bab-8a5f-42fc-8ac9-3b6c7ce97d72",
       "title": "Wednesday Night Knockout",
       "date": "2018-05-30",
+      "starts_at": "2018-05-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -587,7 +1099,15 @@
       "id": "c5a8b9cf-86be-434c-8f1b-62dec689f69e",
       "title": "Wednesday Night Knockout",
       "date": "2018-06-13",
+      "starts_at": "2018-06-13T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/176065639689359/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/176065639689359/",
       "source": "facebook"
@@ -596,7 +1116,15 @@
       "id": "3a115f8c-584a-4b0c-a189-ecc12e0212da",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-07-02",
+      "starts_at": "2018-07-02T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/154684165387150/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/154684165387150/",
       "source": "facebook"
@@ -605,7 +1133,15 @@
       "id": "17994cf5-a59d-4308-9fe3-5e76a3e565c4",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-07-09",
+      "starts_at": "2018-07-09T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/154684165387150/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/154684165387150/",
       "source": "facebook"
@@ -614,7 +1150,15 @@
       "id": "b194b60f-d025-4a12-aec7-9d837e4eac51",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-07-16",
+      "starts_at": "2018-07-16T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/154684165387150/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/154684165387150/",
       "source": "facebook"
@@ -623,7 +1167,15 @@
       "id": "d6b9aab3-1809-4819-9586-dec38233ed5b",
       "title": "Pinball!Pinball!Pinball!",
       "date": "2018-07-23",
+      "starts_at": "2018-07-23T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/634691796896349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -632,7 +1184,15 @@
       "id": "e16d68cd-50da-418b-bafc-1bae975d4132",
       "title": "Pinball!Pinball!Pinball!",
       "date": "2018-08-06",
+      "starts_at": "2018-08-06T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/634691796896349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -641,7 +1201,15 @@
       "id": "afcd49d3-98a3-4b4d-99df-80325a3b6d0a",
       "title": "Pinball!Pinball!Pinball!",
       "date": "2018-08-13",
+      "starts_at": "2018-08-13T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/634691796896349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -650,7 +1218,15 @@
       "id": "9ae29f92-1b8e-413d-a04f-c63c3d1bffbd",
       "title": "Pinball!Pinball!Pinball!",
       "date": "2018-08-20",
+      "starts_at": "2018-08-20T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/634691796896349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -659,7 +1235,15 @@
       "id": "2a5dcb82-3743-4076-a09d-507672b50447",
       "title": "Pinball!Pinball!Pinball!",
       "date": "2018-08-27",
+      "starts_at": "2018-08-27T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/634691796896349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/634691796896349/",
       "source": "facebook"
@@ -668,7 +1252,15 @@
       "id": "487e1adf-920c-433d-a2da-1148892bd4c0",
       "title": "Wednesday Night Knock-Out",
       "date": "2018-09-19",
+      "starts_at": "2018-09-19T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/529136100890618/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -677,7 +1269,15 @@
       "id": "706a2231-502b-4e2a-b5b9-3e91fe65a3cb",
       "title": "Wednesday Night Knock-Out",
       "date": "2018-10-03",
+      "starts_at": "2018-10-03T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/529136100890618/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -686,7 +1286,15 @@
       "id": "2cd1ab0b-f40a-458b-8c20-84afc319448d",
       "title": "Wednesday Night Knock-Out",
       "date": "2018-10-17",
+      "starts_at": "2018-10-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/529136100890618/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -695,7 +1303,15 @@
       "id": "d4011f76-06f8-4201-82c6-8a3cf8bb5583",
       "title": "Pintoberfest 666",
       "date": "2018-10-27",
+      "starts_at": "2018-10-27T14:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/281850349307165/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/281850349307165/",
       "source": "facebook"
@@ -704,7 +1320,15 @@
       "id": "46552b17-c12a-481c-a8aa-7e9fba7cb02a",
       "title": "Wednesday Night Knock-Out",
       "date": "2018-10-31",
+      "starts_at": "2018-10-31T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/529136100890618/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/529136100890618/",
       "source": "facebook"
@@ -712,8 +1336,16 @@
     {
       "id": "0f534be8-7faf-4a85-aeef-0de4feac81f4",
       "title": "Wednesday Night Knock-Out",
-      "date": "2018-11-14",
+      "date": "2018-11-15",
+      "starts_at": "2018-11-15T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -722,7 +1354,15 @@
       "id": "fcd54c38-f569-4dd9-a395-3362419511f2",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-11-26",
+      "starts_at": "2018-11-26T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/358364441390154/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -730,8 +1370,16 @@
     {
       "id": "ba6315b4-8d84-48a3-8998-6566b7b5ea47",
       "title": "Wednesday Night Knock-Out",
-      "date": "2018-11-28",
+      "date": "2018-11-29",
+      "starts_at": "2018-11-29T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -740,7 +1388,15 @@
       "id": "5e925654-daba-4953-9078-11302be34093",
       "title": "SNHPC Pin-Football",
       "date": "2018-12-01",
+      "starts_at": "2018-12-01T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/250978292247894/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/250978292247894/",
       "source": "facebook"
@@ -749,7 +1405,15 @@
       "id": "a7639807-0b6c-443c-be97-712c7e47cc9e",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-12-03",
+      "starts_at": "2018-12-03T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/358364441390154/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -758,7 +1422,15 @@
       "id": "3754137a-58b7-4bb6-8b83-caba9a6a8e44",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-12-10",
+      "starts_at": "2018-12-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/358364441390154/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -766,8 +1438,16 @@
     {
       "id": "e5f34bf6-bc96-4f66-9f08-6d8aa16bd016",
       "title": "Wednesday Night Knock-Out",
-      "date": "2018-12-12",
+      "date": "2018-12-13",
+      "starts_at": "2018-12-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -776,7 +1456,15 @@
       "id": "2d469d43-4796-4b74-8bca-2b24aa04e062",
       "title": "Pinball! Pinball! Pinball!",
       "date": "2018-12-17",
+      "starts_at": "2018-12-17T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/358364441390154/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/358364441390154/",
       "source": "facebook"
@@ -784,8 +1472,16 @@
     {
       "id": "dd356feb-cffd-4d29-8318-57ae8082e887",
       "title": "Yankee Knockout",
-      "date": "2018-12-21",
+      "date": "2018-12-22",
+      "starts_at": "2018-12-22T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/405363330000673/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/405363330000673/",
       "source": "facebook"
@@ -793,8 +1489,16 @@
     {
       "id": "8a2c00aa-0d27-4721-930c-1fb83a21dcbe",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-01-02",
+      "date": "2019-01-03",
+      "starts_at": "2019-01-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -802,8 +1506,16 @@
     {
       "id": "93a97e57-7e7f-492c-b87a-983f7f24de7f",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-01-16",
+      "date": "2019-01-17",
+      "starts_at": "2019-01-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -811,8 +1523,16 @@
     {
       "id": "080a7a5c-dd8d-455a-99b3-74b2d1b05820",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-01-30",
+      "date": "2019-01-31",
+      "starts_at": "2019-01-31T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -820,8 +1540,16 @@
     {
       "id": "148ecc3a-0a1e-437e-a525-e563e1395ae2",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-02-13",
+      "date": "2019-02-14",
+      "starts_at": "2019-02-14T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -829,8 +1557,16 @@
     {
       "id": "d9aa715c-a23f-422e-ba55-cb3e62bf9c53",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-02-27",
+      "date": "2019-02-28",
+      "starts_at": "2019-02-28T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -839,7 +1575,15 @@
       "id": "90e3f153-f2ad-427f-a432-4e0dcc5b92ba",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-03-13",
+      "starts_at": "2019-03-13T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -848,7 +1592,15 @@
       "id": "70cef0e1-cb00-4402-a714-ae59e734fbd0",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-03-27",
+      "starts_at": "2019-03-27T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/305271473415122/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/305271473415122/",
       "source": "facebook"
@@ -857,7 +1609,15 @@
       "id": "5748bc6d-ea52-4294-997e-b398996194d7",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-04-10",
+      "starts_at": "2019-04-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -866,7 +1626,15 @@
       "id": "e82c4fdb-c088-4510-b472-c566cab39fe3",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-04-24",
+      "starts_at": "2019-04-24T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -875,7 +1643,15 @@
       "id": "c6f616eb-e27d-4b7e-b871-ab289a1756a4",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-05-08",
+      "starts_at": "2019-05-08T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -884,7 +1660,15 @@
       "id": "5f806304-ae58-4862-a0fa-3fbb7ed5956b",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-05-22",
+      "starts_at": "2019-05-22T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -893,7 +1677,15 @@
       "id": "9c6bf013-f91e-4568-b833-56c40439bd30",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-06-05",
+      "starts_at": "2019-06-05T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -902,7 +1694,15 @@
       "id": "c4844391-d7e6-4aff-ab3c-b818f0ace3d8",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-06-19",
+      "starts_at": "2019-06-19T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -911,7 +1711,15 @@
       "id": "a694db33-6b0d-4d79-940e-94846e0e4c63",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-07-10",
+      "starts_at": "2019-07-10T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -920,7 +1728,15 @@
       "id": "58e96ef5-2200-4005-bc94-808afdf03bfe",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-07-24",
+      "starts_at": "2019-07-24T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -929,7 +1745,15 @@
       "id": "01615060-979b-4b28-9152-bc4749a5892e",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-08-14",
+      "starts_at": "2019-08-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -938,7 +1762,15 @@
       "id": "11982c3e-7199-4cd5-94f9-da966ddf3a8d",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-08-28",
+      "starts_at": "2019-08-28T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -947,7 +1779,15 @@
       "id": "c9717034-ee42-41ba-b9aa-79df7713e015",
       "title": "NEPL Season 22",
       "date": "2019-09-02",
+      "starts_at": "2019-09-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -956,7 +1796,15 @@
       "id": "646b7631-5fcd-482c-8109-deba577e4314",
       "title": "NEPL Season 22",
       "date": "2019-09-09",
+      "starts_at": "2019-09-09T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -965,7 +1813,15 @@
       "id": "09b3f837-2f28-4321-8f7e-7cfdd7399d1f",
       "title": "NEPL Season 22",
       "date": "2019-09-16",
+      "starts_at": "2019-09-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -974,7 +1830,15 @@
       "id": "dec0aadd-0d09-4e08-a64e-81ad9d3393d0",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-09-18",
+      "starts_at": "2019-09-18T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -983,7 +1847,15 @@
       "id": "23c4c6e4-07c4-448f-a29f-b02e773c2f23",
       "title": "NEPL Season 22",
       "date": "2019-09-23",
+      "starts_at": "2019-09-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -992,7 +1864,15 @@
       "id": "58adf5dd-050f-43bd-9133-6bdaf0d7f443",
       "title": "NEPL Season 22",
       "date": "2019-09-30",
+      "starts_at": "2019-09-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1001,7 +1881,15 @@
       "id": "8e51c93e-698e-4f3d-bbd1-b7c34de5b8cb",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-10-02",
+      "starts_at": "2019-10-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1010,7 +1898,15 @@
       "id": "4299c74f-1b45-4c89-93ba-1f1ef607eb28",
       "title": "NEPL Season 22",
       "date": "2019-10-07",
+      "starts_at": "2019-10-07T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1019,7 +1915,15 @@
       "id": "a7bf6393-d910-4931-91ff-4b7893b7c4f8",
       "title": "NEPL Season 22",
       "date": "2019-10-14",
+      "starts_at": "2019-10-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1028,7 +1932,15 @@
       "id": "831b5722-a9d7-4d14-9e48-3bbf94a5f00d",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-10-16",
+      "starts_at": "2019-10-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1037,7 +1949,15 @@
       "id": "152d20bc-f054-4b6e-9698-4e3bdd9d7b44",
       "title": "NEPL Season 22",
       "date": "2019-10-21",
+      "starts_at": "2019-10-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1201202693415620/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1201202693415620/",
       "source": "facebook"
@@ -1046,7 +1966,15 @@
       "id": "050f87c8-1534-4e7e-83c6-0b34e21dddcc",
       "title": "Wednesday Night Knock-Out",
       "date": "2019-10-30",
+      "starts_at": "2019-10-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1054,8 +1982,16 @@
     {
       "id": "b806e4df-0471-437a-9533-9c4e417cb07f",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-11-13",
+      "date": "2019-11-14",
+      "starts_at": "2019-11-14T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1063,8 +1999,16 @@
     {
       "id": "8f4f14a3-6968-49af-8125-afa4954ec07e",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-12-04",
+      "date": "2019-12-05",
+      "starts_at": "2019-12-05T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1072,8 +2016,16 @@
     {
       "id": "51daed31-4352-4eb5-81d1-7a0d2470c279",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-12-11",
+      "date": "2019-12-12",
+      "starts_at": "2019-12-12T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1082,7 +2034,15 @@
       "id": "376e4093-dc05-42e3-906f-ebe41be0ddac",
       "title": "Pin Football",
       "date": "2019-12-14",
+      "starts_at": "2019-12-14T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/2417065645176588/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/2417065645176588/",
       "source": "facebook"
@@ -1090,8 +2050,16 @@
     {
       "id": "962e392f-8927-4815-9a59-57c14be0a610",
       "title": "Wednesday Night Knock-Out",
-      "date": "2019-12-18",
+      "date": "2019-12-19",
+      "starts_at": "2019-12-19T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1099,8 +2067,16 @@
     {
       "id": "c4431113-890d-4dee-bf57-d8da5cea71ab",
       "title": "Wednesday Night Knock-Out",
-      "date": "2020-01-08",
+      "date": "2020-01-09",
+      "starts_at": "2020-01-09T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1108,8 +2084,16 @@
     {
       "id": "a578467b-4db0-4e00-90b6-4fc4446fdd93",
       "title": "Wednesday Night Knock-Out",
-      "date": "2020-01-22",
+      "date": "2020-01-23",
+      "starts_at": "2020-01-23T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1118,7 +2102,15 @@
       "id": "a051c1fc-7b8b-4404-84b8-9518cf8b5efa",
       "title": "Pin Football!",
       "date": "2020-02-01",
+      "starts_at": "2020-02-01T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/167722441176542/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/167722441176542/",
       "source": "facebook"
@@ -1126,8 +2118,16 @@
     {
       "id": "c54dca75-bf27-44b8-8f11-04403f7a67db",
       "title": "Wednesday Night Knock-Out",
-      "date": "2020-02-05",
+      "date": "2020-02-06",
+      "starts_at": "2020-02-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1135,8 +2135,16 @@
     {
       "id": "45e1e392-d305-4a91-a125-76d995c6dfc1",
       "title": "Wednesday Night Knock-Out",
-      "date": "2020-02-12",
+      "date": "2020-02-13",
+      "starts_at": "2020-02-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1144,8 +2152,16 @@
     {
       "id": "09523b42-dd70-435f-bf99-7a9fc878a79d",
       "title": "Wednesday Night Knock-Out",
-      "date": "2020-02-19",
+      "date": "2020-02-20",
+      "starts_at": "2020-02-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1153,8 +2169,16 @@
     {
       "id": "b6994b80-c0fb-4bd8-9800-a5ea6e6e0721",
       "title": "Wednesday Night Knock-Out",
-      "date": "2020-03-04",
+      "date": "2020-03-05",
+      "starts_at": "2020-03-05T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/583061642186822/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/583061642186822/",
       "source": "facebook"
@@ -1163,7 +2187,15 @@
       "id": "d9fe20cd-2421-43cb-9f06-9da1d49cf25a",
       "title": "Friday Pin-Golf!",
       "date": "2021-06-11",
+      "starts_at": "2021-06-11T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/345324980343412/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/345324980343412/",
       "source": "facebook"
@@ -1172,7 +2204,15 @@
       "id": "8364f0c4-dbe9-4566-a3ef-28d38f4f0cac",
       "title": "Friday Pin-Golf!",
       "date": "2021-07-23",
+      "starts_at": "2021-07-23T22:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/563026604883189/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/563026604883189/",
       "source": "facebook"
@@ -1181,7 +2221,15 @@
       "id": "5d0aa039-33e4-4b1f-9f8b-ea5a228172f4",
       "title": "Open House",
       "date": "2021-12-12",
+      "starts_at": "2021-12-12T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/396901612121096/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/396901612121096/",
       "source": "facebook"
@@ -1190,7 +2238,15 @@
       "id": "b84b5013-fecf-4048-b3ae-f238e8e4e3f1",
       "title": "Sunday Knockout at SNHPC",
       "date": "2021-12-19",
+      "starts_at": "2021-12-19T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/464393988522587/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/464393988522587/",
       "source": "facebook"
@@ -1198,8 +2254,16 @@
     {
       "id": "4578d4b0-1beb-43f5-b84c-55346875d3f4",
       "title": "Wednesday Night Knockout",
-      "date": "2022-01-05",
+      "date": "2022-01-06",
+      "starts_at": "2022-01-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/617481026119383/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1208,7 +2272,15 @@
       "id": "504a846a-aadb-4872-a1a1-74bb11b6b713",
       "title": "Sunday PinGolf",
       "date": "2022-01-09",
+      "starts_at": "2022-01-09T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/415891776993998/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/415891776993998/",
       "source": "facebook"
@@ -1216,8 +2288,16 @@
     {
       "id": "b69d4de9-6d63-4755-b91a-84c7db98b7e9",
       "title": "Wednesday Night Knockout",
-      "date": "2022-01-19",
+      "date": "2022-01-20",
+      "starts_at": "2022-01-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/617481026119383/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1225,8 +2305,16 @@
     {
       "id": "cdbf2378-29be-4a30-8f1c-582bb9335b45",
       "title": "Wednesday Night Knockout",
-      "date": "2022-02-02",
+      "date": "2022-02-03",
+      "starts_at": "2022-02-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/617481026119383/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1235,7 +2323,15 @@
       "id": "b72de118-b990-4fe7-93c1-1b40fc1ddbd3",
       "title": "Sunday PinGolf",
       "date": "2022-02-13",
+      "starts_at": "2022-02-13T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/467988854862959/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/467988854862959/",
       "source": "facebook"
@@ -1243,8 +2339,16 @@
     {
       "id": "c52ee41a-9792-479c-8d25-a6d4862da1b2",
       "title": "Wednesday Night Knockout",
-      "date": "2022-02-16",
+      "date": "2022-02-17",
+      "starts_at": "2022-02-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/617481026119383/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1252,8 +2356,16 @@
     {
       "id": "1d31c841-395d-49e5-bd9b-4b39f421da6d",
       "title": "Southern NH Pinball League",
-      "date": "2022-02-21",
+      "date": "2022-02-22",
+      "starts_at": "2022-02-22T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1261,8 +2373,16 @@
     {
       "id": "f7fcf209-c702-4205-91be-3579552ea95b",
       "title": "Southern NH Pinball League",
-      "date": "2022-02-28",
+      "date": "2022-03-01",
+      "starts_at": "2022-03-01T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1270,8 +2390,16 @@
     {
       "id": "f6287032-a2c7-4c3e-945a-e04d6aed04ce",
       "title": "Wednesday Night Knockout",
-      "date": "2022-03-02",
+      "date": "2022-03-03",
+      "starts_at": "2022-03-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/617481026119383/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/617481026119383/",
       "source": "facebook"
@@ -1279,8 +2407,16 @@
     {
       "id": "77678a81-bf60-4d50-a094-dff099c63d82",
       "title": "Southern NH Pinball League",
-      "date": "2022-03-07",
+      "date": "2022-03-08",
+      "starts_at": "2022-03-08T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1289,7 +2425,15 @@
       "id": "c268a135-a5c8-4464-b261-402bb5ace6fd",
       "title": "Southern NH Pinball League",
       "date": "2022-03-14",
+      "starts_at": "2022-03-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1298,7 +2442,15 @@
       "id": "4c258c0a-4f8a-40ac-9c35-eaee5ac3e4e0",
       "title": "Southern NH Pinball League",
       "date": "2022-03-21",
+      "starts_at": "2022-03-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1307,7 +2459,15 @@
       "id": "7e166e6b-8f18-4098-a146-982b6a8a426e",
       "title": "Wednesday Night Knockout",
       "date": "2022-03-23",
+      "starts_at": "2022-03-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/716055506235950/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/716055506235950/",
       "source": "facebook"
@@ -1316,7 +2476,15 @@
       "id": "6b996a4e-8544-416b-b66f-a79ac3a20e84",
       "title": "Southern NH Pinball League",
       "date": "2022-03-28",
+      "starts_at": "2022-03-28T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1325,7 +2493,15 @@
       "id": "125c3ec5-8177-4f75-9b92-b03e63ba8a7b",
       "title": "Sunday PinGold",
       "date": "2022-04-03",
+      "starts_at": "2022-04-03T16:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/346131550860870/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/346131550860870/",
       "source": "facebook"
@@ -1334,7 +2510,15 @@
       "id": "f41188a1-e9d7-42af-aa7d-a01f75d9812d",
       "title": "Southern NH Pinball League",
       "date": "2022-04-04",
+      "starts_at": "2022-04-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1343,7 +2527,15 @@
       "id": "c3e27c9b-26c8-49f3-975a-f71cd4301564",
       "title": "Wednesday Night Knockout",
       "date": "2022-04-06",
+      "starts_at": "2022-04-06T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/716055506235950/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/716055506235950/",
       "source": "facebook"
@@ -1352,7 +2544,15 @@
       "id": "c7bcac41-02da-4e19-8449-92bcffa5adf5",
       "title": "Southern NH Pinball League",
       "date": "2022-04-11",
+      "starts_at": "2022-04-11T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/906777256676034/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/906777256676034/",
       "source": "facebook"
@@ -1361,7 +2561,15 @@
       "id": "7ba879aa-08c8-49b0-828f-5850df45527a",
       "title": "Wednesday Night Knockout",
       "date": "2022-04-20",
+      "starts_at": "2022-04-20T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/716055506235950/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/716055506235950/",
       "source": "facebook"
@@ -1370,7 +2578,15 @@
       "id": "6ea337e3-e28c-40af-9af9-d776b76f5a1a",
       "title": "Sunday PinGolf",
       "date": "2022-04-24",
+      "starts_at": "2022-04-24T16:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1026469584633906/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1026469584633906/",
       "source": "facebook"
@@ -1379,7 +2595,15 @@
       "id": "7a5bb22c-8d5a-4d64-aae5-4e878967901c",
       "title": "Wednesday Night Knockout",
       "date": "2022-05-11",
+      "starts_at": "2022-05-11T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1085520402040968/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1085520402040968/",
       "source": "facebook"
@@ -1387,8 +2611,16 @@
     {
       "id": "260c0256-7555-4370-9be3-36cd33943cb2",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-11-07",
+      "date": "2022-11-08",
+      "starts_at": "2022-11-08T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1396,8 +2628,16 @@
     {
       "id": "9d57107d-95c5-40f8-8aa2-ba07300fa60c",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-11-14",
+      "date": "2022-11-15",
+      "starts_at": "2022-11-15T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1405,8 +2645,16 @@
     {
       "id": "93e56087-6b08-4307-b25b-72ca7e789702",
       "title": "Wesnesday Knockout",
-      "date": "2022-11-16",
+      "date": "2022-11-17",
+      "starts_at": "2022-11-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/666939754809954/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1414,8 +2662,16 @@
     {
       "id": "5a5b6a71-bae1-46f0-a4d2-f5939cc0eeb6",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-11-21",
+      "date": "2022-11-22",
+      "starts_at": "2022-11-22T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1423,8 +2679,16 @@
     {
       "id": "a4eb01b4-e956-4a91-906e-af09d2e7deb5",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-11-28",
+      "date": "2022-11-29",
+      "starts_at": "2022-11-29T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1432,8 +2696,16 @@
     {
       "id": "cb7fed16-5ba8-41b6-9ff8-f9f668c30318",
       "title": "Wesnesday Knockout",
-      "date": "2022-11-30",
+      "date": "2022-12-01",
+      "starts_at": "2022-12-01T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/666939754809954/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1441,8 +2713,16 @@
     {
       "id": "4fcc4172-f74d-4f7c-9824-7721e58a8fb4",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-12-05",
+      "date": "2022-12-06",
+      "starts_at": "2022-12-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1450,8 +2730,16 @@
     {
       "id": "a4af90f9-6e33-4559-82c9-e68ce9507e30",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-12-12",
+      "date": "2022-12-13",
+      "starts_at": "2022-12-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1459,8 +2747,16 @@
     {
       "id": "e9743055-9744-41fd-b024-7fdd43a26f9f",
       "title": "Wesnesday Knockout",
-      "date": "2022-12-14",
+      "date": "2022-12-15",
+      "starts_at": "2022-12-15T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/666939754809954/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1468,8 +2764,16 @@
     {
       "id": "2fb75e8d-7a6c-47f4-be2a-5780b3ef8fdf",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2022-12-19",
+      "date": "2022-12-20",
+      "starts_at": "2022-12-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1477,8 +2781,16 @@
     {
       "id": "4899c2c9-4930-4724-b388-938c4338afe5",
       "title": "Wesnesday Knockout",
-      "date": "2022-12-28",
+      "date": "2022-12-29",
+      "starts_at": "2022-12-29T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/666939754809954/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1486,8 +2798,16 @@
     {
       "id": "e5f8c9f0-0acb-4b51-9845-3e3de0ce99e1",
       "title": "Southern NH Pinball League - Season 3",
-      "date": "2023-01-02",
+      "date": "2023-01-03",
+      "starts_at": "2023-01-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/8905178932829349/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/8905178932829349/",
       "source": "facebook"
@@ -1495,8 +2815,16 @@
     {
       "id": "ae7b3429-1ece-4831-8e71-87c042901b4c",
       "title": "Wesnesday Knockout",
-      "date": "2023-01-11",
+      "date": "2023-01-12",
+      "starts_at": "2023-01-12T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/666939754809954/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1504,8 +2832,16 @@
     {
       "id": "86cebb0d-6c01-4fa5-bf1f-884cf67cb8ce",
       "title": "Wesnesday Knockout",
-      "date": "2023-01-25",
+      "date": "2023-01-26",
+      "starts_at": "2023-01-26T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/666939754809954/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/666939754809954/",
       "source": "facebook"
@@ -1514,7 +2850,15 @@
       "id": "cb8da102-80dc-434d-bddd-c73f2edaa3f2",
       "title": "SNHPC - End Of Month Knockout",
       "date": "2023-01-29",
+      "starts_at": "2023-01-29T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/832374577854311/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/832374577854311/",
       "source": "facebook"
@@ -1523,7 +2867,15 @@
       "id": "444e57a9-fd21-4ba8-bd44-05e0b58e3cf4",
       "title": "SNHPC - End Of Month Knockout",
       "date": "2023-02-26",
+      "starts_at": "2023-02-26T19:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/633107778571119/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/633107778571119/",
       "source": "facebook"
@@ -1531,8 +2883,16 @@
     {
       "id": "ae7974e0-1f20-48cf-8ebb-c0c930345844",
       "title": "Wednesday Night KnockOut",
-      "date": "2023-03-08",
+      "date": "2023-03-09",
+      "starts_at": "2023-03-09T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1230152134267181/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1230152134267181/",
       "source": "facebook"
@@ -1541,7 +2901,15 @@
       "id": "4dd783d9-32b9-43de-b514-761434ad6a0b",
       "title": "Wednesday Night KnockOut",
       "date": "2023-03-22",
+      "starts_at": "2023-03-22T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1230152134267181/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1230152134267181/",
       "source": "facebook"
@@ -1550,7 +2918,15 @@
       "id": "3334d151-ae94-44f0-bb20-b4b2d2a48765",
       "title": "SNHPC - End Of Month Knockout",
       "date": "2023-03-26",
+      "starts_at": "2023-03-26T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/5453653054738594/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/5453653054738594/",
       "source": "facebook"
@@ -1559,7 +2935,15 @@
       "id": "337c1f5f-ee95-40df-ab3a-ae171fe4315a",
       "title": "SNHPC - End Of Month Knockout",
       "date": "2023-04-30",
+      "starts_at": "2023-04-30T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1612779935853821/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1612779935853821/",
       "source": "facebook"
@@ -1568,7 +2952,15 @@
       "id": "9b95bf64-df0e-4650-845d-6841afe08587",
       "title": "SNHPC - End Of Month Knockout",
       "date": "2023-06-04",
+      "starts_at": "2023-06-04T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/953491376055965/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/953491376055965/",
       "source": "facebook"
@@ -1577,7 +2969,15 @@
       "id": "24280f5e-ac69-4bf6-a6cd-2ecdad0ceac5",
       "title": "SNHPC - End Of Month Knockout",
       "date": "2023-06-25",
+      "starts_at": "2023-06-25T18:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/2293874750780836/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/2293874750780836/",
       "source": "facebook"
@@ -1586,7 +2986,15 @@
       "id": "53571fef-fbc6-4895-93a2-3a8964e00ba1",
       "title": "New England Pinball League Week 1",
       "date": "2023-09-04",
+      "starts_at": "2023-09-04T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/891314705745358/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/891314705745358/",
       "source": "facebook"
@@ -1595,7 +3003,15 @@
       "id": "1fc47d71-867f-466d-a278-afd82b60bca7",
       "title": "SNHPC Open House - Play For Free!",
       "date": "2023-09-24",
+      "starts_at": "2023-09-24T17:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/294954429925260/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/294954429925260/",
       "source": "facebook"
@@ -1603,8 +3019,16 @@
     {
       "id": "e1f82d37-a18a-430e-978a-4e748273ddb8",
       "title": "Friday Night Yankee Swap - OUT!!!",
-      "date": "2023-12-29",
+      "date": "2023-12-30",
+      "starts_at": "2023-12-30T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/2089234988108062/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/2089234988108062/",
       "source": "facebook"
@@ -1612,8 +3036,16 @@
     {
       "id": "e3739366-e33d-46a9-9ca4-ba206ffc2984",
       "title": "Casino Night / Pinball Poker / Tommy Dollar$ / Stall Ball",
-      "date": "2024-01-12",
+      "date": "2024-01-13",
+      "starts_at": "2024-01-13T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/6969233849825839/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/6969233849825839/",
       "source": "facebook"
@@ -1622,7 +3054,15 @@
       "id": "7fb0d694-5b1c-4708-aa7d-4b3027a5ad88",
       "title": "SUNDAY FUNDAY IFPA TOURNAMENT",
       "date": "2024-01-28",
+      "starts_at": "2024-01-28T16:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1293681197927481/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1293681197927481/",
       "source": "facebook"
@@ -1630,8 +3070,16 @@
     {
       "id": "07aedefd-1595-40ac-a426-e226b21b630f",
       "title": "Split Flipper K.O. XO",
-      "date": "2024-02-16",
+      "date": "2024-02-17",
+      "starts_at": "2024-02-17T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/905900081163404/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/905900081163404/",
       "source": "facebook"
@@ -1639,8 +3087,16 @@
     {
       "id": "c68d7cbc-6a4f-43b1-af8f-76864bede602",
       "title": "HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH",
-      "date": "2024-03-01",
+      "date": "2024-03-02",
+      "starts_at": "2024-03-02T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/940631717625251/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1648,8 +3104,16 @@
     {
       "id": "69d893f2-1e75-4065-ad84-3966a4b86f35",
       "title": "HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH",
-      "date": "2024-03-08",
+      "date": "2024-03-09",
+      "starts_at": "2024-03-09T00:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/940631717625251/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1658,7 +3122,15 @@
       "id": "d643199b-372c-4b1a-85ab-3532fd6a610d",
       "title": "HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH",
       "date": "2024-03-15",
+      "starts_at": "2024-03-15T23:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/940631717625251/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1667,7 +3139,15 @@
       "id": "aa1b1793-be20-4f84-bf89-a9bf85797cad",
       "title": "Weekly Knock-Out",
       "date": "2024-03-21",
+      "starts_at": "2024-03-21T23:30:00+00:00",
       "location": "134 Haines St, Nashua, NH, United States, New Hampshire 03060",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/452673533794888/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/452673533794888/",
       "source": "facebook"
@@ -1676,7 +3156,15 @@
       "id": "fb1a4b1b-ea08-4927-aac0-4d687131a6ac",
       "title": "HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH",
       "date": "2024-03-22",
+      "starts_at": "2024-03-22T23:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/940631717625251/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1685,7 +3173,15 @@
       "id": "76570752-eec4-4b66-b382-02e33bad9627",
       "title": "HIGH STAKES: POT-O-GOLD K.O. SERIES EVERY FRI IN MARCH",
       "date": "2024-03-29",
+      "starts_at": "2024-03-29T23:15:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/940631717625251/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/940631717625251/",
       "source": "facebook"
@@ -1694,7 +3190,15 @@
       "id": "82465c2d-51a7-497a-b4ce-ed59326e9645",
       "title": "Pinball, Paws, Pints, & Pizza",
       "date": "2024-03-30",
+      "starts_at": "2024-03-30T18:00:00+00:00",
       "location": "Rockingham Brewing Company",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1434100163885378/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1434100163885378/",
       "source": "facebook"
@@ -1703,7 +3207,15 @@
       "id": "a24d0738-86f3-4b2c-9a9e-2bb452de85fd",
       "title": "Pinball, Paws, Pints & Pizza!",
       "date": "2024-03-30",
+      "starts_at": "2024-03-30T18:00:00+00:00",
       "location": "1 Corporate Park Dr, Unit 1, Derry, NH, United States, New Hampshire 03038",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/842578741218967/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/842578741218967/",
       "source": "facebook"
@@ -1712,7 +3224,15 @@
       "id": "b15bf167-cf59-4b21-8fea-3b57868e6a55",
       "title": "Party at the Club Friday the 17th - Gauntlet, Stall Ball, Tommy Dollars, Games Galore!",
       "date": "2024-05-17",
+      "starts_at": "2024-05-17T23:15:00+00:00",
       "location": "134 Haines St, Nashua, NH",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/298555306623630/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/298555306623630/",
       "source": "facebook"
@@ -1721,7 +3241,15 @@
       "id": "19d7270e-d232-486d-a94b-3607eae1a12d",
       "title": "NEPL Season 33 - Week 1",
       "date": "2024-09-02",
+      "starts_at": "2024-09-02T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1202149160826500/"
+        }
+      ],
       "description": "Hosted the opening night of NEPL Season 33 at Southern New Hampshire Pinball Club in Nashua.",
       "url": "https://www.facebook.com/events/1202149160826500/",
       "source": "facebook"
@@ -1730,7 +3258,11 @@
       "id": "a4eb65e6-cf9d-4bc5-9b7e-2d6e33fdb41f",
       "title": "NEPL Season 33 - Week 2",
       "date": "2024-09-09",
+      "starts_at": "2024-09-09T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 2 of NEPL Season 33 at the club as players returned for the second session of the season.",
       "url": "",
       "source": "NEPL"
@@ -1739,7 +3271,11 @@
       "id": "b7776183-4478-452d-ae77-d1b0ba351823",
       "title": "NEPL Season 33 - Week 3",
       "date": "2024-09-16",
+      "starts_at": "2024-09-16T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 3 of NEPL Season 33 at Southern New Hampshire Pinball Club for another Monday league night in Nashua.",
       "url": "",
       "source": "NEPL"
@@ -1748,7 +3284,11 @@
       "id": "edd77e86-e1d7-47ab-aa06-6e2ce49a4730",
       "title": "NEPL Season 33 - Week 4",
       "date": "2024-09-23",
+      "starts_at": "2024-09-23T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 4 of NEPL Season 33 at the club as Southern New Hampshire Pinball Club kept the season rolling.",
       "url": "",
       "source": "NEPL"
@@ -1757,7 +3297,15 @@
       "id": "29771de1-2a81-4ef7-8a82-ef1fa6bc368c",
       "title": "Flipping It Old School end of the month pingolf tournament",
       "date": "2024-09-27",
+      "starts_at": "2024-09-27T22:00:00+00:00",
       "location": "134 Haines St, Nashua, NH",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/3161470803987725/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/3161470803987725/",
       "source": "facebook"
@@ -1766,7 +3314,11 @@
       "id": "760b08f1-b5cd-4c7a-811a-297215b20814",
       "title": "NEPL Season 33 - Week 5",
       "date": "2024-09-30",
+      "starts_at": "2024-09-30T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 5 of NEPL Season 33 at Southern New Hampshire Pinball Club for another full night of league competition.",
       "url": "",
       "source": "NEPL"
@@ -1775,7 +3327,11 @@
       "id": "179d293d-ec64-451f-8ad2-be83380ff62a",
       "title": "NEPL Season 33 - Week 6",
       "date": "2024-10-07",
+      "starts_at": "2024-10-07T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 6 of NEPL Season 33 at the club as the fall league schedule continued in Nashua.",
       "url": "",
       "source": "NEPL"
@@ -1784,7 +3340,11 @@
       "id": "27d14911-348a-4b75-946e-1fcfd138d2d7",
       "title": "NEPL Season 33 - Week 7",
       "date": "2024-10-14",
+      "starts_at": "2024-10-14T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 7 of NEPL Season 33 at Southern New Hampshire Pinball Club for another Monday night of league play in Nashua.",
       "url": "",
       "source": "NEPL"
@@ -1793,7 +3353,11 @@
       "id": "69cceab7-d772-4c59-aa28-91607078eade",
       "title": "NEPL Season 33 - Week 8",
       "date": "2024-10-21",
+      "starts_at": "2024-10-21T23:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
       "description": "Hosted Week 8 of NEPL Season 33 at the club as Southern New Hampshire Pinball Club wrapped up its regular season league nights.",
       "url": "",
       "source": "NEPL"
@@ -1801,8 +3365,16 @@
     {
       "id": "407e4227-77c7-48ee-ab9f-b6fe3ab248de",
       "title": "Yankee Swap Pinball Frenzy Jan 3rd",
-      "date": "2025-01-03",
+      "date": "2025-01-04",
+      "starts_at": "2025-01-04T00:15:00+00:00",
       "location": "134 Haines St, Nashua, NH",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/601337932424914/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/601337932424914/",
       "source": "facebook"
@@ -1810,8 +3382,16 @@
     {
       "id": "b5d0d0bd-e472-469c-9244-28c0c1cb1dc8",
       "title": "Friday Night Yankee Swap!!!",
-      "date": "2026-01-02",
+      "date": "2026-01-03",
+      "starts_at": "2026-01-03T00:30:00+00:00",
       "location": "Nashua, NH",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/events/1876569622934171/"
+        }
+      ],
       "description": "",
       "url": "https://www.facebook.com/events/1876569622934171/",
       "source": "facebook"
@@ -1819,8 +3399,16 @@
     {
       "id": "c016fcf3-e30b-426e-a9dc-9ff2d188b8a9",
       "title": "NEPL Season 36 - Week 1",
-      "date": "2026-01-05",
+      "date": "2026-01-06",
+      "starts_at": "2026-01-06T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1828,8 +3416,16 @@
     {
       "id": "f9d43b7b-9bef-4a77-b31c-7e41240915f7",
       "title": "NEPL Season 36 - Week 2",
-      "date": "2026-01-12",
+      "date": "2026-01-13",
+      "starts_at": "2026-01-13T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1837,8 +3433,16 @@
     {
       "id": "111829a1-0534-4c7f-9b88-d78017a8027a",
       "title": "NEPL Season 36 - Week 3",
-      "date": "2026-01-19",
+      "date": "2026-01-20",
+      "starts_at": "2026-01-20T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1846,8 +3450,16 @@
     {
       "id": "e86f2906-e673-44db-a0db-d9e156a2a396",
       "title": "NEPL Season 36 - Week 4",
-      "date": "2026-01-26",
+      "date": "2026-01-27",
+      "starts_at": "2026-01-27T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1855,8 +3467,16 @@
     {
       "id": "db80b48b-dfb1-4b1c-ab6b-39feca4f874f",
       "title": "NEPL Season 36 - Week 5",
-      "date": "2026-02-02",
+      "date": "2026-02-03",
+      "starts_at": "2026-02-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1864,8 +3484,16 @@
     {
       "id": "db8cfad2-e6df-45e2-8042-6ac4be3dbcad",
       "title": "NEPL Season 36 - Week 6",
-      "date": "2026-02-16",
+      "date": "2026-02-17",
+      "starts_at": "2026-02-17T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1873,8 +3501,16 @@
     {
       "id": "3e1653ea-3413-49b5-9743-e9d4da4fa756",
       "title": "NEPL Season 36 - Week 8",
-      "date": "2026-03-02",
+      "date": "2026-03-03",
+      "starts_at": "2026-03-03T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1882,8 +3518,16 @@
     {
       "id": "65e397eb-6156-48e3-bc66-8dc447ebef6f",
       "title": "NEPL Season 36 - Week 7 Makeup",
-      "date": "2026-03-04",
+      "date": "2026-03-05",
+      "starts_at": "2026-03-05T00:30:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [
+        {
+          "url": "https://nepl.org/schedule"
+        }
+      ],
       "description": "",
       "url": "https://nepl.org/schedule",
       "source": "NEPL"
@@ -1892,8 +3536,12 @@
       "id": "2f66cb2f-65ab-47aa-bd74-a2b86198e334",
       "title": "American Pinball Warrior Tournament",
       "date": "2026-04-11",
+      "starts_at": "2026-04-11T23:30:00+00:00",
       "location": "Pintastic- Club Rooms",
-      "description": "A fun event to compete in!",
+      "all_day": false,
+      "time_known": true,
+      "external_links": [],
+      "description": "A fun event to compete in!\n\nSessions started at 7:30 PM and 9:45 PM (America/New_York).",
       "url": "",
       "source": "manual"
     },
@@ -1901,7 +3549,11 @@
       "id": "fa612384-7c6d-427d-a2ee-05d6420dfacc",
       "title": "Take Your Pin Home from the Club Day",
       "date": "2026-04-18",
+      "starts_at": "2026-04-18T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
+      "external_links": [],
       "description": "Bring a vehicle, claim your machine, and get your pin safely home before move-out.",
       "url": "",
       "source": "manual"
@@ -1910,7 +3562,11 @@
       "id": "2cb52f4f-7ab2-4df3-a56a-3775147903e3",
       "title": "Get-Your-Tools Day",
       "date": "2026-04-19",
+      "starts_at": "2026-04-19T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
+      "external_links": [],
       "description": "Collect your stored tools, parts, bins, and personal gear. If it is yours, this is the day to grab it.",
       "url": "",
       "source": "manual"
@@ -1919,7 +3575,11 @@
       "id": "80e807e8-ee49-4302-9a90-9f51770e0f74",
       "title": "Last Call Load-Out Party",
       "date": "2026-04-25",
+      "starts_at": "2026-04-25T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
+      "external_links": [],
       "description": "Final big pickup push with buddy carries and good vibes. Help clear remaining personal items before vacating.",
       "url": "",
       "source": "manual"
@@ -1928,7 +3588,11 @@
       "id": "dcaf080b-e3de-4303-923c-d9801e1f8643",
       "title": "Clean Sweep and Memory Lap",
       "date": "2026-04-26",
+      "starts_at": "2026-04-26T00:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club (Old Club Space)",
+      "all_day": true,
+      "time_known": false,
+      "external_links": [],
       "description": "Final retrieval window and clean sweep day before we hand over the space.",
       "url": "",
       "source": "manual"
@@ -1937,7 +3601,11 @@
       "id": "bb84834d-3bcd-4978-a047-2ae9c9a242b0",
       "title": "Last day to Move Your Car",
       "date": "2026-04-30",
+      "starts_at": "2026-04-30T21:00:00+00:00",
       "location": "Haines St location",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "Last day of the lease, everything needs to be gone by EOD.",
       "url": "",
       "source": "manual"
@@ -1946,7 +3614,11 @@
       "id": "9d90fbf9-0af8-451b-8bde-3403e124b658",
       "title": "American Pinball Warrior",
       "date": "2026-06-19",
+      "starts_at": "2026-06-19T20:00:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "The club will be open Friday, June 19th from 7:00 - 11:00 pm and running an American Pinball Warrior event during this time. \n\nThe event consists of 5 machines with an objective on each. Your goals is to complete the objective on each machine as fast as possible to get the lowest time. If you miss an objective you do not get a time. The lowest time at the end of the night gets to pick from our box of prizes (trans-lights, mugs, shirts...) \n\nEveryone gets 2 free attempts with admission. Extra attempts are $2 each or 3/$5.",
       "url": "",
       "source": "manual"
@@ -1955,17 +3627,203 @@
       "id": "ead22930-a524-4762-b4bb-441f32f6c374",
       "title": "Learn to Play Crokinole",
       "date": "2026-07-06",
+      "starts_at": "2026-07-06T22:00:00+00:00",
       "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://www.facebook.com/share/1HEifCAXsr/"
+        }
+      ],
       "description": "Curious about Crokinole? Always wanted to check out the Southern New Hampshire Pinball Club?\nNow's your chance to do both!\nJoin us for a fun, casual evening where you can learn one of the world's most addictive tabletop games while enjoying an incredible collection of pinball machines. Whether you've never played Crokinole or you're looking to sharpen your game before league season, everyone is welcome.\n✅ FREE Event\n✅ No experience necessary\n✅ Learn to play Crokinole\n✅ Play pinball throughout the evening\n✅ Meet local players and make new friends\n\nWe'll have experienced players teaching the basics, plenty of boards available, and lots of opportunities to jump right into games. In just a few minutes you'll be sinking 20s and wondering why you didn't discover Crokinole sooner.\nBring a friend, bring your family, or just bring your curiosity—we'll provide everything you need to play.\nSee you on July 6!\nFlick. Flip. Have Fun.\nLearn more:\n\nNew England Crokinole League: necrokinole.com\nSouthern New Hampshire Pinball Club: https://www.snhpinballclub.com",
       "url": "https://www.facebook.com/share/1HEifCAXsr/",
       "source": "manual"
     },
     {
+      "id": "154a80c0-cf4f-4cf6-a5a5-42389205d120",
+      "title": "NPC @ SNHPC: Season 3 week #1",
+      "date": "2026-07-13",
+      "starts_at": "2026-07-13T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254778"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254778",
+      "source": "matchplay"
+    },
+    {
+      "id": "3e104c7d-baad-4c5a-9123-0ad472c2d709",
+      "title": "NPC @ SNHPC: Season 3 week #2",
+      "date": "2026-07-20",
+      "starts_at": "2026-07-20T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254779"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254779",
+      "source": "matchplay"
+    },
+    {
+      "id": "803fb1ca-057c-4226-80ba-5a72032cb323",
+      "title": "Flipper Frenzy in the Club",
+      "date": "2026-07-24",
+      "starts_at": "2026-07-24T23:30:00+00:00",
+      "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://facebook.com/events/s/flipper-frenzy-in-the-club/27451420311217389/"
+        }
+      ],
+      "description": "Testa will be hosting a Flipper Frenzy event!  Come one come all. \n\n$5 for members\n\nNon members $15 ($10 covers admission, $5 for the event) \n\nPrize given to the winner!",
+      "url": "https://facebook.com/events/s/flipper-frenzy-in-the-club/27451420311217389/",
+      "source": "manual"
+    },
+    {
+      "id": "1a8fff9a-39ef-4346-8078-49afe69cd308",
+      "title": "NPC @ SNHPC: Season 3 week #3",
+      "date": "2026-07-27",
+      "starts_at": "2026-07-27T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254780"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254780",
+      "source": "matchplay"
+    },
+    {
+      "id": "ed0e58d4-e36d-47a4-a437-b25ffd914b9c",
+      "title": "NPC @ SNHPC: Season 3 week #4",
+      "date": "2026-08-03",
+      "starts_at": "2026-08-03T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254781"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254781",
+      "source": "matchplay"
+    },
+    {
+      "id": "b57cb90f-afac-4054-93fe-a36dda779339",
+      "title": "NPC @ SNHPC: Season 3 week #5",
+      "date": "2026-08-10",
+      "starts_at": "2026-08-10T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254782"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254782",
+      "source": "matchplay"
+    },
+    {
+      "id": "79be4f69-e869-42a8-9340-16f11e5c6eb8",
+      "title": "NPC @ SNHPC: Season 3 week #6",
+      "date": "2026-08-17",
+      "starts_at": "2026-08-17T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254783"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254783",
+      "source": "matchplay"
+    },
+    {
+      "id": "5cfc7619-02d6-4568-aab7-e6fb7cc5fbcf",
+      "title": "NPC @ SNHPC: Season 3 week #7",
+      "date": "2026-08-24",
+      "starts_at": "2026-08-24T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/254784"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/254784",
+      "source": "matchplay"
+    },
+    {
+      "id": "430b96f3-0544-4881-a695-9b66916a4685",
+      "title": "B Division Finals for NPC @ SNHPC: Season Three",
+      "date": "2026-08-31",
+      "starts_at": "2026-08-31T23:02:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/270134"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/270134",
+      "source": "matchplay"
+    },
+    {
+      "id": "ceed8469-0ccb-4f24-99f9-69abd0e2e35f",
+      "title": "A Division Finals for NPC @ SNHPC: Season Three",
+      "date": "2026-08-31",
+      "starts_at": "2026-08-31T23:30:00+00:00",
+      "location": "Southern New Hampshire Pinball Club",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/270143"
+        }
+      ],
+      "description": "Northeast Pinball Challenge at SNHPC",
+      "url": "https://app.matchplay.events/tournaments/270143",
+      "source": "matchplay"
+    },
+    {
       "id": "9fb68be0-c7e9-4c89-96b4-870805a0ff2f",
       "title": "NEPL @ SNHPC: Season 38 week 1",
       "date": "2026-09-14",
-      "location": "TBD",
-      "description": "",
+      "starts_at": "2026-09-14T23:30:00+00:00",
+      "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/272599"
+        }
+      ],
+      "description": "NEPL Season 38 - see NEPL.ORG for details.",
       "url": "https://app.matchplay.events/tournaments/272599",
       "source": "manual"
     },
@@ -1973,25 +3831,41 @@
       "id": "751e3cad-d4c9-4db5-8f27-1a9599b615ba",
       "title": "Summertime Fun Group Matchplay",
       "date": "2026-09-19",
+      "starts_at": "2026-09-19T17:00:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "Doors at 12 PM\nTournament starts at 1 PM\n\nQualifiers: 7 Rounds of Group Match Play Scoring: IFPA scoring (7/5/3/1)\nTop 8 will make finals\nFinals: Fast Ladder\nCash prizes For Top 4\n\nPlayer Limit: 20\n*All games set to Freeplay\n$20 tournament fee - $10 house fee (SNHPC Members: No House Fee)",
-      "url": "https://app.matchplay.events/tournaments/265055",
+      "url": "",
       "source": "manual"
     },
     {
       "id": "0b1f86b0-335d-46e3-b76a-a276a6381351",
       "title": "NEPL @ SNHPC: Season 38 week 2",
       "date": "2026-09-21",
+      "starts_at": "2026-09-21T23:30:00+00:00",
       "location": "SNHPC",
-      "description": "",
-      "url": "",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [
+        {
+          "url": "https://app.matchplay.events/tournaments/273945"
+        }
+      ],
+      "description": "NEPL Season 38 - see NEPL.ORG for details.",
+      "url": "https://app.matchplay.events/tournaments/273945",
       "source": "manual"
     },
     {
       "id": "ee70b49e-67ef-4352-805a-781ece740632",
       "title": "NEPL @ SNHPC: Season 38 week 3",
       "date": "2026-09-28",
+      "starts_at": "2026-09-28T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "",
       "url": "",
       "source": "manual"
@@ -2000,7 +3874,11 @@
       "id": "0b44737b-3b35-4505-b53f-2cab76a2a075",
       "title": "NEPL @ SNHPC: Season 38 week 4",
       "date": "2026-10-05",
+      "starts_at": "2026-10-05T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "",
       "url": "",
       "source": "manual"
@@ -2009,7 +3887,11 @@
       "id": "a457f413-936e-4965-a543-faecac0bd3e2",
       "title": "NEPL @ SNHPC: Season 38 week 5",
       "date": "2026-10-12",
+      "starts_at": "2026-10-12T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "",
       "url": "",
       "source": "manual"
@@ -2018,7 +3900,11 @@
       "id": "9bff6621-aa6a-4f9a-89ff-014c95d16f38",
       "title": "NEPL @ SNHPC: Season 38 week 6",
       "date": "2026-10-19",
+      "starts_at": "2026-10-19T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "",
       "url": "",
       "source": "manual"
@@ -2027,7 +3913,11 @@
       "id": "080dbd53-da4d-41f5-99b2-1652435824aa",
       "title": "NEPL @ SNHPC: Season 38 week 7",
       "date": "2026-10-26",
+      "starts_at": "2026-10-26T23:30:00+00:00",
       "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "",
       "url": "",
       "source": "manual"
@@ -2036,7 +3926,11 @@
       "id": "d9730ded-f93a-49c9-9680-68e8a5ba3346",
       "title": "NEPL @ SNHPC: Season 38 week 8",
       "date": "2026-11-03",
-      "location": "TBD",
+      "starts_at": "2026-11-03T00:30:00+00:00",
+      "location": "SNHPC",
+      "all_day": false,
+      "time_known": null,
+      "external_links": [],
       "description": "",
       "url": "",
       "source": "manual"

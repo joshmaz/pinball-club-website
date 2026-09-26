@@ -59,6 +59,13 @@ function Get-EventNodes {
     return $out
 }
 
+function Normalize-Start {
+    param($StartDate)
+    if ([string]::IsNullOrWhiteSpace([string]$StartDate) -or [string]$StartDate -notmatch 'T') { return $null }
+    if ([string]$StartDate -notmatch '(Z|[+-]\d{2}:\d{2})$') { throw "Event start requires a timezone offset" }
+    return ([DateTimeOffset]::Parse([string]$StartDate)).ToUniversalTime().ToString("o")
+}
+
 function Normalize-Date {
     param($StartDate)
     if ([string]::IsNullOrWhiteSpace([string]$StartDate)) { return "TBD" }
@@ -125,6 +132,8 @@ function Normalize-Event {
     [pscustomobject]@{
         name = if ([string]::IsNullOrWhiteSpace([string]$EventNode.name)) { "Untitled Event" } else { [string]$EventNode.name }
         date = Normalize-Date -StartDate $EventNode.startDate
+        starts_at = Normalize-Start -StartDate $EventNode.startDate
+        time_known = [bool](Normalize-Start -StartDate $EventNode.startDate)
         location = Normalize-Location -Location $EventNode.location
         description = [string]$EventNode.description
         url = [string]$EventNode.url
@@ -220,6 +229,7 @@ function Enrich-EventFromUrl {
             $norm = Normalize-Event -EventNode $pageEvents[0]
             if ($needsName -and -not [string]::IsNullOrWhiteSpace([string]$norm.name)) { $Event.name = $norm.name }
             if ($needsDate -and [string]$norm.date -ne "TBD") { $Event.date = $norm.date }
+            if ($norm.date -eq $Event.date -and $norm.starts_at) { $Event.starts_at = $norm.starts_at; $Event.time_known = $true }
             if ($needsLocation -and [string]$norm.location -ne "TBD") { $Event.location = $norm.location }
             if ($needsDescription -and -not [string]::IsNullOrWhiteSpace([string]$norm.description)) { $Event.description = $norm.description }
             if ($needsImage -and -not [string]::IsNullOrWhiteSpace([string]$norm.imageUrl)) { $Event.imageUrl = $norm.imageUrl }
@@ -297,6 +307,8 @@ function Enrich-EventsFromSourceHtml {
         $updated = [pscustomobject]@{
             name = [string]$evt.name
             date = [string]$evt.date
+            starts_at = $evt.starts_at
+            time_known = $evt.time_known
             location = [string]$evt.location
             description = [string]$evt.description
             url = [string]$evt.url
@@ -349,11 +361,15 @@ function Enrich-EventsFromSourceHtml {
                         try {
                             $dt = [DateTimeOffset]::FromUnixTimeSeconds([int64]$m.Groups["ts"].Value).LocalDateTime
                             $updated.date = $dt.ToString("yyyy-MM-dd")
+                            $updated.starts_at = [DateTimeOffset]::FromUnixTimeSeconds([int64]$m.Groups["ts"].Value).ToString("o")
+                            $updated.time_known = $true
                             break
                         } catch {}
                     }
                     if ($m.Groups["iso"].Success) {
                         $updated.date = Normalize-Date -StartDate $m.Groups["iso"].Value
+                        $updated.starts_at = Normalize-Start -StartDate $m.Groups["iso"].Value
+                        $updated.time_known = [bool]$updated.starts_at
                         break
                     }
                 }
@@ -432,6 +448,8 @@ function Get-EventLinksFromHtml {
         $events += [pscustomobject]@{
             name = $name
             date = "TBD"
+            starts_at = $null
+            time_known = $null
             location = "TBD"
             description = ""
             url = (Get-CanonicalEventUrl -Url $url)
@@ -457,6 +475,8 @@ function Get-EventLinksFromHtml {
         $events += [pscustomobject]@{
             name = $name
             date = "TBD"
+            starts_at = $null
+            time_known = $null
             location = "TBD"
             description = ""
             url = (Get-CanonicalEventUrl -Url $url)

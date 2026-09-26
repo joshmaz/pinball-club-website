@@ -99,3 +99,53 @@ current data during an outage. Automated refresh is the next mitigation.
 Add manual/scheduled refresh automation that opens a snapshot-update PR, reports
 export/validation failures, and applies an agreed freshness threshold. No workflow
 in this foundation PR automatically refreshes data or writes directly to `main`.
+
+Event snapshots now preserve the canonical `starts_at` timestamp. Cards use it
+for both local date and time, matching the editor's browser-local conversion;
+`date` remains available for older date-only snapshots. Existing snapshots without
+`starts_at` keep showing “Time not listed” until refreshed. The legacy migration
+and JSON importer encoded date-only values as midnight UTC, so cards preserve
+those UTC calendar dates without claiming a known time. The current schema cannot
+distinguish a genuine midnight-UTC start from that placeholder; resolving that
+ambiguity requires explicit time precision metadata. Local midnight at other UTC
+offsets remains a known time. No separate presentation `time` field is used.
+
+### Historical time recovery
+
+See `event-time-recovery-proposal.md` and its JSON companion for the September 25,
+2026 review set. This is a proposal, not a migration: no database updates have
+been applied. Regenerate it with:
+
+```bash
+python3 scripts/prepare-event-time-recovery.py /path/to/event-audit.json docs/event-time-recovery-proposal.json
+```
+
+The input audit contains `checkedAt` and an `unknown` array of public event rows.
+Monday league and Wednesday knockout defaults use the user's confirmed 7:30 PM
+America/New_York rule; off-weekday exceptions remain for review. Verified source
+times are identified separately. Any eventual application must update by UUID,
+compare the old timestamp, modify only `starts_at`, and record applied changes.
+Do not run the legacy bulk upsert for recovery: it can overwrite descriptions,
+publication state, and other edits. Refresh the public snapshot after recovery.
+
+Both Facebook importers now retain explicit offset-bearing start timestamps as
+`starts_at`; the database JSON importer prefers that canonical value over `date`.
+Date-only source data still uses the documented legacy placeholder. Ambiguous
+full timestamps without a timezone offset are rejected instead of guessed.
+The legacy import key retains the original calendar date when available so a
+winter evening's UTC date rollover does not change its deduplication identity.
+
+
+### Explicit event time precision (September 25 recovery completion)
+
+`all_day` and nullable `time_known` are now carried by the public reader and
+snapshot exporter. All-day values preserve the UTC calendar date and render
+“All day.” `time_known: true` renders the canonical timestamp even at midnight
+UTC; false keeps “Time not listed.” Null retains legacy precision inference.
+The event editor offers an all-day date input and preserves precision when the
+schedule is unchanged. Its publish toggle preserves both fields.
+
+Migration `20260925180000_event_time_precision.sql` was applied and recorded
+before these readers were deployed. The former UUID-specific midnight exception
+has been removed. All eight remaining records were resolved by the user's
+corrections; see `event-time-recovery-completed.md`.

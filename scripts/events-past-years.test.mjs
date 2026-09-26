@@ -40,6 +40,7 @@ test('past years open, navigate, and collapse with correct selection and boundar
     createTextNode: (value) => ({ textContent: value }),
   };
   const context = vm.createContext({ document, window: {} });
+  vm.runInContext(await readFile(path.join(root, 'assets/js/event-links.js'), 'utf8'), context);
   vm.runInContext(source.replace(/^loadEvents\(\);$|^void loadEventsPhotoSpotlight\(\);$/gm, ''), context);
 
   const region = new Element();

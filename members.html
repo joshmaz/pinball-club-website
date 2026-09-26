@@ -28,6 +28,7 @@
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/site-auth.js"></script>
   <script src="assets/js/member-routes.js"></script>
+  <script src="assets/js/event-links.js"></script>
   <script src="assets/js/member-portal.js"></script>
   <script src="assets/js/member-audit-panel.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
@@ -395,14 +396,18 @@
             <label for="member-events-title">Title</label>
             <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
 
+            <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
             <label for="member-events-starts-at">Starts at (local)</label>
             <input id="member-events-starts-at" type="datetime-local">
 
             <label for="member-events-location">Location</label>
             <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
 
-            <label for="member-events-url">External URL</label>
-            <input id="member-events-url" type="url" maxlength="1000" placeholder="https://...">
+            <fieldset class="event-links-editor">
+              <legend>External links</legend>
+              <div id="member-events-links"></div>
+              <button id="member-events-add-link" type="button">Add another link</button>
+            </fieldset>
 
             <label for="member-events-source">Source</label>
             <input id="member-events-source" type="text" maxlength="80" placeholder="manual">
@@ -540,9 +545,11 @@
     var memberEventsForm = document.getElementById("member-events-form");
     var memberEventsId = document.getElementById("member-events-id");
     var memberEventsTitle = document.getElementById("member-events-title");
+    var memberEventsAllDay = document.getElementById("member-events-all-day");
+    var memberEventsOriginalSchedule = null;
     var memberEventsStartsAt = document.getElementById("member-events-starts-at");
     var memberEventsLocation = document.getElementById("member-events-location");
-    var memberEventsUrl = document.getElementById("member-events-url");
+    var memberEventsLinks = window.SNHEventLinks.createEditor(document.getElementById("member-events-links"), document.getElementById("member-events-add-link"));
     var memberEventsSource = document.getElementById("member-events-source");
     var memberEventsDescription = document.getElementById("member-events-description");
     var memberEventsPublished = document.getElementById("member-events-published");
@@ -1307,9 +1314,22 @@
     });
     window.addEventListener("beforeunload", function (ev) { if (adminHasUnsaved()) { ev.preventDefault(); ev.returnValue = ""; } });
 
+    function setEventDateInputMode(allDay) {
+      if (!memberEventsStartsAt) return;
+      var value = memberEventsStartsAt.value;
+      memberEventsStartsAt.type = allDay ? "date" : "datetime-local";
+      memberEventsStartsAt.value = value ? (allDay ? value.slice(0, 10) : value.slice(0, 10) + "T00:00") : "";
+    }
+    if (memberEventsAllDay) memberEventsAllDay.addEventListener("change", function () {
+      setEventDateInputMode(memberEventsAllDay.checked);
+    });
+
     function resetEventsForm() {
       if (!memberEventsForm) return;
       memberEventsForm.reset();
+      memberEventsLinks.set([]);
+      memberEventsOriginalSchedule = null;
+      if (memberEventsStartsAt) memberEventsStartsAt.type = "datetime-local";
       if (memberEventsId) memberEventsId.value = "";
       if (memberEventsPublished) memberEventsPublished.checked = true;
       clearEventPhotoDigest();
@@ -1320,9 +1340,14 @@
       if (!row || !memberEventsForm) return;
       if (memberEventsId) memberEventsId.value = String(row.id || "");
       if (memberEventsTitle) memberEventsTitle.value = row.title || "";
-      if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(row.starts_at);
+      if (memberEventsAllDay) memberEventsAllDay.checked = !!row.all_day;
+      if (memberEventsStartsAt) {
+        memberEventsStartsAt.type = row.all_day ? "date" : "datetime-local";
+        memberEventsStartsAt.value = row.all_day ? String(row.starts_at || "").slice(0, 10) : toLocalDateTimeInputValue(row.starts_at);
+        memberEventsOriginalSchedule = { value: memberEventsStartsAt.value, all_day: !!row.all_day, time_known: row.time_known };
+      }
       if (memberEventsLocation) memberEventsLocation.value = row.location || "";
-      if (memberEventsUrl) memberEventsUrl.value = row.external_url || "";
+      memberEventsLinks.set(window.SNHEventLinks.fromEvent(row));
       if (memberEventsSource) memberEventsSource.value = row.source || "";
       if (memberEventsDescription) memberEventsDescription.value = row.description || "";
       if (memberEventsPublished) memberEventsPublished.checked = !!row.published;
@@ -1376,7 +1401,7 @@
         tdTitle.textContent = row.title || "(untitled)";
 
         var tdDate = document.createElement("td");
-        tdDate.textContent = window.SNHMemberPortal.formatDate(row.starts_at);
+        tdDate.textContent = row.all_day ? String(row.starts_at || "").slice(0, 10) + " · All day" : window.SNHMemberPortal.formatDate(row.starts_at);
 
         var tdLoc = document.createElement("td");
         tdLoc.textContent = row.location || "—";
@@ -1624,7 +1649,9 @@
           return String(row.id) === button.getAttribute("data-matchplay-event-id");
         });
         if (!candidate) return;
-        selectEventForEdit(candidate);
+        var savedEvent = memberEventsAllRows.find(function (row) { return String(row.id) === String(candidate.id); });
+        if (!savedEvent) { setEventsStatus("Refresh the events list before editing this event."); return; }
+        selectEventForEdit(savedEvent);
         var tournament = matchplayReviewData.tournament || {};
         if (memberEventsDescription && !memberEventsDescription.value.trim()) {
           memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
@@ -1635,10 +1662,8 @@
         if (memberEventsStartsAt && !memberEventsStartsAt.value) {
           memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
         }
-        if (memberEventsUrl && !memberEventsUrl.value.trim()) {
-          memberEventsUrl.value = tournament.url || "";
-        }
-        setEventsStatus("Editing the existing club event. Its saved fields remain populated; only empty fields received MatchPlay details. Review before saving.");
+        if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+        setEventsStatus("Editing the existing club event. Its saved fields remain populated; empty fields received Match Play details and its tournament link was added. Review before saving.");
       });
     }
 
@@ -1650,7 +1675,7 @@
         if (memberEventsTitle) memberEventsTitle.value = String(tournament.title || "").slice(0, 300);
         if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
         if (memberEventsLocation) memberEventsLocation.value = String(tournament.location || "").slice(0, 500);
-        if (memberEventsUrl) memberEventsUrl.value = tournament.url || "";
+        if (tournament.url) memberEventsLinks.append({ url: tournament.url });
         if (memberEventsSource) memberEventsSource.value = "matchplay";
         if (memberEventsDescription) memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
         if (memberEventsPublished) memberEventsPublished.checked = false;
@@ -1774,12 +1799,20 @@
           setEventsStatus("Title is required.");
           return;
         }
+        var externalLinks;
+        try { externalLinks = memberEventsLinks.get(); }
+        catch (error) { setEventsStatus(error.message); return; }
+        var allDay = !!(memberEventsAllDay && memberEventsAllDay.checked);
+        var startValue = memberEventsStartsAt ? memberEventsStartsAt.value : "";
+        var unchangedSchedule = memberEventsOriginalSchedule && memberEventsOriginalSchedule.value === startValue && memberEventsOriginalSchedule.all_day === allDay;
         var payload = {
+          all_day: allDay,
+          time_known: allDay ? false : (unchangedSchedule ? memberEventsOriginalSchedule.time_known : !!startValue),
           id: trimOrEmpty(memberEventsId ? memberEventsId.value : ""),
           title: title,
-          starts_at: toIsoOrNull(memberEventsStartsAt ? memberEventsStartsAt.value : ""),
+          starts_at: allDay ? (startValue ? startValue + "T00:00:00Z" : null) : toIsoOrNull(startValue),
           location: trimOrEmpty(memberEventsLocation ? memberEventsLocation.value : ""),
-          external_url: trimOrEmpty(memberEventsUrl ? memberEventsUrl.value : ""),
+          external_links: externalLinks,
           source: trimOrEmpty(memberEventsSource ? memberEventsSource.value : "") || "manual",
           description: trimOrEmpty(memberEventsDescription ? memberEventsDescription.value : ""),
           published: !!(memberEventsPublished && memberEventsPublished.checked)
@@ -1818,8 +1851,10 @@
               id: row.id,
               title: row.title || "Untitled Event",
               starts_at: row.starts_at || null,
+              all_day: !!row.all_day,
+              time_known: row.time_known,
               location: row.location || "",
-              external_url: row.external_url || "",
+              external_links: window.SNHEventLinks.fromEvent(row),
               source: row.source || "manual",
               description: row.description || "",
               published: !row.published

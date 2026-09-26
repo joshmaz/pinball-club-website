@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import eventLinks from '../assets/js/event-links.js';
 /**
  * One-time/repeatable backfill from data/events.json to public.events.
  *
@@ -10,6 +11,7 @@
  * - EVENTS_JSON_PATH (default: data/events.json)
  * - DRY_RUN=true
  */
+import { importedStart } from "./event-start.mjs";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -55,10 +57,10 @@ function safeUrl(value) {
   return null;
 }
 
-function makeLegacyImportKey(event) {
+function makeLegacyImportKey(event, dateOnly) {
   const key = [
     (event.title || "").toLowerCase(),
-    event.starts_at ? event.starts_at.slice(0, 10) : "",
+    dateOnly || (event.starts_at ? event.starts_at.slice(0, 10) : ""),
     (event.location || "").toLowerCase(),
     event.external_url || "",
   ].join("|");
@@ -118,17 +120,22 @@ async function main() {
       skipped.push({ index: i, reason: "missing title" });
       continue;
     }
-    const startsAt = dateOnly ? `${dateOnly}T00:00:00Z` : null;
+    const startsAt = importedStart(row, dateOnly);
     const event = {
       title,
       description: cleanText(row.description, 4000),
       location: cleanText(row.location, 500),
       starts_at: startsAt,
+      ...(typeof row.all_day === "boolean" ? { all_day: row.all_day } : {}),
+      ...(typeof row.time_known === "boolean" ? { time_known: row.time_known } : {}),
       external_url: safeUrl(row.url || row.external_url),
+      ...(Array.isArray(row.external_links) || Array.isArray(row.externalLinks)
+        ? { external_links: eventLinks.normalize(eventLinks.fromEvent(row), true) } : {}),
       source: cleanText(row.source, 80) || "json_backfill",
       published: true,
     };
-    event.legacy_import_key = makeLegacyImportKey(event);
+    if (event.external_links) event.external_url = event.external_links[0]?.url || null;
+    event.legacy_import_key = makeLegacyImportKey(event, dateOnly);
     normalized.push(event);
   }
 

@@ -73,24 +73,38 @@ function parseEventDate(dateStr) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-// Presentation-only adapter. Current data has one URL; future providers may supply
-// externalLinks: [{ url, label? }]. No schema, write path, or fabricated links.
+// Legacy date-only imports/backfills use midnight UTC as a placeholder.
+// Until the schema records time precision, keep those dates calendar-only.
+function eventStart(event) {
+  if (typeof event.starts_at !== 'string' || !/T\d{2}:\d{2}/.test(event.starts_at)) return null;
+  const start = new Date(event.starts_at);
+  if (!Number.isFinite(start.getTime())) return null;
+  return start;
+}
+
+function eventHasKnownTime(start, event) {
+  if (event && event.all_day) return false;
+  if (event && typeof event.time_known === 'boolean') return !!start && event.time_known;
+  return start && (start.getUTCHours() !== 0 || start.getUTCMinutes() !== 0 ||
+    start.getUTCSeconds() !== 0 || start.getUTCMilliseconds() !== 0);
+}
+
+function eventCalendarDate(event) {
+  const start = eventStart(event);
+  if (eventHasKnownTime(start, event)) return start;
+  return parseEventDate(start ? start.toISOString().slice(0, 10) : event.date);
+}
+
+function eventTimeLabel(event) {
+  if (event.all_day) return 'All day';
+  const start = eventStart(event);
+  return eventHasKnownTime(start, event)
+    ? start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    : 'Time not listed';
+}
+
 function eventPresentationLinks(event) {
-  const candidates = [...(Array.isArray(event.externalLinks) ? event.externalLinks : []), { url: event.url }];
-  const seen = new Set();
-  return candidates.flatMap((item) => {
-    try {
-      const url = new URL(String(item?.url || ''));
-      if (!['https:', 'http:'].includes(url.protocol) || seen.has(url.href)) return [];
-      seen.add(url.href);
-      const host = url.hostname.toLowerCase();
-      const belongsTo = (domain) => host === domain || host.endsWith('.' + domain);
-      const provider = belongsTo('matchplay.events') ? 'Match Play'
-        : belongsTo('facebook.com') || belongsTo('fb.me') ? 'Facebook'
-        : belongsTo('discord.com') || belongsTo('discord.gg') ? 'Discord' : 'Event details';
-      return [{ url: url.href, label: String(item.label || provider) }];
-    } catch { return []; }
-  });
+  return SNHEventLinks.presentation(event);
 }
 
 function createEventCard(event, options = {}) {
@@ -99,7 +113,7 @@ function createEventCard(event, options = {}) {
   div.className = 'event-card';
   div.classList.add(isUpcoming ? 'event-card--upcoming' : 'event-card--past');
 
-  const date = parseEventDate(event.date);
+  const date = eventCalendarDate(event);
   const dateBlock = document.createElement('div');
   dateBlock.className = 'event-date-block';
   dateBlock.setAttribute('aria-hidden', 'true');
@@ -129,14 +143,12 @@ function createEventCard(event, options = {}) {
   const dateP = document.createElement('p');
   dateP.className = 'event-card-meta';
   const time = document.createElement('time');
-  if (date) time.setAttribute('datetime', String(event.date));
+  if (date) time.setAttribute('datetime', eventStart(event) ? event.starts_at : String(event.date));
   time.textContent = date
     ? date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
     : 'Date to be announced';
   dateP.appendChild(time);
-  // Public data currently supplies a calendar date, not a reliable start time.
-  // Preserve any explicit presentation time; never infer midnight as a start time.
-  dateP.appendChild(document.createTextNode(` · ${event.time || 'Time not listed'}`));
+  dateP.appendChild(document.createTextNode(` · ${eventTimeLabel(event)}`));
   body.appendChild(dateP);
 
   const locP = document.createElement('p');
@@ -206,7 +218,7 @@ function splitUpcomingAndPast(events) {
   const past = [];
 
   for (const event of events) {
-    const d = parseEventDate(event.date);
+    const d = eventCalendarDate(event);
     if (d === null) {
       upcoming.push(event);
       continue;
@@ -219,16 +231,16 @@ function splitUpcomingAndPast(events) {
   }
 
   const byDateAsc = (a, b) => {
-    const da = parseEventDate(a.date);
-    const db = parseEventDate(b.date);
+    const da = eventCalendarDate(a);
+    const db = eventCalendarDate(b);
     if (da && db) return da - db;
     if (da) return -1;
     if (db) return 1;
     return 0;
   };
   const byDateDesc = (a, b) => {
-    const da = parseEventDate(a.date);
-    const db = parseEventDate(b.date);
+    const da = eventCalendarDate(a);
+    const db = eventCalendarDate(b);
     if (da && db) return db - da;
     if (da) return -1;
     if (db) return 1;
@@ -249,7 +261,7 @@ function splitUpcomingAndPast(events) {
 function getPastEventsByYear(pastEvents) {
   const byYear = new Map();
   for (const event of pastEvents) {
-    const d = parseEventDate(event.date);
+    const d = eventCalendarDate(event);
     const year = d ? String(d.getFullYear()) : 'Unknown';
     if (!byYear.has(year)) {
       byYear.set(year, []);
@@ -267,8 +279,8 @@ function getPastEventsByYear(pastEvents) {
   for (const year of sortedYears) {
     const events = byYear.get(year);
     const byDateDesc = (a, b) => {
-      const da = parseEventDate(a.date);
-      const db = parseEventDate(b.date);
+      const da = eventCalendarDate(a);
+      const db = eventCalendarDate(b);
       if (da && db) return db - da;
       if (da) return -1;
       if (db) return 1;
@@ -427,7 +439,19 @@ function renderEventsList(container, events) {
     const upcomingHeading = document.createElement('h2');
     upcomingHeading.className = 'events-upcoming-heading';
     upcomingHeading.textContent = 'Upcoming events';
-    upcomingWrap.appendChild(upcomingHeading);
+    if (eventsCanManage) {
+      const headingRow = document.createElement('div');
+      headingRow.className = 'events-upcoming-heading-row';
+      headingRow.appendChild(upcomingHeading);
+      const addLink = document.createElement('a');
+      addLink.className = 'events-add-link';
+      addLink.href = 'members.html?panel=events';
+      addLink.textContent = '+ Add Event';
+      headingRow.appendChild(addLink);
+      upcomingWrap.appendChild(headingRow);
+    } else {
+      upcomingWrap.appendChild(upcomingHeading);
+    }
 
     const upcomingMeta = document.createElement('p');
     upcomingMeta.className = 'events-upcoming-meta';
