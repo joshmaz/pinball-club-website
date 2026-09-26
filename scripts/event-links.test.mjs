@@ -8,7 +8,7 @@ import { rankEventCandidates } from '../supabase/functions/matchplay-event-revie
 
 test('labels recognize service subdomains, respect custom labels, reject unsafe URLs, and honor empty arrays', () => {
   assert.equal(links.inferLabel('https://www.ifpapinball.com/tournaments/view.php?t=1'), 'IFPA');
-  assert.equal(links.inferLabel('https://app.matchplay.events/tournaments/1'), 'Match Play');
+  assert.equal(links.inferLabel('https://app.matchplay.events/tournaments/1'), 'Match Play Event');
   assert.equal(links.inferLabel('https://facebook.com.evil.test'), 'Event link');
   assert.deepEqual(links.presentation({ external_links: [{ url: 'https://discord.gg/club', label: '  Join us  ' }, {url: 'javascript:alert(1)'}] }), [{ url: 'https://discord.gg/club', label: 'Join us' }]);
   assert.deepEqual(links.presentation({ external_links: [], url: 'https://facebook.com/old' }), []);
@@ -34,7 +34,7 @@ test('repeatable editor autofills labels until manually edited, supports removal
   const {editor,container,button,fields} = editorFixture();
   let {url,label} = fields();
   url.value = 'https://facebook.com/events/1'; url.handlers.input(); assert.equal(label.value,'Facebook');
-  url.value = 'https://app.matchplay.events/tournaments/1'; url.handlers.input(); assert.equal(label.value,'Match Play');
+  url.value = 'https://app.matchplay.events/tournaments/1'; url.handlers.input(); assert.equal(label.value,'Match Play Event');
   label.value = 'Register here'; label.handlers.input();
   url.value = 'https://discord.gg/example'; url.handlers.input(); assert.equal(label.value,'Register here');
   label.value = ''; label.handlers.input(); url.handlers.input(); assert.equal(label.value,'');
@@ -161,4 +161,48 @@ test('limit migration preserves data, rejects six on inserts/updates and legacy 
     assert.equal((await db.query('select external_url from events where id=2')).rows[0].external_url, null);
     await assert.rejects(db.exec("update events set external_links='{}' where id=3"));
   } finally { await db.close(); }
+});
+
+test('Match Play labels distinguish event and series paths with a generic fallback', () => {
+  for (const [path, expected] of [
+    ['/tournaments/272599', 'Match Play Event'],
+    ['/series/6497', 'Match Play Series'],
+    ['/series/6497/?view=standings#results', 'Match Play Series'],
+    ['/tournaments/272599/matches?round=1', 'Match Play Event'],
+    ['/', 'Match Play'], ['/users/123', 'Match Play'],
+    ['/series/', 'Match Play'], ['/tournaments/', 'Match Play'],
+    ['/series-other/6497', 'Match Play'],
+  ]) {
+    for (const host of ['app.matchplay.events', 'matchplay.events']) {
+      assert.equal(links.inferLabel(`https://${host}${path}`), expected);
+    }
+  }
+  assert.equal(links.inferLabel('https://app.matchplay.events.evil.test/series/6497'), 'Event link');
+  assert.equal(links.inferLabel('https://notmatchplay.events/tournaments/272599'), 'Event link');
+});
+
+test('Match Play editor updates automatic labels and preserves edited, cleared, and saved labels', () => {
+  const tournament = 'https://app.matchplay.events/tournaments/272599';
+  const series = 'https://app.matchplay.events/series/6497';
+  const { editor, fields } = editorFixture();
+  let { url, label } = fields();
+  for (const [value, expected] of [[tournament, 'Match Play Event'], [series, 'Match Play Series'], [tournament, 'Match Play Event']]) {
+    url.value = value; url.handlers.input();
+    assert.equal(label.value, expected);
+  }
+  // Even a manually entered standard label must stay intentional.
+  for (const custom of ['League standings', 'Match Play Event', '']) {
+    label.value = custom; label.handlers.input();
+    for (const value of [series, tournament]) {
+      url.value = value; url.handlers.input();
+      assert.equal(label.value, custom);
+    }
+  }
+  for (const value of [series, tournament]) {
+    editor.set([{ url: value, label: 'Saved label' }]);
+    ({ url, label } = fields());
+    url.value = value === series ? tournament : series; url.handlers.input();
+    assert.equal(label.value, 'Saved label');
+    assert.equal(links.presentation({ external_links: editor.get() })[0].label, 'Saved label');
+  }
 });
