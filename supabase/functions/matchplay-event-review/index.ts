@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
     if (startsAt) {
       const startMs = Date.parse(startsAt);
       const nearby = await admin.from("events")
-        .select("id,title,description,location,starts_at,external_url,source,published")
+        .select("id,title,description,location,starts_at,external_url,external_links,source,published")
         .gte("starts_at", new Date(startMs - 36 * 3600000).toISOString())
         .lte("starts_at", new Date(startMs + 36 * 3600000).toISOString())
         .limit(200);
@@ -158,8 +158,8 @@ Deno.serve(async (req) => {
       for (const event of nearby.data || []) seen.set(String(event.id), event);
     }
     const linked = await admin.from("events")
-      .select("id,title,description,location,starts_at,external_url,source,published")
-      .eq("external_url", tournament.url).limit(20);
+      .select("id,title,description,location,starts_at,external_url,external_links,source,published")
+      .contains("external_links", [{ url: tournament.url }]).limit(20);
     if (linked.error) throw new Error("Could not read linked club events");
     for (const event of linked.data || []) seen.set(String(event.id), event);
 

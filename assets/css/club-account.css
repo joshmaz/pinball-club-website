@@ -76,3 +76,8 @@
 .club-account .member-photos-album-list-item.is-active button { background: var(--club-soft); border-color: var(--club-teal); }
 
 .club-account #member-page-status:empty { margin: 0; }
+
+.event-links-editor { min-width: 0; margin: 0; padding: 1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); }
+.event-link-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; gap: .65rem; align-items: end; margin-bottom: 1rem; }
+.event-link-row label { display: grid; gap: .35rem; min-width: 0; }
+@media (max-width: 650px) { .event-link-row { grid-template-columns: minmax(0, 1fr); } .event-link-row button { justify-self: start; } }

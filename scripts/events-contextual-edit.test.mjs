@@ -16,7 +16,7 @@ test("Events loads shared auth before its page script", async () => {
 test("public Events retains UUIDs and capability-gates contextual edit links", async () => {
   const source = await readFile(path.join(root, "assets", "js", "events.js"), "utf8");
   const loader = await readFile(path.join(root, 'assets', 'js', 'public-data.js'), 'utf8');
-  assert.match(loader, /select\('id,title,description,location,starts_at,external_url,source,all_day,time_known'/);
+  assert.match(loader, /select\('id,title,description,location,starts_at,external_url,source,all_day,time_known,external_links'/);
   assert.match(source, /SNHSiteAuth\.can\(roles, 'events\.manage'\)/);
   assert.match(source, /members\.html\?panel=events&event=/);
   assert.match(source, /Edit \$\{event\.title/);

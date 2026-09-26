@@ -13,6 +13,7 @@ function element() {
 const context = vm.createContext({ URL, document: {
   createElement: element, createTextNode: textContent => ({ textContent }),
 } });
+vm.runInContext(await readFile(new URL('../assets/js/event-links.js', import.meta.url), 'utf8'), context);
 vm.runInContext(source.replace(/^loadEvents\(\);$|^void loadEventsPhotoSpotlight\(\);$/gm, ''), context);
 const row = { id: '6c76d069-3d02-443f-8c33-3f0da3946609', title: 'League', starts_at: '2026-09-28T23:30:00Z' };
 function text(node) { return (node.textContent || '') + (node.children || []).map(text).join(''); }

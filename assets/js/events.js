@@ -103,24 +103,8 @@ function eventTimeLabel(event) {
     : 'Time not listed';
 }
 
-// Presentation-only adapter. Current data has one URL; future providers may supply
-// externalLinks: [{ url, label? }]. No schema, write path, or fabricated links.
 function eventPresentationLinks(event) {
-  const candidates = [...(Array.isArray(event.externalLinks) ? event.externalLinks : []), { url: event.url }];
-  const seen = new Set();
-  return candidates.flatMap((item) => {
-    try {
-      const url = new URL(String(item?.url || ''));
-      if (!['https:', 'http:'].includes(url.protocol) || seen.has(url.href)) return [];
-      seen.add(url.href);
-      const host = url.hostname.toLowerCase();
-      const belongsTo = (domain) => host === domain || host.endsWith('.' + domain);
-      const provider = belongsTo('matchplay.events') ? 'Match Play'
-        : belongsTo('facebook.com') || belongsTo('fb.me') ? 'Facebook'
-        : belongsTo('discord.com') || belongsTo('discord.gg') ? 'Discord' : 'Event details';
-      return [{ url: url.href, label: String(item.label || provider) }];
-    } catch { return []; }
-  });
+  return SNHEventLinks.presentation(event);
 }
 
 function createEventCard(event, options = {}) {

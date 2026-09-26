@@ -61,6 +61,7 @@
     return {
       id: row.id, title: row.title, date, starts_at: row.starts_at || null, location: row.location || 'TBD',
       all_day: !!row.all_day, time_known: typeof row.time_known === 'boolean' ? row.time_known : null,
+      external_links: Array.isArray(row.external_links) ? row.external_links : (row.external_url ? [{ url: row.external_url }] : []),
       description: row.description || '', url: row.external_url || '', source: row.source || 'supabase',
     };
   }
@@ -113,7 +114,7 @@
     const client = root.snhSupabase;
     return load('events', {
       live: client && (() => readPages(() => client.from('events')
-        .select('id,title,description,location,starts_at,external_url,source,all_day,time_known', { count: 'exact' })
+        .select('id,title,description,location,starts_at,external_url,source,all_day,time_known,external_links', { count: 'exact' })
         .or('published.eq.true,published.is.null')
         .order('starts_at', { ascending: true, nullsFirst: false }).order('id'))
         .then((rows) => rows.map(eventFromRow))),

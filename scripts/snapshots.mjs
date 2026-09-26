@@ -8,7 +8,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const queries = {
   games: { table: 'games_catalog_v1', select: 'game', order: 'slug.asc' },
   events: {
-    table: 'events', select: 'id,title,description,location,starts_at,external_url,source,all_day,time_known',
+    table: 'events', select: 'id,title,description,location,starts_at,external_url,source,all_day,time_known,external_links',
     order: 'starts_at.asc.nullslast,id.asc', or: '(published.eq.true,published.is.null)',
   },
 };

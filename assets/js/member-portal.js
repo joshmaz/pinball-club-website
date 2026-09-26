@@ -531,7 +531,7 @@
     if (!client) return null;
     var result = await client
       .from("events")
-      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known")
+      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known,external_links")
       .order("starts_at", { ascending: false, nullsFirst: false })
       .limit(500);
     if (result.error) return null;
@@ -577,6 +577,10 @@
       source: eventInput.source || "manual",
       published: !!eventInput.published
     };
+    if (Array.isArray(eventInput.external_links)) {
+      payload.external_links = window.SNHEventLinks.normalize(eventInput.external_links, true);
+      payload.external_url = payload.external_links[0]?.url || null;
+    }
     if (typeof eventInput.all_day === "boolean") payload.all_day = eventInput.all_day;
     if (Object.prototype.hasOwnProperty.call(eventInput, "time_known")) payload.time_known = eventInput.time_known;
     if (eventInput.id) {

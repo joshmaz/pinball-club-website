@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import eventLinks from '../assets/js/event-links.js';
 /**
  * One-time/repeatable backfill from data/events.json to public.events.
  *
@@ -128,9 +129,12 @@ async function main() {
       ...(typeof row.all_day === "boolean" ? { all_day: row.all_day } : {}),
       ...(typeof row.time_known === "boolean" ? { time_known: row.time_known } : {}),
       external_url: safeUrl(row.url || row.external_url),
+      ...(Array.isArray(row.external_links) || Array.isArray(row.externalLinks)
+        ? { external_links: eventLinks.normalize(eventLinks.fromEvent(row), true) } : {}),
       source: cleanText(row.source, 80) || "json_backfill",
       published: true,
     };
+    if (event.external_links) event.external_url = event.external_links[0]?.url || null;
     event.legacy_import_key = makeLegacyImportKey(event, dateOnly);
     normalized.push(event);
   }
