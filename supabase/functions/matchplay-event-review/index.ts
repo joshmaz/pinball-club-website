@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
         page,
         has_next: !!links.next,
         has_previous: page > 1,
-        tournaments: rows.slice(0, 25).map((entry) => {
+        tournaments: rows.slice(0, 10).map((entry) => {
           const row = entry && typeof entry === "object" ? entry as Record<string, unknown> : {};
           const organizer = row.organizer && typeof row.organizer === "object"
             ? row.organizer as Record<string, unknown> : {};
