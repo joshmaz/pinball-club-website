@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { canonicalStart } from './event-start.mjs';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -83,6 +84,8 @@ function normalizeEvent(evt) {
   return {
     name: evt.name || 'Untitled Event',
     date: normalizeDate(evt.startDate),
+    starts_at: evt.startDate && /T/.test(evt.startDate) ? canonicalStart(evt.startDate) : null,
+    time_known: !!(evt.startDate && /T/.test(evt.startDate)),
     location: normalizeLocation(evt.location),
     description: evt.description || '',
     url: evt.url || '',

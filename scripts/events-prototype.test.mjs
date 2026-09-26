@@ -5,6 +5,7 @@ import vm from 'node:vm';
 
 const source = await readFile(new URL('../assets/js/events.js', import.meta.url), 'utf8');
 const context = vm.createContext({ URL });
+vm.runInContext(await readFile(new URL('../assets/js/event-links.js', import.meta.url), 'utf8'), context);
 vm.runInContext(source.replace(/^loadEvents\(\);$|^void loadEventsPhotoSpotlight\(\);$/gm, ''), context);
 
 test('presentation links support multiple providers, preserve legacy URL, and deduplicate', () => {
@@ -23,7 +24,7 @@ test('presentation links omit unsafe schemes and do not mislabel lookalike hosts
     { url: 'https://facebook.com.example.org/event' },
     { url: 'https://club.example/event', label: 'Registration' },
   ] });
-  assert.deepEqual(Array.from(links, l => l.label), ['Event details', 'Registration']);
+  assert.deepEqual(Array.from(links, l => l.label), ['Event link', 'Registration']);
   assert.equal(context.eventPresentationLinks({}).length, 0);
 });
 

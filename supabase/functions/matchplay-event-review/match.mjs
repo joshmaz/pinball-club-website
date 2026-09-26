@@ -41,7 +41,7 @@ export function rankEventCandidates(tournament, events) {
   const matchplayUrl = tournament.url;
   const ranked = [];
   for (const event of events || []) {
-    const exactUrl = event.external_url === matchplayUrl;
+    const exactUrl = event.external_url === matchplayUrl || (Array.isArray(event.external_links) && event.external_links.some(link => link.url === matchplayUrl));
     const eventStart = Date.parse(event.starts_at || "");
     const hours = Number.isFinite(start) && Number.isFinite(eventStart)
       ? Math.abs(start - eventStart) / 3600000 : null;
