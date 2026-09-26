@@ -1,5 +1,7 @@
 /* Shared link labels, safe presentation, and the repeatable event editor. */
 (function (root) {
+  const MAX_LINKS = 5;
+  const limitMessage = `Events support up to ${MAX_LINKS} external links. Remove a link before adding another.`;
   function safeUrl(value) {
     try {
       const url = new URL(String(value || '').trim());
@@ -25,6 +27,8 @@
       ...((event.external_url || event.url) ? [{ url: event.external_url || event.url }] : [])];
   }
   function normalize(items, strict = false) {
+    // Check before filtering blanks or duplicates so oversized saves never truncate.
+    if (strict && items?.length > MAX_LINKS) throw new Error(limitMessage);
     const seen = new Set();
     return (items || []).flatMap(item => {
       const raw = typeof item?.url === 'string' ? item.url.trim() : '';
@@ -47,7 +51,10 @@
     const doc = container.ownerDocument;
     let rows = [];
     let nextId = 0;
-    function add(item = {}, focus = false) {
+    function updateLimit() { addButton.disabled = rows.length >= MAX_LINKS; }
+    function add(item = {}, focus = false, loading = false) {
+      // Loading preserves older oversized records so the user can remove links.
+      if (!loading && rows.length >= MAX_LINKS) throw new Error(limitMessage);
       const row = doc.createElement('div'); row.className = 'event-link-row';
       const url = doc.createElement('input'); url.type = 'url'; url.maxLength = 1000; url.placeholder = 'https://…';
       const label = doc.createElement('input'); label.type = 'text'; label.maxLength = 200; label.placeholder = 'Optional';
@@ -70,14 +77,16 @@
       remove.addEventListener('click', () => {
         rows = rows.filter(candidate => candidate !== entry); row.remove();
         if (!rows.length) add();
+        updateLimit();
         (rows[0]?.url || addButton).focus();
       });
       row.appendChild(remove); rows.push(entry); container.appendChild(row);
+      updateLimit();
       if (focus) url.focus();
     }
     function set(items) {
       rows = []; container.replaceChildren();
-      (items && items.length ? items : [{}]).forEach(item => add(item));
+      (items && items.length ? items : [{}]).forEach(item => add(item, false, true));
     }
     function get() {
       return normalize(rows.map(({ url, label }) => ({ url: url.value, label: label.value })), true);
@@ -91,11 +100,13 @@
         add(item);
       }
     }
-    addButton.addEventListener('click', () => add({}, true));
+    addButton.addEventListener('click', () => {
+      if (rows.length < MAX_LINKS) add({}, true);
+    });
     set([]);
     return { set, get, append };
   }
-  const api = { safeUrl, inferLabel, fromEvent, normalize, presentation, createEditor };
+  const api = { MAX_LINKS, safeUrl, inferLabel, fromEvent, normalize, presentation, createEditor };
   root.SNHEventLinks = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

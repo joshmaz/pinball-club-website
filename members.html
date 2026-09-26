@@ -408,8 +408,9 @@
 
             <fieldset class="event-links-editor">
               <legend>External links</legend>
+              <small id="member-events-links-help">Up to 5 links</small>
               <div id="member-events-links"></div>
-              <button id="member-events-add-link" type="button">Add another link</button>
+              <button id="member-events-add-link" type="button" aria-describedby="member-events-links-help">Add another link</button>
             </fieldset>
 
             <label for="member-events-source">Source</label>
@@ -1676,7 +1677,12 @@
         if (memberEventsStartsAt && !memberEventsStartsAt.value) {
           memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
         }
-        if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+        try {
+          if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+        } catch (error) {
+          setEventsStatus(error.message);
+          return;
+        }
         setEventsStatus("Editing the existing club event. Its saved fields remain populated; empty fields received Match Play details and its tournament link was added. Review before saving.");
       });
     }
@@ -1689,7 +1695,12 @@
         if (memberEventsTitle) memberEventsTitle.value = String(tournament.title || "").slice(0, 300);
         if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
         if (memberEventsLocation) memberEventsLocation.value = String(tournament.location || "").slice(0, 500);
-        if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+        try {
+          if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+        } catch (error) {
+          setEventsStatus(error.message);
+          return;
+        }
         if (memberEventsSource) memberEventsSource.value = "matchplay";
         if (memberEventsDescription) memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
         if (memberEventsPublished) memberEventsPublished.checked = false;
