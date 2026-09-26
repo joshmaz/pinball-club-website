@@ -11,9 +11,15 @@
   function inferLabel(value) {
     const url = safeUrl(value);
     if (!url) return 'Event link';
-    const host = new URL(url).hostname.toLowerCase();
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    if (host === 'matchplay.events' || host.endsWith('.matchplay.events')) {
+      if (/^\/tournaments\/[^/]+(?:\/|$)/.test(parsed.pathname)) return 'Match Play Event';
+      if (/^\/series\/[^/]+(?:\/|$)/.test(parsed.pathname)) return 'Match Play Series';
+      return 'Match Play';
+    }
     const providers = [
-      ['matchplay.events', 'Match Play'], ['ifpapinball.com', 'IFPA'],
+      ['ifpapinball.com', 'IFPA'],
       ['facebook.com', 'Facebook'], ['fb.me', 'Facebook'], ['fb.com', 'Facebook'],
       ['discord.com', 'Discord'], ['discord.gg', 'Discord'],
       ['eventbrite.com', 'Eventbrite'], ['meetup.com', 'Meetup'],

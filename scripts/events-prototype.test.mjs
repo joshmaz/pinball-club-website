@@ -12,10 +12,11 @@ test('presentation links support multiple providers, preserve legacy URL, and de
   const links = context.eventPresentationLinks({
     url: 'https://www.facebook.com/events/123',
     externalLinks: [{ url: 'https://app.matchplay.events/tournaments/42' },
+      { url: 'https://app.matchplay.events/series/6497' },
       { url: 'https://discord.gg/example' }, { url: 'https://www.facebook.com/events/123' }],
   });
-  assert.deepEqual(Array.from(links, l => l.label), ['Match Play', 'Discord', 'Facebook']);
-  assert.equal(links.length, 3);
+  assert.deepEqual(Array.from(links, l => l.label), ['Match Play Event', 'Match Play Series', 'Discord', 'Facebook']);
+  assert.equal(links.length, 4);
 });
 
 test('presentation links omit unsafe schemes and do not mislabel lookalike hosts', () => {
