@@ -417,13 +417,16 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
   renderYearCards();
 }
 
+function createAddEventLink() {
+  const link = document.createElement('a');
+  link.className = 'events-add-link';
+  link.href = 'members.html?panel=events';
+  link.textContent = '+ Add Event';
+  return link;
+}
+
 function renderEventsList(container, events) {
   container.innerHTML = '';
-  if (events.length === 0) {
-    showMessage(container, 'No events yet', 'Check back soon for upcoming events.');
-    return;
-  }
-
   const { upcoming, past } = splitUpcomingAndPast(events);
 
   const upcomingWrap = document.createElement('div');
@@ -431,9 +434,24 @@ function renderEventsList(container, events) {
   container.appendChild(upcomingWrap);
 
   if (upcoming.length === 0) {
-    const empty = document.createElement('p');
+    const empty = document.createElement('section');
     empty.className = 'events-empty-upcoming';
-    empty.textContent = 'No upcoming events right now. Check back soon, or browse past events below.';
+    empty.setAttribute('aria-labelledby', 'events-empty-heading');
+    const heading = document.createElement('h2');
+    heading.id = 'events-empty-heading';
+    heading.textContent = 'More good games ahead';
+    const message = document.createElement('p');
+    message.textContent = 'There are no upcoming events right now. Check back soon for your next chance to play!';
+    empty.appendChild(heading);
+    empty.appendChild(message);
+    if (past.length > 0) {
+      const archiveNote = document.createElement('p');
+      archiveNote.textContent = 'In the meantime, explore past events below.';
+      empty.appendChild(archiveNote);
+    }
+    if (eventsCanManage) {
+      empty.appendChild(createAddEventLink());
+    }
     upcomingWrap.appendChild(empty);
   } else {
     const upcomingHeading = document.createElement('h2');
@@ -443,11 +461,7 @@ function renderEventsList(container, events) {
       const headingRow = document.createElement('div');
       headingRow.className = 'events-upcoming-heading-row';
       headingRow.appendChild(upcomingHeading);
-      const addLink = document.createElement('a');
-      addLink.className = 'events-add-link';
-      addLink.href = 'members.html?panel=events';
-      addLink.textContent = '+ Add Event';
-      headingRow.appendChild(addLink);
+      headingRow.appendChild(createAddEventLink());
       upcomingWrap.appendChild(headingRow);
     } else {
       upcomingWrap.appendChild(upcomingHeading);

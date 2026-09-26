@@ -33,10 +33,13 @@ test("Add Event uses shared creation access and opens the blank Events workflow"
     constructor(tagName) {
       this.tagName = tagName;
       this.children = [];
-      this.classList = { add() {} };
+      this.attributes = {};
+      this.classList = { add() {}, toggle() {} };
     }
     appendChild(child) { this.children.push(child); return child; }
-    setAttribute() {}
+    setAttribute(name, value) { this.attributes[name] = value; }
+    addEventListener() {}
+    replaceChildren() { this.children = []; }
   }
   const context = vm.createContext({
     window: {}, console,
@@ -53,19 +56,38 @@ test("Add Event uses shared creation access and opens the blank Events workflow"
     auth.fetchMemberRoles = async () => [role];
     context.allowed = await context.currentUserCanManageEvents();
     vm.runInContext('eventsCanManage = allowed', context);
-    const container = new Element('div');
-    context.renderEventsList(container, [{ title: 'Future event', date: '2099-01-01' }]);
-    const nodes = descendants(container);
-    const links = nodes.filter((node) => node.textContent === '+ Add Event');
-    const expected = ['events_editor', 'events_admin', 'club_admin'].includes(role);
-    assert.equal(links.length, expected ? 1 : 0, String(role));
-    if (expected) {
-      assert.equal(links[0].href, 'members.html?panel=events');
-      const row = nodes.find((node) => node.className === 'events-upcoming-heading-row');
-      assert.equal(row.children[0].tagName, 'h2');
-      assert.equal(row.children[1], links[0]);
-    } else {
-      assert.equal(container.children[0].children[0].tagName, 'h2');
+    for (const events of [
+      [],
+      [{ title: 'Past event', date: '2000-01-01' }],
+      [{ title: 'Future event', date: '2099-01-01' }],
+    ]) {
+      const container = new Element('div');
+      context.renderEventsList(container, events);
+      const nodes = descendants(container);
+      const links = nodes.filter((node) => node.textContent === '+ Add Event');
+      const expected = ['events_editor', 'events_admin', 'club_admin'].includes(role);
+      assert.equal(links.length, expected ? 1 : 0, String(role));
+      const empty = nodes.find((node) => node.className === 'events-empty-upcoming');
+      const isEmpty = !events.some((event) => event.date === '2099-01-01');
+      assert.equal(Boolean(empty), isEmpty);
+      if (isEmpty) {
+        assert.equal(empty.tagName, 'section');
+        assert.equal(empty.attributes['aria-labelledby'], empty.children[0].id);
+        assert.equal(empty.children[0].tagName, 'h2');
+        assert.match(empty.children[1].textContent, /no upcoming events/i);
+        assert.equal(nodes.some((node) => node.textContent === 'In the meantime, explore past events below.'), events.length > 0);
+        assert.equal(nodes.some((node) => node.id === 'events-past-region'), events.length > 0);
+        assert.equal(empty.children.filter((node) => node.tagName === 'a').length, expected ? 1 : 0);
+      }
+      if (expected) {
+        assert.equal(links[0].href, 'members.html?panel=events');
+        if (isEmpty) continue;
+        const row = nodes.find((node) => node.className === 'events-upcoming-heading-row');
+        assert.equal(row.children[0].tagName, 'h2');
+        assert.equal(row.children[1], links[0]);
+      } else if (!isEmpty) {
+        assert.equal(container.children[0].children[0].tagName, 'h2');
+      }
     }
   }
 });
