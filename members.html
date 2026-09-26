@@ -348,7 +348,10 @@
               <option value="mine">Token account's tournaments</option>
             </select>
             <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
-            <input id="member-matchplay-discover-value" type="text" hidden disabled>
+            <span class="members-admin-search-wrap" id="member-matchplay-discover-value-wrap" hidden>
+              <input id="member-matchplay-discover-value" type="search" autocomplete="off" disabled>
+              <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
+            </span>
             <button type="submit">List tournaments</button>
           </form>
           <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
@@ -563,6 +566,8 @@
     var matchplayDiscoverForm = document.getElementById("member-matchplay-discover-form");
     var matchplayDiscoverScope = document.getElementById("member-matchplay-discover-scope");
     var matchplayDiscoverValue = document.getElementById("member-matchplay-discover-value");
+    var matchplayDiscoverValueWrap = document.getElementById("member-matchplay-discover-value-wrap");
+    var matchplayDiscoverClear = document.getElementById("member-matchplay-discover-clear");
     var matchplayDiscoverValueLabel = document.getElementById("member-matchplay-discover-value-label");
     var matchplayDiscoverStatus = document.getElementById("member-matchplay-discover-status");
     var matchplayDiscoverResults = document.getElementById("member-matchplay-discover-results");
@@ -1496,7 +1501,7 @@
     function syncMatchplayDiscoverScope() {
       var scope = matchplayDiscoverScope.value;
       var needsValue = scope !== "mine";
-      matchplayDiscoverValue.hidden = !needsValue;
+      matchplayDiscoverValueWrap.hidden = !needsValue;
       matchplayDiscoverValue.disabled = !needsValue;
       matchplayDiscoverValue.required = needsValue;
       matchplayDiscoverValueLabel.hidden = !needsValue;
@@ -1505,6 +1510,7 @@
       matchplayDiscoverValue.placeholder = scope === "title" ? "SNHPC" :
         scope === "series" ? "6497" : "Numeric user ID";
       matchplayDiscoverValue.value = scope === "title" ? "SNHPC" : "";
+      matchplayDiscoverClear.hidden = !matchplayDiscoverValue.value;
       matchplayDiscoverResults.hidden = true;
     }
 
@@ -1566,6 +1572,14 @@
     if (matchplayDiscoverForm) {
       syncMatchplayDiscoverScope();
       matchplayDiscoverScope.addEventListener("change", syncMatchplayDiscoverScope);
+      matchplayDiscoverValue.addEventListener("input", function () {
+        matchplayDiscoverClear.hidden = !matchplayDiscoverValue.value;
+      });
+      matchplayDiscoverClear.addEventListener("click", function () {
+        matchplayDiscoverValue.value = "";
+        matchplayDiscoverClear.hidden = true;
+        matchplayDiscoverValue.focus();
+      });
       matchplayDiscoverForm.addEventListener("submit", function (event) {
         event.preventDefault();
         void loadMatchplayDiscovery(1);
