@@ -40,3 +40,7 @@
   .events-toolbar { align-items: flex-start; }
 }
 .clubhouse .events-past-year-hint { color: var(--club-muted); font-size: .85rem; margin: -.25rem 0 1rem; }
+
+.events-upcoming-heading-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; margin-bottom: .5rem; }
+.clubhouse .events-upcoming-heading-row .events-upcoming-heading { margin: 0; }
+.clubhouse .events-add-link { display: inline-flex; align-items: center; min-height: 44px; padding: .35rem .7rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); font-size: .85rem; font-weight: 650; white-space: nowrap; }

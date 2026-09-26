@@ -439,7 +439,19 @@ function renderEventsList(container, events) {
     const upcomingHeading = document.createElement('h2');
     upcomingHeading.className = 'events-upcoming-heading';
     upcomingHeading.textContent = 'Upcoming events';
-    upcomingWrap.appendChild(upcomingHeading);
+    if (eventsCanManage) {
+      const headingRow = document.createElement('div');
+      headingRow.className = 'events-upcoming-heading-row';
+      headingRow.appendChild(upcomingHeading);
+      const addLink = document.createElement('a');
+      addLink.className = 'events-add-link';
+      addLink.href = 'members.html?panel=events';
+      addLink.textContent = '+ Add Event';
+      headingRow.appendChild(addLink);
+      upcomingWrap.appendChild(headingRow);
+    } else {
+      upcomingWrap.appendChild(upcomingHeading);
+    }
 
     const upcomingMeta = document.createElement('p');
     upcomingMeta.className = 'events-upcoming-meta';
