@@ -25,12 +25,21 @@ function json(body: unknown, status = 200) {
 }
 
 async function getMatchplay(path: string, token: string): Promise<Record<string, unknown>> {
-  const response = await fetch(`https://app.matchplay.events/api/${path}`, {
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-    signal: AbortSignal.timeout(10000),
-  });
-  if (!response.ok) throw new Error(`MatchPlay request failed (${response.status})`);
-  return await response.json() as Record<string, unknown>;
+  try {
+    const response = await fetch(`https://app.matchplay.events/api/${path}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) throw new Error(`MatchPlay request failed (${response.status})`);
+    return await response.json() as Record<string, unknown>;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (error instanceof DOMException && error.name === "TimeoutError" ||
+        /timed out|timeout|signal timed out/i.test(message)) {
+      throw new Error("Match Play is taking too long to respond. Please try again in a few minutes.");
+    }
+    throw error;
+  }
 }
 
 function positiveId(value: unknown): string {
