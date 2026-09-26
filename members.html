@@ -342,10 +342,10 @@
           <form id="member-matchplay-discover-form" class="members-profile-form">
             <label for="member-matchplay-discover-scope">Find by</label>
             <select id="member-matchplay-discover-scope">
-              <option value="mine">Token account's tournaments</option>
+              <option value="title">Tournament title</option>
               <option value="owner">Organizer MatchPlay ID</option>
               <option value="series">Series MatchPlay ID</option>
-              <option value="title">Tournament title</option>
+              <option value="mine">Token account's tournaments</option>
             </select>
             <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
             <input id="member-matchplay-discover-value" type="text" hidden disabled>
@@ -1504,7 +1504,7 @@
         scope === "series" ? "Series MatchPlay ID" : "Organizer MatchPlay ID";
       matchplayDiscoverValue.placeholder = scope === "title" ? "SNHPC" :
         scope === "series" ? "6497" : "Numeric user ID";
-      matchplayDiscoverValue.value = "";
+      matchplayDiscoverValue.value = scope === "title" ? "SNHPC" : "";
       matchplayDiscoverResults.hidden = true;
     }
 
