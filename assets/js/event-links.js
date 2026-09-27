@@ -4,12 +4,7 @@
   const limitMessage = `Events support up to ${MAX_LINKS} external links. Remove a link before adding another.`;
   function safeUrl(value) {
     try {
-      let raw = String(value || '').trim();
-      if (raw.length % 2 === 0) {
-        const half = raw.slice(0, raw.length / 2);
-        if (/^https?:\/\//i.test(half) && half === raw.slice(raw.length / 2)) raw = half;
-      }
-      const url = new URL(raw);
+      const url = new URL(String(value || '').trim());
       return ['https:', 'http:'].includes(url.protocol) ? url.href : '';
     } catch { return ''; }
   }
