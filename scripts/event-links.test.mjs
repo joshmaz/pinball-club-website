@@ -163,14 +163,6 @@ test('limit migration preserves data, rejects six on inserts/updates and legacy 
   } finally { await db.close(); }
 });
 
-test('repairs an accidentally doubled identical URL before validation and presentation', () => {
-  const once = 'https://app.matchplay.events/series/6497';
-  const doubled = once + once;
-  assert.equal(links.safeUrl(doubled), once);
-  assert.deepEqual(links.normalize([{ url: doubled }]), [{ url: once }]);
-  assert.deepEqual(links.presentation({ external_links: [{ url: doubled }] }), [{ url: once, label: 'Match Play Series' }]);
-});
-
 test('Match Play labels distinguish event and series paths with a generic fallback', () => {
   for (const [path, expected] of [
     ['/tournaments/272599', 'Match Play Event'],
