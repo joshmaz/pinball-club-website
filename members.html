@@ -1558,7 +1558,7 @@
         matchplayDiscoverPageLabel.textContent = "Page " + matchplayDiscoverPage;
         matchplayDiscoverResults.hidden = false;
         matchplayDiscoverStatus.textContent = (listing.owner_label ? listing.owner_label + ": " : "") +
-          (tournaments.length ? "Showing " + tournaments.length + " tournament(s)." : "No tournaments found on this page.");
+          (tournaments.length ? "Showing " + tournaments.length + " tournament(s)." : "No tournaments found on this page.") + matchplayCacheNote(listing.cache);
       } catch (error) {
         matchplayDiscoverStatus.textContent = "Could not list tournaments: " +
           (error && error.message ? error.message : "Please try again.");
@@ -1602,6 +1602,11 @@
     }
 
     if (matchplayReviewForm) {
+      function matchplayCacheNote(cache) {
+        if (!cache || !cache.fetched_at) return "";
+        return (cache.stale ? " Refresh failed; showing saved data." : "") +
+          " Last updated: " + new Date(cache.fetched_at).toLocaleString() + ".";
+      }
       matchplayReviewForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         matchplayReviewData = null;
@@ -1647,6 +1652,7 @@
           matchplayReviewStatus.textContent = alreadyLinked
             ? "This tournament is already linked to a club event. Edit that record instead."
             : "Review any suggested matches before preparing a new event.";
+          matchplayReviewStatus.textContent += matchplayCacheNote(review.cache);
         } catch (error) {
           matchplayReviewStatus.textContent = "Could not review tournament: " +
             (error && error.message ? error.message : "Please try again.");

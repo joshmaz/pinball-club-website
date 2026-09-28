@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
-import { getMatchplay } from "./provider.mjs";
+import { createMatchplayCache } from "./cache.mjs";
 import { rankEventCandidates, tournamentIdFromInput } from "./match.mjs";
 
 const CORS_HEADERS = {
@@ -57,6 +57,7 @@ Deno.serve(async (req) => {
 
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (!token) return json({ error: "MatchPlay API token is not configured" }, 503);
+    const getCached = createMatchplayCache(admin, token);
     if (body.mode === "discover") {
       const scope = String(body.scope || "");
       const value = String(body.value || "").trim();
@@ -65,7 +66,7 @@ Deno.serve(async (req) => {
       let path = "";
       let ownerLabel = "";
       if (scope === "mine") {
-        const profile = await getMatchplay("users/profile", token);
+        const { payload: profile } = await getCached("users/profile");
         const ownerId = positiveId(profile.userId);
         if (!ownerId) throw new Error("MatchPlay token owner could not be identified");
         ownerLabel = String(profile.name || "MatchPlay token owner").slice(0, 100);
@@ -86,11 +87,12 @@ Deno.serve(async (req) => {
       } else {
         return json({ error: "Choose a MatchPlay discovery method" }, 400);
       }
-      const listing = await getMatchplay(path, token);
+      const { payload: listing, cache } = await getCached(path);
       const rows = Array.isArray(listing.data) ? listing.data : [];
       const links = listing.links && typeof listing.links === "object"
         ? listing.links as Record<string, unknown> : {};
       return json({
+        cache,
         owner_label: ownerLabel,
         page,
         has_next: !!links.next,
@@ -116,9 +118,7 @@ Deno.serve(async (req) => {
 
     const tournamentId = tournamentIdFromInput(body?.tournament);
     if (!tournamentId) return json({ error: "Enter a MatchPlay tournament URL or ID" }, 400);
-    const payload = await getMatchplay(`tournaments/${tournamentId}?includeLocation=1`, token) as {
-      data?: Record<string, unknown>;
-    };
+    const { payload, cache } = await getCached(`tournaments/${tournamentId}?includeLocation=1`);
     const data = payload?.data || {};
     if (String(data.tournamentId || "") !== tournamentId) {
       return json({ error: "MatchPlay returned an unexpected tournament" }, 502);
@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
     if (linked.error) throw new Error("Could not read linked club events");
     for (const event of linked.data || []) seen.set(String(event.id), event);
 
-    return json({ tournament, candidates: rankEventCandidates(tournament, [...seen.values()]) });
+    return json({ tournament, cache, candidates: rankEventCandidates(tournament, [...seen.values()]) });
   } catch (error) {
     const message = error instanceof Error ? error.message : "MatchPlay review failed";
     return json({ error: message }, message.startsWith("MatchPlay request failed") ? 502 : 500);
