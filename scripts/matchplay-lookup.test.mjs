@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 import { createClient } from '@supabase/supabase-js';
 import { PGlite } from '@electric-sql/pglite';
+import { createMatchplayCache } from '../supabase/functions/matchplay-event-review/cache.mjs';
 import { getMatchplay } from '../supabase/functions/matchplay-event-review/provider.mjs';
 import { rankEventCandidates, tournamentIdFromInput } from '../supabase/functions/matchplay-event-review/match.mjs';
 
@@ -32,6 +33,10 @@ function setup(t, payload = { data: tournament }, providerStatus = 200) {
     }
     if (url.pathname === '/auth/v1/user') return Response.json({ id: 'editor' });
     if (url.pathname === '/rest/v1/members') return Response.json([{ id: 'member' }]);
+    if (url.pathname === '/rest/v1/external_api_cache' || url.pathname === '/rest/v1/integration_status') {
+      return options.method === 'POST' ? new Response(null, { status: 201 }) : Response.json(null);
+    }
+    if (url.pathname === '/rest/v1/external_api_cache_policies') return Response.json(null);
     assert.equal(url.pathname, '/rest/v1/events');
     const contains = url.searchParams.get('external_links');
     if (contains) {
@@ -45,9 +50,9 @@ function setup(t, payload = { data: tournament }, providerStatus = 200) {
   let handler;
   const env = { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'fake-key', MATCHPLAY_API_TOKEN: token };
   const Deno = { env: { get: name => env[name] }, serve: fn => { handler = fn; } };
-  new Function('Deno', 'createClient', 'getMatchplay', 'rankEventCandidates', 'tournamentIdFromInput', handlerSource)(
+  new Function('Deno', 'createClient', 'createMatchplayCache', 'rankEventCandidates', 'tournamentIdFromInput', handlerSource)(
     Deno, (url, key, opts) => createClient(url, key, { ...opts, global: { fetch: fakeFetch } }),
-    getMatchplay, rankEventCandidates, tournamentIdFromInput,
+    createMatchplayCache, rankEventCandidates, tournamentIdFromInput,
   );
   return { calls, request: body => handler(new Request('https://function.test', {
     method: 'POST', headers: { Authorization: 'Bearer fake-session' }, body: JSON.stringify(body),
