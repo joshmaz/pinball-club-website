@@ -58,3 +58,32 @@ uses the existing Events editor and database permissions.
   an editor explicitly chooses to publish them.
 
 MatchPlay API reference: https://app.matchplay.events/api-docs/
+
+## Single-tournament lookup regression (September 2026)
+
+A direct unauthenticated probe of tournament `228825` returned HTTP 200 from
+`/api/tournaments/228825?includeLocation=1`, with the documented
+`data.tournamentId` and `data.location` fields. The endpoint, query parameter,
+and wrapped response shape are retained. No alternate envelope was observed.
+
+The reproducible failure was the subsequent club-event query. Passing an array
+of objects to Supabase JS 2.56.1's `.contains()` generated
+`external_links=cs.{[object Object]}`. PostgreSQL rejects that value as invalid
+JSON for the `external_links` JSONB column. This query runs on every single-event
+review, including tournaments with no date, but never during discovery. Passing
+`JSON.stringify([{ url: tournament.url }])` produces the required JSONB filter.
+No database migration is needed.
+
+`node --test scripts/matchplay-event-review.test.mjs scripts/matchplay-lookup.test.mjs`
+executes the actual Edge Function handler with mocked HTTP responses and the
+same Supabase SDK version as deployment. It covers the exact request, wrapped
+response, numeric/string IDs, absent optional fields, rejected payloads, linked
+candidates, discovery, and provider diagnostics. A local PostgreSQL test also
+checks the invalid old filter and valid JSONB containment. Provider errors keep
+HTTP status and at most 240 characters of a credential-redacted message or text
+excerpt. Raw request/transport errors are not returned.
+
+These checks reproduce the code defect; they do not inspect production Edge
+Function logs or exercise an authenticated production review. After deploying,
+verify an individual review from the Events dashboard. The preview shares the
+production Supabase project, so deployment affects both environments.

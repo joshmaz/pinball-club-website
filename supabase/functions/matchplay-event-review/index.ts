@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { getMatchplay } from "./provider.mjs";
 import { rankEventCandidates, tournamentIdFromInput } from "./match.mjs";
 
 const CORS_HEADERS = {
@@ -22,24 +23,6 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status, headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
-}
-
-async function getMatchplay(path: string, token: string): Promise<Record<string, unknown>> {
-  try {
-    const response = await fetch(`https://app.matchplay.events/api/${path}`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!response.ok) throw new Error(`MatchPlay request failed (${response.status})`);
-    return await response.json() as Record<string, unknown>;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "";
-    if (error instanceof DOMException && error.name === "TimeoutError" ||
-        /timed out|timeout|signal timed out/i.test(message)) {
-      throw new Error("Match Play is taking too long to respond. Please try again in a few minutes.");
-    }
-    throw error;
-  }
 }
 
 function positiveId(value: unknown): string {
@@ -136,7 +119,7 @@ Deno.serve(async (req) => {
     const payload = await getMatchplay(`tournaments/${tournamentId}?includeLocation=1`, token) as {
       data?: Record<string, unknown>;
     };
-    const data = payload.data || {};
+    const data = payload?.data || {};
     if (String(data.tournamentId || "") !== tournamentId) {
       return json({ error: "MatchPlay returned an unexpected tournament" }, 502);
     }
@@ -168,7 +151,8 @@ Deno.serve(async (req) => {
     }
     const linked = await admin.from("events")
       .select("id,title,description,location,starts_at,external_url,external_links,source,published")
-      .contains("external_links", [{ url: tournament.url }]).limit(20);
+      // The column is JSONB; an array argument is serialized as a PostgreSQL array.
+      .contains("external_links", JSON.stringify([{ url: tournament.url }])).limit(20);
     if (linked.error) throw new Error("Could not read linked club events");
     for (const event of linked.data || []) seen.set(String(event.id), event);
 
