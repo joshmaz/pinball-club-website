@@ -12,7 +12,7 @@ check, then generates public Supabase configuration using the same generator as
 the AWS build. Missing configuration fails the build instead of silently shipping
 an unauthenticated preview.
 
-Only root HTML/favicon files, `assets/`, `donate/`, `wix_archive/`, and the four
+Only root HTML/favicon files, `assets/`, `donate/`, `wix_archive/` (legacy redirect pages), and the four
 runtime JSON files (Games, Events, Highlights, Resources) are copied. Repository
 internals, maintenance datasets, environment files, and symlinks are excluded or
 rejected. Existing local `assets/js/config.js` is not copied or modified.
@@ -85,7 +85,7 @@ Commit/push happens before previewing. Merge remains the approval point.
 - Authorized Game/Event Edit links open the correct item and preserve their
   destination through sign-in. Avoid saving unnecessary changes to live data.
 - Password recovery returns to the preview after the redirect allowlist update.
-- Homepage photo content, `/donate/`, and `wix_archive/index.html` render.
+- Homepage photo content, `/donate/`, render, and `wix_archive/index.html` redirects to the independent archive.
 - `/scripts/build-preview.mjs`, `/supabase/config.toml`, `/.env`, and `/README.md`
   are not published.
 
