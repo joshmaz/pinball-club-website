@@ -34,7 +34,8 @@ export async function cachedResource({ store, provider, resourceType, key, fetch
   const result = (row, source, stale = false) => ({ payload: row.payload, cache: {
     source, stale, fetched_at: row.fetched_at, expires_at: row.expires_at,
   } });
-  if (cached && (force ? started - Date.parse(cached.fetched_at) < 30000
+  const refreshMinimum = force ? await store.ttl(provider, 'force_refresh_minimum', 30) : 30;
+  if (cached && (force ? started - Date.parse(cached.fetched_at) < refreshMinimum * 1000
     : Date.parse(cached.expires_at) > started)) return result(cached, 'cache');
   const statusId = { provider, resource_type: resourceType };
   // Observability failures must not discard a successful response or stale fallback.

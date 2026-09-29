@@ -85,3 +85,22 @@
 .event-link-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; gap: .65rem; align-items: end; margin-bottom: 1rem; }
 .event-link-row label { display: grid; gap: .35rem; min-width: 0; }
 @media (max-width: 650px) { .event-link-row { grid-template-columns: minmax(0, 1fr); } .event-link-row button { justify-self: start; } }
+
+/* Operations stays within the member portal's existing theme and spacing. */
+#operations-sections { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+#operations-sections [aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 2px; }
+.operations-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+.operations-cards section, .operations-provider { border: 1px solid var(--club-line); border-radius: .5rem; padding: 1rem; margin-bottom: 1rem; }
+.operations-table-wrap { overflow-x: auto; margin: 1rem 0; }
+.operations-table-wrap table { width: 100%; border-collapse: collapse; }
+.operations-table-wrap th, .operations-table-wrap td { text-align: left; vertical-align: top; padding: .75rem; border-bottom: 1px solid var(--club-line); }
+.operations-table-wrap input { width: 8rem; max-width: 100%; }
+.operations-table-wrap small { display: block; margin-top: .4rem; }
+.operations-table-wrap button { margin: .25rem; }
+.operations-provider dl { display: grid; grid-template-columns: minmax(6rem, 1fr) minmax(0, 3fr); gap: .4rem 1rem; }
+.operations-provider dd { margin: 0; overflow-wrap: anywhere; }
+#operations-content button:disabled { opacity: .6; cursor: wait; }
+
+#member-panel-operations :is(button, .btn) { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; font-size: .85rem; cursor: pointer; }
+#member-panel-operations :is(button, a):focus-visible { outline: 3px solid var(--club-teal); outline-offset: 3px; }
+#operations-sections [aria-pressed="true"] { background: var(--club-soft); color: var(--club-teal); }

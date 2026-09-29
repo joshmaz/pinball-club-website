@@ -45,8 +45,9 @@ test("accepts legacy panel hashes but ignores invalid panels and item ids", () =
 
 test("reads and builds the Audit Log panel route", () => {
   const fixture = loadRoutes({ search: "?panel=audit-log" });
-  assert.equal(fixture.routes.read().panel, "audit-log");
-  assert.equal(fixture.routes.build("audit-log"), "/members.html?panel=audit-log");
+  assert.equal(fixture.routes.read().panel, "operations");
+  assert.equal(fixture.routes.read().operationsSection, "audit");
+  assert.equal(fixture.routes.build("audit-log"), "/members.html?panel=operations&section=audit");
 });
 
 test("reads and builds a canonical event editor route", () => {
@@ -97,4 +98,13 @@ test("Member Tools opens event deep links through the existing event editor", as
   assert.match(membersHtml, /snhNavigateToMemberEventEditor\(initialRoute\.eventId\)/);
   assert.match(membersHtml, /SNHMemberRoutes\.setEvent\(row\.id\)/);
   assert.match(membersHtml, /selectEventForEdit\(row\)/);
+});
+
+test("Operations section routes survive reload and legacy hashes", () => {
+  const f = loadRoutes({ search: "?panel=operations&section=cache" });
+  assert.equal(f.routes.read().operationsSection, "cache");
+  assert.equal(f.routes.build("operations"), "/members.html?panel=operations&section=cache");
+  assert.equal(f.routes.build("profile"), "/members.html");
+  assert.equal(loadRoutes({ hash: "#audit-log" }).routes.read().operationsSection, "audit");
+  assert.equal(loadRoutes({ search: "?panel=operations&section=invalid" }).routes.read().operationsSection, "overview");
 });

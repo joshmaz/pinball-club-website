@@ -160,19 +160,10 @@
     var recordCell = addCell(row, entry.entity_type || "");
     if (entry.entity_id) {
       var id = String(entry.entity_id);
-      var copy = document.createElement("button");
-      copy.type = "button";
-      copy.className = "member-audit-id";
-      copy.textContent = " · " + (id.length > 12 ? id.slice(0, 8) + "…" : id);
-      copy.title = id;
-      copy.setAttribute("aria-label", "Copy record ID " + id);
-      copy.addEventListener("click", function (event) {
-        event.stopPropagation();
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(id).then(function () { copy.title = "Copied: " + id; }, function () { copy.textContent = " · " + id; });
-        } else copy.textContent = " · " + id;
-      });
-      recordCell.appendChild(copy);
+      var identifier = document.createElement("span");
+      identifier.textContent = " · " + (id.length > 12 ? id.slice(0, 8) + "…" : id);
+      identifier.title = id;
+      recordCell.appendChild(identifier);
     }
     var controlCell = document.createElement("td");
     var button = document.createElement("button");
