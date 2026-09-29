@@ -109,3 +109,10 @@ Deploy the updated `operations` function for mode-specific dispatcher results.
 Cache policies show readable durations, unused-policy labels, and Save/Reset buttons
 that are disabled when unchanged. Overview shortcuts open failures, cache, jobs, and
 integrations. Audit retains its filters, pagination, automated toggle and access rules.
+
+Acceptance verified on the signed-in PR preview: an unused IFPA event policy was
+saved and reset to its original default, both audit records appeared under Operations,
+legacy `panel=audit-log` redirected to `panel=operations&section=audit`, Match Play
+Test Connection succeeded, and the failed-message filter survived reload. A 390px
+viewport showed no page-level horizontal overflow. No messages were dispatched.
+The cleanup-failure migration and updated Operations function have been deployed.

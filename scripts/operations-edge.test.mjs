@@ -20,7 +20,7 @@ function setup(t,name,options={}) {
    assert.equal(init.headers.get('Authorization'),'Bearer user-session');
    return options.auditError ? Response.json({message:'failed'},{status:500}) : Response.json(null);
   }
-  if(url.pathname==='/functions/v1/notification-dispatch') return Response.json({next:{body:'private-message'}});
+  if(url.pathname==='/functions/v1/notification-dispatch') return Response.json(options.dispatchResult || {next:{body:'private-message'}});
   if(url.pathname==='/rest/v1/operations_job_runs') return init.method==='POST' ? Response.json({id:'run'}) : new Response(null,{status:204});
   if(url.pathname==='/rest/v1/notification_outbox') return Response.json([{id:'message',body:'private-message',subject:'Subject'}]);
   throw new Error('Unexpected fetch '+url);
@@ -65,4 +65,14 @@ test('dispatcher records preview completion without consuming queue or retaining
  const row=JSON.parse(finish.init.body); assert.equal(row.status,'succeeded'); assert.equal(row.result.mode,'preview');
  assert.ok(!finish.init.body.includes('private-message'));
  assert.ok(!f.calls.some(c=>c.url.pathname.includes('snh_claim_notification')));
+});
+
+for (const [result, expected] of [
+ [{mode:'preview',next:{body:'private-message'}},'Preview completed. No messages were sent.'],
+ [{mode:'test',sent:true},'Test message sent to the configured test inbox. The queue was not consumed.'],
+ [{mode:'live',sent:2,failed:1,canceled:0},'Dispatch completed: 2 sent, 1 failed, 0 canceled.'],
+]) test('dispatch reports '+result.mode+' outcome safely',async t=>{
+ const f=setup(t,'operations',{dispatchResult:result});const response=await f.request({action:'dispatch'});
+ const body=await response.json();assert.equal(body.message,expected);assert.ok(!JSON.stringify(body).includes('private-message'));
+ assert.equal(body.ok,!result.failed);
 });
