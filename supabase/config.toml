@@ -35,3 +35,7 @@ verify_jwt = true
 # A scheduled server caller supplies NOTIFICATION_DISPATCH_SECRET. JWT verification
 # is disabled so the function can use a dedicated secret without a user session.
 verify_jwt = false
+
+[functions.operations]
+# Authentication and club_admin membership are checked before every action.
+verify_jwt = true

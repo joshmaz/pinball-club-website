@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 
 type Job = {
   id: string;
@@ -39,6 +39,24 @@ Deno.serve(async (req) => {
   const key = elevatedKey();
   if (!url || !key) return response({ error: "Supabase configuration missing" }, 500);
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const run = await db.from("operations_job_runs").insert({ job: "notification_dispatch" }).select("id").single();
+  if (run.error) return response({ error: "Could not record job start" }, 503);
+  let outcome: Response;
+  try { outcome = await dispatch(db); }
+  catch { outcome = response({ error: "Dispatcher failed unexpectedly" }, 500); }
+  const summary = await outcome.clone().json();
+  const finish = await db.from("operations_job_runs").update({
+    finished_at: new Date().toISOString(),
+    status: outcome.ok && !summary.failed ? "succeeded" : "failed",
+    result: { mode: summary.mode || null, sent: summary.sent ?? 0,
+      canceled: summary.canceled ?? 0, failed: summary.failed ?? 0 },
+    error: outcome.ok && !summary.failed ? null : "Notification dispatch encountered errors; inspect Messaging",
+  }).eq("id", run.data.id);
+  if (finish.error) return response({ error: "Could not record job completion" }, 503);
+  return outcome;
+});
+
+async function dispatch(db: SupabaseClient): Promise<Response> {
   const mode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
   if (!["preview", "test", "live"].includes(mode)) return response({ error: "Invalid delivery mode" }, 500);
 
@@ -104,7 +122,7 @@ Deno.serve(async (req) => {
     else failed++;
   }
   return response({ mode, sent, canceled, failed });
-});
+}
 
 async function send(apiKey: string, from: string, to: string, subject: string,
   text: string, idempotencyKey: string): Promise<{ ok: boolean; id?: string; error?: string }> {

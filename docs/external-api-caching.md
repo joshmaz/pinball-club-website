@@ -32,11 +32,12 @@ requests this is approximate operational status, not an ordered audit trail.
 
 Policies live in `external_api_cache_policies` and are read when storing a new
 response. A policy change affects subsequent fetches, not existing expiry times.
-Operations will eventually expose these settings via an authorized admin endpoint;
-no browser has direct access to cache, status or policy tables in v1.
+Operations exposes authorized, audited policy overrides with Reset to Default; see
+`operations.md`. Browsers have no direct access to cache, status or policy tables.
 
 Normal reads use unexpired data. Check Standings will force a refresh unless the
-resource was successfully fetched in the previous 30 seconds. The shared helper
+resource was successfully fetched within the provider’s forced-refresh minimum
+(default 30 seconds, tunable in Operations). The shared helper
 implements this rule with `force: true`; the standings endpoint/UI is future work.
 If a provider request or validation fails and cached data exists, return stale data
 with its original last-updated time and a visible refresh-failed message. Without

@@ -8,7 +8,7 @@ import { createMatchplayCache } from '../supabase/functions/matchplay-event-revi
 function fixture() {
   let time = 100000, calls = 0, row = null, fail = false;
   const statuses = [];
-  const store = { read: async () => row, write: async value => { row = value; },
+  const store = { ttl: async (_provider, _policy, fallback) => fallback, read: async () => row, write: async value => { row = value; },
     status: async value => statuses.push(value) };
   const options = { store, provider: 'test', resourceType: 'event', key: '1', now: () => time,
     fetchPayload: async () => { calls++; if (fail) throw new Error('offline'); return { raw: calls }; },
@@ -104,4 +104,14 @@ test('migration executes, denies clients, seeds TTLs and cleans only old searche
     assert.equal((await db.query('select count(*)::int as n from external_api_cache')).rows[0].n, 2);
     await assert.rejects(db.query("update external_api_cache_policies set ttl_seconds = 0"), /check constraint/);
   } finally { await db.close(); }
+});
+
+test('forced refresh uses a persistent policy override', async () => {
+  const f = fixture();
+  f.options.store.ttl = async () => 90;
+  await cachedResource(f.options);
+  f.time(180000);
+  assert.equal((await cachedResource({ ...f.options, force: true })).cache.source, 'cache');
+  f.time(190000);
+  assert.equal((await cachedResource({ ...f.options, force: true })).cache.source, 'provider');
 });
