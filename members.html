@@ -95,11 +95,6 @@
           <li data-member-rbac-nav data-rbac-roles="club_admin">
             <button type="button" class="members-sidebar-link" data-member-panel="operations" id="member-nav-operations" aria-controls="member-panel-operations">Operations</button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="audit-log" id="member-nav-audit-log" aria-controls="member-panel-audit-log">
-              Audit Log
-            </button>
-          </li>
           <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
             <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
               Events
@@ -311,12 +306,10 @@
           <p id="operations-status" role="status" aria-live="polite"></p>
           <nav id="operations-sections" aria-label="Operations sections"></nav>
           <div id="operations-content"></div>
-        </div>
-
-        <div id="member-panel-audit-log" class="member-panel" role="region" aria-labelledby="member-nav-audit-log" tabindex="-1" aria-hidden="true">
+          <div id="operations-audit" hidden>
           <section id="member-audit-section" hidden aria-labelledby="member-audit-title">
             <h3 id="member-audit-title">Audit Log</h3>
-            <p class="member-form-hint">Club admins can review changes to events, members, games, and photos.</p>
+            <p class="member-form-hint">Club admins can review changes to Operations, events, members, games, and photos.</p>
             <p class="members-admin-toolbar">
               <label for="member-audit-module">Area</label>
               <select id="member-audit-module">
@@ -340,6 +333,7 @@
             </div>
             <p class="members-admin-toolbar"><button type="button" class="members-sidebar-link" id="member-audit-older" hidden>Show older changes</button></p>
           </section>
+        </div>
         </div>
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
@@ -540,7 +534,6 @@
     var panelButtons = document.querySelectorAll("[data-member-panel]");
     var panels = document.querySelectorAll(".member-panel");
     var onMemberAdminPanelShown = null;
-    var onAuditLogPanelShown = null;
     var onEventsPanelShown = null;
     var onPhotosPanelShown = null;
     var onGamesPanelShown = null;
@@ -777,9 +770,6 @@
         onMemberAdminPanelShown();
       }
       if (id === "operations" && window.SNHMemberOperationsPanel) void window.SNHMemberOperationsPanel.load();
-      if (id === "audit-log" && typeof onAuditLogPanelShown === "function") {
-        onAuditLogPanelShown();
-      }
       if (id === "events" && !options.skipPanelLoad && typeof onEventsPanelShown === "function") {
         onEventsPanelShown();
       }
@@ -885,7 +875,6 @@
       var toCsv = portal.rolesToCsv || function (arr) { return (arr || []).join(","); };
       var panelRoleMap = {
         "member-admin": groups.MEMBERSHIP_MANAGE_ACCESS || ["membership_editor", "membership_admin", "club_admin"],
-        "audit-log": ["club_admin"],
         "operations": ["club_admin"],
         events: groups.EVENTS_MANAGE_ACCESS || ["events_editor", "events_admin", "club_admin"],
         photos: groups.PHOTOS_ACCESS || ["photos_editor", "photos_admin", "club_admin"],
@@ -1128,9 +1117,6 @@
     applyRbacNav(userRoles);
     if (window.SNHMemberOperationsPanel) window.SNHMemberOperationsPanel.init(userRoles);
     if (window.SNHMemberAuditPanel) window.SNHMemberAuditPanel.init(userRoles);
-    onAuditLogPanelShown = function () {
-      if (window.SNHMemberAuditPanel) void window.SNHMemberAuditPanel.load();
-    };
     setMemberAdminPanelIntro(userRoles);
     setEventsPanelIntro(userRoles);
     setPhotosPanelIntro(userRoles);

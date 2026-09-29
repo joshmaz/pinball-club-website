@@ -77,5 +77,20 @@ try {
  await assert.rejects(query("select snh_operations_policy('matchplay','event',7)"),/reject_audit/);
  snapshot=(await query('select snh_operations_snapshot() s'))[0].s;
  assert.equal(snapshot.policies.find(p=>p.provider==='matchplay' && p.policy==='event').seconds,7200);
+ // Exercise a real deletion failure: payload deletion rolls back, failure remains visible.
+ await sql('reset role');
+ await migration('20260928170000_operations_cleanup_failures.sql');
+ await sql(`insert into external_api_cache values ('matchplay','search','failure-test','{}',now()-interval '10 days',now()-interval '8 days');
+ create function fail_cleanup_test() returns trigger language plpgsql as $$ begin raise exception 'private provider detail'; end; $$;
+ create trigger fail_cleanup before delete on external_api_cache for each row execute function fail_cleanup_test();
+ set role authenticated;`);
+ assert.equal((await query('select snh_operations_cleanup() n'))[0].n,-1);
+ await sql('reset role');
+ const failed=(await query("select * from operations_job_runs where status='failed'"))[0];
+ assert.equal(failed.result.removed,0); assert.ok(!failed.error.includes('private'));
+ assert.equal((await query("select count(*)::int n from external_api_cache where cache_key='failure-test'"))[0].n,1);
+ assert.equal((await query("select count(*)::int n from audit_log where action='cleanup_failed'"))[0].n,1);
+ await sql('drop trigger fail_cleanup on external_api_cache; set role authenticated');
+ assert.equal((await query('select snh_operations_cleanup() n'))[0].n,1);
  console.log('PASS Operations: role boundaries, override/reset, validation, transactional audit, safe retry/claim, cleanup and snapshot.');
 } finally { await db.close(); }

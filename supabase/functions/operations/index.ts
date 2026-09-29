@@ -61,8 +61,15 @@ Deno.serve(async req => {
       const response = await fetch(`${url}/functions/v1/notification-dispatch`, {
         method: "POST", headers: { "x-notification-secret": secret }, signal: AbortSignal.timeout(60000),
       });
-      // The dispatcher may include a preview message body; do not pass it through.
-      return json({ ok: response.ok, message: response.ok ? "Dispatcher completed. See Jobs for the result." : "Dispatcher failed. See Jobs for the result." });
+      // Whitelist only delivery counts and mode; never forward preview content.
+      const result = await response.json();
+      const count = (value: unknown) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : 0;
+      const message = !response.ok ? "Dispatcher failed. See Jobs for the recorded error."
+        : result.mode === "preview" ? "Preview completed. No messages were sent."
+        : result.mode === "test" ? (result.sent ? "Test message sent to the configured test inbox. The queue was not consumed." : "Test completed. No message was sent; the queue is empty.")
+        : result.mode === "live" ? `Dispatch completed: ${count(result.sent)} sent, ${count(result.failed)} failed, ${count(result.canceled)} canceled.`
+        : "Dispatcher completed. See Jobs for the result.";
+      return json({ ok: response.ok && !count(result.failed), message });
     }
     return json({ error: "Unknown operation" }, 400);
   } catch { return json({ error: "Operation could not be completed. Refresh Jobs before running again." }, 500); }

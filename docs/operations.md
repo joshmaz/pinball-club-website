@@ -1,7 +1,8 @@
 # Operations
 
 Operations is a club-admin-only section of My Account, with Overview, Integrations,
-Cache, Messaging, Jobs, and a link to the existing Audit Log. Ordinary member
+Cache, Messaging, Jobs, and Audit. Legacy Audit links redirect into Operations. Section and message-status
+links survive refreshes and can be shared. Ordinary member
 management remains in Member Tools; self-delete remains in My Account.
 
 ## Implemented
@@ -39,7 +40,11 @@ management remains in Member Tools; self-delete remains in My Account.
   rather than permanently stuck in sending. Old messages are never re-created.
 - Jobs uses a generic `operations_job_runs` ledger. The dispatcher records start,
   completion, counts and a fixed safe failure summary in every delivery mode.
-  Cleanup records successful runs transactionally. Unfinished worker runs remain
+  Cleanup records both successful and failed runs. A nested transaction rolls back
+  deletions on failure, retaining a safe error and an audit entry. Its existing bigint
+  API returns a nonnegative removal count on success and -1 on failure; scheduler
+  callers must treat -1 as failure. Failures that prevent recording the run or audit
+  itself still fail the whole transaction. Unfinished worker runs remain
   explicitly “running”, with a warning that completion is unknown.
 - Run Now uses the existing dispatcher secret exclusively server-side. It audits
   the authenticated actor before invoking the worker, and uses the configured
@@ -83,9 +88,7 @@ Tournament standings, IFPA adapters, Pinball Map ingest instrumentation, arbitra
 cache purges/refreshes, dangerous account tools, scheduler editing/next-run reporting,
 provider delivery webhooks, job-run history pagination/retention, and richer cache
 hit/miss metrics. The generic job ledger accepts future server-side job names;
-unknown jobs appear without a manual action. Cleanup database failures roll back
-that transaction (including its run record); they are shown to the invoking admin
-but require scheduler/database logs for historical diagnosis.
+unknown jobs appear without a manual action.
 
 ## Verification
 
@@ -97,3 +100,12 @@ configuration, safe connection errors, audit-before-dispatch and preview-mode ru
 recording. `operations-panel.test.mjs` exercises section changes, policy save/reset,
 retry confirmation and disabled-state recovery. The cache suite checks the tunable
 forced-refresh boundary. Run the full preview build and Deno check before release.
+
+## Finishing pass
+
+`20260928170000_operations_cleanup_failures.sql` adds failure tracking without editing
+an applied migration. Apply it before using the updated cleanup result messages.
+Deploy the updated `operations` function for mode-specific dispatcher results.
+Cache policies show readable durations, unused-policy labels, and Save/Reset buttons
+that are disabled when unchanged. Overview shortcuts open failures, cache, jobs, and
+integrations. Audit retains its filters, pagination, automated toggle and access rules.

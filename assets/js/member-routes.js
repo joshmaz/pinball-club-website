@@ -2,6 +2,8 @@
   var PANEL_IDS = Object.freeze([
     "profile", "membership", "door", "club-issues", "member-admin", "operations", "audit-log", "events", "photos", "games"
   ]);
+  var OPERATIONS_SECTIONS = ["overview", "integrations", "cache", "messaging", "jobs", "audit"];
+  function operationsSection(value) { return OPERATIONS_SECTIONS.indexOf(value) !== -1 ? value : "overview"; }
   var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   function validPanel(value) {
@@ -22,11 +24,15 @@
       panel = validPanel(String(loc.hash || "").replace(/^#/, ""));
     }
     panel = panel || "profile";
-    return {
-      panel: panel,
+    var route = {
+      panel: panel === "audit-log" ? "operations" : panel,
       gameId: panel === "games" ? validUuid(params.get("game")) : "",
       eventId: panel === "events" ? validUuid(params.get("event")) : ""
     };
+    if (route.panel === "operations") {
+      route.operationsSection = panel === "audit-log" ? "audit" : operationsSection(params.get("section"));
+    }
+    return route;
   }
 
   function build(panelId, options, locationLike) {
@@ -35,6 +41,10 @@
     var panel = validPanel(panelId) || "profile";
     var params = new URLSearchParams(loc.search || "");
 
+    var legacyAudit = panel === "audit-log" || (panel === "operations" && (params.get("panel") === "audit-log" || loc.hash === "#audit-log"));
+    if (panel === "audit-log") panel = "operations";
+    if (panel === "operations") params.set("section", legacyAudit ? "audit" : operationsSection(options.section || params.get("section")));
+    else { params.delete("section"); params.delete("messageStatus"); }
     if (panel === "profile") params.delete("panel");
     else params.set("panel", panel);
 
