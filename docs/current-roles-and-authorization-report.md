@@ -1,5 +1,8 @@
 # SNHPC website roles and authorization: current-state report
 
+> Historical snapshot: Pingolf session descriptions document the pre-refactor system.
+> See [Pingolf targets](pingolf-targets.md) for the replacement model and permissions.
+
 **Review date:** 2026-09-29  
 **Scope:** Current repository implementation, traced through browser code, Supabase migrations/RLS, RPCs, Edge Functions, and role-management UI. This is an implementation inventory, not a proposed target model.
 
