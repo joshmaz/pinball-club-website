@@ -112,17 +112,17 @@ This changes the current policy in one important respect: today, `membership_edi
 
 **Games Editor** may perform normal game-catalog upkeep, including maintaining game information and imagery, using normal game-data integrations, and maintaining Pingolf targets.
 
-**Games Admin** includes all Games Editor capabilities plus reserved administrative operations such as game deletion/restoration, destructive game-record maintenance, and Pingolf session administration.
+**Games Admin** includes all Games Editor capabilities plus reserved administrative operations such as game deletion/restoration, destructive game-record maintenance, and permanent Pingolf target deletion.
 
 These distinctions are broadly consistent with the current implementation for Events, Photos, and Games, although some individual checks require alignment.
 
 ## 8. Pingolf policy
 
-Pingolf target maintenance is considered normal Games-domain upkeep and belongs to **Games Editor**.
+Pingolf target listing, creation, editing, and preferred selection are normal Games-domain upkeep and belong to **Games Editor**.
 
-Pingolf session administration is considered a higher-level administrative activity and belongs to **Games Admin**.
+Permanent Pingolf target deletion belongs to **Games Admin**, following the general policy for permanent deletion.
 
-The current backend already permits Games Editors to perform Pingolf target CRUD, while the UI presents the broader Pingolf area as Games Admin-only. This policy resolves that inconsistency in favor of Editor-level target maintenance and Admin-level session administration.
+Targets belong directly to games. There are no Pingolf sessions or session-specific roles. See [Pingolf targets](pingolf-targets.md) for the model, RPC behavior, and deployment procedure.
 
 ## 9. Website Volunteer concept
 

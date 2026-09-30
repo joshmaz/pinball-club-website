@@ -40,8 +40,10 @@
   var highScoresWrapEl = null;
   var modsWrapEl = null;
   var pingolfTargetsWrapEl = null;
-  var pingolfAdminEl = null;
-  var featuredPingolfSessionId = null;
+  var editingPingolfTargetId = null;
+  var pingolfTargetCount = 0;
+  var pingolfBusy = false;
+  var pingolfLoaded = false;
   var partiesCache = [];
   var filteredParties = [];
   var partyComboboxOpen = false;
@@ -366,35 +368,31 @@
     pingolfPanel.appendChild(el("p", { className: "member-games-help", id: "mg-pingolf-help", text: "" }));
     pingolfPanel.appendChild(el("div", { id: "mg-pingolf-target-list", className: "member-games-sublist" }));
     pingolfPanel.appendChild(fieldRow("Target description", textInput("mg-pg-desc", "")));
-    pingolfPanel.appendChild(fieldRow("Target value (optional)", numberInput("mg-pg-val", "")));
+    var pgType = el("select", { id: "mg-pg-type" });
+    ["score", "feature", "progression", "hybrid"].forEach(function (type) {
+      pgType.appendChild(el("option", { value: type, text: type.charAt(0).toUpperCase() + type.slice(1) }));
+    });
+    pingolfPanel.appendChild(fieldRow("Target type", pgType));
+    var pgScore = textInput("mg-pg-val", "");
+    pgScore.inputMode = "numeric";
+    pingolfPanel.appendChild(fieldRow("Score threshold (optional)", pgScore));
+    pingolfPanel.appendChild(fieldRow("Internal notes", textInput("mg-pg-notes", "")));
+    pingolfPanel.appendChild(fieldRow("Preferred target", el("input", { type: "checkbox", id: "mg-pg-preferred" })));
     var pgAdd = el("button", { type: "button", className: "members-sidebar-link", id: "mg-pg-add" });
     pgAdd.textContent = "Add Pingolf target";
     pgAdd.addEventListener("click", onAddPingolfTarget);
     pingolfPanel.appendChild(pgAdd);
-    pingolfTargetsWrapEl = wrapCollapsible("Pingolf target (featured session)", pingolfPanel);
+    var pgCancel = el("button", { type: "button", className: "members-sidebar-link", id: "mg-pg-cancel", text: "Cancel target edit" });
+    pgCancel.hidden = true;
+    pgCancel.addEventListener("click", resetPingolfForm);
+    pingolfPanel.appendChild(pgCancel);
+    pingolfPanel.querySelectorAll(".member-games-field").forEach(function (row) {
+      var label = row.querySelector("label");
+      var input = row.querySelector("input, select");
+      if (label && input) label.setAttribute("for", input.id);
+    });
+    pingolfTargetsWrapEl = wrapCollapsible("Pingolf Targets", pingolfPanel);
     formEl.appendChild(pingolfTargetsWrapEl);
-
-    var pingolfAdminPanel = el("div", { className: "member-games-pingolf-admin member-games-collapsible-panel", id: "mg-pingolf-admin-wrap" });
-    pingolfAdminPanel.appendChild(
-      el("p", {
-        className: "member-games-help",
-        text: "Only one featured session at a time; it drives public Pingolf targets in More Info on games.html."
-      })
-    );
-    pingolfAdminPanel.appendChild(el("ul", { className: "mg-pingolf-session-ul member-games-help" }));
-    pingolfAdminPanel.appendChild(fieldRow("New session title", textInput("mg-pg-admin-title", "")));
-    var featRow = el("div", { className: "member-games-field member-games-checkbox-row" });
-    var featCb = el("input", { type: "checkbox", id: "mg-pg-admin-featured" });
-    featRow.appendChild(featCb);
-    featRow.appendChild(el("label", { for: "mg-pg-admin-featured", text: "Featured session" }));
-    pingolfAdminPanel.appendChild(featRow);
-    pingolfAdminPanel.appendChild(fieldRow("Session notes", textInput("mg-pg-admin-notes", "")));
-    var pgSessBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-pg-admin-save" });
-    pgSessBtn.textContent = "Save Pingolf session";
-    pgSessBtn.addEventListener("click", onCreatePingolfSession);
-    pingolfAdminPanel.appendChild(pgSessBtn);
-    pingolfAdminEl = wrapCollapsible("Pingolf sessions (games admin)", pingolfAdminPanel);
-    formEl.appendChild(pingolfAdminEl);
 
     var saveBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-save" });
     saveBtn.textContent = "Save game";
@@ -1075,15 +1073,6 @@
     if (highScoresWrapEl) highScoresWrapEl.hidden = mode !== "edit";
     if (modsWrapEl) modsWrapEl.hidden = mode !== "edit";
     if (pingolfTargetsWrapEl) pingolfTargetsWrapEl.hidden = mode !== "edit";
-    if (pingolfAdminEl) {
-      pingolfAdminEl.hidden =
-        mode !== "edit" ||
-        !(
-          window.SNHMemberPortal &&
-          window.SNHMemberPortal.memberHasAnyRole &&
-          window.SNHMemberPortal.memberHasAnyRole(lastUserRoles || [], "games_admin,club_admin")
-        );
-    }
     var secGame = document.getElementById("mg-section-game");
     if (secGame) {
       secGame.textContent =
@@ -1139,8 +1128,7 @@
       "mg-mod-url",
       "mg-pg-desc",
       "mg-pg-val",
-      "mg-pg-admin-title",
-      "mg-pg-admin-notes"
+      "mg-pg-notes"
     ].forEach(function (id) {
       var n = document.getElementById(id);
       if (n) n.value = "";
@@ -1153,8 +1141,10 @@
     if (saleStatus) saleStatus.value = "draft";
     var hsDate = document.getElementById("mg-hs-date");
     if (hsDate) hsDate.value = "";
-    var featAdmin = document.getElementById("mg-pg-admin-featured");
-    if (featAdmin) featAdmin.checked = false;
+    resetPingolfForm();
+    pingolfLoaded = false;
+    pingolfTargetCount = 0;
+    syncPingolfControls();
     var pls = document.getElementById("mg-party-link-select");
     if (pls) pls.value = "";
     var prel = document.getElementById("mg-party-relationship-public");
@@ -2243,21 +2233,6 @@
     stintsEl.appendChild(addBtn);
   }
 
-  async function refreshFeaturedPingolfSession() {
-    featuredPingolfSessionId = null;
-    if (!window.SNHMemberPortal || !window.SNHMemberPortal.pingolfSessionsListEditor) return;
-    try {
-      var sessions = await window.SNHMemberPortal.pingolfSessionsListEditor();
-      var arr = Array.isArray(sessions) ? sessions : [];
-      var f = arr.find(function (s) {
-        return s && s.isFeatured;
-      });
-      featuredPingolfSessionId = f && f.id ? f.id : null;
-    } catch (e) {
-      console.warn("pingolf sessions", e);
-    }
-  }
-
   function todayIsoDate() {
     return new Date().toISOString().slice(0, 10);
   }
@@ -2409,135 +2384,129 @@
     }
   }
 
+  function syncPingolfControls() {
+    var add = document.getElementById("mg-pg-add");
+    if (add) {
+      add.textContent = editingPingolfTargetId ? "Save target" : "Add target";
+      add.disabled = pingolfBusy || !pingolfLoaded || (!editingPingolfTargetId && pingolfTargetCount >= 10);
+    }
+    var cancel = document.getElementById("mg-pg-cancel");
+    if (cancel) { cancel.hidden = !editingPingolfTargetId; cancel.disabled = pingolfBusy; }
+    var box = document.getElementById("mg-pingolf-target-list");
+    if (box) box.querySelectorAll("button").forEach(function (button) { button.disabled = pingolfBusy; });
+  }
+
+  function resetPingolfForm() {
+    editingPingolfTargetId = null;
+    ["mg-pg-desc", "mg-pg-val", "mg-pg-notes"].forEach(function (id) {
+      var input = document.getElementById(id);
+      if (input) input.value = "";
+    });
+    var type = document.getElementById("mg-pg-type");
+    if (type) type.value = "feature";
+    var preferred = document.getElementById("mg-pg-preferred");
+    if (preferred) preferred.checked = false;
+    syncPingolfControls();
+  }
+
   async function loadPingolfTargetsForGame(gameId) {
     var box = document.getElementById("mg-pingolf-target-list");
     var help = document.getElementById("mg-pingolf-help");
     if (!box || !window.SNHMemberPortal) return;
-    if (!featuredPingolfSessionId) {
-      if (help) help.textContent = "No featured Pingolf session. A games_admin can create one below.";
-      box.replaceChildren();
-      return;
-    }
-    if (help) help.textContent = "Targets apply to the featured Pingolf session only.";
+    pingolfLoaded = false;
+    syncPingolfControls();
     try {
-      var targets = await window.SNHMemberPortal.pingolfTargetsListEditor(featuredPingolfSessionId);
+      var targets = await window.SNHMemberPortal.pingolfTargetsListEditor(gameId);
+      if (currentGameId !== gameId) return;
       var arr = Array.isArray(targets) ? targets : [];
-      var forGame = arr.filter(function (t) {
-        return String(t.gameId) === String(gameId);
-      });
-      renderPingolfTargets(forGame);
+      pingolfTargetCount = arr.length;
+      pingolfLoaded = true;
+      if (help) help.textContent = arr.length + " of 10 targets" + (arr.length >= 10 ? ". Limit reached. You can still edit existing targets." : ". Reusable objectives for this game.");
+      renderPingolfTargets(arr);
     } catch (e) {
-      console.warn("pingolf targets", e);
+      if (currentGameId !== gameId) return;
       box.textContent = "Could not load Pingolf targets.";
+      if (help) help.textContent = "Reopen this game to try again.";
     }
+    syncPingolfControls();
   }
 
   function renderPingolfTargets(arr) {
     var box = document.getElementById("mg-pingolf-target-list");
     if (!box) return;
     box.replaceChildren();
-    (arr || []).forEach(function (row) {
+    arr.forEach(function (row) {
       var line = el("div", { className: "member-games-sublist-row" });
-      line.appendChild(
-        el("span", {
-          text: (row.description || "—") + (row.targetValue != null ? " · " + row.targetValue : "")
-        })
-      );
-      var del = el("button", { type: "button", className: "members-sidebar-link" });
-      del.textContent = "Delete";
-      del.addEventListener("click", function () {
-        onDeletePingolfTarget(row.id);
+      line.appendChild(el("span", { text: (row.isPreferred ? "★ Preferred · " : "") + row.description + " · " + row.targetType }));
+      var edit = el("button", { type: "button", className: "members-sidebar-link", text: "Edit" });
+      edit.addEventListener("click", function () {
+        editingPingolfTargetId = row.id;
+        document.getElementById("mg-pg-desc").value = row.description;
+        document.getElementById("mg-pg-type").value = row.targetType;
+        document.getElementById("mg-pg-val").value = row.scoreThreshold == null ? "" : row.scoreThreshold;
+        document.getElementById("mg-pg-notes").value = row.notes || "";
+        document.getElementById("mg-pg-preferred").checked = row.isPreferred;
+        syncPingolfControls();
+        document.getElementById("mg-pg-desc").focus();
       });
-      line.appendChild(del);
+      line.appendChild(edit);
+      var prefer = el("button", { type: "button", className: "members-sidebar-link", text: row.isPreferred ? "Clear preferred" : "Make preferred" });
+      prefer.addEventListener("click", function () {
+        void mutatePingolfTarget(function (gameId) {
+          return window.SNHMemberPortal.pingolfTargetUpsert(row.id, gameId, { isPreferred: !row.isPreferred });
+        }, "Preferred target updated.");
+      });
+      line.appendChild(prefer);
+      if (hasDeleteAccess()) {
+        var del = el("button", { type: "button", className: "members-sidebar-link", text: "Delete" });
+        del.addEventListener("click", function () { void onDeletePingolfTarget(row.id); });
+        line.appendChild(del);
+      }
       box.appendChild(line);
     });
   }
 
+  async function mutatePingolfTarget(action, message) {
+    if (!currentGameId || pingolfBusy) return;
+    var gameId = currentGameId;
+    pingolfBusy = true;
+    syncPingolfControls();
+    try {
+      await action(gameId);
+      if (currentGameId !== gameId) return;
+      resetPingolfForm();
+      await loadPingolfTargetsForGame(gameId);
+      setStatus(message);
+    } catch (err) {
+      if (currentGameId === gameId) setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
+    } finally {
+      pingolfBusy = false;
+      syncPingolfControls();
+    }
+  }
+
   async function onAddPingolfTarget() {
-    if (!currentGameId || !featuredPingolfSessionId || !window.SNHMemberPortal) return;
+    if (!pingolfLoaded || (!editingPingolfTargetId && pingolfTargetCount >= 10)) return;
     var desc = getVal("mg-pg-desc");
-    if (!desc) {
-      setStatus("Pingolf target description is required.");
+    var score = getVal("mg-pg-val");
+    if (!desc) { setStatus("Pingolf target description is required."); return; }
+    if (score && (!/^[0-9]+$/.test(score) || BigInt(score) <= 0n || BigInt(score) > 9223372036854775807n)) {
+      setStatus("Score threshold must be a positive whole number no larger than 9223372036854775807.");
       return;
     }
-    setStatus("Adding Pingolf target…");
-    try {
-      await window.SNHMemberPortal.pingolfTargetUpsert(null, featuredPingolfSessionId, currentGameId, {
-        description: desc,
-        targetValue: getVal("mg-pg-val") ? Number(getVal("mg-pg-val")) : null
-      });
-      document.getElementById("mg-pg-desc").value = "";
-      document.getElementById("mg-pg-val").value = "";
-      await loadPingolfTargetsForGame(currentGameId);
-      setStatus("Pingolf target added.");
-    } catch (err) {
-      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-    }
+    var fields = {
+      description: desc, targetType: getVal("mg-pg-type"), scoreThreshold: score || null,
+      notes: getVal("mg-pg-notes") || null, isPreferred: document.getElementById("mg-pg-preferred").checked
+    };
+    var targetId = editingPingolfTargetId;
+    await mutatePingolfTarget(function (gameId) {
+      return window.SNHMemberPortal.pingolfTargetUpsert(targetId, gameId, fields);
+    }, targetId ? "Pingolf target updated." : "Pingolf target added.");
   }
 
   async function onDeletePingolfTarget(targetId) {
-    if (!targetId || !confirm("Delete this Pingolf target?")) return;
-    try {
-      await window.SNHMemberPortal.pingolfTargetDelete(targetId);
-      await loadPingolfTargetsForGame(currentGameId);
-      setStatus("Pingolf target deleted.");
-    } catch (err) {
-      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-    }
-  }
-
-  async function renderPingolfAdmin() {
-    if (!pingolfAdminEl) return;
-    var ul = pingolfAdminEl.querySelector(".mg-pingolf-session-ul");
-    if (!ul || !window.SNHMemberPortal) return;
-    ul.replaceChildren();
-    try {
-      var sessions = await window.SNHMemberPortal.pingolfSessionsListEditor();
-      var arr = Array.isArray(sessions) ? sessions : [];
-      arr.forEach(function (s) {
-        var li = el("li", {});
-        li.textContent =
-          (s.title || "Untitled") +
-          (s.isFeatured ? " ★ featured" : "") +
-          " · " +
-          String(s.id).slice(0, 8) +
-          "…";
-        ul.appendChild(li);
-      });
-    } catch (e) {
-      ul.appendChild(el("li", { text: "Could not load sessions." }));
-    }
-  }
-
-  async function onCreatePingolfSession() {
-    if (!window.SNHMemberPortal || !window.SNHMemberPortal.memberHasAnyRole) return;
-    if (!window.SNHMemberPortal.memberHasAnyRole(lastUserRoles || [], "games_admin,club_admin")) {
-      setStatus("Games admin role required for Pingolf sessions.");
-      return;
-    }
-    var title = getVal("mg-pg-admin-title");
-    if (!title) {
-      setStatus("Session title is required.");
-      return;
-    }
-    setStatus("Saving Pingolf session…");
-    try {
-      var featured = document.getElementById("mg-pg-admin-featured");
-      await window.SNHMemberPortal.pingolfSessionUpsert(null, {
-        title: title,
-        isFeatured: !!(featured && featured.checked),
-        notes: getVal("mg-pg-admin-notes") || null
-      });
-      document.getElementById("mg-pg-admin-title").value = "";
-      if (featured) featured.checked = false;
-      document.getElementById("mg-pg-admin-notes").value = "";
-      await refreshFeaturedPingolfSession();
-      await renderPingolfAdmin();
-      if (currentGameId) await loadPingolfTargetsForGame(currentGameId);
-      setStatus("Pingolf session saved.");
-    } catch (err) {
-      setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-    }
+    if (!hasDeleteAccess() || !targetId || !confirm("Delete this Pingolf target?")) return;
+    await mutatePingolfTarget(function () { return window.SNHMemberPortal.pingolfTargetDelete(targetId); }, "Pingolf target deleted.");
   }
 
   async function loadSale(gameId) {
@@ -2570,6 +2539,13 @@
 
   async function populateForm(gameId) {
     currentGameId = gameId;
+    pingolfLoaded = false;
+    pingolfTargetCount = 0;
+    resetPingolfForm();
+    var pingolfList = document.getElementById("mg-pingolf-target-list");
+    if (pingolfList) pingolfList.replaceChildren();
+    var pingolfHelp = document.getElementById("mg-pingolf-help");
+    if (pingolfHelp) pingolfHelp.textContent = "Loading targets…";
     var g = currentGame();
     if (!g) return;
     if (window.SNHMemberRoutes) window.SNHMemberRoutes.setGame(g.id || gameId);
@@ -2621,11 +2597,9 @@
     renderStints(g.locationStints || []);
     suppressDirtyTracking = false;
     await loadSale(gameId);
-    await refreshFeaturedPingolfSession();
     await loadHighScoresForGame(gameId);
     await loadModsForGame(gameId);
     await loadPingolfTargetsForGame(gameId);
-    await renderPingolfAdmin();
     await loadPartiesDirectory();
     resetAiProposalUi();
     var ps = document.getElementById("mg-party-link-select");
@@ -2874,10 +2848,7 @@
       buildShell();
       void loadCatalog();
     } else {
-      refreshFeaturedPingolfSession().then(function () {
-        if (currentGameId) return loadPingolfTargetsForGame(currentGameId);
-      });
-      renderPingolfAdmin();
+      if (currentGameId) void loadPingolfTargetsForGame(currentGameId);
       syncPartyDirectoryDeleteVisibility();
       void loadPartiesDirectory();
       void refreshPinballMapIngestStatus();

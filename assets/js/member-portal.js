@@ -959,39 +959,19 @@
     if (result.error) throw result.error;
   }
 
-  async function pingolfSessionsListEditor() {
+  async function pingolfTargetsListEditor(gameId) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
-    var result = await client.rpc("snh_pingolf_sessions_list_editor");
+    var result = await client.rpc("snh_pingolf_targets_list_editor", { p_game_id: gameId });
     if (result.error) throw result.error;
     return parseRpcJson(result.data);
   }
 
-  async function pingolfSessionUpsert(sessionId, fields) {
-    var client = getClient();
-    if (!client) throw new Error("Supabase is not available.");
-    var result = await client.rpc("snh_pingolf_session_upsert", {
-      p_id: sessionId || null,
-      p_fields: fields
-    });
-    if (result.error) throw result.error;
-    return result.data;
-  }
-
-  async function pingolfTargetsListEditor(sessionId) {
-    var client = getClient();
-    if (!client) throw new Error("Supabase is not available.");
-    var result = await client.rpc("snh_pingolf_targets_list_editor", { p_session_id: sessionId });
-    if (result.error) throw result.error;
-    return parseRpcJson(result.data);
-  }
-
-  async function pingolfTargetUpsert(targetId, sessionId, gameId, fields) {
+  async function pingolfTargetUpsert(targetId, gameId, fields) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
     var result = await client.rpc("snh_pingolf_target_upsert", {
       p_id: targetId || null,
-      p_session_id: sessionId,
       p_game_id: gameId,
       p_fields: fields
     });
@@ -1431,8 +1411,6 @@
     gameHighScoresList: gameHighScoresList,
     gameHighScoresUpsert: gameHighScoresUpsert,
     gameHighScoresDelete: gameHighScoresDelete,
-    pingolfSessionsListEditor: pingolfSessionsListEditor,
-    pingolfSessionUpsert: pingolfSessionUpsert,
     pingolfTargetsListEditor: pingolfTargetsListEditor,
     pingolfTargetUpsert: pingolfTargetUpsert,
     pingolfTargetDelete: pingolfTargetDelete,

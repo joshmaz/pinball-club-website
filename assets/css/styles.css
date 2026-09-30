@@ -2974,15 +2974,13 @@ footer {
   margin-top: 0;
 }
 
-.member-games-extended,
-.member-games-pingolf-admin {
+.member-games-extended {
   margin-top: 1rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-divider);
 }
 
-.member-games-extended h4,
-.member-games-pingolf-admin h4 {
+.member-games-extended h4 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
 }

@@ -613,17 +613,24 @@ function renderGameMoreInfoSections(payload, body, kind) {
   if (kind === "play" && Array.isArray(pingolfTargets) && pingolfTargets.length > 0) {
     const ul = document.createElement("ul");
     ul.className = "games-more-info-list";
-    for (const row of pingolfTargets) {
+    for (const row of [...pingolfTargets].sort((a, b) => Number(!!b?.isPreferred) - Number(!!a?.isPreferred))) {
       if (!row || typeof row !== "object") continue;
       const li = document.createElement("li");
-      let t = hasNonemptyString(row.description) ? String(row.description) : "Target";
-      if (row.targetValue != null && row.targetValue !== "") {
-        t += ` (goal: ${row.targetValue})`;
+      const t = hasNonemptyString(row.description) ? String(row.description) : "Target";
+      if (row.isPreferred) {
+        const label = document.createElement("strong");
+        label.textContent = "★ Preferred: ";
+        li.appendChild(label);
       }
-      li.textContent = t;
+      li.appendChild(document.createTextNode(t));
+      if (row.targetType) {
+        const type = document.createElement("small");
+        type.textContent = ` · ${row.targetType}`;
+        li.appendChild(type);
+      }
       ul.appendChild(li);
     }
-    addSection("Pingolf", ul);
+    addSection("Pingolf Targets", ul);
   }
 
   if (kind === "overview" && Array.isArray(partySummaries) && partySummaries.some((x) => hasNonemptyString(x))) {
