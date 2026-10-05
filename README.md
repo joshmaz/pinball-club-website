@@ -105,8 +105,9 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 **Hosted schedule**
 
 - Migration `supabase/migrations/20260523120000_pinballmap_ingest_pg_cron.sql` registers **pg_cron** job `pinballmap-ingest-every-6h` (every six hours, UTC) that POSTs to the Edge Function using **pg_net**.
-- One-time: in the SQL Editor, store **Vault** secrets `snh_pinballmap_ingest_supabase_url` (your `https://<ref>.supabase.co` with no trailing slash) and `snh_pinballmap_ingest_anon_key` (anon / publishable key). See the migration file header for `vault.create_secret` examples. Until both exist, the job runs but skips the HTTP call and logs a Postgres warning.
-- The Edge Function reads hosted **default** secrets (`SUPABASE_URL`, `SUPABASE_SECRET_KEYS` JSON with `default` secret key, or legacy `SUPABASE_SERVICE_ROLE_KEY`); you normally only add custom secrets such as `PINBALLMAP_LOCATION_ID` under Edge Functions.
+- The forward migration `supabase/migrations/20260928190000_pinballmap_ingest_scheduler_auth.sql` replaces the caller without changing the six-hour schedule. It requires Vault entries `snh_pinballmap_ingest_supabase_url`, `snh_pinballmap_ingest_anon_key` (transport only), and `snh_pinballmap_ingest_scheduler_secret`.
+- Store the same dedicated random scheduler credential in Vault as `snh_pinballmap_ingest_scheduler_secret` and in Edge secrets as `PINBALLMAP_INGEST_SCHEDULER_SECRET`. Cron sends it in **`x-pinballmap-scheduler-secret`**, never in the URL or body. Missing configuration skips the HTTP call with a non-secret warning.
+- The Edge Function still uses hosted `SUPABASE_URL` and elevated keys for database work, plus the required `PINBALLMAP_API_TOKEN`. See [deployment and rotation instructions](docs/games-relational-migration-plan.md#ingestion-authentication-deployment-and-rotation).
 
 **Database**
 
@@ -124,7 +125,8 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 
 **Operator note**
 
-- `pinballmap-ingest` is configured with `verify_jwt = false` in `supabase/config.toml` so scheduled invokes do not need a user JWT. Treat the function URL plus anon key like a privileged trigger: restrict who you share invoke instructions with, or harden later (for example JWT + role check or a dedicated scheduler secret).
+- `verify_jwt = false` allows the handler to support both authentication paths. A present `x-pinballmap-scheduler-secret` header selects scheduler authentication and must match the configured secret; failure never falls back to user authentication. Without that header, a verified user JWT and `games_editor`, `games_admin`, or `club_admin` are required. Public keys and matching `Authorization`/`apikey` headers grant no ingestion authority. Only POST ingests; OPTIONS is side-effect-free.
+- Manual calls retain the verified user actor. Scheduled calls retain System attribution. Request bodies cannot supply an actor or select authentication mode.
 
 ## Deployment
 

@@ -9,6 +9,8 @@ import {
 } from "./merge.ts";
 import { importOpdbImages } from "../_shared/opdb-images.ts";
 
+import { authorizeIngest, GAMES_INGEST_ROLES, ingestMethodResponse } from "./auth.ts";
+
 const LOCATION_DEFAULT = 8908;
 
 /** Prefer new default `SUPABASE_SECRET_KEYS` JSON; fall back to legacy JWT service role. */
@@ -33,15 +35,8 @@ function resolveElevatedApiKey(): string | null {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-        "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-      },
-    });
-  }
+  const methodResponse = ingestMethodResponse(req);
+  if (methodResponse) return methodResponse;
 
   try {
     const supabaseUrl = (Deno.env.get("SUPABASE_URL") || "").trim().replace(/\/+$/, "");
@@ -67,27 +62,26 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Browser runs carry a user JWT; cron sends the same key in Authorization and apikey.
-    // Verify manual callers before using the elevated ingest client or attributing audit.
-    const authorization = req.headers.get("Authorization") || "";
-    const bearer = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
-    const requestApiKey = (req.headers.get("apikey") || "").trim();
-    let manualActorUserId: string | null = null;
-    if (bearer && bearer !== requestApiKey) {
-      const verifier = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
-      const authResult = await verifier.auth.getUser(bearer);
-      const user = authResult.data.user;
-      if (authResult.error || !user) return jsonResponse({ ok: false, error: "Invalid user token" }, 401);
-      const roles = await verifier.from("members")
-        .select("id,member_roles!inner(role_slug)")
-        .eq("user_id", user.id)
-        .in("member_roles.role_slug", ["games_editor", "games_admin", "club_admin"])
-        .limit(1);
-      if (roles.error || !(roles.data || []).length) {
-        return jsonResponse({ ok: false, error: "Games access required" }, 403);
-      }
-      manualActorUserId = user.id;
-    }
+    const authorization = await authorizeIngest(req, {
+      schedulerSecret: Deno.env.get("PINBALLMAP_INGEST_SCHEDULER_SECRET"),
+      getUser: async (bearer) => {
+        const verifier = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+        const result = await verifier.auth.getUser(bearer);
+        return result.error ? null : result.data.user?.id || null;
+      },
+      hasGamesAccess: async (userId) => {
+        const verifier = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+        const roles = await verifier.from("members")
+          .select("id,member_roles!inner(role_slug)")
+          .eq("user_id", userId)
+          .in("member_roles.role_slug", GAMES_INGEST_ROLES)
+          .limit(1);
+        if (roles.error) throw new Error("Role lookup failed");
+        return !!roles.data?.length;
+      },
+    });
+    if (!authorization.ok) return jsonResponse({ ok: false, error: authorization.error }, authorization.status);
+    const manualActorUserId = authorization.manualActorUserId;
 
     const pinballMapApiToken = (Deno.env.get("PINBALLMAP_API_TOKEN") || "").trim();
     if (!pinballMapApiToken) {

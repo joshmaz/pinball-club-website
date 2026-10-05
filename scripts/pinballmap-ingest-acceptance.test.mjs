@@ -1,10 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { importOpdbImages } from '../supabase/functions/_shared/opdb-images.ts';
+import ts from 'typescript';
 
 const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
+
+// Transpile with the repository's existing compiler instead of relying on Node TS loading.
+const opdbSource = await read('supabase/functions/_shared/opdb-images.ts');
+const opdbCode = ts.transpileModule(opdbSource.replace(/^export /gm, ''), {
+  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
+}).outputText;
+const { importOpdbImages } = new Function(opdbCode + '\nreturn { importOpdbImages };')();
 
 test('ingest calls shared OPDB image importer after creating game rows and isolates failure', async () => {
   const source = await read('supabase/functions/pinballmap-ingest/index.ts');
@@ -42,7 +49,9 @@ test('shared OPDB importer deduplicates IDs and reuses stable source keys on rep
 test('manual and scheduled runs use one overall audit row with counts, status and verified actor', async () => {
   const edge = await read('supabase/functions/pinballmap-ingest/index.ts');
   const sql = await read('supabase/migrations/20260921160000_pinballmap_manual_audit_actor.sql');
+  assert.match(edge, /await authorizeIngest\(req/);
   assert.match(edge, /auth\.getUser\(bearer\)/);
+  assert.match(edge, /const manualActorUserId = authorization\.manualActorUserId/);
   assert.match(edge, /member_roles!inner\(role_slug\)/);
   assert.match(edge, /if \(manualActorUserId\) \(payload as Record<string, unknown>\)\.manual_actor_user_id = manualActorUserId/);
   assert.match(sql, /'games', 'import', nullif\(p_payload->>'manual_actor_user_id', ''\)::uuid/);
@@ -52,4 +61,26 @@ test('manual and scheduled runs use one overall audit row with counts, status an
   assert.match(sql, /'status', 'success'/);
   assert.match(sql, /case when p_payload \? 'manual_actor_user_id' then 'manual' else 'scheduled' end/);
   assert.doesNotMatch(sql, /if .*jsonb_array_length.*then[\s\S]*insert into public\.audit_log/);
+});
+
+
+test('cron requires the dedicated scheduler credential while gateway JWT verification stays disabled', async () => {
+  const sql = await read('supabase/migrations/20260928190000_pinballmap_ingest_scheduler_auth.sql');
+  assert.match(sql, /create or replace function private\.snh_pinballmap_ingest_cron_invoke/);
+  assert.match(sql, /where ds\.name = 'snh_pinballmap_ingest_scheduler_secret'/);
+  assert.match(sql, /v_scheduler_secret is null or btrim\(v_scheduler_secret\) = ''/);
+  assert.match(sql, /'x-pinballmap-scheduler-secret', v_scheduler_secret/);
+  assert.match(sql, /'apikey', v_key/);
+  assert.doesNotMatch(sql, /'Authorization'|cron\.schedule|cron\.unschedule/);
+  assert.match(sql, /revoke all on function private\.snh_pinballmap_ingest_cron_invoke \(\) from public, anon, authenticated/);
+  assert.match(sql, /timeout_milliseconds := 300000/);
+  const config = await read('supabase/config.toml');
+  const section = config.split('[functions.pinballmap-ingest]')[1].split('[functions.')[0];
+  assert.match(section, /verify_jwt = false/);
+  for (const path of ['README.md', 'docs/games-relational-migration-plan.md']) {
+    const doc = await read(path);
+    assert.match(doc, /x-pinballmap-scheduler-secret/);
+    assert.match(doc, /PINBALLMAP_INGEST_SCHEDULER_SECRET/);
+    assert.match(doc, /snh_pinballmap_ingest_scheduler_secret/);
+  }
 });
