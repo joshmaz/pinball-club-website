@@ -402,29 +402,15 @@
    */
   var ROLE_GROUPS = window.SNHSiteAuth.ROLE_GROUPS;
 
-  function uniqueRoleList(roleArrays) {
-    var out = [];
-    for (var i = 0; i < roleArrays.length; i += 1) {
-      var arr = roleArrays[i] || [];
-      for (var j = 0; j < arr.length; j += 1) {
-        if (out.indexOf(arr[j]) === -1) out.push(arr[j]);
-      }
-    }
-    return out;
-  }
-
   function rolesToCsv(rolesList) {
     return window.SNHSiteAuth.rolesToCsv(rolesList);
   }
 
-  /** Role slugs assignable from the member admin panel (matches portal RBAC groups). */
+  /** Assigned roles only; inherited capabilities and volunteer status are never persisted. */
   var ASSIGNABLE_MEMBER_ROLES = Object.freeze(
-    uniqueRoleList([
-      ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS,
-      ROLE_GROUPS.EVENTS_MANAGE_ACCESS,
-      ROLE_GROUPS.PHOTOS_ACCESS,
-      ROLE_GROUPS.GAMES_ACCESS
-    ])
+    Object.keys(window.SNHSiteAuth.ROLE_CATALOG).filter(function (slug) {
+      return window.SNHSiteAuth.ROLE_CATALOG[slug].assignable === true;
+    })
   );
 
   async function fetchMemberAdminStats() {

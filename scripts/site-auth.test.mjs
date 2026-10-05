@@ -158,3 +158,34 @@ test("requireAuth preserves the member route when redirecting to sign in", async
     "signin.html?next=" + encodeURIComponent("members.html?panel=games&game=123#games")
   );
 });
+
+
+test("delegation requires an assignable catalog target and the correct administrator", () => {
+  const { auth } = loadSiteAuth();
+  const targets = Object.keys(auth.ROLE_CATALOG).filter(slug => auth.ROLE_CATALOG[slug].assignable);
+  assert.equal(targets.length, 9);
+  for (const actor of [[], ["membership_editor"], ["membership_admin"], ["club_admin"],
+    ["events_admin"], ["website_volunteer"], ["unknown_role"], ["membership_editor", "membership_admin"]]) {
+    for (const target of targets) {
+      const expected = actor.includes("club_admin") ||
+        (actor.includes("membership_admin") && !["club_admin", "membership_admin"].includes(target));
+      assert.equal(auth.canAssignMemberRole(actor, target), expected, `${actor} -> ${target}`);
+      assert.equal(auth.canAssignMemberRole(actor, ` ${target.toUpperCase()} `), expected);
+    }
+    for (const target of ["website_volunteer", "unknown_role", "toString", "__proto__", "", null]) {
+      assert.equal(auth.canAssignMemberRole(actor, target), false);
+    }
+  }
+  assert.equal(auth.can(["membership_editor"], "membership.manage"), true);
+});
+
+test("portal assignable roles are derived from catalog metadata, not effective access groups", async () => {
+  const { auth } = loadSiteAuth();
+  const portal = await readFile(path.join(root, "assets/js/member-portal.js"), "utf8");
+  const declaration = portal.slice(portal.indexOf("  var ASSIGNABLE_MEMBER_ROLES ="), portal.indexOf("  async function fetchMemberAdminStats"));
+  const catalog = { ...auth.ROLE_CATALOG, derived_test: { assignable: false } };
+  const context = { window: { SNHSiteAuth: { ROLE_CATALOG: catalog } } };
+  vm.runInNewContext(declaration, context);
+  assert.deepEqual([...context.ASSIGNABLE_MEMBER_ROLES], Object.keys(catalog).filter(slug => catalog[slug].assignable));
+  assert.equal(context.ASSIGNABLE_MEMBER_ROLES.includes("website_volunteer"), false);
+});

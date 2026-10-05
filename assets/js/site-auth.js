@@ -233,6 +233,14 @@
     return !!requiredRoles && memberHasAnyRole(userRoles, requiredRoles);
   }
 
+  // Delegation is target-specific and separate from ordinary membership upkeep.
+  function canAssignMemberRole(userRoles, roleSlug) {
+    var slug = String(roleSlug || "").trim().toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(ROLE_CATALOG, slug) || !ROLE_CATALOG[slug].assignable) return false;
+    return memberHasAnyRole(userRoles, "club_admin") ||
+      (slug !== "club_admin" && slug !== "membership_admin" && memberHasAnyRole(userRoles, "membership_admin"));
+  }
+
   window.SNHSiteAuth = {
     ROLE_CATALOG: ROLE_CATALOG,
     ROLE_GROUPS: ROLE_GROUPS,
@@ -247,6 +255,7 @@
     memberHasAnyRole: memberHasAnyRole,
     rolesToCsv: rolesToCsv,
     can: can,
+    canAssignMemberRole: canAssignMemberRole,
     clearCache: clearCache
   };
 

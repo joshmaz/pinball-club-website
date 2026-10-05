@@ -132,7 +132,9 @@ RBAC for the **member portal** (`members.html`): which extra sidebar sections (E
 
 **Member admin RPCs** (`members.html` → `SNHMemberPortal.*`)
 
-Callable by `authenticated` users who already have **`membership_editor`**, **`membership_admin`**, or **`club_admin`** on their own `member_roles` rows (checked inside each function).
+Ordinary membership RPCs remain available to authenticated Membership Editors, Membership Admins, and Website Administrators. Despite its name, `snh_member_can_manage_roles()` is the general membership-access helper; do not narrow it to implement delegation policy.
+
+Grant and revoke RPCs additionally call `snh_member_can_assign_role(text)`: Membership Editor cannot delegate any role; Membership Admin may delegate Membership Editor and Events/Photos/Games Editor and Admin; only Website Administrator (`club_admin`) may delegate Membership Admin or Website Administrator. Existing self-removal and last-Website-Administrator triggers remain authoritative. See [delegation migration](supabase/migrations/20260928200000_membership_role_delegation.sql).
 
 | RPC | Purpose |
 |-----|---------|
@@ -142,7 +144,7 @@ Callable by `authenticated` users who already have **`membership_editor`**, **`m
 | `snh_grant_member_role(p_member_id, p_role_slug)` | Inserts role (idempotent on conflict). |
 | `snh_revoke_member_role(p_member_id, p_role_slug)` | Deletes role row. |
 
-Assignable slugs from the portal UI are listed in `SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES` in `member-portal.js` (must stay compatible with the `member_roles` check constraint).
+`SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES` derives from assignable entries in `SNHSiteAuth.ROLE_CATALOG`. Keep these entries aligned with the SQL `snh_is_assignable_member_role` allowlist. The table check only validates slug format. Unknown identifiers and derived `website_volunteer` status are never assignable through the RPCs or UI.
 
 **Bootstrap first admin**
 

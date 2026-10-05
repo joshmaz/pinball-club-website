@@ -1106,6 +1106,7 @@
       logoutButtonId: "logout-btn"
     });
 
+    var currentAdminMemberId = null;
     var userRoles = [];
     if (window.SNHMemberPortal.fetchMemberRoles) {
       try {
@@ -1135,9 +1136,12 @@
     }
 
     function adminMayManageRole(slug) {
-      return userRoles.includes("club_admin") ||
-        (slug !== "club_admin" && userRoles.includes("membership_admin")) ||
-        (slug !== "club_admin" && slug !== "membership_admin" && userRoles.includes("membership_editor"));
+      return window.SNHSiteAuth.canAssignMemberRole(userRoles, slug);
+    }
+
+    function adminMayRemoveRole(row, slug) {
+      return adminMayManageRole(slug) && (slug !== "club_admin" ||
+        !!currentAdminMemberId && row.member_id !== currentAdminMemberId);
     }
 
     function adminHasUnsaved() {
@@ -1259,7 +1263,7 @@
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       (row.role_slugs || []).forEach(function (slug) {
         var li = document.createElement("li"); li.textContent = slug + " ";
-        if (adminMayManageRole(slug) && !(slug === "club_admin" && row.email === session.user.email)) {
+        if (adminMayRemoveRole(row, slug)) {
           var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove";
           remove.setAttribute("aria-label", "Remove " + slug + " from " + adminMemberName(row));
           remove.addEventListener("click", async function () {
@@ -1283,7 +1287,7 @@
       var grantButton = document.createElement("button"); grantButton.type = "submit"; grantButton.textContent = "Grant role"; grant.appendChild(grantButton);
       if (select.options.length === 1) grant.hidden = true;
       grant.addEventListener("submit", async function (ev) {
-        ev.preventDefault(); if (!select.value) return;
+        ev.preventDefault(); if (!select.value || !adminMayManageRole(select.value)) return;
         grantButton.disabled = true; grantButton.textContent = "Saving…";
         try { await window.SNHMemberPortal.grantMemberRole(row.member_id, select.value); var granted = select.value; await onMemberAdminPanelShown(true); memberAdminStatus.textContent = "Role " + granted + " granted to " + adminMemberName(row) + "."; }
         catch (err) { memberAdminStatus.textContent = "Role grant failed: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err); grantButton.disabled = false; grantButton.textContent = "Grant role"; }
@@ -1293,6 +1297,15 @@
 
     onMemberAdminPanelShown = async function (quiet) {
       if (!quiet) memberAdminStatus.textContent = "Loading…";
+      if (!currentAdminMemberId) {
+        try {
+          var adminProfile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);
+          currentAdminMemberId = adminProfile.id || null;
+        } catch (err) {
+          // Keep membership upkeep available; hide administrator removal until identity is known.
+          currentAdminMemberId = null;
+        }
+      }
       var stats = await window.SNHMemberPortal.fetchMemberAdminStats();
       var rows = await window.SNHMemberPortal.listMembersForAdmin();
       if (!stats || rows == null) { memberAdminStatus.textContent = "Could not load member data."; return; }
