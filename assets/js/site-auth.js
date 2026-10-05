@@ -2,12 +2,86 @@
   var sessionPromise = null;
   var rolesPromiseByUserId = Object.create(null);
 
+  var ROLE_CATALOG = Object.freeze({
+    club_admin: Object.freeze({
+      displayName: "Website Administrator",
+      domain: "website",
+      level: "admin",
+      assignable: true,
+      inherits: Object.freeze(["membership_admin", "events_admin", "photos_admin", "games_admin"])
+    }),
+    membership_editor: Object.freeze({
+      displayName: "Membership Editor",
+      domain: "membership",
+      level: "editor",
+      assignable: true,
+      inherits: Object.freeze([])
+    }),
+    membership_admin: Object.freeze({
+      displayName: "Membership Admin",
+      domain: "membership",
+      level: "admin",
+      assignable: true,
+      inherits: Object.freeze(["membership_editor"])
+    }),
+    events_editor: Object.freeze({
+      displayName: "Events Editor",
+      domain: "events",
+      level: "editor",
+      assignable: true,
+      inherits: Object.freeze([])
+    }),
+    events_admin: Object.freeze({
+      displayName: "Events Admin",
+      domain: "events",
+      level: "admin",
+      assignable: true,
+      inherits: Object.freeze(["events_editor"])
+    }),
+    photos_editor: Object.freeze({
+      displayName: "Photos Editor",
+      domain: "photos",
+      level: "editor",
+      assignable: true,
+      inherits: Object.freeze([])
+    }),
+    photos_admin: Object.freeze({
+      displayName: "Photos Admin",
+      domain: "photos",
+      level: "admin",
+      assignable: true,
+      inherits: Object.freeze(["photos_editor"])
+    }),
+    games_editor: Object.freeze({
+      displayName: "Games Editor",
+      domain: "games",
+      level: "editor",
+      assignable: true,
+      inherits: Object.freeze([])
+    }),
+    games_admin: Object.freeze({
+      displayName: "Games Admin",
+      domain: "games",
+      level: "admin",
+      assignable: true,
+      inherits: Object.freeze(["games_editor"])
+    }),
+    website_volunteer: Object.freeze({
+      displayName: "Website Volunteer",
+      domain: "website",
+      level: "volunteer",
+      assignable: false,
+      inherits: Object.freeze([])
+    })
+  });
+
   var ROLE_GROUPS = Object.freeze({
     MEMBERSHIP_MANAGE_ACCESS: Object.freeze(["membership_editor", "membership_admin", "club_admin"]),
     EVENTS_MANAGE_ACCESS: Object.freeze(["events_editor", "events_admin", "club_admin"]),
     EVENTS_DELETE_ACCESS: Object.freeze(["events_admin", "club_admin"]),
     PHOTOS_ACCESS: Object.freeze(["photos_editor", "photos_admin", "club_admin"]),
-    GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"])
+    GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"]),
+    WEBSITE_VOLUNTEER_ACCESS: Object.freeze(["website_volunteer"])
   });
 
   var CAPABILITY_ROLES = Object.freeze({
@@ -15,7 +89,8 @@
     "events.manage": ROLE_GROUPS.EVENTS_MANAGE_ACCESS,
     "events.delete": ROLE_GROUPS.EVENTS_DELETE_ACCESS,
     "photos.manage": ROLE_GROUPS.PHOTOS_ACCESS,
-    "games.manage": ROLE_GROUPS.GAMES_ACCESS
+    "games.manage": ROLE_GROUPS.GAMES_ACCESS,
+    "website.volunteer": ROLE_GROUPS.WEBSITE_VOLUNTEER_ACCESS
   });
 
   function getClient() {
@@ -109,13 +184,43 @@
     return rolesPromiseByUserId[userId];
   }
 
+  function getEffectiveRoles(assignedRoles) {
+    var assigned = Array.isArray(assignedRoles) ? assignedRoles : [];
+    var effective = [];
+
+    function addRole(roleSlug) {
+      if (effective.indexOf(roleSlug) !== -1) return;
+      effective.push(roleSlug);
+      if (!Object.prototype.hasOwnProperty.call(ROLE_CATALOG, roleSlug)) return;
+      var role = ROLE_CATALOG[roleSlug];
+      for (var i = 0; i < role.inherits.length; i += 1) {
+        addRole(role.inherits[i]);
+      }
+    }
+
+    for (var i = 0; i < assigned.length; i += 1) {
+      var roleSlug = assigned[i];
+      if (
+        typeof roleSlug === "string" &&
+        Object.prototype.hasOwnProperty.call(ROLE_CATALOG, roleSlug) &&
+        ROLE_CATALOG[roleSlug].assignable
+      ) {
+        addRole(roleSlug);
+      }
+    }
+    if (effective.length) {
+      effective.push("website_volunteer");
+    }
+    return effective;
+  }
+
   function memberHasAnyRole(userRoles, requiredRoles) {
     var req = Array.isArray(requiredRoles)
       ? requiredRoles
       : String(requiredRoles || "").split(",");
     req = req.map(function (role) { return String(role).trim(); }).filter(Boolean);
     if (!req.length) return true;
-    var roles = userRoles || [];
+    var roles = getEffectiveRoles(userRoles);
     return req.some(function (role) { return roles.indexOf(role) !== -1; });
   }
 
@@ -129,6 +234,7 @@
   }
 
   window.SNHSiteAuth = {
+    ROLE_CATALOG: ROLE_CATALOG,
     ROLE_GROUPS: ROLE_GROUPS,
     CAPABILITY_ROLES: CAPABILITY_ROLES,
     getSession: getSession,
@@ -137,6 +243,7 @@
     signOut: signOut,
     requireAuth: requireAuth,
     fetchMemberRoles: fetchMemberRoles,
+    getEffectiveRoles: getEffectiveRoles,
     memberHasAnyRole: memberHasAnyRole,
     rolesToCsv: rolesToCsv,
     can: can,
