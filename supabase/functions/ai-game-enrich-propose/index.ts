@@ -111,23 +111,37 @@ Deno.serve(async (req) => {
       return json({ ok: false, error: "Missing bearer token" }, 401);
     }
 
-    const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
-    const authResult = await admin.auth.getUser(jwt);
-    if (authResult.error || !authResult.data.user) {
-      return json({ ok: false, error: "Invalid auth token" }, 401);
+    let userClient: ReturnType<typeof createClient>;
+    let actorUserId: string;
+    try {
+      userClient = createClient(supabaseUrl, mustEnv("SUPABASE_ANON_KEY"), {
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false },
+      });
+      const authResult = await userClient.auth.getUser(jwt);
+      if (authResult.error || !authResult.data.user) {
+        return json({ ok: false, error: "Invalid auth token" }, 401);
+      }
+      actorUserId = authResult.data.user.id;
+    } catch {
+      return json({ ok: false, error: "Authentication check failed" }, 500);
     }
-    const actorUserId = authResult.data.user.id;
 
     const body = (await req.json()) as EnrichmentRequest;
     if (!body || !body.gameId) {
       return json({ ok: false, error: "gameId is required" }, 400);
     }
 
-    const canAccess = await userHasAnyRole(admin, actorUserId, ["games_editor", "games_admin", "club_admin"]);
-    if (!canAccess) {
-      return json({ ok: false, error: "Not authorized for game enrichment" }, 403);
+    try {
+      const { data: canAccess, error: accessError } = await userClient.rpc("snh_member_has_games_access");
+      if (accessError || canAccess !== true) {
+        return json({ ok: false, error: "Not authorized for game enrichment" }, 403);
+      }
+    } catch {
+      return json({ ok: false, error: "Authorization check failed" }, 500);
     }
 
+    const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
     const game = await loadGame(admin, body.gameId);
     if (!game) {
       return json({ ok: false, error: "Game not found" }, 404);
@@ -189,23 +203,6 @@ function json(body: Json | Record<string, unknown>, status = 200): Response {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
-}
-
-async function userHasAnyRole(
-  admin: ReturnType<typeof createClient>,
-  userId: string,
-  roleSlugs: string[],
-): Promise<boolean> {
-  const memberRes = await admin.from("members").select("id").eq("user_id", userId).maybeSingle();
-  if (memberRes.error || !memberRes.data?.id) return false;
-  const rolesRes = await admin
-    .from("member_roles")
-    .select("role_slug")
-    .eq("member_id", memberRes.data.id)
-    .in("role_slug", roleSlugs)
-    .limit(1);
-  if (rolesRes.error) return false;
-  return (rolesRes.data || []).length > 0;
 }
 
 async function loadGame(admin: ReturnType<typeof createClient>, gameId: string): Promise<GameRow | null> {
