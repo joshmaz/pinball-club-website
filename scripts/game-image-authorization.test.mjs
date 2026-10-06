@@ -46,6 +46,8 @@ test('real image RPCs preserve Editor management and require admin deletion', as
       insert into members values('${uid(1)}','${uid(1)}'),('${uid(2)}','${uid(2)}'),('${uid(3)}','${uid(3)}');
       insert into member_roles values('${uid(1)}','games_editor'),('${uid(2)}','games_admin'),('${uid(3)}','club_admin');`);
     await db.exec(between(catalog, 'create or replace function public.snh_member_has_games_access()', 'create schema if not exists private;'));
+    await db.exec(await read('supabase/migrations/20260928230000_canonical_effective_role_core.sql'));
+    await db.exec(await read('supabase/migrations/20260928235000_domain_helpers_use_effective_roles.sql'));
     await db.exec(images.slice(0, images.indexOf('-- Preserve every existing')));
     await db.exec(between(images, 'create or replace function public.snh_game_images_upsert(', 'create or replace function public.snh_game_images_import_opdb('));
     // Execute the actual replacement RPC; Storage service policy is source-tested above.
