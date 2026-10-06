@@ -1,9 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  entriesByOpdbId,
-  imageImportsForEntry,
-} from "../supabase/functions/_shared/opdb-images.ts";
+import { readFile } from "node:fs/promises";
+import ts from "typescript";
+
+// Match the Pinball Map acceptance harness without requiring Node TS loading.
+const source = await readFile(new URL("../supabase/functions/_shared/opdb-images.ts", import.meta.url), "utf8");
+const code = ts.transpileModule(source.replace(/^export /gm, ""), {
+  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
+}).outputText;
+const { entriesByOpdbId, imageImportsForEntry } = new Function(
+  code + "\nreturn { entriesByOpdbId, imageImportsForEntry };",
+)();
 
 test("imageImportsForEntry uses explicit OPDB fields and prefers the large URL", () => {
   const rows = imageImportsForEntry({
@@ -56,4 +63,3 @@ test("entriesByOpdbId indexes machines and aliases once", () => {
   assert.equal(entries.get("G-one").name, "One");
   assert.equal(entries.get("G-two-A-one").name, "Two alias");
 });
-

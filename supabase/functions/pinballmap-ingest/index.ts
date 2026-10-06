@@ -9,7 +9,7 @@ import {
 } from "./merge.ts";
 import { importOpdbImages } from "../_shared/opdb-images.ts";
 
-import { authorizeIngest, GAMES_INGEST_ROLES, ingestMethodResponse } from "./auth.ts";
+import { authorizeIngest, ingestMethodResponse } from "./auth.ts";
 
 const LOCATION_DEFAULT = 8908;
 
@@ -62,22 +62,25 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Created lazily only on the manual path; scheduler auth needs no member client.
+    let userClient: ReturnType<typeof createClient> | undefined;
     const authorization = await authorizeIngest(req, {
       schedulerSecret: Deno.env.get("PINBALLMAP_INGEST_SCHEDULER_SECRET"),
       getUser: async (bearer) => {
-        const verifier = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
-        const result = await verifier.auth.getUser(bearer);
+        const anonKey = (Deno.env.get("SUPABASE_ANON_KEY") || "").trim();
+        if (!anonKey) throw new Error("Missing caller client configuration");
+        userClient = createClient(supabaseUrl, anonKey, {
+          global: { headers: { Authorization: `Bearer ${bearer}` } },
+          auth: { persistSession: false },
+        });
+        const result = await userClient.auth.getUser(bearer);
         return result.error ? null : result.data.user?.id || null;
       },
-      hasGamesAccess: async (userId) => {
-        const verifier = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
-        const roles = await verifier.from("members")
-          .select("id,member_roles!inner(role_slug)")
-          .eq("user_id", userId)
-          .in("member_roles.role_slug", GAMES_INGEST_ROLES)
-          .limit(1);
-        if (roles.error) throw new Error("Role lookup failed");
-        return !!roles.data?.length;
+      hasGamesAccess: async () => {
+        if (!userClient) return false;
+        const { data: allowed, error } = await userClient.rpc("snh_member_has_games_access");
+        if (error) throw new Error("Games authorization check failed");
+        return allowed === true;
       },
     });
     if (!authorization.ok) return jsonResponse({ ok: false, error: authorization.error }, authorization.status);

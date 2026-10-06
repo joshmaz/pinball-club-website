@@ -44,17 +44,28 @@ Deno.serve(async (req) => {
     const url = (Deno.env.get("SUPABASE_URL") || "").trim();
     const key = elevatedKey();
     if (!url || !key) throw new Error("Supabase function is not configured");
-    const admin = createClient(url, key, { auth: { persistSession: false } });
-    const auth = await admin.auth.getUser(jwt);
-    if (auth.error || !auth.data.user) return json({ error: "Invalid session" }, 401);
-    const roles = await admin.from("members")
-      .select("id,member_roles!inner(role_slug)")
-      .eq("user_id", auth.data.user.id)
-      .in("member_roles.role_slug", ["events_editor", "events_admin", "club_admin"])
-      .limit(1);
-    if (roles.error) throw new Error("Could not check event editor access");
-    if (!roles.data?.length) return json({ error: "Event editor access required" }, 403);
+    let userClient: ReturnType<typeof createClient>;
+    try {
+      const anonKey = (Deno.env.get("SUPABASE_ANON_KEY") || "").trim();
+      if (!anonKey) return json({ error: "Authentication check failed" }, 500);
+      userClient = createClient(url, anonKey, {
+        global: { headers: { Authorization: bearer } },
+        auth: { persistSession: false },
+      });
+      const auth = await userClient.auth.getUser(jwt);
+      if (auth.error || !auth.data.user) return json({ error: "Invalid session" }, 401);
+    } catch {
+      return json({ error: "Authentication check failed" }, 500);
+    }
+    try {
+      const { data: allowed, error } = await userClient.rpc("snh_member_has_events_access");
+      if (error) return json({ error: "Could not check event editor access" }, 500);
+      if (allowed !== true) return json({ error: "Event editor access required" }, 403);
+    } catch {
+      return json({ error: "Could not check event editor access" }, 500);
+    }
 
+    const admin = createClient(url, key, { auth: { persistSession: false } });
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (!token) return json({ error: "MatchPlay API token is not configured" }, 503);
     const getCached = createMatchplayCache(admin, token);

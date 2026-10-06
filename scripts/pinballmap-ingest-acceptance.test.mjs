@@ -52,7 +52,7 @@ test('manual and scheduled runs use one overall audit row with counts, status an
   assert.match(edge, /await authorizeIngest\(req/);
   assert.match(edge, /auth\.getUser\(bearer\)/);
   assert.match(edge, /const manualActorUserId = authorization\.manualActorUserId/);
-  assert.match(edge, /member_roles!inner\(role_slug\)/);
+  // Caller-JWT authorization and SQL inheritance are exercised by interactive-edge-auth.test.mjs.
   assert.match(edge, /if \(manualActorUserId\) \(payload as Record<string, unknown>\)\.manual_actor_user_id = manualActorUserId/);
   assert.match(sql, /'games', 'import', nullif\(p_payload->>'manual_actor_user_id', ''\)::uuid/);
   assert.match(sql, /'pinballmap_ingest', v_loc::text/);

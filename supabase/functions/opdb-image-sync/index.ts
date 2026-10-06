@@ -36,21 +36,27 @@ Deno.serve(async (req) => {
     if (!supabaseUrl || !elevatedKey) throw new Error("Missing Supabase Edge Function configuration");
     if (!jwt) return json({ ok: false, error: "Missing bearer token" }, 401);
 
-    const admin = createClient(supabaseUrl, elevatedKey, { auth: { persistSession: false } });
-    const authResult = await admin.auth.getUser(jwt);
-    const user = authResult.data.user;
-    if (authResult.error || !user) return json({ ok: false, error: "Invalid auth token" }, 401);
-
-    const roles = await admin
-      .from("members")
-      .select("id,member_roles!inner(role_slug)")
-      .eq("user_id", user.id)
-      .in("member_roles.role_slug", ["games_editor", "games_admin", "club_admin"])
-      .limit(1);
-    if (roles.error || !(roles.data || []).length) {
-      return json({ ok: false, error: "Not authorized for game image sync" }, 403);
+    let userClient: ReturnType<typeof createClient>;
+    try {
+      const anonKey = (Deno.env.get("SUPABASE_ANON_KEY") || "").trim();
+      if (!anonKey) return json({ ok: false, error: "Authentication check failed" }, 500);
+      userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false },
+      });
+      const authResult = await userClient.auth.getUser(jwt);
+      if (authResult.error || !authResult.data.user) return json({ ok: false, error: "Invalid auth token" }, 401);
+    } catch {
+      return json({ ok: false, error: "Authentication check failed" }, 500);
+    }
+    try {
+      const { data: allowed, error } = await userClient.rpc("snh_member_has_games_access");
+      if (error || allowed !== true) return json({ ok: false, error: "Not authorized for game image sync" }, 403);
+    } catch {
+      return json({ ok: false, error: "Authorization check failed" }, 500);
     }
 
+    const admin = createClient(supabaseUrl, elevatedKey, { auth: { persistSession: false } });
     const body = await req.json() as { gameId?: string };
     if (!body.gameId) return json({ ok: false, error: "gameId is required" }, 400);
     const game = await admin

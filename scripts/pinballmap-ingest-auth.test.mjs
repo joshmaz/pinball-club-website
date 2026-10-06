@@ -10,9 +10,9 @@ const authSource = await readFile(new URL('../supabase/functions/pinballmap-inge
 const authCode = ts.transpileModule(authSource.replace(/^import .*;\n/gm, '').replace(/^export /gm, ''), {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
 }).outputText;
-const { authorizeIngest, GAMES_INGEST_ROLES, ingestMethodResponse, SCHEDULER_HEADER } = new Function(
+const { authorizeIngest, ingestMethodResponse, SCHEDULER_HEADER } = new Function(
   'createHash', 'timingSafeEqual',
-  authCode + '\nreturn { authorizeIngest, GAMES_INGEST_ROLES, ingestMethodResponse, SCHEDULER_HEADER };',
+  authCode + '\nreturn { authorizeIngest, ingestMethodResponse, SCHEDULER_HEADER };',
 )(createHash, timingSafeEqual);
 
 // Fixed test fixture, not a deployment credential.
@@ -34,15 +34,14 @@ async function authorize(headers, options = {}) {
     hasGamesAccess: async id => {
       calls.push(['roles', id]);
       if (options.roleError) throw new Error('private database details');
-      return (options.roles || []).some(role => GAMES_INGEST_ROLES.includes(role));
+      return options.allowed ?? false;
     },
   });
   return { result, calls };
 }
 
-test('scheduler header contract and exact Games role set', () => {
+test('scheduler header contract', () => {
   assert.equal(SCHEDULER_HEADER, 'x-pinballmap-scheduler-secret');
-  assert.deepEqual(GAMES_INGEST_ROLES, ['games_editor', 'games_admin', 'club_admin']);
 });
 
 test('missing, malformed, public-key and matching-header credentials cannot bypass authentication', async () => {
@@ -58,14 +57,12 @@ test('missing, malformed, public-key and matching-header credentials cannot bypa
   }
 });
 
-test('each inherited Games role authorizes the verified actor; unrelated or absent roles do not', async () => {
-  for (const role of GAMES_INGEST_ROLES) {
-    const { result, calls } = await authorize({ Authorization: 'Bearer valid-user-jwt', apikey: 'valid-user-jwt' }, { roles: [role], secret: '' });
-    assert.deepEqual(result, { ok: true, manualActorUserId: 'verified-user' });
-    assert.deepEqual(calls, [['user', 'valid-user-jwt'], ['roles', 'verified-user']]);
-  }
-  for (const roles of [[], ['events_admin'], ['membership_admin'], ['photos_editor'], ['website_volunteer']]) {
-    assert.equal((await authorize({ Authorization: 'Bearer valid-user-jwt' }, { roles })).result.status, 403);
+test('manual authorization requires exactly true from the backend dependency', async () => {
+  const { result, calls } = await authorize({ Authorization: 'Bearer valid-user-jwt' }, { allowed: true, secret: '' });
+  assert.deepEqual(result, { ok: true, manualActorUserId: 'verified-user' });
+  assert.deepEqual(calls, [['user', 'valid-user-jwt'], ['roles', 'verified-user']]);
+  for (const allowed of [false, null, 'true', 1, [], {}]) {
+    assert.equal((await authorize({ Authorization: 'Bearer valid-user-jwt' }, { allowed })).result.status, 403);
   }
 });
 
@@ -75,12 +72,12 @@ test('scheduler mode wins and never consults user authentication, even with a us
     assert.deepEqual(await authorize(headers), { result: { ok: true, manualActorUserId: null }, calls: [] });
   }
   for (const supplied of ['', 'wrong', 'public-anon-key', 'sb_publishable_public']) {
-    const { result, calls } = await authorize({ [SCHEDULER_HEADER]: supplied, Authorization: 'Bearer valid-user-jwt' }, { roles: ['club_admin'] });
+    const { result, calls } = await authorize({ [SCHEDULER_HEADER]: supplied, Authorization: 'Bearer valid-user-jwt' }, { allowed: true });
     assert.equal(result.status, 401);
     assert.deepEqual(calls, []);
   }
   for (const configured of ['', '   ']) {
-    const { result, calls } = await authorize({ [SCHEDULER_HEADER]: secret, Authorization: 'Bearer valid-user-jwt' }, { secret: configured, roles: ['club_admin'] });
+    const { result, calls } = await authorize({ [SCHEDULER_HEADER]: secret, Authorization: 'Bearer valid-user-jwt' }, { secret: configured, allowed: true });
     assert.equal(result.status, 503);
     assert.deepEqual(calls, []);
   }
@@ -100,7 +97,7 @@ test('authentication and role lookup errors fail closed without leaking details'
 });
 
 // Execute the real entrypoint with local dependencies: no network or Deno server.
-async function handlerFixture({ roles = [], schedulerSecret = secret, roleError = false } = {}) {
+async function handlerFixture({ allowed = false, schedulerSecret = secret, roleError = false } = {}) {
   let handler;
   const effects = [];
   const source = await readFile(new URL('../supabase/functions/pinballmap-ingest/index.ts', import.meta.url), 'utf8');
@@ -110,22 +107,29 @@ async function handlerFixture({ roles = [], schedulerSecret = secret, roleError 
   const db = {
     auth: { getUser: async token => ({ data: { user: token === 'valid-user-jwt' ? { id: 'verified-user' } : null }, error: null }) },
     from: table => {
-      if (table !== 'members') effects.push(['read', table]);
-      const query = {
-        select: () => query, eq: () => query,
-        in: (_column, allowed) => { assert.deepEqual(Array.from(allowed), GAMES_INGEST_ROLES); return query; },
-        limit: async () => ({ data: roles.some(role => GAMES_INGEST_ROLES.includes(role)) ? [{}] : [], error: roleError ? {} : null }),
-        then: resolve => Promise.resolve({ data: [], error: null }).then(resolve),
-      };
-      return query;
+      effects.push(['read', table]);
+      return { select: async () => ({ data: [], error: null }) };
     },
     rpc: async (name, args) => { effects.push(['rpc', name, args]); return { data: { ok: true }, error: null }; },
   };
-  const env = { SUPABASE_URL: 'https://example.test', SUPABASE_SERVICE_ROLE_KEY: 'test-service-key', PINBALLMAP_API_TOKEN: 'test-provider-key', PINBALLMAP_INGEST_SCHEDULER_SECRET: schedulerSecret };
+  const env = { SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'test-anon-key', SUPABASE_SERVICE_ROLE_KEY: 'test-service-key', PINBALLMAP_API_TOKEN: 'test-provider-key', PINBALLMAP_INGEST_SCHEDULER_SECRET: schedulerSecret };
   vm.runInNewContext(code, {
     Deno: { serve: callback => { handler = callback; }, env: { get: name => env[name] } },
-    Response, URL, authorizeIngest, GAMES_INGEST_ROLES, ingestMethodResponse,
-    createClient: () => db,
+    Response, URL, authorizeIngest, ingestMethodResponse,
+    createClient: (_url, key, opts) => {
+      if (key === 'test-anon-key') {
+        assert.ok(opts.global.headers.Authorization.startsWith('Bearer '));
+        return {
+          auth: db.auth,
+          rpc: async name => {
+            assert.equal(name, 'snh_member_has_games_access');
+            return { data: allowed, error: roleError ? {} : null };
+          },
+        };
+      }
+      effects.push(['service-client']);
+      return db;
+    },
     fetch: async () => { effects.push(['fetch']); return { ok: true, json: async () => ({ user_submissions: [], machines: [] }) }; },
     buildPinballRpcPayload: () => ({ location_id: 8908, updates: [], creates: [] }),
     buildPinballConditionPayload: () => ({ rows: [] }),
@@ -140,7 +144,7 @@ test('real handler rejects unauthorized requests before all ingestion side effec
     [{ Authorization: 'Bearer public-anon-key', apikey: 'public-anon-key' }, {}, 401],
     [{ Authorization: 'Bearer valid-user-jwt' }, {}, 403],
     [{ Authorization: 'Bearer valid-user-jwt' }, { roleError: true }, 503],
-    [{ [SCHEDULER_HEADER]: 'wrong', Authorization: 'Bearer valid-user-jwt' }, { roles: ['club_admin'] }, 401],
+    [{ [SCHEDULER_HEADER]: 'wrong', Authorization: 'Bearer valid-user-jwt' }, { allowed: true }, 401],
     [{ [SCHEDULER_HEADER]: secret }, { schedulerSecret: '' }, 503],
   ]) {
     const { handler, effects } = await handlerFixture(options);
@@ -151,7 +155,7 @@ test('real handler rejects unauthorized requests before all ingestion side effec
 
 test('real handler preserves verified manual versus System attribution and ignores forged body actor', async () => {
   for (const scheduled of [false, true]) {
-    const { handler, effects } = await handlerFixture({ roles: ['games_admin'] });
+    const { handler, effects } = await handlerFixture({ allowed: true });
     const response = await handler(request(scheduled ? { [SCHEDULER_HEADER]: secret } : { Authorization: 'Bearer valid-user-jwt' }));
     assert.equal(response.status, 200);
     const payload = effects.find(effect => effect[0] === 'rpc')[2].p_payload;

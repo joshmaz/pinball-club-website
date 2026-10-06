@@ -1,7 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
 export const SCHEDULER_HEADER = "x-pinballmap-scheduler-secret";
-export const GAMES_INGEST_ROLES = ["games_editor", "games_admin", "club_admin"];
 
 type Dependencies = {
   schedulerSecret: string | undefined;
@@ -61,7 +60,7 @@ export async function authorizeIngest(req: Request, deps: Dependencies): Promise
   }
   if (!userId) return { ok: false, status: 401, error: "Invalid user token" };
   try {
-    if (!await deps.hasGamesAccess(userId)) {
+    if (await deps.hasGamesAccess(userId) !== true) {
       return { ok: false, status: 403, error: "Games access required" };
     }
   } catch {
