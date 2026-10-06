@@ -716,32 +716,28 @@
     });
     if (upload.error) throw upload.error;
 
-    try {
-      var publicResult = client.storage.from("game-images").getPublicUrl(storagePath);
-      var publicUrl = publicResult && publicResult.data ? publicResult.data.publicUrl : "";
-      if (!publicUrl) throw new Error("Supabase did not return a public image URL.");
+    // A failed response may follow a committed association. Never delete on failure.
+    var publicResult = client.storage.from("game-images").getPublicUrl(storagePath);
+    var publicUrl = publicResult && publicResult.data ? publicResult.data.publicUrl : "";
+    if (!publicUrl) throw new Error("Supabase did not return a public image URL.");
 
-      return await gameImageUpsert(null, gameId, {
-        sourceType: "club",
-        sourceKey: "storage:" + storagePath,
-        locationType: "remote_url",
-        locationValue: publicUrl,
-        imageType: "game_photo",
-        altText: fields && fields.altText ? fields.altText : null,
-        usageStatus: "approved",
-        makePrimary: !fields || fields.makePrimary !== false,
-        metadata: {
-          storageBucket: "game-images",
-          storagePath: storagePath,
-          originalFilename: file.name,
-          contentType: file.type,
-          sizeBytes: file.size
-        }
-      });
-    } catch (err) {
-      await client.storage.from("game-images").remove([storagePath]);
-      throw err;
-    }
+    return await gameImageUpsert(null, gameId, {
+      sourceType: "club",
+      sourceKey: "storage:" + storagePath,
+      locationType: "remote_url",
+      locationValue: publicUrl,
+      imageType: "game_photo",
+      altText: fields && fields.altText ? fields.altText : null,
+      usageStatus: "approved",
+      makePrimary: !fields || fields.makePrimary !== false,
+      metadata: {
+        storageBucket: "game-images",
+        storagePath: storagePath,
+        originalFilename: file.name,
+        contentType: file.type,
+        sizeBytes: file.size
+      }
+    });
   }
 
   async function gameImageDeleteUploaded(gameId, imageId) {
