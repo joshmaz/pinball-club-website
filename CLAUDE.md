@@ -119,6 +119,7 @@ RBAC for the **member portal** (`members.html`): which extra sidebar sections (E
 **Constraints**
 
 - UNIQUE (`member_id`, `role_slug`)
+- `role_slug` must match the identifier format and one of the nine canonical assignable roles; derived Website Volunteer status is not stored.
 
 **RLS**
 
@@ -144,7 +145,9 @@ Grant and revoke RPCs additionally call `snh_member_can_assign_role(text)`: Memb
 | `snh_grant_member_role(p_member_id, p_role_slug)` | Inserts role (idempotent on conflict). |
 | `snh_revoke_member_role(p_member_id, p_role_slug)` | Deletes role row. |
 
-`SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES` derives from assignable entries in `SNHSiteAuth.ROLE_CATALOG`. Keep these entries aligned with the SQL `snh_is_assignable_member_role` allowlist. The table check only validates slug format. Unknown identifiers and derived `website_volunteer` status are never assignable through the RPCs or UI.
+`SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES` derives from assignable entries in `SNHSiteAuth.ROLE_CATALOG`. Keep these entries aligned with the SQL `snh_is_assignable_member_role` allowlist and the nine-role `member_roles_canonical_role` table constraint. The table enforces both slug format and canonical identifiers, including for privileged writes. Unknown identifiers and derived `website_volunteer` status cannot be persisted. Website Volunteer/helper authority requires a recognized assignable role.
+
+Before applying [canonical persisted-role hardening](supabase/migrations/20260928220000_canonical_persisted_member_roles.sql), run its commented read-only inventory query. Existing noncanonical assignments cause constraint validation to fail and require explicit review; the migration does not translate or delete them.
 
 **Bootstrap first admin**
 

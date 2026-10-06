@@ -29,7 +29,8 @@ try {
     '20260508153118_manual_membership_admin_rpcs.sql',
     '20260921140000_member_role_scope.sql',
     '20260921150000_membership_door_access.sql',
-    '20260928200000_membership_role_delegation.sql'
+    '20260928200000_membership_role_delegation.sql',
+    '20260928220000_canonical_persisted_member_roles.sql'
   ]) await migration(name);
   for (let n = 1; n <= 4; n++) {
     await db.query('insert into members(id,user_id) values ($1,$1)', [uid(n)]);
