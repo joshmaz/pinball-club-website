@@ -36,7 +36,7 @@
       let currentIndex = 0;
       function showCurrent() {
         const g = all[currentIndex];
-        imgElement.src = resolveImage(g);
+        window.SNHGameImages.apply(imgElement, g.primaryImage, false);
         imgElement.alt = g.title + ", pinball machine from the club collection";
       }
       showCurrent();

@@ -70,6 +70,7 @@ function resolveGameImage(game) {
   if (normalized && typeof normalized === "object" && hasNonemptyString(normalized.url)) {
     return {
       url: String(normalized.url).trim(),
+      variants: normalized.variants,
       altText: hasNonemptyString(normalized.altText) ? String(normalized.altText).trim() : String(game.title || ""),
       sourceType: hasNonemptyString(normalized.sourceType) ? String(normalized.sourceType).trim() : "external",
       attributionText: hasNonemptyString(normalized.attributionText) ? String(normalized.attributionText).trim() : "",
@@ -85,7 +86,7 @@ function resolveGameImage(game) {
   return null;
 }
 
-function createGameImageFigure(game) {
+function createGameImageFigure(game, detail = false) {
   const selected = resolveGameImage(game);
   if (!selected) return null;
 
@@ -93,7 +94,7 @@ function createGameImageFigure(game) {
   figure.className = "game-card-figure";
   const image = document.createElement("img");
   image.className = "game-card-image";
-  image.src = selected.url;
+  window.SNHGameImages.apply(image, selected, detail);
   image.alt = selected.altText;
   image.loading = "lazy";
   image.decoding = "async";
@@ -764,7 +765,7 @@ function renderGameProfile(game, payload, error) {
 
   const overview = document.createElement("div");
   overview.className = "games-profile-panel";
-  const figure = createGameImageFigure(game);
+  const figure = createGameImageFigure(game, true);
   if (hasNonemptyString(game.details)) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";

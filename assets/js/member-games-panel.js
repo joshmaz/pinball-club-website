@@ -523,6 +523,8 @@
           })
         );
       }
+      var preview = card.querySelector("img");
+      if (preview) window.SNHGameImages.apply(preview, imageRow, false);
       var sourceLabel = imageRow.sourceType === "club" ? "Club-owned" : String(imageRow.sourceType || "External").toUpperCase();
       var isUploadedClubImage = imageRow.sourceType === "club" && imageRow.metadata && imageRow.metadata.storagePath;
       if (isUploadedClubImage) sourceLabel += " upload";

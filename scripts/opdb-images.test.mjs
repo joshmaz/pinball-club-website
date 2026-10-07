@@ -27,7 +27,7 @@ test("imageImportsForEntry uses explicit OPDB fields and prefers the large URL",
           medium: "https://img.opdb.org/test-medium.jpg",
           large: "https://img.opdb.org/test-large.jpg",
         },
-        sizes: { large: { width: 900, height: 1200 } },
+        sizes: { small: { width: 225, height: 300 }, medium: { width: 450, height: 600 }, large: { width: 900, height: 1200 } },
       },
     ],
   });
@@ -39,6 +39,7 @@ test("imageImportsForEntry uses explicit OPDB fields and prefers the large URL",
   assert.equal(rows[0].imageType, "playfield");
   assert.equal(rows[0].metadata.width, 900);
   assert.equal(rows[0].metadata.rightsReviewed, false);
+  assert.deepEqual(rows[0].metadata.deliveryVariants.map(v => v.width), [225, 450, 900]);
 });
 
 test("imageImportsForEntry does not crawl unrelated URLs", () => {
