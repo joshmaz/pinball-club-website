@@ -87,7 +87,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
   if (!apiKey || !from) return response({ error: "Live delivery configuration missing" }, 500);
 
   let sent = 0;
-  let canceled = 0;
+  const canceled = 0;
   let failed = 0;
   for (let i = 0; i < 10; i += 1) {
     const claim = await db.rpc("snh_claim_notification");
@@ -95,30 +95,18 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
     const job = (claim.data as Job[] | null)?.[0];
     if (!job) break;
 
-    // Removing a coordinator's role before dispatch stops their pending mail.
-    const roles = await db.from("member_roles").select("id")
-      .eq("member_id", job.recipient_member_id)
-      .in("role_slug", ["membership_editor", "membership_admin", "club_admin"]).limit(1);
-    let status: "sent" | "failed" | "canceled" = "failed";
-    let providerId: string | null = null;
-    let failure: string | null = null;
-    if (roles.error) {
-      failure = "Could not verify recipient role";
-    } else if (!roles.data?.length) {
-      status = "canceled";
-    } else {
-      const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id);
-      status = result.ok ? "sent" : "failed";
-      providerId = result.id || null;
-      failure = result.error || null;
-    }
+    // The explicit recipient was authorized at enqueue; role changes do not
+    // revoke delivery of an already-authorized message.
+    const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id);
+    const status = result.ok ? "sent" : "failed";
+    const providerId = result.id || null;
+    const failure = result.error || null;
     const finish = await db.rpc("snh_finish_notification", {
       p_id: job.id, p_lease_id: job.lease_id, p_status: status,
       p_provider_id: providerId, p_error: failure,
     });
     if (finish.error || !finish.data) return response({ error: "Could not record delivery result", sent, canceled, failed }, 500);
     if (status === "sent") sent++;
-    else if (status === "canceled") canceled++;
     else failed++;
   }
   return response({ mode, sent, canceled, failed });

@@ -149,7 +149,7 @@ Legend: **Yes** means the role is explicitly included by a corresponding code/da
 - No member/account deletion action or delete RPC gated by these roles was found in the Member Admin path reviewed; Member Tools currently exposes membership updates and role grant/revoke.
 - Role grant/revoke policy is enforced in `snh_member_can_assign_role()` in `20260921140000_member_role_scope.sql`: any Club Admin may grant/revoke any allowlisted role; otherwise either membership role may manage roles other than `club_admin` and `membership_admin`. A user with either membership role can therefore assign module-admin roles. The UI applies a matching filter, and the RPC checks again.
 - Member roles and memberships are audited by database triggers (`20260921121000_audit_member_admin_changes.sql`). A trigger prevents deleting/changing the final Club Admin and prevents a Club Admin from removing their own Club Admin role.
-- `membership_editor`/`membership_admin`/`club_admin` are recipient eligibility roles for the queued new-account/signup notification (`20260924130000_notification_foundation.sql` plus dispatcher role recheck). They do not authorize calling the dispatcher; dispatcher invocation uses a shared secret and service credentials.
+- `membership_editor`/`membership_admin`/`club_admin` are recipient eligibility roles for the queued new-account/signup notification (canonical effective Membership Editor eligibility at enqueue via [the forward migration](../supabase/migrations/20260928235800_notification_enqueue_authorization.sql); no dispatch-time role recheck). They do not authorize calling the dispatcher; dispatcher invocation uses a shared secret and service credentials.
 
 ### Operations, audit, and door access
 

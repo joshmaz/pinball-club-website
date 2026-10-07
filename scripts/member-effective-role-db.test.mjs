@@ -33,12 +33,12 @@ async function assertPolicy(userId, allowed, label) {
 }
 try {
   await db.exec(`
-    create role anon; create role authenticated;
+    create role anon; create role authenticated; create role service_role;
     create schema auth;
     create function auth.uid() returns uuid language sql as $$
       select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
     $$;
-    create table public.members(id uuid primary key, user_id uuid unique);
+    create table public.members(id uuid primary key, user_id uuid unique, email text, first_name text, last_name text, display_name text);
     grant usage on schema auth to authenticated;
     grant select on public.members to authenticated;
   `);
@@ -46,7 +46,8 @@ try {
     '20260423190000_create_member_roles.sql',
     '20260427201536_member_role_slug_allowlist.sql',
     '20260928220000_canonical_persisted_member_roles.sql',
-    '20260928230000_canonical_effective_role_core.sql'
+    '20260928230000_canonical_effective_role_core.sql',
+    '20260928235800_notification_enqueue_authorization.sql'
   ]) await migration(name);
   // Deliberately use different member IDs and auth user IDs.
   for (let n = 1; n <= 13; n++) {
@@ -99,6 +100,17 @@ try {
   assert.equal(properties.authenticated_execute, true);
   assert.equal(properties.anon_execute, false);
   assert.equal(properties.public_execute, false);
+  const internal = (await query(`select p.prosecdef,p.provolatile,p.proconfig,
+    has_function_privilege('authenticated',p.oid,'execute') as authenticated_execute,
+    has_function_privilege('anon',p.oid,'execute') as anon_execute,
+    has_function_privilege('service_role',p.oid,'execute') as service_execute
+    from pg_proc p where p.oid='private.snh_member_has_effective_role(uuid,text)'::regprocedure`))[0];
+  assert.deepEqual(internal, { prosecdef: true, provolatile: 's', proconfig: ['search_path=""'],
+    authenticated_execute: false, anon_execute: false, service_execute: false });
+  await db.exec('set role authenticated');
+  await assert.rejects(query("select private.snh_member_has_effective_role($1,'club_admin')", [uid(1)]),
+    error => error.code === '42501');
+  await db.exec('reset role');
   await db.exec('set role anon');
   await assert.rejects(query("select public.snh_member_has_effective_role('website_volunteer')"), error => error.code === '42501');
   await db.exec('reset role');
