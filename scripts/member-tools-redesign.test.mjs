@@ -29,6 +29,6 @@ test("directory has inline editing, paging, search, and discard protection", () 
   assert.match(html, /filtered\.slice\(\(adminPage - 1\) \* 25, adminPage \* 25\)/);
   assert.match(html, /Discard unsaved membership changes\?/);
   assert.match(html, /beforeunload/);
-  assert.match(html, /Remove role " \+ slug \+ " from " \+ adminMemberName\(row\)/);
+  assert.match(html, /rolePresentation\.removalMessage\(row\.role_slugs/);
   assert.match(html, /adminMayManageRole\(slug\)/);
 });

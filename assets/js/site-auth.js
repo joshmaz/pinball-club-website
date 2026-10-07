@@ -159,6 +159,18 @@
     return null;
   }
 
+  // Strict read for presentation: unavailable data must not look like zero assignments.
+  async function loadMemberRoles(userId) {
+    var client = getClient();
+    if (!client || !userId) throw new Error("Role information unavailable");
+    var member = await client.from("members").select("id").eq("user_id", userId).maybeSingle();
+    if (member.error) throw member.error;
+    if (!member.data || !member.data.id) return [];
+    var result = await client.from("member_roles").select("role_slug").eq("member_id", member.data.id);
+    if (result.error) throw result.error;
+    return (result.data || []).map(function (row) { return row && row.role_slug ? String(row.role_slug) : ""; }).filter(Boolean);
+  }
+
   async function fetchMemberRoles(userId, options) {
     options = options || {};
     if (!userId) return [];
@@ -168,14 +180,9 @@
       rolesPromiseByUserId[userId] = (async function () {
         var memberResult = await client.from("members").select("id").eq("user_id", userId).maybeSingle();
         if (memberResult.error || !memberResult.data || !memberResult.data.id) return [];
-        var rolesResult = await client
-          .from("member_roles")
-          .select("role_slug")
-          .eq("member_id", memberResult.data.id);
+        var rolesResult = await client.from("member_roles").select("role_slug").eq("member_id", memberResult.data.id);
         if (rolesResult.error) return [];
-        return (rolesResult.data || [])
-          .map(function (row) { return row && row.role_slug ? String(row.role_slug) : ""; })
-          .filter(Boolean);
+        return (rolesResult.data || []).map(function (row) { return row && row.role_slug ? String(row.role_slug) : ""; }).filter(Boolean);
       })().catch(function (err) {
         delete rolesPromiseByUserId[userId];
         throw err;
@@ -251,6 +258,7 @@
     signOut: signOut,
     requireAuth: requireAuth,
     fetchMemberRoles: fetchMemberRoles,
+    loadMemberRoles: loadMemberRoles,
     getEffectiveRoles: getEffectiveRoles,
     memberHasAnyRole: memberHasAnyRole,
     rolesToCsv: rolesToCsv,
