@@ -1,7 +1,8 @@
 # Supabase project config (partial). See https://supabase.com/docs/guides/cli/config
 
 [functions.pinballmap-ingest]
-# Invoked on a schedule with the service role from Supabase (no end-user JWT).
+# Handler verifies x-pinballmap-scheduler-secret for cron, or a user JWT plus Games access.
+# Scheduled calls have no user JWT; disabling the gateway check does not authorize ingestion.
 verify_jwt = false
 
 [functions.ai-game-enrich-propose]

@@ -54,10 +54,11 @@ Migrations:
 
 - `supabase/migrations/20260512120000_photos_rpcs.sql`
   - Editor RPCs: `snh_photo_albums_list_editor`,
-    `snh_photo_album_upsert`, `snh_photo_album_delete`,
+    `snh_photo_album_upsert`,
     `snh_photo_assets_list_editor`, `snh_photo_asset_set_metadata`,
     `snh_photo_asset_finalize_upload`, `snh_photo_asset_publish`,
-    `snh_photo_asset_unpublish`, `snh_photo_asset_delete`.
+    `snh_photo_asset_unpublish`.
+  - Admin-only RPCs: `snh_photo_album_delete`, `snh_photo_asset_delete`.
   - Service-only RPCs: `snh_photo_assets_create_pending`,
     `snh_photo_asset_record_variants`. Granted `execute` to service_role
     only.
@@ -143,8 +144,7 @@ derivatives never made it to the public bucket.
 | Delete asset                        | `photos_admin`, `club_admin`                      | RPC role check (admin)       |
 | Direct write to either bucket       | none (no policy)                                  | Storage policy               |
 
-UI gating in `members.html` mirrors these slugs but is not the security
-boundary.
+These assignments confer effective Photos access through canonical inheritance; `club_admin` displays as Website Administrator. See the [canonical policy](website-roles-and-authorization-policy.md). UI gating is not the security boundary.
 
 ## Threat model (for Phase 1.5 gate)
 
@@ -211,7 +211,7 @@ public site:
 ### Frontend integration tests
 
 - [ ] Member portal Photos panel hidden for members without `photos_*` / `club_admin` roles.
-- [ ] Editors can upload, finalize, publish, unpublish, regenerate, delete from the UI.
+- [ ] Editors can upload, finalize, publish, unpublish, and regenerate from the UI; album/asset deletion requires Photos Admin or Website Administrator.
 - [ ] Public homepage falls back to `data/highlights.json` when Supabase is unreachable or returns no published albums.
 
 ## Operational controls
@@ -272,7 +272,7 @@ Migrations:
 - `supabase/migrations/20260519091000_photo_albums_events_rpcs.sql`
   - Extends editor and public JSON with event and promo fields.
   - `snh_photo_album_upsert` accepts `eventId` and `displayAt` in `p_fields`;
-    only **published** events may be linked; **photos editors only** (same
+    only **published** events may be linked; **effective Photos Editor access** (same
     `snh_member_has_photos_access()` gate). When `event_id` on an album
     changes, promo roles on assets in that album are cleared.
   - `snh_photo_asset_set_metadata` accepts `excludeFromSlideshow` and

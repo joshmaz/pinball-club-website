@@ -46,10 +46,13 @@ The `notification-dispatch` Edge Function reads the outbox and sends through
 Resend. It requires an independent `NOTIFICATION_DISPATCH_SECRET` header. Its
 default mode is `preview`, which shows one queued message without consuming it.
 `test` sends that message only to `NOTIFICATION_TEST_EMAIL` with a test label and
-does not consume the queue. `live` claims up to ten messages per call, verifies
-that each recipient still holds a membership role, sends, and records the
-provider ID or an error. It retries failures at most three times during the
-first 24 hours. Resend's idempotency key uses the outbox ID for safe short-term
+does not consume the queue. `live` claims up to ten messages per call, sends to
+the queued recipient, and records the provider ID or an error. Recipient
+authorization occurs only at enqueue, using the canonical effective Membership
+Editor role. Removing a qualifying role afterward does not suppress already
+queued mail; removing it before the next signup prevents new mail for that
+recipient. The dispatcher retries failures at most three times during the first
+24 hours. Resend's idempotency key uses the outbox ID for safe short-term
 retries; delivery beyond that window is held for manual review.
 
 ### Activation

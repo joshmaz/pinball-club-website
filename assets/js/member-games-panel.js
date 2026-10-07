@@ -599,7 +599,7 @@
         });
         actions.appendChild(referenceBtn);
       }
-      if (isUploadedClubImage) {
+      if (isUploadedClubImage && hasDeleteAccess()) {
         var removeBtn = el("button", { type: "button", className: "members-sidebar-link member-games-image-remove" });
         removeBtn.textContent = "Remove uploaded photo";
         removeBtn.addEventListener("click", function () {
@@ -651,6 +651,12 @@
         ? "Club photo uploaded."
         : "Club photo uploaded and selected as primary.");
     } catch (err) {
+      // Reconcile a possibly committed association without masking the original failure.
+      try {
+        await refreshCurrentGameImages();
+      } catch (refreshError) {
+        // The original upload/association error remains the actionable failure.
+      }
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     } finally {
       imageUploadBusy = false;
@@ -664,7 +670,7 @@
   }
 
   async function onRemoveUploadedImage(imageRow) {
-    if (!currentGameId || !imageRow || !window.SNHMemberPortal) return;
+    if (!hasDeleteAccess() || !currentGameId || !imageRow || !window.SNHMemberPortal) return;
     if (!window.confirm("Remove this uploaded club photo? This also deletes its stored file.")) return;
     setStatus("Removing uploaded club photo…");
     try {

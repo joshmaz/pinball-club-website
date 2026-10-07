@@ -1,14 +1,23 @@
 # Member role scope follow-up
 
-The September 2026 role RPC migration restricts `club_admin` and `membership_admin` grants and revokes in the database. The existing allowlist and general Member Tools access remain in place.
+The [membership delegation migration](../supabase/migrations/20260928200000_membership_role_delegation.sql) separates role delegation from ordinary Member Tools access:
 
-A broader RBAC review should consider these existing scopes separately:
+- Membership Editor retains directory access and routine membership upkeep but cannot grant or revoke roles.
+- Membership Admin may grant/revoke Membership Editor and Events, Photos, and Games Editor/Admin roles.
+- Website Administrator (`club_admin`) may grant/revoke all nine assignable roles. Only this role may delegate Membership Admin or Website Administrator.
+- The existing trigger blocks self-removal of Website Administrator and removal of the last Website Administrator. These protections also cover direct deletion and guarded updates.
+- `website_volunteer` is derived; neither it nor unknown identifiers can be assigned through the RPCs. Existing stored role identifiers are unchanged.
 
-- `membership_editor` can still grant and revoke other allowlisted module admin roles, including `events_admin`, `photos_admin`, and `games_admin`. This patch intentionally preserves that established permission.
-- Any permitted role manager can revoke their own qualifying role. The present RPC checks authorization before mutation, but a club could lose its last administrator. Consider a last-admin guard.
-- Member Tools still returns the full directory, including email and roles, to all three membership management roles. Pagination and search here are client side; consider server side pagination and a narrower read scope for large clubs.
+The shared general membership-access helper is deliberately unchanged. Directory pagination and search remain client side; broader directory access changes are outside this slice.
 
-Direct RPC checks require a running local Supabase stack with seeded member accounts. This environment does not provide Docker access, so those checks could not run here.
+[Focused PGlite coverage](../scripts/member-role-delegation-db.test.mjs) loads the real role migrations and runs the [SQL boundary matrix](../scripts/member-role-rpc-boundaries.sql), followed by client-role and membership-upkeep regression checks. Run from the repository root:
+
+```sh
+node scripts/member-role-delegation-db.test.mjs
+node --test scripts/site-auth.test.mjs scripts/member-tools-redesign.test.mjs scripts/member-view-acceptance.test.mjs
+```
+
+The SQL matrix requires a disposable migrated database with four distinct role-free member accounts and rolls back its fixtures. The PGlite runner creates those accounts automatically; no hosted database or Docker is needed for it. These checks have not been run as part of this implementation.
 
 ## Future Full Access approval requirement (2026-09-23)
 

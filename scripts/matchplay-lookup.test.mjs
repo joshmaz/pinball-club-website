@@ -32,7 +32,11 @@ function setup(t, payload = { data: tournament }, providerStatus = 200) {
       return new Response(JSON.stringify(payload), { status: providerStatus });
     }
     if (url.pathname === '/auth/v1/user') return Response.json({ id: 'editor' });
-    if (url.pathname === '/rest/v1/members') return Response.json([{ id: 'member' }]);
+    if (url.pathname === '/rest/v1/rpc/snh_member_has_events_access') {
+      assert.equal(new Headers(options.headers).get('apikey'), 'fake-anon-key');
+      assert.equal(new Headers(options.headers).get('Authorization'), 'Bearer fake-session');
+      return Response.json(true);
+    }
     if (url.pathname === '/rest/v1/external_api_cache' || url.pathname === '/rest/v1/integration_status') {
       return options.method === 'POST' ? new Response(null, { status: 201 }) : Response.json(null);
     }
@@ -48,10 +52,10 @@ function setup(t, payload = { data: tournament }, providerStatus = 200) {
   };
   t.mock.method(globalThis, 'fetch', fakeFetch);
   let handler;
-  const env = { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'fake-key', MATCHPLAY_API_TOKEN: token };
+  const env = { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_ANON_KEY: 'fake-anon-key', SUPABASE_SERVICE_ROLE_KEY: 'fake-key', MATCHPLAY_API_TOKEN: token };
   const Deno = { env: { get: name => env[name] }, serve: fn => { handler = fn; } };
   new Function('Deno', 'createClient', 'createMatchplayCache', 'rankEventCandidates', 'tournamentIdFromInput', handlerSource)(
-    Deno, (url, key, opts) => createClient(url, key, { ...opts, global: { fetch: fakeFetch } }),
+    Deno, (url, key, opts) => createClient(url, key, { ...opts, global: { ...opts.global, fetch: fakeFetch } }),
     createMatchplayCache, rankEventCandidates, tournamentIdFromInput,
   );
   return { calls, request: body => handler(new Request('https://function.test', {

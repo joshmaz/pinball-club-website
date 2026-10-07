@@ -30,6 +30,7 @@
   <script src="assets/js/member-routes.js"></script>
   <script src="assets/js/event-links.js"></script>
   <script src="assets/js/member-portal.js"></script>
+  <script src="assets/js/member-role-presentation.js"></script>
   <script src="assets/js/member-operations-panel.js"></script>
   <script src="assets/js/member-audit-panel.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
@@ -88,7 +89,7 @@
             </button>
           </li>
           <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Member tools: statistics and role management">
+            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Member Tools">
               Member Tools
             </button>
           </li>
@@ -124,6 +125,11 @@
           <h2>Profile</h2>
           <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. Anything you save here stays with the club and isn't shared with other members yet.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
+
+          <section class="member-role-profile" aria-labelledby="member-role-profile-title">
+            <h3 id="member-role-profile-title">Roles &amp; Permissions</h3>
+            <div id="member-role-profile-content" aria-live="polite"><p>Loading website roles…</p></div>
+          </section>
 
           <form id="profile-form" class="members-profile-form">
             <fieldset class="club-form-section"><legend>Account basics</legend>
@@ -264,7 +270,7 @@
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
           <h2>Member Tools</h2>
-          <p id="member-admin-intro" class="member-panel-intro">Look up members, see at-a-glance stats, and manage who has access to which tools. Use this to onboard a new helper, hand off a role, or check on a member record before answering a question.</p>
+          <p id="member-admin-intro" class="member-panel-intro">Look up members, review website responsibilities, and update membership status.</p>
           <p id="member-admin-access" class="member-panel-access-note" hidden></p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
 
@@ -292,7 +298,7 @@
           <div class="members-admin-table-wrap">
             <table class="members-admin-table members-admin-directory">
               <caption class="visually-hidden">Club member directory</caption>
-              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Roles</th></tr></thead>
+              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Assigned roles</th></tr></thead>
               <tbody id="member-admin-table-body"></tbody>
             </table>
           </div>
@@ -900,6 +906,7 @@
     }
 
     function setMemberAdminPanelIntro(userRolesList) {
+      document.getElementById("member-admin-intro").textContent = window.SNHMemberRolePresentation.intro(userRolesList);
       var allowedRoles =
         (window.SNHMemberPortal &&
           window.SNHMemberPortal.ROLE_GROUPS &&
@@ -1106,14 +1113,16 @@
       logoutButtonId: "logout-btn"
     });
 
+    var currentAdminMemberId = null;
     var userRoles = [];
-    if (window.SNHMemberPortal.fetchMemberRoles) {
-      try {
-        userRoles = await window.SNHMemberPortal.fetchMemberRoles(session.user.id);
-      } catch (e) {
-        userRoles = [];
-      }
+    var rolesLoadFailed = false;
+    try {
+      userRoles = await window.SNHSiteAuth.loadMemberRoles(session.user.id);
+    } catch (e) {
+      rolesLoadFailed = true;
     }
+    var rolePresentation = window.SNHMemberRolePresentation;
+    rolePresentation.renderProfile(document.getElementById("member-role-profile-content"), userRoles, rolesLoadFailed);
     applyRbacNav(userRoles);
     if (window.SNHMemberOperationsPanel) window.SNHMemberOperationsPanel.init(userRoles);
     if (window.SNHMemberAuditPanel) window.SNHMemberAuditPanel.init(userRoles);
@@ -1135,9 +1144,12 @@
     }
 
     function adminMayManageRole(slug) {
-      return userRoles.includes("club_admin") ||
-        (slug !== "club_admin" && userRoles.includes("membership_admin")) ||
-        (slug !== "club_admin" && slug !== "membership_admin" && userRoles.includes("membership_editor"));
+      return window.SNHSiteAuth.canAssignMemberRole(userRoles, slug);
+    }
+
+    function adminMayRemoveRole(row, slug) {
+      return adminMayManageRole(slug) && (slug !== "club_admin" ||
+        !!currentAdminMemberId && row.member_id !== currentAdminMemberId);
     }
 
     function adminHasUnsaved() {
@@ -1169,6 +1181,8 @@
       var filtered = adminRows.filter(function (row) { return memberMatchesDirectoryFilter(row, mode, query); });
       var pages = Math.max(1, Math.ceil(filtered.length / 25));
       adminPage = Math.min(adminPage, pages);
+      var focused = document.activeElement;
+      var focusKey = focused && memberAdminTableBody.contains(focused) ? focused.getAttribute("data-member-focus") : null;
       memberAdminTableBody.replaceChildren();
       filtered.slice((adminPage - 1) * 25, adminPage * 25).forEach(function (row) {
         var tr = document.createElement("tr");
@@ -1177,6 +1191,8 @@
         toggle.type = "button";
         toggle.className = "members-sidebar-link";
         toggle.textContent = adminMemberName(row);
+        toggle.setAttribute("data-member-focus", row.member_id);
+        toggle.setAttribute("aria-controls", "member-detail-" + row.member_id);
         toggle.setAttribute("aria-expanded", String(adminExpandedId === row.member_id));
         toggle.setAttribute("aria-label", (adminExpandedId === row.member_id ? "Close editor for " : "Open editor for ") + adminMemberName(row));
         toggle.addEventListener("click", function () {
@@ -1187,10 +1203,16 @@
         });
         nameCell.appendChild(toggle);
         adminCell(tr, row.membership_status === "active" ? "Full Access Member" : "Basic Member");
-        adminCell(tr, row.role_slugs && row.role_slugs.length ? row.role_slugs.length : "");
+        rolePresentation.renderAssignments(adminCell(tr, ""), row.role_slugs || []);
         memberAdminTableBody.appendChild(tr);
         if (adminExpandedId === row.member_id) adminRenderEditor(row);
       });
+      if (focusKey) {
+        var restore = Array.from(memberAdminTableBody.querySelectorAll("[data-member-focus]")).find(function (el) {
+          return el.getAttribute("data-member-focus") === focusKey;
+        });
+        if (restore) restore.focus();
+      }
       memberAdminPagination.replaceChildren();
       var prev = document.createElement("button");
       prev.type = "button"; prev.textContent = "Previous"; prev.disabled = adminPage === 1;
@@ -1210,6 +1232,7 @@
       td.colSpan = 3;
       var box = document.createElement("div");
       box.className = "members-admin-editor";
+      box.id = "member-detail-" + row.member_id;
       var info = document.createElement("p");
       info.textContent = "Email: " + (row.email || "—") + " · Last updated: " +
         (row.membership_last_updated_at ? window.SNHMemberPortal.formatDate(row.membership_last_updated_at) : "—");
@@ -1255,48 +1278,69 @@
         finally { adminSaving = false; adminRender(); }
       });
       box.appendChild(form);
-      var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Roles"; box.appendChild(rolesTitle);
+      var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Assigned roles"; box.appendChild(rolesTitle);
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
-      (row.role_slugs || []).forEach(function (slug) {
-        var li = document.createElement("li"); li.textContent = slug + " ";
-        if (adminMayManageRole(slug) && !(slug === "club_admin" && row.email === session.user.email)) {
+      rolePresentation.assignments(row.role_slugs || []).forEach(function (slug) {
+        var roleName = rolePresentation.name(slug);
+        var li = document.createElement("li"); li.appendChild(rolePresentation.badge(slug));
+        if (adminMayRemoveRole(row, slug)) {
           var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove";
-          remove.setAttribute("aria-label", "Remove " + slug + " from " + adminMemberName(row));
+          remove.setAttribute("data-member-focus", row.member_id);
+          remove.setAttribute("aria-label", "Remove " + roleName + " from " + adminMemberName(row));
           remove.addEventListener("click", async function () {
-            if (!window.confirm("Remove role " + slug + " from " + adminMemberName(row) + "?")) return;
-            try { await window.SNHMemberPortal.revokeMemberRole(row.member_id, slug); await onMemberAdminPanelShown(true); memberAdminStatus.textContent = "Role " + slug + " removed from " + adminMemberName(row) + "."; }
-            catch (err) { memberAdminStatus.textContent = "Role removal failed: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err); }
+            if (!window.confirm(rolePresentation.removalMessage(row.role_slugs || [], slug, adminMemberName(row)))) return;
+            try { await window.SNHMemberPortal.revokeMemberRole(row.member_id, slug); await onMemberAdminPanelShown(true); memberAdminStatus.textContent = roleName + " removed from " + adminMemberName(row) + "."; }
+            catch (err) { memberAdminStatus.textContent = "Role removal failed: " + rolePresentation.errorMessage(err); }
           }); li.appendChild(remove);
         }
         roleList.appendChild(li);
       });
-      if (!row.role_slugs || !row.role_slugs.length) { var empty = document.createElement("li"); empty.textContent = "No roles"; roleList.appendChild(empty); }
+      if (!rolePresentation.assignments(row.role_slugs || []).length) { var empty = document.createElement("li"); empty.textContent = "None"; roleList.appendChild(empty); }
       box.appendChild(roleList);
+      var accessTitle = document.createElement("h4"); accessTitle.textContent = "Effective access"; box.appendChild(accessTitle);
+      var accessSummary = document.createElement("div");
+      rolePresentation.renderAccess(accessSummary, row.role_slugs || []); box.appendChild(accessSummary);
       var grant = document.createElement("form"); grant.className = "members-admin-editor-form";
-      var grantLabel = document.createElement("label"); grantLabel.textContent = "Grant a role";
+      var grantLabel = document.createElement("label"); grantLabel.textContent = "Assign a role";
       var select = document.createElement("select"); select.required = true;
       var placeholder = document.createElement("option"); placeholder.value = ""; placeholder.textContent = "Select a role"; select.appendChild(placeholder);
       (window.SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES || []).filter(function (slug) { return adminMayManageRole(slug) && !(row.role_slugs || []).includes(slug); }).forEach(function (slug) {
-        var opt = document.createElement("option"); opt.value = slug; opt.textContent = slug.replace(/_/g, " "); select.appendChild(opt);
+        var opt = document.createElement("option"); opt.value = slug; opt.textContent = rolePresentation.name(slug); select.appendChild(opt);
       });
       grantLabel.appendChild(select); grant.appendChild(grantLabel);
-      var grantButton = document.createElement("button"); grantButton.type = "submit"; grantButton.textContent = "Grant role"; grant.appendChild(grantButton);
+      select.setAttribute("data-member-focus", row.member_id);
+      var grantButton = document.createElement("button"); grantButton.setAttribute("data-member-focus", row.member_id); grantButton.type = "submit"; grantButton.textContent = "Assign role"; grant.appendChild(grantButton);
       if (select.options.length === 1) grant.hidden = true;
       grant.addEventListener("submit", async function (ev) {
-        ev.preventDefault(); if (!select.value) return;
+        ev.preventDefault(); if (!select.value || !adminMayManageRole(select.value)) return;
         grantButton.disabled = true; grantButton.textContent = "Saving…";
-        try { await window.SNHMemberPortal.grantMemberRole(row.member_id, select.value); var granted = select.value; await onMemberAdminPanelShown(true); memberAdminStatus.textContent = "Role " + granted + " granted to " + adminMemberName(row) + "."; }
-        catch (err) { memberAdminStatus.textContent = "Role grant failed: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err); grantButton.disabled = false; grantButton.textContent = "Grant role"; }
+        try { await window.SNHMemberPortal.grantMemberRole(row.member_id, select.value); var granted = select.value; await onMemberAdminPanelShown(true); memberAdminStatus.textContent = rolePresentation.name(granted) + " assigned to " + adminMemberName(row) + "."; }
+        catch (err) { memberAdminStatus.textContent = "Role assignment failed: " + rolePresentation.errorMessage(err); grantButton.disabled = false; grantButton.textContent = "Assign role"; }
       });
-      box.appendChild(grant); td.appendChild(box); tr.appendChild(td); memberAdminTableBody.appendChild(tr);
+      if (rolePresentation.assignable(userRoles).length) box.appendChild(grant); td.appendChild(box); tr.appendChild(td); memberAdminTableBody.appendChild(tr);
     }
 
     onMemberAdminPanelShown = async function (quiet) {
       if (!quiet) memberAdminStatus.textContent = "Loading…";
+      if (!currentAdminMemberId) {
+        try {
+          var adminProfile = await window.SNHMemberPortal.fetchProfile(session.user.id, session.user.email);
+          currentAdminMemberId = adminProfile.id || null;
+        } catch (err) {
+          // Keep membership upkeep available; hide administrator removal until identity is known.
+          currentAdminMemberId = null;
+        }
+      }
       var stats = await window.SNHMemberPortal.fetchMemberAdminStats();
       var rows = await window.SNHMemberPortal.listMembersForAdmin();
       if (!stats || rows == null) { memberAdminStatus.textContent = "Could not load member data."; return; }
       adminRows = rows;
+      var selfRow = rows.find(function (row) { return row.member_id === currentAdminMemberId; });
+      if (selfRow) {
+        userRoles = selfRow.role_slugs || [];
+        rolePresentation.renderProfile(document.getElementById("member-role-profile-content"), userRoles, false);
+        setMemberAdminPanelIntro(userRoles);
+      }
       memberAdminStats.replaceChildren();
       [["Members", stats.member_count], ["Membership records", stats.membership_count], ["Full Access Members", stats.active_membership_count], ["Role assignments", stats.member_roles_count]].forEach(function (pair) {
         var p = document.createElement("p"); p.className = "members-admin-stat";

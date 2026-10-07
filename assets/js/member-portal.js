@@ -402,29 +402,15 @@
    */
   var ROLE_GROUPS = window.SNHSiteAuth.ROLE_GROUPS;
 
-  function uniqueRoleList(roleArrays) {
-    var out = [];
-    for (var i = 0; i < roleArrays.length; i += 1) {
-      var arr = roleArrays[i] || [];
-      for (var j = 0; j < arr.length; j += 1) {
-        if (out.indexOf(arr[j]) === -1) out.push(arr[j]);
-      }
-    }
-    return out;
-  }
-
   function rolesToCsv(rolesList) {
     return window.SNHSiteAuth.rolesToCsv(rolesList);
   }
 
-  /** Role slugs assignable from the member admin panel (matches portal RBAC groups). */
+  /** Assigned roles only; inherited capabilities and volunteer status are never persisted. */
   var ASSIGNABLE_MEMBER_ROLES = Object.freeze(
-    uniqueRoleList([
-      ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS,
-      ROLE_GROUPS.EVENTS_MANAGE_ACCESS,
-      ROLE_GROUPS.PHOTOS_ACCESS,
-      ROLE_GROUPS.GAMES_ACCESS
-    ])
+    Object.keys(window.SNHSiteAuth.ROLE_CATALOG).filter(function (slug) {
+      return window.SNHSiteAuth.ROLE_CATALOG[slug].assignable === true;
+    })
   );
 
   async function fetchMemberAdminStats() {
@@ -730,32 +716,28 @@
     });
     if (upload.error) throw upload.error;
 
-    try {
-      var publicResult = client.storage.from("game-images").getPublicUrl(storagePath);
-      var publicUrl = publicResult && publicResult.data ? publicResult.data.publicUrl : "";
-      if (!publicUrl) throw new Error("Supabase did not return a public image URL.");
+    // A failed response may follow a committed association. Never delete on failure.
+    var publicResult = client.storage.from("game-images").getPublicUrl(storagePath);
+    var publicUrl = publicResult && publicResult.data ? publicResult.data.publicUrl : "";
+    if (!publicUrl) throw new Error("Supabase did not return a public image URL.");
 
-      return await gameImageUpsert(null, gameId, {
-        sourceType: "club",
-        sourceKey: "storage:" + storagePath,
-        locationType: "remote_url",
-        locationValue: publicUrl,
-        imageType: "game_photo",
-        altText: fields && fields.altText ? fields.altText : null,
-        usageStatus: "approved",
-        makePrimary: !fields || fields.makePrimary !== false,
-        metadata: {
-          storageBucket: "game-images",
-          storagePath: storagePath,
-          originalFilename: file.name,
-          contentType: file.type,
-          sizeBytes: file.size
-        }
-      });
-    } catch (err) {
-      await client.storage.from("game-images").remove([storagePath]);
-      throw err;
-    }
+    return await gameImageUpsert(null, gameId, {
+      sourceType: "club",
+      sourceKey: "storage:" + storagePath,
+      locationType: "remote_url",
+      locationValue: publicUrl,
+      imageType: "game_photo",
+      altText: fields && fields.altText ? fields.altText : null,
+      usageStatus: "approved",
+      makePrimary: !fields || fields.makePrimary !== false,
+      metadata: {
+        storageBucket: "game-images",
+        storagePath: storagePath,
+        originalFilename: file.name,
+        contentType: file.type,
+        sizeBytes: file.size
+      }
+    });
   }
 
   async function gameImageDeleteUploaded(gameId, imageId) {

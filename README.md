@@ -28,7 +28,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
 - **Billing:** Stripe Checkout + webhooks will be the source of truth for paid membership state.
 - **Tiering:** support free web users who can upgrade into paid/on-prem access tiers.
 - **Admin roles:** continue iterating on admin tooling and auditing around existing role-based controls.
-- **RBAC expansion:** continue evaluating scoped permissions for areas like events, machines, and membership management.
+- **Authorization:** maintain the deployed [canonical RBAC policy](docs/website-roles-and-authorization-policy.md) as capabilities evolve.
 
 Keep auth and billing concerns separated:
 
@@ -56,24 +56,24 @@ Keep auth and billing concerns separated:
   - `stern_insider` for a Stern Insider username
   - `matchplay_events` for a MatchPlay player ID
   - The portal reads these via the `snh_get_my_external_accounts` RPC and writes them with `upsert`/`delete` on the table; clearing a field deletes the matching row.
-- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`, `snh_set_member_membership`) gated by the `MEMBERSHIP_MANAGE_ACCESS` role group (see role table below).
+- Ordinary member upkeep uses security-definer RPCs gated by effective Membership Editor access. Role grant/revoke RPCs additionally enforce delegation: Membership Editor cannot delegate; Membership Admin can manage Membership Editor and Events/Photos/Games roles; Website Administrator can manage all nine assignable roles subject to self/last-admin safeguards.
 - Manual membership updates in Member Tools use `snh_set_member_membership` with allowlisted status values (`active`, `past_due`, `expired`, `canceled`, `inactive`) and a latest-record update pattern in `public.memberships` (fallback insert when no membership row exists yet).
 
 ## Role-gated UI sections
 
-The member dashboard sidebar shows a section if the signed-in member has any of the role slugs listed below. UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
+The member dashboard sidebar uses effective capabilities; the table lists assignments that confer access. `club_admin` displays as **Website Administrator**. Admin inherits its corresponding Editor, and Website Administrator inherits all domain Admin/Editor capabilities. Exactly nine roles are persisted and assignable; `website_volunteer` is derived from any recognized assignment. See the [canonical authorization policy](docs/website-roles-and-authorization-policy.md). UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
 
 | Sidebar label  | Panel heading            | Roles that grant access                                       | Notes                                                                                  |
 |----------------|--------------------------|---------------------------------------------------------------|----------------------------------------------------------------------------------------|
 | Profile        | Profile                  | Any signed-in member                                          | Always shown.                                                                          |
 | Membership     | Membership               | Any signed-in member                                          | Always shown.                                                                          |
 | Notes          | Club & machine notes     | Any signed-in member can read and add notes                   | Editing and status workflow require any portal helper role (events, photos, games, or membership). |
-| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes. |
+| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes only for authorized Admins. |
 | Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
-| Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`.                                                            |
+| Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`; permanent uploaded-image and Pingolf target deletion require effective Games Admin. |
 
-Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. Keep that map in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
+Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. The browser catalog and canonical SQL effective-role helpers define inheritance. Keep browser capabilities in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
 
 ## Games catalog (relational)
 
@@ -105,8 +105,9 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 **Hosted schedule**
 
 - Migration `supabase/migrations/20260523120000_pinballmap_ingest_pg_cron.sql` registers **pg_cron** job `pinballmap-ingest-every-6h` (every six hours, UTC) that POSTs to the Edge Function using **pg_net**.
-- One-time: in the SQL Editor, store **Vault** secrets `snh_pinballmap_ingest_supabase_url` (your `https://<ref>.supabase.co` with no trailing slash) and `snh_pinballmap_ingest_anon_key` (anon / publishable key). See the migration file header for `vault.create_secret` examples. Until both exist, the job runs but skips the HTTP call and logs a Postgres warning.
-- The Edge Function reads hosted **default** secrets (`SUPABASE_URL`, `SUPABASE_SECRET_KEYS` JSON with `default` secret key, or legacy `SUPABASE_SERVICE_ROLE_KEY`); you normally only add custom secrets such as `PINBALLMAP_LOCATION_ID` under Edge Functions.
+- The forward migration `supabase/migrations/20260928190000_pinballmap_ingest_scheduler_auth.sql` replaces the caller without changing the six-hour schedule. It requires Vault entries `snh_pinballmap_ingest_supabase_url`, `snh_pinballmap_ingest_anon_key` (transport only), and `snh_pinballmap_ingest_scheduler_secret`.
+- Store the same dedicated random scheduler credential in Vault as `snh_pinballmap_ingest_scheduler_secret` and in Edge secrets as `PINBALLMAP_INGEST_SCHEDULER_SECRET`. Cron sends it in **`x-pinballmap-scheduler-secret`**, never in the URL or body. Missing configuration skips the HTTP call with a non-secret warning.
+- The Edge Function still uses hosted `SUPABASE_URL` and elevated keys for database work, plus the required `PINBALLMAP_API_TOKEN`. See [deployment and rotation instructions](docs/games-relational-migration-plan.md#ingestion-authentication-deployment-and-rotation).
 
 **Database**
 
@@ -124,7 +125,8 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 
 **Operator note**
 
-- `pinballmap-ingest` is configured with `verify_jwt = false` in `supabase/config.toml` so scheduled invokes do not need a user JWT. Treat the function URL plus anon key like a privileged trigger: restrict who you share invoke instructions with, or harden later (for example JWT + role check or a dedicated scheduler secret).
+- `verify_jwt = false` allows the handler to support both authentication paths. A present `x-pinballmap-scheduler-secret` header selects scheduler authentication and must match the configured secret; failure never falls back to user authentication. Without that header, a verified user JWT and `games_editor`, `games_admin`, or `club_admin` are required. Public keys and matching `Authorization`/`apikey` headers grant no ingestion authority. Only POST ingests; OPTIONS is side-effect-free.
+- Manual calls retain the verified user actor. Scheduled calls retain System attribution. Request bodies cannot supply an actor or select authentication mode.
 
 ## Deployment
 

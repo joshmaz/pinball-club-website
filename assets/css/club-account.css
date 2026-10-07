@@ -1,4 +1,31 @@
 /* Quiet application patterns; existing panel navigation and access gates remain. */
+.club-account {
+ --role-silver-bg: light-dark(#edf0f3, #29343e);
+ --role-silver-line: light-dark(#75818d, #9caab6);
+ --role-gold-bg: light-dark(#faf0d8, #382f20);
+ --role-gold-line: light-dark(#97712d, #d9b667);
+}
+.member-role-profile { margin: 1rem 0 1.3rem; padding: 1.3rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.member-role-profile h3 { margin: 0 0 1rem; }
+.member-role-profile h4 { margin: 1rem 0 .5rem; }
+.member-role-badges { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.member-role-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .5rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); color: var(--club-ink); font-size: .82rem; line-height: 1.5; max-width: 100%; box-sizing: border-box; }
+.member-role-badge--editor { background: var(--role-silver-bg); border-color: var(--role-silver-line); }
+.member-role-badge--admin { background: var(--role-gold-bg); border-color: var(--role-gold-line); }
+.member-role-badge--website { background: var(--club-surface); border: 2px solid var(--role-gold-line); font-weight: 700; }
+.member-role-badge svg { width: 1rem; height: 1rem; flex: 0 0 1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.member-role-access { padding-left: 1.2rem; margin: .5rem 0; font-size: .88rem; line-height: 1.6; }
+.member-role-derived { color: var(--club-muted); font-size: .83rem; line-height: 1.6; }
+.member-role-load-error { color: var(--club-danger); }
+.club-account .members-admin-directory td:first-child { width: auto; }
+.club-account .members-admin-directory td { vertical-align: top; overflow-wrap: anywhere; }
+.club-account .members-admin-role-list li { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+.club-account .members-admin-role-list button { min-height: 44px; padding: .5rem; }
+@media (max-width: 600px) {
+ .club-account .members-admin-directory th, .club-account .members-admin-directory td { padding: .4rem; }
+ .member-role-profile { padding: 1rem; }
+ .member-role-badge { padding: .2rem .35rem; }
+}
 .club-account .auth-status { color: var(--club-muted); font-size: .8rem; margin: .5rem 0 0; text-align: left; }
 .club-account .members-layout { max-width: none; grid-template-columns: 11rem minmax(0,1fr); gap: 2rem; padding: 0; }
 .club-account .members-sidebar { padding: .75rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }

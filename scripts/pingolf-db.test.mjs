@@ -35,6 +35,8 @@ async function fixture() {
     insert into member_roles values ('${uid(1)}','games_editor'),('${uid(2)}','games_admin'),('${uid(3)}','club_admin');
   `);
   await db.exec(catalog.slice(catalog.indexOf('create or replace function public.snh_member_has_games_access()'), catalog.indexOf('create schema if not exists private;')));
+  await db.exec(await readMigration('20260928230000_canonical_effective_role_core.sql'));
+  await db.exec(await readMigration('20260928235000_domain_helpers_use_effective_roles.sql'));
   await db.exec(old.slice(old.indexOf('create table if not exists public.pingolf_sessions'), old.indexOf('create table if not exists public.game_custom_mods')));
   await db.exec(old.slice(old.indexOf('create or replace function private.snh_require_game_editable'), old.indexOf('--', old.indexOf('revoke all on function private.snh_require_game_editable'))));
   await db.exec(old.slice(old.indexOf('create or replace function public.snh_pingolf_sessions_list_editor'), old.indexOf('-- game_custom_mods RPCs')));

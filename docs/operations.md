@@ -35,7 +35,7 @@ management remains in Member Tools; self-delete remains in My Account.
   original creation time, and grants one claim beyond the automatic attempt cap.
   Only failed rows younger than 23 hours, without a provider ID or active lease,
   qualify. The worker still enforces the original 24-hour delivery deadline,
-  provider idempotency key, and recipient-role recheck. A second concurrent retry
+  provider idempotency key, and enqueue-time recipient authorization. A second concurrent retry
   fails because the first changes the state. Expired exhausted leases become failed
   rather than permanently stuck in sending. Old messages are never re-created.
 - Jobs uses a generic `operations_job_runs` ledger. The dispatcher records start,

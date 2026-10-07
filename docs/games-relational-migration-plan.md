@@ -79,11 +79,46 @@ Games catalog DDL and RPCs are split across four migrations (apply in timestamp 
 - Fetches paginated `user_submissions`, loads current `games` + `game_location_stints`, builds `{ location_id, location_address, updates, creates }`, calls `snh_pinballmap_upsert_from_activity`.
 - [`supabase/config.toml`](../supabase/config.toml) — `verify_jwt = false` for scheduled/service invokes.
 
-**Schedule (in repo):** Migration [`20260523120000_pinballmap_ingest_pg_cron.sql`](../supabase/migrations/20260523120000_pinballmap_ingest_pg_cron.sql) registers a **pg_cron** job (`pinballmap-ingest-every-6h`, every **6 hours** at minute 0 UTC) that POSTs to `/functions/v1/pinballmap-ingest` via **pg_net**. URLs and auth come from **Vault** (not committed): create secrets `snh_pinballmap_ingest_supabase_url` (project URL, no trailing slash) and `snh_pinballmap_ingest_anon_key` (anon / publishable key). See migration header comments for `vault.create_secret` examples. Enable the **pg_net** extension if the migration cannot create it (Dashboard → Database → Extensions).
+**Schedule (in repo):** The original [cron migration](../supabase/migrations/20260523120000_pinballmap_ingest_pg_cron.sql) registers `pinballmap-ingest-every-6h` at `0 */6 * * *` UTC. The [authentication migration](../supabase/migrations/20260928190000_pinballmap_ingest_scheduler_auth.sql) replaces only its private invocation function. The job, empty request body, and 300000 ms timeout remain unchanged. Do not create a duplicate schedule.
 
-You can still add a second schedule from **Dashboard → Integrations → Cron** if you prefer UI-only ops; avoid duplicate overlapping jobs unless intentional.
+Cron reads these Vault entries:
 
-Edge Function **default** secrets (injected on every project) supply `SUPABASE_URL` and an elevated key via **`SUPABASE_SECRET_KEYS`** (`default` entry, `sb_secret_…`) or legacy **`SUPABASE_SERVICE_ROLE_KEY`**. The worker only needs **custom** secrets you add under Edge Functions → `pinballmap-ingest`, for example optional `PINBALLMAP_LOCATION_ID` (default `8908`) and optional `PINBALLMAP_ACTIVITY_URL`.
+| Vault name | Purpose |
+| --- | --- |
+| `snh_pinballmap_ingest_supabase_url` | Project HTTPS URL without trailing slash |
+| `snh_pinballmap_ingest_anon_key` | Existing anon/publishable key, sent only as `apikey` for transport compatibility |
+| `snh_pinballmap_ingest_scheduler_secret` | Dedicated credential sent as `x-pinballmap-scheduler-secret` |
+
+The Edge Function compares the scheduler credential against `PINBALLMAP_INGEST_SCHEDULER_SECRET`. Header presence selects scheduler mode, including an empty header; an invalid credential never falls back to user authentication. Missing Edge configuration fails closed for scheduler calls but does not disable authenticated interactive calls. Missing cron configuration skips the HTTP request with a non-secret warning.
+
+Without the scheduler header, the handler requires a Bearer token validated with Supabase Auth and effective Games Editor access through `snh_member_has_games_access()` (Games Editor, Games Admin, or Website Administrator). This helper uses canonical role inheritance. A public key alone, a missing bearer, or equality between bearer and `apikey` cannot bypass authorization. Only POST can ingest; OPTIONS returns preflight without authentication calls or ingestion effects. Other methods return 405.
+
+`verify_jwt = false` stays configured because scheduler calls do not carry a user JWT. Authentication is enforced by the handler. The browser continues using `functions.invoke` with its session JWT and never receives the scheduler secret.
+
+Existing Edge configuration remains: `SUPABASE_URL`; an elevated key from `SUPABASE_SECRET_KEYS` or `SUPABASE_SERVICE_ROLE_KEY`; required `PINBALLMAP_API_TOKEN`; optional `PINBALLMAP_LOCATION_ID` (default `8908`), `PINBALLMAP_ACTIVITY_URL`, and `PINBALLMAP_MACHINE_DETAILS_URL`.
+
+#### Ingestion authentication deployment and rotation
+
+Merging the code does not deploy Supabase: the repository workflow deploys only the static site. After review and merge:
+
+1. Pause `pinballmap-ingest-every-6h` in Supabase Cron while coordinating the cutover. Check for any separate Dashboard schedules invoking the same endpoint.
+2. Generate a dedicated cryptographically random credential (32 random bytes encoded as hex is sufficient). Store the identical value in Edge secrets as `PINBALLMAP_INGEST_SCHEDULER_SECRET` and Supabase Vault as `snh_pinballmap_ingest_scheduler_secret`. Use the Dashboard secret interfaces; never commit the value, include it in public site configuration, or log it. Keep the existing URL and public-key Vault entries. This is a separate credential from both Supabase service keys and `PINBALLMAP_API_TOKEN`.
+3. Deploy the hardened function with `supabase functions deploy pinballmap-ingest`, keeping `verify_jwt = false` in the deployed configuration.
+4. Apply the forward migration through the normal linked-project migration workflow (`supabase db push`, after reviewing pending migrations). Do not edit or replay the original applied migration. The replacement explicitly revokes private cron-function execution from `PUBLIC`, `anon`, and `authenticated`.
+5. Verify public-key-only, missing-token, matching-header, and invalid-scheduler requests fail without ingestion. Verify an authorized interactive POST and a scheduler POST with the dedicated header. These successful checks run real ingestion; inspect their audit records.
+6. Resume the existing job at its unchanged six-hour schedule and verify the next run. Inspect the HTTP response as well as the cron result: `net.http_post` queues the request, so cron SQL success alone does not establish ingestion success.
+
+Deploy the Edge Function before changing the cron caller. Old cron requests will fail closed during the transition; do not add a public-key fallback. To rotate, pause cron, replace the secret in both stores, verify a scheduled invocation, and resume. Never print either secret in diagnostics.
+
+Manual invocation uses only the verified user's ID for the overall ingest audit and OPDB failure audit. Scheduled invocation omits `manual_actor_user_id` and retains System attribution. Request bodies cannot set actor identity. Downstream OPDB imports and Pinball Map condition provenance retain their existing behavior. The overall catalog audit still records catalog-RPC success before downstream OPDB/condition processing completes.
+
+Focused local checks (Node.js 22.18+ with development dependencies installed):
+
+```sh
+node --test scripts/pinballmap-ingest-auth.test.mjs scripts/pinballmap-ingest-acceptance.test.mjs
+```
+
+The tests use local mocks and source assertions, not live credentials or ingestion.
 
 ### CI / deploy
 
@@ -131,7 +166,7 @@ Ship the relational catalog cutover prerequisites in one focused pass:
 
 - [x] Apply hosted migration: `supabase db push`
 - [x] Import catalog seed: `node --env-file=.env scripts/import-games-json.mjs`
-- [x] Deploy `pinballmap-ingest`, set required Edge secrets, enable **pg_cron** ingest via migration + Vault (`snh_pinballmap_ingest_supabase_url`, `snh_pinballmap_ingest_anon_key`), or add an equivalent Dashboard cron
+- [x] Deploy `pinballmap-ingest`, set required Edge secrets, enable **pg_cron** ingest via migration + Vault (`snh_pinballmap_ingest_supabase_url`, `snh_pinballmap_ingest_anon_key`, `snh_pinballmap_ingest_scheduler_secret`), or add an equivalent Dashboard cron
 - [x] Verify `games_catalog_v1` rows in Supabase SQL/Table Editor
 - [x] Set `GAMES_CATALOG_SOURCE=db` (local + GitHub Actions)
 - [x] Regenerate deploy config: `node scripts/write-config.mjs`

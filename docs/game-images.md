@@ -89,20 +89,48 @@ Storage bucket `game-images`. Uploaded objects use the stable convention
 PNG, WebP, and GIF files up to 10 MB.
 
 Public reads are allowed because approved club photos render on the public
-catalog. Inserts and deletes require an authenticated member with games access;
-the database RPC that removes an association repeats the games-role and
-game-editability checks. The browser records the public URL as the normal
+catalog. Inserts require an authenticated member with games access. Permanent deletion
+requires Games Admin or Website Administrator in both the association-deletion
+RPC and the Storage DELETE policy. The RPC also checks game editability.
+Migration `20260928210000_game_image_delete_authorization.sql` removes the old
+Editor DELETE policy; there are no Editor exceptions for own, unassociated,
+reference-only, or pending objects. Upload, association editing, approval, and
+primary selection remain available to Games Editors. The browser records the public URL as the normal
 `remote_url` location and stores `storageBucket`, `storagePath`, original
 filename, content type, and byte size in `metadata`. This keeps uploads in the
 existing image model and makes stored objects distinguishable from hotlinked
 external images.
 
-If association creation fails after upload, the client removes the new object.
+If association creation fails after upload, the client preserves the original
+error and attempts to refresh the image list. It never deletes the object as
+rollback: a lost response may follow a successfully committed association.
+There is no protected pending/staged upload state. Failed or abandoned uploads
+may leave objects requiring deferred administrator cleanup. This is operational
+debt for future Operations functionality, not an Editor deletion exception.
+Review exact objects, current references, and image audit history before using
+the Storage API to clean them up; absence of a current reference alone does not
+prove an object was never established. Do not delete Storage metadata with SQL.
 On removal, the database association is deleted first, a deterministic approved
 fallback becomes primary when needed, and the stored object is then deleted.
 This ordering avoids leaving a public record that points to a missing object; a
 storage cleanup failure can leave only an unreferenced object and is reported to
-the editor.
+the administrator.
+
+## Future security hardening / accepted residual risk
+
+Games Editors can currently set image metadata so that stored object identity
+fields disagree with the displayed image URL. An Admin deleting such a
+deliberately malformed association could consequently delete the wrong stored
+object. After the game-image deletion authorization migration is applied,
+Editors still cannot directly perform permanent deletion through either the
+association-deletion RPC or the Storage DELETE API.
+
+SNHPC consciously accepts this residual risk for now: Games Editors are trusted
+club volunteers, exploitation requires deliberate malicious metadata followed
+by Admin interaction, and the engineering cost of stronger identity and deletion
+coordination is disproportionate to the current threat model. Future hardening
+should bind uploaded associations to validated, immutable Storage identity and
+safely handle shared references, including concurrent association changes.
 
 ## Editor workflow
 
@@ -156,3 +184,14 @@ the migration time. Consequently:
 The public catalog and home cabinet rotation now use `primaryImage` exclusively.
 The repository assets, static filename fields, and one-time migration utility
 were removed only after production verification.
+
+## Deletion authorization verification
+
+Run `node --test scripts/game-image-authorization.test.mjs` for focused RPC,
+client, UI, and migration-source coverage. Storage policy coverage is source
+assertion only, not an emulation of the Supabase Storage service. Before rollout,
+verify in a disposable environment that Editor Storage DELETE cannot remove an
+object (including own/unassociated/reference-only uploads), admin deletion works,
+and Editor INSERT still works. Inspect deployed `storage.objects` policies for
+additional DELETE or ALL policies that could permit this bucket. Apply the
+forward migration before publishing the frontend so older clients fail closed.
