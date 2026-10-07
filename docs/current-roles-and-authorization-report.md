@@ -1,7 +1,7 @@
-# SNHPC website roles and authorization: current-state report
+# SNHPC website roles and authorization: historical current-state report
 
-> Historical snapshot: Pingolf session descriptions document the pre-refactor system.
-> See [Pingolf targets](pingolf-targets.md) for the replacement model and permissions.
+> **Historical/as-of report — superseded by the deployed canonical RBAC model.** This preserves the 2026-09-29 review of the repository boundary below, not current production truth. Statements about absent inheritance/catalogs, equal membership delegation authority, role presentation, and Pingolf sessions describe that reviewed state. Some later annotations point to replacement behavior.
+> Read the [canonical roles and authorization policy](website-roles-and-authorization-policy.md) for current roles, inheritance, delegation, deletion, notification authorization, and Pinball Map authentication; see [Pingolf targets](pingolf-targets.md) for the replacement data model.
 
 **Review date:** 2026-09-29  
 **Scope:** Current repository implementation, traced through browser code, Supabase migrations/RLS, RPCs, Edge Functions, and role-management UI. This is an implementation inventory, not a proposed target model.

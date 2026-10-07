@@ -1,19 +1,20 @@
 # SNHPC Website Roles and Authorization Policy
 
-**Status:** Draft v1  
-**Purpose:** Define the intended role hierarchy, role semantics, delegation model, and effective authorization principles for the Southern New Hampshire Pinball Club website.
+**Status:** Canonical deployed RBAC/security model (status updated 2026-10-07)
+
+**Purpose:** Describe the deployed role hierarchy, role semantics, delegation model, and effective authorization principles for the Southern New Hampshire Pinball Club website.
 
 ## 1. Purpose and scope
 
 The SNHPC website uses role-based authorization to delegate responsibility for maintaining different areas of the website. This policy defines what those roles mean, how they relate to one another, and how effective access should be determined.
 
-The policy is intended to be the canonical description of the authorization model. Application code, database policies, RPCs, Edge Functions, and user-interface behavior should implement this policy consistently.
+This is the canonical description of the deployed authorization model. See the [historical implementation report](current-roles-and-authorization-report.md) for the earlier state.
 
 Membership status and website authorization are separate concepts. Terms such as **Basic Member** and **Full Access Member** describe membership state or benefits; they are not website-management roles. The current implementation already treats these as separate concepts.
 
 ## 2. Canonical role hierarchy
 
-The intended hierarchy is:
+The effective hierarchy is:
 
 ```text
 Website Administrator
@@ -35,7 +36,7 @@ This hierarchy represents **effective authorization**, not merely naming convent
 
 A domain Admin includes all capabilities of that domain's Editor role. Website Administrator includes all capabilities of every domain Admin role.
 
-The current implementation approximates this hierarchy through repeated role checks rather than through an explicit inheritance model. This policy establishes the hierarchy as the intended model going forward.
+Canonical SQL effective-role helpers and the browser role catalog implement this hierarchy. Inherited access does not create additional persisted assignments.
 
 ## 3. Universal Editor policy
 
@@ -47,19 +48,19 @@ Editors should not normally perform destructive or elevated administrative actio
 
 Permanent deletion is reserved for Admin roles unless a specific capability is intentionally classified otherwise.
 
-Role delegation is also considered an administrative capability. Domain-level role delegation is not required in the current implementation, but the model should allow for it in the future.
+Role delegation is an administrative capability reserved to Membership Admin and Website Administrator within the scope below. Events, Photos, and Games Admins do not gain delegation authority from their domain role.
 
 ## 4. Universal Admin policy
 
 A domain **Admin** has all capabilities of the corresponding Editor role plus reserved administrative capabilities for that domain.
 
-Reserved capabilities may include permanent deletion, restoration of deleted records, destructive maintenance actions, higher-impact configuration, and—if implemented in the future—delegation of that domain's Editor role.
+Reserved capabilities may include permanent deletion, restoration of deleted records, destructive maintenance actions, higher-impact configuration, and role delegation where explicitly authorized below.
 
 The guiding rule is:
 
 > **Admin = Editor capabilities + explicitly reserved administrative capabilities.**
 
-An Admin role should not need a separate Editor role assignment in order to receive Editor-level access.
+An Admin role does not need a separate Editor role assignment to receive Editor-level access.
 
 ## 5. Website Administrator
 
@@ -67,7 +68,7 @@ The top-level role is **Website Administrator**.
 
 This name is preferred for user-facing presentation because it clearly describes responsibility for administration of the club's website and avoids implying that the holder is necessarily an officer or administrator of the club organization itself.
 
-The existing internal role identifier may remain `club_admin` unless and until a deliberate migration is undertaken. Display naming and database naming do not need to change at the same time.
+Website Administrator is the display name for the persisted identifier `club_admin`.
 
 Website Administrator includes the effective capabilities of:
 
@@ -82,7 +83,7 @@ It also includes website-wide administrative capabilities that do not naturally 
 
 Website Administrator should be treated as a true top-level role. New domain capabilities should inherit appropriately rather than requiring every subsystem to remember to add the Website Administrator role to an independent allowlist.
 
-The existing protections against removing one's own final administrator assignment or removing the last administrator should be preserved. The current implementation already contains such safeguards for `club_admin`.
+Existing `club_admin` safeguards block removing one's own Website Administrator role and removing the last Website Administrator, including through cascading member deletion.
 
 ## 6. Membership roles
 
@@ -92,13 +93,13 @@ The existing protections against removing one's own final administrator assignme
 
 Role assignment and revocation are Membership Admin capabilities.
 
-Membership Editor should not have general authority to grant or revoke website roles.
+Membership Editor cannot grant or revoke website roles.
 
-Membership Admin may assign and revoke domain roles, including Editor and Admin roles for Events, Photos, and Games.
+Membership Admin may assign and revoke Membership Editor and the Editor and Admin roles for Events, Photos, and Games, but cannot manage `membership_admin` or `club_admin`.
 
-Website Administrator may assign and revoke all roles, including Membership Admin and Website Administrator, subject to administrator-protection rules.
+Website Administrator may assign and revoke all nine assignable roles, including Membership Admin and Website Administrator, subject to self-removal and last-administrator safeguards.
 
-This changes the current policy in one important respect: today, `membership_editor` and `membership_admin` have effectively identical role-management authority, and both may assign module Admin roles. Under this policy, role delegation becomes an Admin-level responsibility.
+Membership Editor retains ordinary membership upkeep but cannot grant or revoke any role. The general membership-access helper name `snh_member_can_manage_roles()` does not confer delegation; grant/revoke RPCs additionally enforce target-specific assignment authority.
 
 ## 7. Domain roles
 
@@ -112,9 +113,9 @@ This changes the current policy in one important respect: today, `membership_edi
 
 **Games Editor** may perform normal game-catalog upkeep, including maintaining game information and imagery, using normal game-data integrations, and maintaining Pingolf targets.
 
-**Games Admin** includes all Games Editor capabilities plus reserved administrative operations such as game deletion/restoration, destructive game-record maintenance, and permanent Pingolf target deletion.
+**Games Admin** includes all Games Editor capabilities plus reserved administrative operations such as game deletion/restoration, destructive game-record maintenance, permanent uploaded game-image deletion, and permanent Pingolf target deletion.
 
-These distinctions are broadly consistent with the current implementation for Events, Photos, and Games, although some individual checks require alignment.
+Destructive deletion is Admin-only where implemented; ordinary upkeep remains Editor-level. Events RLS and the event photo digest use canonical effective-role helpers, retaining the digest’s Photos-access alternative.
 
 ## 8. Pingolf policy
 
@@ -128,7 +129,7 @@ Targets belong directly to games. There are no Pingolf sessions or session-speci
 
 Any member with at least one assigned website role is considered a **Website Volunteer**.
 
-Website Volunteer is an effective status, not a separately assignable role.
+`website_volunteer` is derived effective status, never assignable or persisted. Only recognized canonical assignments confer it.
 
 The intent is:
 
@@ -140,7 +141,7 @@ This formalizes the existing behavior in which any assigned role enables broader
 
 ## 10. Assigned roles versus effective capabilities
 
-The system should distinguish between **assigned roles** and **effective capabilities**.
+The system distinguishes between **assigned roles** and **effective capabilities**.
 
 If a member is explicitly assigned `events_admin`, that does not mean they must also have a separate `events_editor` assignment stored.
 
@@ -177,7 +178,9 @@ The existing application already follows this pattern for most high-impact opera
 
 ## 12. Canonical role catalog
 
-The website should maintain a canonical role catalog that defines, for every assignable role:
+Exactly nine persisted roles are assignable: `club_admin`, `membership_editor`, `membership_admin`, `events_editor`, `events_admin`, `photos_editor`, `photos_admin`, `games_editor`, and `games_admin`. The database CHECK constraint rejects other identifiers, including `website_volunteer`, even on privileged writes.
+
+The browser role catalog describes each role with:
 
 - internal role identifier;
 - user-facing display name;
@@ -188,11 +191,11 @@ The website should maintain a canonical role catalog that defines, for every ass
 - effective capabilities;
 - which roles may assign or revoke it.
 
-This catalog should become the authoritative definition used by both presentation and authorization logic where practical.
+The browser catalog supplies presentation and capability helpers; SQL enforces canonical inheritance and delegation independently.
 
 The goal is not to introduce unnecessary enterprise-style complexity. The purpose is to ensure that concepts such as **Games Admin includes Games Editor** and **Website Administrator includes all domain Admin capabilities** are defined rules rather than duplicated conventions.
 
-The current implementation has no such canonical catalog; role logic is spread across browser helpers, HTML attributes, SQL helpers, policies, RPCs, and Edge Functions.
+Implementation references: [persisted-role constraint](../supabase/migrations/20260928220000_canonical_persisted_member_roles.sql), [effective-role core](../supabase/migrations/20260928230000_canonical_effective_role_core.sql), [domain helpers](../supabase/migrations/20260928235000_domain_helpers_use_effective_roles.sql), and [browser catalog](../assets/js/site-auth.js).
 
 ## 13. User-facing role presentation
 
@@ -206,9 +209,15 @@ Visual representations may use domain icons and level distinctions—for example
 
 Inherited access should be presented as inherited/effective access rather than as a separate assigned role.
 
-This addresses a current gap: Member Admin presently shows an assignment count in the directory, role slugs only after expansion, and there is no general self-service role summary.
+The Profile Roles & Permissions section and member-directory badges present assigned roles separately from inherited access.
 
-## 14. Policy principles
+## 14. Notifications and scheduled ingestion
+
+Signup notification recipients are authorized at enqueue using effective Membership Editor eligibility. The dispatcher sends to the stored recipients without re-checking roles at delivery; subsequent role removal does not cancel already queued mail. See [email operations](email.md).
+
+Pinball Map interactive ingestion requires a verified user JWT and effective Games Editor authorization. Scheduled ingestion uses a separate scheduler-secret credential and System attribution. Scheduler-header presence selects that path; invalid scheduler credentials never fall back to interactive authentication. See [Pinball Map operations](games-relational-migration-plan.md#pinball-map-edge-function).
+
+## 15. Policy principles
 
 The authorization model should remain simple enough for club volunteers and administrators to understand.
 

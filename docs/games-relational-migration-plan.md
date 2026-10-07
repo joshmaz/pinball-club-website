@@ -91,7 +91,7 @@ Cron reads these Vault entries:
 
 The Edge Function compares the scheduler credential against `PINBALLMAP_INGEST_SCHEDULER_SECRET`. Header presence selects scheduler mode, including an empty header; an invalid credential never falls back to user authentication. Missing Edge configuration fails closed for scheduler calls but does not disable authenticated interactive calls. Missing cron configuration skips the HTTP request with a non-secret warning.
 
-Without the scheduler header, the handler requires a Bearer token validated with Supabase Auth and a persisted `games_editor`, `games_admin`, or `club_admin` role. This preserves effective Games Editor access without changing shared RBAC. A public key alone, a missing bearer, or equality between bearer and `apikey` cannot bypass authorization. Only POST can ingest; OPTIONS returns preflight without authentication calls or ingestion effects. Other methods return 405.
+Without the scheduler header, the handler requires a Bearer token validated with Supabase Auth and effective Games Editor access through `snh_member_has_games_access()` (Games Editor, Games Admin, or Website Administrator). This helper uses canonical role inheritance. A public key alone, a missing bearer, or equality between bearer and `apikey` cannot bypass authorization. Only POST can ingest; OPTIONS returns preflight without authentication calls or ingestion effects. Other methods return 405.
 
 `verify_jwt = false` stays configured because scheduler calls do not carry a user JWT. Authentication is enforced by the handler. The browser continues using `functions.invoke` with its session JWT and never receives the scheduler secret.
 

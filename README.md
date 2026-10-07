@@ -28,7 +28,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
 - **Billing:** Stripe Checkout + webhooks will be the source of truth for paid membership state.
 - **Tiering:** support free web users who can upgrade into paid/on-prem access tiers.
 - **Admin roles:** continue iterating on admin tooling and auditing around existing role-based controls.
-- **RBAC expansion:** continue evaluating scoped permissions for areas like events, machines, and membership management.
+- **Authorization:** maintain the deployed [canonical RBAC policy](docs/website-roles-and-authorization-policy.md) as capabilities evolve.
 
 Keep auth and billing concerns separated:
 
@@ -56,24 +56,24 @@ Keep auth and billing concerns separated:
   - `stern_insider` for a Stern Insider username
   - `matchplay_events` for a MatchPlay player ID
   - The portal reads these via the `snh_get_my_external_accounts` RPC and writes them with `upsert`/`delete` on the table; clearing a field deletes the matching row.
-- Member admin capabilities use security-definer RPCs (`snh_get_member_admin_stats`, `snh_list_members_for_admin`, `snh_grant_member_role`, `snh_revoke_member_role`, `snh_set_member_membership`) gated by the `MEMBERSHIP_MANAGE_ACCESS` role group (see role table below).
+- Ordinary member upkeep uses security-definer RPCs gated by effective Membership Editor access. Role grant/revoke RPCs additionally enforce delegation: Membership Editor cannot delegate; Membership Admin can manage Membership Editor and Events/Photos/Games roles; Website Administrator can manage all nine assignable roles subject to self/last-admin safeguards.
 - Manual membership updates in Member Tools use `snh_set_member_membership` with allowlisted status values (`active`, `past_due`, `expired`, `canceled`, `inactive`) and a latest-record update pattern in `public.memberships` (fallback insert when no membership row exists yet).
 
 ## Role-gated UI sections
 
-The member dashboard sidebar shows a section if the signed-in member has any of the role slugs listed below. UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
+The member dashboard sidebar uses effective capabilities; the table lists assignments that confer access. `club_admin` displays as **Website Administrator**. Admin inherits its corresponding Editor, and Website Administrator inherits all domain Admin/Editor capabilities. Exactly nine roles are persisted and assignable; `website_volunteer` is derived from any recognized assignment. See the [canonical authorization policy](docs/website-roles-and-authorization-policy.md). UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
 
 | Sidebar label  | Panel heading            | Roles that grant access                                       | Notes                                                                                  |
 |----------------|--------------------------|---------------------------------------------------------------|----------------------------------------------------------------------------------------|
 | Profile        | Profile                  | Any signed-in member                                          | Always shown.                                                                          |
 | Membership     | Membership               | Any signed-in member                                          | Always shown.                                                                          |
 | Notes          | Club & machine notes     | Any signed-in member can read and add notes                   | Editing and status workflow require any portal helper role (events, photos, games, or membership). |
-| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes. |
+| Member Tools   | Member Tools             | `membership_editor`, `membership_admin`, `club_admin`         | Listed in code as `ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS`; includes manual membership status/tier/end-date updates plus role grants/revokes only for authorized Admins. |
 | Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
-| Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`.                                                            |
+| Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`; permanent uploaded-image and Pingolf target deletion require effective Games Admin. |
 
-Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. Keep that map in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
+Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. The browser catalog and canonical SQL effective-role helpers define inheritance. Keep browser capabilities in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
 
 ## Games catalog (relational)
 
