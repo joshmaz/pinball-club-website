@@ -30,7 +30,7 @@ These cannot be verified by a desktop preview or Node tests. After deployment to
 
 ## Finishing changes
 
-Home and About both offer understated, side-by-side Apple Maps and Google Maps links with a small location icon, visible vendor names, accessible directions labels and tooltips. Both retain the existing destination, 48 Bridge St, Unit 3A, Nashua, NH. Origin and travel mode are omitted so the map provider can offer the appropriate route choices.
+Home offers understated, side-by-side Apple Maps and Google Maps links with small location icons. About uses plain text links within the approved updated paragraph, with “Apple Maps or Google Maps” phrasing and current full-time opening/member-tool information. Both use visible vendor names, accessible directions labels and tooltips. Both retain the existing destination, 48 Bridge St, Unit 3A, Nashua, NH. Origin and travel mode are omitted so the map provider can offer the appropriate route choices.
 
 - [Apple Map Links](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html): `daddr` directions destination.
 - [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started): `/maps/dir/?api=1&destination=…`.
