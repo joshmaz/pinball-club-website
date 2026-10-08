@@ -1126,7 +1126,7 @@ async function loadGames() {
     const todayIso = todayIsoDate();
     let priorGames = [];
     let hasRenderedSnapshot = false;
-    let showAllMode = false;
+    let showAllMode = new URLSearchParams(window.location.search).get("view") === "all";
     let currentLineup = [];
     function renderLineup(games) {
       currentLineup = games;

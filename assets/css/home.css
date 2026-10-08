@@ -47,9 +47,18 @@
  .home-concept-section { padding: 2rem 0; }
 }
 .home-floor { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; border-top: 1px solid var(--club-line); }
-.club-home #gallery { height: 320px; max-width: 100%; margin: 0; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); }
-.club-home #gallery img { object-fit: cover; object-position: center; }
-#gallery-pause { padding: .6rem .8rem; min-height: 44px; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-teal); font: inherit; }
+.club-home #gallery { position: relative; min-width: 0; height: auto; max-width: 100%; margin: 0; overflow: hidden; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); }
+.gallery-track { position: relative; aspect-ratio: 4 / 3; overflow: hidden; touch-action: pan-y; }
+.gallery-slide { position: absolute; left: 15%; top: 6%; width: 70%; height: 88%; opacity: .18; border: 1px solid var(--club-line); border-radius: var(--club-radius); overflow: hidden; }
+.club-home #gallery .gallery-slide img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.gallery-slide.is-current { opacity: 1; }
+.gallery-edge { position: absolute; top: 0; bottom: 0; z-index: 1; width: 44px; border: 0; background: transparent; color: var(--club-ink); font: 2rem/1 var(--club-display); cursor: pointer; }
+.gallery-edge:hover { background: var(--club-surface); }
+.gallery-edge:focus-visible { outline: 3px solid var(--club-teal); outline-offset: -3px; }
+#gallery-previous { left: 0; }
+#gallery-next { right: 0; }
+.gallery-footer { display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 52px; padding: .35rem .75rem; border-top: 1px solid var(--club-line); background: var(--club-surface); }
+#gallery-caption { margin: 0; text-align: center; font: .8rem/1.4 var(--club-display); }
 @media(max-width:600px) { .home-floor { grid-template-columns: 1fr; } }
 
 /* Keep eight desktop snapshots in balanced rows, with four on mobile. */
