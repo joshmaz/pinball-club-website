@@ -3,52 +3,312 @@
     {
       "filename": "snhpc_club01.jpg",
       "alt": "Players gathered around active pinball machines at the club",
-      "caption": "League night energy"
+      "caption": "League night energy",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp",
+          "width": 320,
+          "height": 240,
+          "bytes": 21836
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp",
+          "width": 640,
+          "height": 480,
+          "bytes": 59406
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp",
+          "width": 960,
+          "height": 720,
+          "bytes": 100924
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w1600.webp",
+          "width": 1600,
+          "height": 1200,
+          "bytes": 201952
+        }
+      ]
     },
     {
       "filename": "snhpc_club02.jpg",
       "alt": "Rows of lit pinball games inside the club space",
-      "caption": "Full row of games"
+      "caption": "Full row of games",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp",
+          "width": 320,
+          "height": 427,
+          "bytes": 34520
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp",
+          "width": 640,
+          "height": 854,
+          "bytes": 132416
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp",
+          "width": 960,
+          "height": 1282,
+          "bytes": 267610
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp",
+          "width": 1534,
+          "height": 2048,
+          "bytes": 513332
+        }
+      ]
     },
     {
       "filename": "snhpc_club03.jpg",
       "alt": "Members playing and socializing during a club event",
-      "caption": "Community at play"
+      "caption": "Community at play",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w320.webp",
+          "width": 320,
+          "height": 191,
+          "bytes": 17266
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w640.webp",
+          "width": 640,
+          "height": 382,
+          "bytes": 61304
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w960.webp",
+          "width": 960,
+          "height": 573,
+          "bytes": 121526
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w1600.webp",
+          "width": 1600,
+          "height": 955,
+          "bytes": 254678
+        }
+      ]
     },
     {
       "filename": "snhpc_yankee-swap2024.jpg",
       "alt": "Members celebrating during the 2024 Yankee Swap event",
-      "caption": "Yankee Swap 2024"
+      "caption": "Yankee Swap 2024",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w320.webp",
+          "width": 320,
+          "height": 240,
+          "bytes": 22996
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w640.webp",
+          "width": 640,
+          "height": 480,
+          "bytes": 72114
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w960.webp",
+          "width": 960,
+          "height": 720,
+          "bytes": 125908
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w1600.webp",
+          "width": 1600,
+          "height": 1200,
+          "bytes": 229454
+        }
+      ]
     },
     {
       "filename": "knock-out_gloves.jpg",
       "alt": "Knock Out event artwork with boxing gloves motif",
-      "caption": "Knock Out event art"
+      "caption": "Knock Out event art",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/knock-out_gloves-76a83aed5b48.w320.webp",
+          "width": 320,
+          "height": 427,
+          "bytes": 19292
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/knock-out_gloves-76a83aed5b48.w640.webp",
+          "width": 640,
+          "height": 854,
+          "bytes": 49904
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/knock-out_gloves-76a83aed5b48.w960.webp",
+          "width": 960,
+          "height": 1281,
+          "bytes": 79106
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/knock-out_gloves-76a83aed5b48.w1535.webp",
+          "width": 1535,
+          "height": 2048,
+          "bytes": 137126
+        }
+      ]
     },
     {
       "filename": "IMG_3044.jpg",
       "alt": "Pinball machine backboxes glowing in the club space",
-      "caption": "Enjoying the glow"
+      "caption": "Enjoying the glow",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_3044-ea1b5af82785.w320.webp",
+          "width": 320,
+          "height": 427,
+          "bytes": 35856
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_3044-ea1b5af82785.w640.webp",
+          "width": 640,
+          "height": 853,
+          "bytes": 95350
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_3044-ea1b5af82785.w960.webp",
+          "width": 960,
+          "height": 1280,
+          "bytes": 162750
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_3044-ea1b5af82785.w1536.webp",
+          "width": 1536,
+          "height": 2048,
+          "bytes": 306982
+        }
+      ]
     },
     {
       "filename": "IMG_4873.jpg",
       "alt": "Players lining up for games during an event night",
-      "caption": "Busy event night"
+      "caption": "Busy event night",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp",
+          "width": 320,
+          "height": 404,
+          "bytes": 38424
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp",
+          "width": 640,
+          "height": 808,
+          "bytes": 137298
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp",
+          "width": 960,
+          "height": 1212,
+          "bytes": 272032
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp",
+          "width": 1600,
+          "height": 2020,
+          "bytes": 566992
+        }
+      ]
     },
     {
       "filename": "IMG_4865.jpg",
       "alt": "Classic and modern pinball machines side by side",
-      "caption": "Classic meets modern"
+      "caption": "Classic meets modern",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp",
+          "width": 320,
+          "height": 180,
+          "bytes": 17614
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 56452
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 107196
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 230512
+        }
+      ]
     },
     {
       "filename": "IMG_5680.jpg",
       "alt": "Players focused on a close pinball match",
-      "caption": "Head-to-head match"
+      "caption": "Head-to-head match",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w320.webp",
+          "width": 320,
+          "height": 240,
+          "bytes": 18708
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w640.webp",
+          "width": 640,
+          "height": 480,
+          "bytes": 60268
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w960.webp",
+          "width": 960,
+          "height": 720,
+          "bytes": 118944
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w1600.webp",
+          "width": 1600,
+          "height": 1200,
+          "bytes": 246664
+        }
+      ]
     },
     {
       "filename": "IMG_5947.jpg",
       "alt": "Crowd scene from a club tournament gathering",
-      "caption": "Tournament crowd"
+      "caption": "Tournament crowd",
+      "deliveryVariants": [
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp",
+          "width": 320,
+          "height": 427,
+          "bytes": 21550
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp",
+          "width": 640,
+          "height": 853,
+          "bytes": 60152
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp",
+          "width": 960,
+          "height": 1280,
+          "bytes": 106484
+        },
+        {
+          "url": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w1536.webp",
+          "width": 1536,
+          "height": 2048,
+          "bytes": 209686
+        }
+      ]
     }
   ]
 }
