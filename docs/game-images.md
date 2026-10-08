@@ -218,10 +218,10 @@ for the same approved selected association. There is no paid transformation API.
 See [Supabase image transformation plan requirements](https://supabase.com/docs/guides/storage/serving/image-transformations).
 
 `assets/js/game-image-delivery.js` supplies `srcset`/`sizes` for cards, detail,
-home rotation, and editor previews. The browser selects candidates for rendered
+and editor previews. The home carousel reuses its normalized candidates with a measured slot width. The browser selects candidates for rendered
 size and device pixel ratio. Cards default to 640, detail to the largest suitable
 candidate. Missing derivative metadata falls back to the current source URL.
-The home rotation clears old `srcset` when moving to a source-only record.
+The home carousel gives each source-only record its own image element, avoiding stale candidate URLs.
 Attribution, approval, and primary selection behavior are preserved. GIF and detected animated PNG/WebP uploads
 retain original delivery to preserve animation. Processing rejects still images
 above 40 megapixels and browsers unable to encode WebP before uploading anything.
@@ -356,3 +356,22 @@ Local reports: `/tmp/opdb-image-sync-dry-run.json`,
 `/tmp/opdb-image-sync-canary.json`, `/tmp/opdb-image-sync-full.json`, and
 `/tmp/opdb-image-sync-after.json`. Reports are operational artifacts, not
 committed source files. Snapshot/frontend deployment is separate from this run.
+
+### Home collection carousel
+
+The homepage uses a shuffled collection and random starting position on every
+load. Each image glides slowly from just right of center to just left of center
+for 2.4 seconds, then hands off to the next image over 0.6 seconds. Faded
+neighbors remain visible; the title is centered below the frame.
+
+Hover and keyboard focus suspend motion while browsing. Edge arrows, keyboard
+arrows, and touch swipes select games. Leaving the carousel resumes motion;
+touch browsing resumes after three seconds of inactivity. Returning to the
+visible tab or viewport resumes automatically, clearing stale interaction state.
+Reduced motion leaves the image stationary with manual navigation available.
+
+Only the current image and immediate neighbors load, and initial loading waits
+until the carousel enters the viewport. Offscreen and hidden-tab states pause
+animations and further neighbor loading, including queued cycle completion.
+Candidate `sizes` use the measured frame width and update on visible resizes.
+Existing hosted and OPDB candidates remain the source of responsive URLs.
