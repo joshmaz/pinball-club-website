@@ -3,7 +3,7 @@
     "schemaVersion": 1,
     "dataset": "games",
     "source": "games_catalog_v1",
-    "generatedAt": "2026-10-08T16:36:11.335Z",
+    "generatedAt": "2026-10-08T18:47:12.350Z",
     "recordCount": 126
   },
   "games": [
@@ -851,6 +851,34 @@
       "mapAtClub": false,
       "playerCount": 4,
       "manufacturer": "Williams",
+      "primaryImage": {
+        "id": "66e9ce2f-3274-47c7-af1b-4150d4a9a69e",
+        "url": "https://img.opdb.org/c431f860-e865-41ba-a9d6-81cad707529b-large.jpg",
+        "altText": "Black Knight playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/c431f860-e865-41ba-a9d6-81cad707529b-small.jpg",
+            "width": 192,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/c431f860-e865-41ba-a9d6-81cad707529b-medium.jpg",
+            "width": 491,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/c431f860-e865-41ba-a9d6-81cad707529b-large.jpg",
+            "width": 1080,
+            "height": 1408
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GrO7w-M9R03",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GrO7w-M9R03",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -1342,6 +1370,34 @@
       "playerCount": 4,
       "releaseDate": "1988-01-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "8b3c344b-47be-4503-956c-30949049295c",
+        "url": "https://img.opdb.org/c2b34d76-5c7f-41c3-be48-0b6e47cc1df4-large.jpg",
+        "altText": "Diamond Lady playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/c2b34d76-5c7f-41c3-be48-0b6e47cc1df4-small.jpg",
+            "width": 173,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/c2b34d76-5c7f-41c3-be48-0b6e47cc1df4-medium.jpg",
+            "width": 443,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/c2b34d76-5c7f-41c3-be48-0b6e47cc1df4-large.jpg",
+            "width": 864,
+            "height": 1248
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G4jXW-MQdrN",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G4jXW-MQdrN",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -1558,6 +1614,34 @@
       "playerCount": 4,
       "releaseDate": "1989-01-01",
       "manufacturer": "Williams",
+      "primaryImage": {
+        "id": "55991262-b8b2-4e31-8b0b-9efd25971cfd",
+        "url": "https://img.opdb.org/6692baef-ddb4-4ed1-a037-038182144883-large.jpg",
+        "altText": "Earthshaker playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/6692baef-ddb4-4ed1-a037-038182144883-small.jpg",
+            "width": 179,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/6692baef-ddb4-4ed1-a037-038182144883-medium.jpg",
+            "width": 457,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/6692baef-ddb4-4ed1-a037-038182144883-large.jpg",
+            "width": 936,
+            "height": 1312
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GRw0r-Mp42p",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GRw0r-Mp42p",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -3833,6 +3917,34 @@
       "playerCount": 4,
       "releaseDate": "2003-01-01",
       "manufacturer": "Stern",
+      "primaryImage": {
+        "id": "3eb123bf-6a45-4ef1-ac38-6a47d4c745ed",
+        "url": "https://img.opdb.org/c618e2d6-9e43-45b9-945b-889b7c1e4542-large.jpg",
+        "altText": "Lord of the Rings playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/c618e2d6-9e43-45b9-945b-889b7c1e4542-small.jpg",
+            "width": 202,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/c618e2d6-9e43-45b9-945b-889b7c1e4542-medium.jpg",
+            "width": 518,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/c618e2d6-9e43-45b9-945b-889b7c1e4542-large.jpg",
+            "width": 757,
+            "height": 936
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GrqZX-MD15w",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GrqZX-MD15w",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -5598,6 +5710,34 @@
       "playerCount": 4,
       "releaseDate": "1985-01-01",
       "manufacturer": "Williams",
+      "primaryImage": {
+        "id": "ff57902c-a2f9-4a13-891e-d3ee84555477",
+        "url": "https://img.opdb.org/2dedc9cd-c618-42dd-bd9d-2768bab9e551-large.jpg",
+        "altText": "Sorcerer playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/2dedc9cd-c618-42dd-bd9d-2768bab9e551-small.jpg",
+            "width": 171,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/2dedc9cd-c618-42dd-bd9d-2768bab9e551-medium.jpg",
+            "width": 438,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/2dedc9cd-c618-42dd-bd9d-2768bab9e551-large.jpg",
+            "width": 972,
+            "height": 1420
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G4qxv-MJPyv",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G4qxv-MJPyv",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/sorcerer",
       "locationStints": [
         {
@@ -6048,6 +6188,34 @@
       "playerCount": 4,
       "releaseDate": "1993-03-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "c672fbc7-a861-45dc-9952-8186e3b74789",
+        "url": "https://img.opdb.org/ef0cf79d-09be-40cf-91de-82a35ed7dffd-large.jpg",
+        "altText": "Street Fighter II playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/ef0cf79d-09be-40cf-91de-82a35ed7dffd-small.jpg",
+            "width": 205,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/ef0cf79d-09be-40cf-91de-82a35ed7dffd-medium.jpg",
+            "width": 525,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/ef0cf79d-09be-40cf-91de-82a35ed7dffd-large.jpg",
+            "width": 768,
+            "height": 936
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G5BYQ-MQdBV",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G5BYQ-MQdBV",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/street-fighter-ii",
       "locationStints": [
         {
@@ -6892,6 +7060,34 @@
       "playerCount": 4,
       "releaseDate": "2011-01-01",
       "manufacturer": "Stern",
+      "primaryImage": {
+        "id": "f88f24b6-9e10-473b-9d70-240d135c1292",
+        "url": "https://img.opdb.org/faf1b05a-27f8-4ae3-bac5-b6653d62a7a0-large.jpg",
+        "altText": "Backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/faf1b05a-27f8-4ae3-bac5-b6653d62a7a0-small.jpg",
+            "width": 250,
+            "height": 188
+          },
+          {
+            "url": "https://img.opdb.org/faf1b05a-27f8-4ae3-bac5-b6653d62a7a0-medium.jpg",
+            "width": 550,
+            "height": 414
+          },
+          {
+            "url": "https://img.opdb.org/faf1b05a-27f8-4ae3-bac5-b6653d62a7a0-large.jpg",
+            "width": 550,
+            "height": 414
+          }
+        ],
+        "imageType": "backglass",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GredR-MDE2K",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GredR-MDE2K",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -7046,6 +7242,34 @@
       "playerCount": 4,
       "releaseDate": "1988-12-01",
       "manufacturer": "Data East",
+      "primaryImage": {
+        "id": "d070ffd3-2432-4a3e-ae76-687dd74d1587",
+        "url": "https://img.opdb.org/da37838d-57a7-47e5-8b31-24a4ed7cddd5-large.jpg",
+        "altText": "Time Machine playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/da37838d-57a7-47e5-8b31-24a4ed7cddd5-small.jpg",
+            "width": 178,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/da37838d-57a7-47e5-8b31-24a4ed7cddd5-medium.jpg",
+            "width": 456,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/da37838d-57a7-47e5-8b31-24a4ed7cddd5-large.jpg",
+            "width": 792,
+            "height": 1112
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GR99Y-MJ9Zy",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GR99Y-MJ9Zy",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/time-machine",
       "locationStints": [
         {
@@ -7332,6 +7556,34 @@
       "playerCount": 1,
       "releaseDate": "1976-08-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "b0b936d8-caa8-417d-8d93-c93da047b0a0",
+        "url": "https://img.opdb.org/8c4b503c-d150-4ea0-9028-237db20a6926-large.jpg",
+        "altText": "Volley playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/8c4b503c-d150-4ea0-9028-237db20a6926-small.jpg",
+            "width": 185,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/8c4b503c-d150-4ea0-9028-237db20a6926-medium.jpg",
+            "width": 475,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/8c4b503c-d150-4ea0-9028-237db20a6926-large.jpg",
+            "width": 1113,
+            "height": 1500
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G5Q19-MLeEN",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G5Q19-MLeEN",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/volley",
       "locationStints": [
         {
