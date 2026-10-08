@@ -46,6 +46,12 @@
     trigger.dataset.imageAlt = item.alt;
 
     const image = document.createElement("img");
+    if (item.srcset) {
+      image.srcset = item.srcset;
+      image.sizes = "(max-width: 400px) calc(100vw - clamp(32px, 6vw, 64px)), (max-width: 1000px) calc((100vw - clamp(32px, 6vw, 64px) - 13px) / 2), calc((min(100vw, 1200px) - clamp(32px, 6vw, 64px) - 39px) / 4)";
+      image.width = item.width;
+      image.height = item.height;
+    }
     image.src = item.thumbSrc || item.fullSrc;
     image.alt = item.alt;
     image.loading = "lazy";
@@ -146,12 +152,21 @@
       })
       .map(function (item) {
         const src = STATIC_IMAGE_BASE + item.filename;
+        const variants = (Array.isArray(item.deliveryVariants) ? item.deliveryVariants : [])
+          .filter(function (v) { return v && typeof v.url === "string" && v.url.startsWith(STATIC_IMAGE_BASE + "responsive/") && Number.isInteger(v.width) && v.width > 0 && Number.isInteger(v.height) && v.height > 0; })
+          .sort(function (a, b) { return a.width - b.width; });
+        const cards = variants.filter(function (v) { return v.width <= 960; });
+        const thumb = cards[0];
+        const full = variants[variants.length - 1];
         return {
           source: "static",
           alt: item.alt,
           caption: item.caption,
-          thumbSrc: src,
-          fullSrc: src
+          thumbSrc: thumb ? thumb.url : src,
+          fullSrc: full ? full.url : src,
+          srcset: cards.map(function (v) { return v.url + " " + v.width + "w"; }).join(", "),
+          width: thumb && thumb.width,
+          height: thumb && thumb.height
         };
       });
   }

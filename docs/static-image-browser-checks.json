@@ -1,0 +1,880 @@
+[
+  {
+    "file": "merch.html",
+    "width": 1440,
+    "dpr": 1,
+    "total": 103880,
+    "images": [
+      {
+        "src": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp 320w, assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp 545w",
+        "complete": true,
+        "bytes": 15606
+      },
+      {
+        "src": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp 320w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp 640w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w960.webp 960w",
+        "complete": true,
+        "bytes": 9686
+      },
+      {
+        "src": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp 240w",
+        "complete": true,
+        "bytes": 9286
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp 188w",
+        "complete": true,
+        "bytes": 7132
+      },
+      {
+        "src": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp 184w",
+        "complete": true,
+        "bytes": 7094
+      },
+      {
+        "src": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp 320w, assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp 553w",
+        "complete": true,
+        "bytes": 16794
+      },
+      {
+        "src": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp 320w, assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp 553w",
+        "complete": true,
+        "bytes": 19124
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp 320w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp 640w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w960.webp 960w",
+        "complete": true,
+        "bytes": 19158
+      }
+    ]
+  },
+  {
+    "file": "about.html",
+    "width": 1440,
+    "dpr": 1,
+    "total": 269714,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp",
+        "slot": 551,
+        "height": 413,
+        "natural": 557,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp 1534w",
+        "complete": true,
+        "bytes": 132416
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp",
+        "slot": 551,
+        "height": 413,
+        "natural": 557,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp 1600w",
+        "complete": true,
+        "bytes": 137298
+      }
+    ]
+  },
+  {
+    "file": "index.html",
+    "width": 1440,
+    "dpr": 1,
+    "total": 192914,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp 960w",
+        "complete": true,
+        "bytes": 21836
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp 960w",
+        "complete": true,
+        "bytes": 21550
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w",
+        "complete": true,
+        "bytes": 34520
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp 960w",
+        "complete": true,
+        "bytes": 17614
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w960.webp 960w",
+        "complete": true,
+        "bytes": 17266
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w",
+        "complete": true,
+        "bytes": 38424
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w960.webp 960w",
+        "complete": true,
+        "bytes": 22996
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w320.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w960.webp 960w",
+        "complete": true,
+        "bytes": 18708
+      }
+    ],
+    "lightbox": {
+      "src": "http://127.0.0.1:8765/assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w1600.webp",
+      "natural": 1600
+    }
+  },
+  {
+    "file": "merch.html",
+    "width": 1440,
+    "dpr": 2,
+    "total": 184342,
+    "images": [
+      {
+        "src": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp 320w, assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp 545w",
+        "complete": true,
+        "bytes": 32572
+      },
+      {
+        "src": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp 320w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp 640w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w960.webp 960w",
+        "complete": true,
+        "bytes": 20394
+      },
+      {
+        "src": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp 240w",
+        "complete": true,
+        "bytes": 9286
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp 188w",
+        "complete": true,
+        "bytes": 7132
+      },
+      {
+        "src": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp 184w",
+        "complete": true,
+        "bytes": 7094
+      },
+      {
+        "src": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp 320w, assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp 553w",
+        "complete": true,
+        "bytes": 30762
+      },
+      {
+        "src": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp 320w, assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp 553w",
+        "complete": true,
+        "bytes": 33808
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp",
+        "slot": 323,
+        "height": 242,
+        "natural": 315,
+        "srcset": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp 320w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp 640w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w960.webp 960w",
+        "complete": true,
+        "bytes": 43294
+      }
+    ]
+  },
+  {
+    "file": "about.html",
+    "width": 1440,
+    "dpr": 2,
+    "total": 1080324,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp",
+        "slot": 551,
+        "height": 413,
+        "natural": 557,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp 1534w",
+        "complete": true,
+        "bytes": 513332
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp",
+        "slot": 551,
+        "height": 413,
+        "natural": 558,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp 1600w",
+        "complete": true,
+        "bytes": 566992
+      }
+    ]
+  },
+  {
+    "file": "index.html",
+    "width": 1440,
+    "dpr": 2,
+    "total": 639410,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp 960w",
+        "complete": true,
+        "bytes": 59406
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp 960w",
+        "complete": true,
+        "bytes": 60152
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w",
+        "complete": true,
+        "bytes": 132416
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp 960w",
+        "complete": true,
+        "bytes": 56452
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w960.webp 960w",
+        "complete": true,
+        "bytes": 61304
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w",
+        "complete": true,
+        "bytes": 137298
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w960.webp 960w",
+        "complete": true,
+        "bytes": 72114
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w640.webp",
+        "slot": 269,
+        "height": 202,
+        "natural": 274,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w960.webp 960w",
+        "complete": true,
+        "bytes": 60268
+      }
+    ],
+    "lightbox": {
+      "src": "http://127.0.0.1:8765/assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w1600.webp",
+      "natural": 1600
+    }
+  },
+  {
+    "file": "merch.html",
+    "width": 390,
+    "dpr": 1,
+    "total": 103880,
+    "images": [
+      {
+        "src": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp 320w, assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp 545w",
+        "complete": true,
+        "bytes": 15606
+      },
+      {
+        "src": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp 320w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp 640w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w960.webp 960w",
+        "complete": true,
+        "bytes": 9686
+      },
+      {
+        "src": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp 240w",
+        "complete": true,
+        "bytes": 9286
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp 188w",
+        "complete": true,
+        "bytes": 7132
+      },
+      {
+        "src": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp 184w",
+        "complete": true,
+        "bytes": 7094
+      },
+      {
+        "src": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp 320w, assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp 553w",
+        "complete": true,
+        "bytes": 16794
+      },
+      {
+        "src": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp 320w, assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp 553w",
+        "complete": true,
+        "bytes": 19124
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp 320w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp 640w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w960.webp 960w",
+        "complete": true,
+        "bytes": 19158
+      }
+    ]
+  },
+  {
+    "file": "about.html",
+    "width": 390,
+    "dpr": 1,
+    "total": 269714,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp 1534w",
+        "complete": true,
+        "bytes": 132416
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp 1600w",
+        "complete": true,
+        "bytes": 137298
+      }
+    ]
+  },
+  {
+    "file": "index.html",
+    "width": 390,
+    "dpr": 1,
+    "total": 308426,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp 960w",
+        "complete": true,
+        "bytes": 59406
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp 960w",
+        "complete": true,
+        "bytes": 60152
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w",
+        "complete": true,
+        "bytes": 132416
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp 960w",
+        "complete": true,
+        "bytes": 56452
+      }
+    ],
+    "lightbox": {
+      "src": "http://127.0.0.1:8765/assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w1600.webp",
+      "natural": 1600
+    }
+  },
+  {
+    "file": "merch.html",
+    "width": 390,
+    "dpr": 2,
+    "total": 184342,
+    "images": [
+      {
+        "src": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp 320w, assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp 545w",
+        "complete": true,
+        "bytes": 32572
+      },
+      {
+        "src": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp 320w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp 640w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w960.webp 960w",
+        "complete": true,
+        "bytes": 20394
+      },
+      {
+        "src": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp 240w",
+        "complete": true,
+        "bytes": 9286
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp 188w",
+        "complete": true,
+        "bytes": 7132
+      },
+      {
+        "src": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp 184w",
+        "complete": true,
+        "bytes": 7094
+      },
+      {
+        "src": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp 320w, assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp 553w",
+        "complete": true,
+        "bytes": 30762
+      },
+      {
+        "src": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp 320w, assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp 553w",
+        "complete": true,
+        "bytes": 33808
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp",
+        "slot": 316,
+        "height": 237,
+        "natural": 308,
+        "srcset": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp 320w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp 640w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w960.webp 960w",
+        "complete": true,
+        "bytes": 43294
+      }
+    ]
+  },
+  {
+    "file": "about.html",
+    "width": 390,
+    "dpr": 2,
+    "total": 539642,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp 1534w",
+        "complete": true,
+        "bytes": 267610
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp 1600w",
+        "complete": true,
+        "bytes": 272032
+      }
+    ]
+  },
+  {
+    "file": "index.html",
+    "width": 390,
+    "dpr": 2,
+    "total": 582214,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp 960w",
+        "complete": true,
+        "bytes": 100924
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp 960w",
+        "complete": true,
+        "bytes": 106484
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w",
+        "complete": true,
+        "bytes": 267610
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 358,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp 960w",
+        "complete": true,
+        "bytes": 107196
+      }
+    ],
+    "lightbox": {
+      "src": "http://127.0.0.1:8765/assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w1600.webp",
+      "natural": 1600
+    }
+  },
+  {
+    "file": "merch.html",
+    "width": 768,
+    "dpr": 2,
+    "total": 184342,
+    "images": [
+      {
+        "src": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w320.webp 320w, assets/images/merch/responsive/t-shirt_tan_front-5a3cf419a7e5.w545.webp 545w",
+        "complete": true,
+        "bytes": 32572
+      },
+      {
+        "src": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w320.webp 320w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w640.webp 640w, assets/images/merch/responsive/t-shirt_blue_front-back-2b12df219841.w960.webp 960w",
+        "complete": true,
+        "bytes": 20394
+      },
+      {
+        "src": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/drink_koozie-68454ad4345d.w240.webp 240w",
+        "complete": true,
+        "bytes": 9286
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/sticker_snhpc-logo-90e4d5a0019e.w188.webp 188w",
+        "complete": true,
+        "bytes": 7132
+      },
+      {
+        "src": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/pin_snhpc-logo-1d3d3c98e771.w184.webp 184w",
+        "complete": true,
+        "bytes": 7094
+      },
+      {
+        "src": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w320.webp 320w, assets/images/merch/responsive/hoodie_red_front-b1677fc32c89.w553.webp 553w",
+        "complete": true,
+        "bytes": 30762
+      },
+      {
+        "src": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/hoddie_red_back-34624975ac01.w320.webp 320w, assets/images/merch/responsive/hoddie_red_back-34624975ac01.w553.webp 553w",
+        "complete": true,
+        "bytes": 33808
+      },
+      {
+        "src": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp",
+        "slot": 312,
+        "height": 234,
+        "natural": 300,
+        "srcset": "assets/images/merch/responsive/sticker_Candy-2597da80415b.w320.webp 320w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w640.webp 640w, assets/images/merch/responsive/sticker_Candy-2597da80415b.w960.webp 960w",
+        "complete": true,
+        "bytes": 43294
+      }
+    ]
+  },
+  {
+    "file": "about.html",
+    "width": 768,
+    "dpr": 2,
+    "total": 539642,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp",
+        "slot": 348,
+        "height": 261,
+        "natural": 350,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w1534.webp 1534w",
+        "complete": true,
+        "bytes": 267610
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp",
+        "slot": 348,
+        "height": 261,
+        "natural": 350,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w1600.webp 1600w",
+        "complete": true,
+        "bytes": 272032
+      }
+    ]
+  },
+  {
+    "file": "index.html",
+    "width": 768,
+    "dpr": 2,
+    "total": 1220624,
+    "images": [
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w960.webp 960w",
+        "complete": true,
+        "bytes": 100924
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5947-d2e7e9af4ae8.w960.webp 960w",
+        "complete": true,
+        "bytes": 106484
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club02-8d1709a08680.w960.webp 960w",
+        "complete": true,
+        "bytes": 267610
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4865-6f87948ff0f4.w960.webp 960w",
+        "complete": true,
+        "bytes": 107196
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_club03-31d8833edeba.w960.webp 960w",
+        "complete": true,
+        "bytes": 121526
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_4873-ebb64b054054.w960.webp 960w",
+        "complete": true,
+        "bytes": 272032
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w320.webp 320w, assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w640.webp 640w, assets/images/highlights/processed/responsive/snhpc_yankee-swap2024-687721a61515.w960.webp 960w",
+        "complete": true,
+        "bytes": 125908
+      },
+      {
+        "src": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w960.webp",
+        "slot": 352,
+        "height": 264,
+        "natural": 354,
+        "srcset": "assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w320.webp 320w, assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w640.webp 640w, assets/images/highlights/processed/responsive/IMG_5680-cc885d12ce9c.w960.webp 960w",
+        "complete": true,
+        "bytes": 118944
+      }
+    ],
+    "lightbox": {
+      "src": "http://127.0.0.1:8765/assets/images/highlights/processed/responsive/snhpc_club01-83bd75eadca9.w1600.webp",
+      "natural": 1600
+    }
+  }
+]
