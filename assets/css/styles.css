@@ -78,7 +78,9 @@ html {
   --bg-body-stop-3: light-dark(#e3eaf2, #0a0d10);
 
   /* Browser polish */
-  --theme-color:      light-dark(#f6f8fb, #0f1216);
+  --theme-color-light: #f6f8fb;
+  --theme-color-dark: #0f1216;
+  --theme-color: light-dark(#f6f8fb, #0f1216);
   --selection-bg:     light-dark(#c8e1ff, #1f3a59);
   --selection-text:   light-dark(#0b1117, #f2f6fb);
   --scrollbar-thumb:  light-dark(#bfc8d4, #2d3b49);

@@ -35,11 +35,11 @@ test('existing theme controller follows System and persists an explicit override
   function loadTheme(dark) {
     const attrs = new Map();
     const media = { matches: dark, addEventListener(_, fn) { this.change = fn; } };
-    const root = { setAttribute: (k, v) => attrs.set(k, v), removeAttribute: k => attrs.delete(k) };
+    const root = { getAttribute: k => attrs.get(k), setAttribute: (k, v) => attrs.set(k, v), removeAttribute: k => attrs.delete(k) };
     const window = { matchMedia: () => media, addEventListener() {}, localStorage: {
       getItem: k => saved.get(k), setItem: (k, v) => saved.set(k, v), removeItem: k => saved.delete(k),
     } };
-    const document = { documentElement: root, readyState: 'loading', head: {}, querySelector: () => null,
+    const document = { documentElement: root, readyState: 'loading', head: {}, querySelector: selector => selector === 'meta[name="theme-color"]' ? { setAttribute() {} } : null,
       getElementById: () => null, addEventListener() {} };
     vm.runInNewContext(themeSource, { window, document });
     return { theme: window.SNHTheme, media, attrs };

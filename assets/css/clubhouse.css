@@ -1,5 +1,7 @@
 /* Shared clubhouse tokens, including aliases used by legacy components. */
 html.clubhouse {
+  --theme-color-light: #f4f2eb;
+  --theme-color-dark: #0b151e;
   --club-bg: light-dark(#f4f2eb, #0b151e);
   --club-surface: light-dark(#fffefa, #122330);
   --club-soft: light-dark(#e6eeea, #192f3c);
@@ -138,3 +140,21 @@ html.clubhouse {
   .club-header-links { align-items: center; }
   .club-header-utilities { justify-content: center; }
 }
+
+/* Keep content clear of notches and the home indicator in standalone/landscape. */
+.clubhouse { background: var(--club-bg); }
+.clubhouse body {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.clubhouse header nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: .25rem;
+}
+.clubhouse footer a[href="#page-top"] { display: inline-block; }

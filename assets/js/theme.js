@@ -72,13 +72,18 @@
   }
 
   function readThemeColorToken() {
+    var resolved = resolveTheme(getPref());
+    // Meta content needs a concrete color, never the CSS light-dark() expression.
     try {
-      var token = getComputedStyle(root).getPropertyValue("--theme-color").trim();
+      var token = getComputedStyle(root).getPropertyValue("--theme-color-" + resolved).trim();
       if (token) return token;
     } catch (err) {
-      // ignore
+      // The synchronous first run may precede stylesheet loading.
     }
-    return null;
+    var clubhouse = (root.getAttribute("class") || "").split(/\s+/).includes("clubhouse");
+    return clubhouse
+      ? (resolved === PREFS.DARK ? "#0b151e" : "#f4f2eb")
+      : (resolved === PREFS.DARK ? "#0f1216" : "#f6f8fb");
   }
 
   function updateThemeColorMeta() {
