@@ -74,6 +74,13 @@ export function imageImportsForEntry(entry: OpdbExportEntry): OpdbImageImport[] 
       licenseName: null,
       licenseUrl: null,
       metadata: {
+        deliveryVariants: ["small", "medium", "large"].flatMap(size => {
+          const url = httpsUrl(urls?.[size as "small" | "medium" | "large"]);
+          const dimensions = image.sizes?.[size];
+          const width = Number(dimensions?.width);
+          return url && Number.isInteger(width) && width > 0
+            ? [{ url, width, height: Number(dimensions?.height) || null }] : [];
+        }),
         opdbPrimary: image.primary === true,
         opdbTitle: title,
         selectedSize: chosenSize,

@@ -76,7 +76,7 @@ test('real image RPCs preserve Editor management and require admin deletion', as
   } finally { await db.close(); }
 });
 
-function clientContext({uploadError, associationError, thrownError, cleanupError, deleteError} = {}) {
+function clientContext({uploadError, associationError, thrownError, cleanupError, deleteError, derivativeRows = []} = {}) {
   const calls = [];
   const client = {
     storage: {from(bucket) { return {
@@ -93,7 +93,7 @@ function clientContext({uploadError, associationError, thrownError, cleanupError
       return {data:{bucket:'game-images',path:'game/object.jpg'},error:deleteError};
     }
   };
-  const context = {getClient:()=>client,window:{crypto:{randomUUID:()=> 'object'}}};
+  const context = {getClient:()=>client,window:{crypto:{randomUUID:()=> 'object'},SNHGameImages:{generate:async()=>derivativeRows,widths:[320,640,1200]}}};
   vm.runInNewContext(between(portal, '  async function gameImageUpsert(', '  async function opdbGameImageSync('), context);
   return {context,calls};
 }
@@ -123,7 +123,7 @@ test('explicit admin removal cleans Storage after RPC and preserves warning', as
     const result = await context.gameImageDeleteUploaded('game','image');
     assert.equal(calls[0][1],'snh_game_images_delete_uploaded');
     assert.equal(calls[1][0],'remove');
-    assert.equal(calls[1][2][0],'game/object.jpg');
+    assert.deepEqual(Array.from(calls[1][2]), ['game/object.jpg', 'game/object.jpg.w320.webp', 'game/object.jpg.w640.webp', 'game/object.jpg.w1200.webp']);
     assert.equal(result.warning,cleanupError ? 'The image was removed from the game, but its stored file could not be cleaned up.' : null);
   }
   const original = new Error('not authorized');
@@ -163,4 +163,14 @@ test('failed upload refreshes images while preserving original error even if ref
     assert.equal(context.imageUploadBusy,false);
     assert.equal(input.disabled,false);
   }
+});
+
+test('upload publishes variant metadata after all immutable derivative writes', async () => {
+  const derivativeRows=[320,640,1200].map(target=>({target,width:target,height:target/2,blob:{size:target,type:'image/webp'}}));
+  const {context,calls}=clientContext({derivativeRows});
+  await context.gameImageUpload('game',file,{});
+  assert.deepEqual(calls.slice(0,4).map(c=>c[2]),['game/object.jpg','game/object.jpg.w320.webp','game/object.jpg.w640.webp','game/object.jpg.w1200.webp']);
+  assert.equal(calls[4][0],'rpc');
+  assert.deepEqual(Array.from(calls[4][2].p_fields.metadata.deliveryVariants,v=>v.width),[320,640,1200]);
+  assert.equal(calls.slice(1,4).every(c=>c[3].upsert===false&&c[3].cacheControl==='31536000'),true);
 });

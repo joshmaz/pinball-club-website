@@ -705,6 +705,8 @@
     if (!extension) throw new Error("Use a JPEG, PNG, WebP, or GIF image.");
     if (file.size > 10 * 1024 * 1024) throw new Error("Images must be 10 MB or smaller.");
 
+    var derivatives = await window.SNHGameImages.generate(file);
+    var deliveryVariants = [];
     var objectId = window.crypto && window.crypto.randomUUID
       ? window.crypto.randomUUID()
       : String(Date.now()) + "-" + Math.random().toString(16).slice(2);
@@ -715,6 +717,17 @@
       upsert: false
     });
     if (upload.error) throw upload.error;
+
+    for (var derivative of derivatives) {
+      var derivativePath = storagePath + ".w" + derivative.target + ".webp";
+      var derivativeUpload = await client.storage.from("game-images").upload(derivativePath, derivative.blob, {
+        cacheControl: "31536000", contentType: "image/webp", upsert: false
+      });
+      if (derivativeUpload.error) throw derivativeUpload.error;
+      deliveryVariants.push({ width: derivative.width, height: derivative.height,
+        url: client.storage.from("game-images").getPublicUrl(derivativePath).data.publicUrl,
+        path: derivativePath, sizeBytes: derivative.blob.size });
+    }
 
     // A failed response may follow a committed association. Never delete on failure.
     var publicResult = client.storage.from("game-images").getPublicUrl(storagePath);
@@ -735,7 +748,8 @@
         storagePath: storagePath,
         originalFilename: file.name,
         contentType: file.type,
-        sizeBytes: file.size
+        sizeBytes: file.size,
+        deliveryVariants: deliveryVariants
       }
     });
   }
@@ -750,7 +764,9 @@
     if (result.error) throw result.error;
 
     var storageInfo = result.data || {};
-    var cleanup = await client.storage.from(storageInfo.bucket || "game-images").remove([storageInfo.path]);
+    var cleanup = await client.storage.from(storageInfo.bucket || "game-images").remove([storageInfo.path].concat(window.SNHGameImages.widths.map(function (width) {
+      return storageInfo.path + ".w" + width + ".webp";
+    })));
     return cleanup.error
       ? { warning: "The image was removed from the game, but its stored file could not be cleaned up." }
       : { warning: null };
