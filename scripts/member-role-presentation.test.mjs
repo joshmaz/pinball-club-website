@@ -41,7 +41,7 @@ test('assignment badges retain actual assignments, never expand inheritance or d
   for (const [roles, names, kinds] of [
     [['games_editor'], ['Games Editor'], ['editor']],
     [['photos_admin'], ['Photos Admin'], ['admin']],
-    [['club_admin'], ['Website Administrator'], ['website']],
+    [['club_admin'], ['Club Admin'], ['website']],
     [['events_editor', 'games_admin'], ['Events Editor', 'Games Admin'], ['editor', 'admin']],
     [['games_admin', 'games_editor'], ['Games Admin', 'Games Editor'], ['admin', 'editor']],
     [['website_volunteer'], [], []]
@@ -50,7 +50,7 @@ test('assignment badges retain actual assignments, never expand inheritance or d
     ui.renderAssignments(root, roles);
     const badges = all(root, el => (el.className || '').startsWith('member-role-badge '));
     assert.deepEqual(badges.map(el => el.textContent.trim()), names);
-    assert.deepEqual(badges.map(el => el.className.split('--')[1]), kinds);
+    assert.deepEqual(badges.map(el => el.className.split('--')[1].split(' ')[0]), kinds);
     for (const icon of all(root, el => el.tag === 'svg')) assert.equal(icon.attributes['aria-hidden'], 'true');
   }
 });
@@ -158,9 +158,29 @@ test('existing directory filtering keeps membership and name/email matching inde
 test('directory wiring retains search, pagination, expansion, focus and unsaved safeguards', () => {
   assert.match(html, /rolePresentation\.renderAssignments\(adminCell\(tr, ""\), row\.role_slugs/);
   assert.match(html, /<th scope="col">Assigned roles<\/th>/);
-  assert.match(html, /\["Role assignments", stats.member_roles_count\]/);
+  assert.match(html, /\["Website Volunteers", stats.volunteer_count\]/);
   for (const text of ['memberMatchesDirectoryFilter(row, mode, query)', 'filtered.slice((adminPage - 1) * 25, adminPage * 25)',
     'aria-expanded', 'aria-controls', 'restore.focus()', 'if (!adminConfirmDiscard()) return;', 'beforeunload']) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /slug\.replace\(/);
   assert.match(html, /rolePresentation\.name\(granted\) \+ " assigned to "/);
+});
+
+
+test('every assigned domain has a shared icon with keyboard tooltip and full accessible name', () => {
+  const { ui, auth } = setup();
+  for (const slug of Object.keys(auth.ROLE_CATALOG).filter(s => auth.ROLE_CATALOG[s].assignable)) {
+    const icon = ui.badge(slug);
+    const label = slug === 'club_admin' ? 'Club Admin' : auth.ROLE_CATALOG[slug].displayName;
+    assert.equal(icon.attributes['aria-label'], label);
+    assert.equal(icon.attributes.title, label);
+    assert.equal(icon.attributes.tabindex, '0');
+    assert.equal(icon.children[1].className, 'member-role-tooltip');
+    assert.equal(icon.children[1].textContent, label);
+    assert.equal(ui.badge(slug, true).children[1].textContent, auth.ROLE_CATALOG[slug].displayName);
+  }
+  for (const domain of ['games', 'events', 'photos', 'membership']) {
+    const path = slug => ui.badge(slug).children[0].children[0].attributes.d;
+    assert.equal(path(domain + '_editor'), path(domain + '_admin'));
+  }
+  assert.equal(new Set(['games', 'events', 'photos', 'membership'].map(d => ui.badge(d + '_editor').children[0].children[0].attributes.d)).size, 4);
 });

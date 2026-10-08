@@ -1289,7 +1289,7 @@
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       rolePresentation.assignments(row.role_slugs || []).forEach(function (slug) {
         var roleName = rolePresentation.name(slug);
-        var li = document.createElement("li"); li.appendChild(rolePresentation.badge(slug));
+        var li = document.createElement("li"); li.appendChild(rolePresentation.badge(slug, true));
         if (adminMayRemoveRole(row, slug)) {
           var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove";
           remove.setAttribute("data-member-focus", row.member_id);
@@ -1349,9 +1349,9 @@
         setMemberAdminPanelIntro(userRoles);
       }
       memberAdminStats.replaceChildren();
-      [["Members", stats.member_count], ["Membership records", stats.membership_count], ["Full Access Members", stats.active_membership_count], ["Role assignments", stats.member_roles_count]].forEach(function (pair) {
+      [["Accounts", stats.account_count], ["Full-Access Members", stats.full_access_count], ["Basic Members", stats.basic_count], ["Website Volunteers", stats.volunteer_count]].forEach(function (pair) {
         var p = document.createElement("p"); p.className = "members-admin-stat";
-        var strong = document.createElement("strong"); strong.textContent = String(pair[1]);
+        var strong = document.createElement("strong"); strong.textContent = pair[1] == null ? "—" : String(pair[1]);
         var span = document.createElement("span"); span.textContent = pair[0]; p.append(strong, span); memberAdminStats.appendChild(p);
       });
       adminRender();

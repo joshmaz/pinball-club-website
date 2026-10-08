@@ -44,7 +44,7 @@
     if (className) el.className = className;
     return el;
   }
-  function badge(slug) {
+  function badge(slug, fullLabel) {
     var role = entry(slug);
     var kind = !role ? "unknown" : role.domain === "website" ? "website" : role.level;
     var el = node("span", "", "member-role-badge member-role-badge--" + kind);
@@ -53,15 +53,34 @@
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
     var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", kind === "editor" ? "M4 16 16 4l4 4L8 20H4v-4Zm9-9 4 4" :
-      kind === "unknown" ? "M12 4v10m0 4v2" : "M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z");
+    var paths = {
+      games: "M7 2h10v6H7Z M6 10h12l2 9H4Z M7 19l-1 3 M17 19l1 3 M9 13h6 M8 16h2 M14 16h2",
+      events: "M4 5h16v16H4Z M4 9h16 M8 3v4 M16 3v4 M8 13h2 M14 13h2 M8 17h2",
+      photos: "M3 7h5l2-3h4l2 3h5v13H3Z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
+      membership: "M3 4h18v16H3Z M11 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0 M5 17v-2c0-3 8-3 8 0v2 M16 9h3 M16 13h3",
+      website: "M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z"
+    };
+    path.setAttribute("d", role && paths[role.domain] || "M12 4v10m0 4v2");
     svg.appendChild(path);
     if (kind === "website") {
       var star = document.createElementNS("http://www.w3.org/2000/svg", "path");
       star.setAttribute("d", "m12 7 1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3L10 12 8 10l2.8-.4Z");
       svg.appendChild(star);
     }
-    el.append(svg, node("span", name(slug)));
+    var label = slug === "club_admin" ? "Club Admin" : name(slug);
+    el.appendChild(svg);
+    if (fullLabel) {
+      el.appendChild(node("span", name(slug)));
+    } else {
+      el.className += " member-role-icon";
+      el.setAttribute("tabindex", "0");
+      el.setAttribute("role", "img");
+      el.setAttribute("aria-label", label);
+      el.setAttribute("title", label);
+      var tooltip = node("span", label, "member-role-tooltip");
+      tooltip.setAttribute("aria-hidden", "true");
+      el.appendChild(tooltip);
+    }
     return el;
   }
   function renderAssignments(container, roles) {

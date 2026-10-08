@@ -131,3 +131,12 @@
 #member-panel-operations :is(button, .btn) { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; font-size: .85rem; cursor: pointer; }
 #member-panel-operations :is(button, a):focus-visible { outline: 3px solid var(--club-teal); outline-offset: 3px; }
 #operations-sections [aria-pressed="true"] { background: var(--club-soft); color: var(--club-teal); }
+
+/* Shared assigned-role icons; management rows retain their full labels. */
+.member-role-badges li { display: flex; }
+.member-role-badge.member-role-icon { position: relative; justify-content: center; width: 2rem; height: 2rem; padding: .3rem; border-radius: .45rem; }
+.member-role-icon.member-role-badge--admin { color: var(--role-gold-line); border-width: 2px; }
+.member-role-icon.member-role-badge--editor { color: var(--role-silver-line); }
+.member-role-icon:hover, .member-role-icon:focus-visible { outline: 2px solid var(--club-ink); outline-offset: 2px; }
+.member-role-tooltip { position: absolute; left: 50%; bottom: calc(100% + .4rem); transform: translateX(-50%); z-index: 10; white-space: nowrap; padding: .3rem .5rem; border: 1px solid var(--club-line); border-radius: .3rem; background: var(--club-surface); color: var(--club-ink); font-size: .8rem; visibility: hidden; pointer-events: none; }
+.member-role-icon:hover .member-role-tooltip, .member-role-icon:focus .member-role-tooltip { visibility: visible; }
