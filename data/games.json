@@ -3,7 +3,7 @@
     "schemaVersion": 1,
     "dataset": "games",
     "source": "games_catalog_v1",
-    "generatedAt": "2026-09-21T00:01:26.322Z",
+    "generatedAt": "2026-10-08T16:36:11.335Z",
     "recordCount": 126
   },
   "games": [
@@ -26,6 +26,29 @@
         "id": "32656bb2-2d2f-47ab-935f-056a9a9a7bfe",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg",
         "altText": "2001",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg.w320.webp",
+            "path": "1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg.w320.webp",
+            "width": 320,
+            "height": 232,
+            "sizeBytes": 20556
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg.w640.webp",
+            "path": "1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg.w640.webp",
+            "width": 640,
+            "height": 464,
+            "sizeBytes": 54742
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg.w1200.webp",
+            "path": "1cc14fda-160d-44bf-9218-2de7fbd24297/74603f01-5c89-50ed-b78f-b69f3c70f36d.jpg.w1200.webp",
+            "width": 1024,
+            "height": 743,
+            "sizeBytes": 104772
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -67,6 +90,29 @@
         "id": "729906c6-9a92-4a42-9597-27c1d78d4264",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg",
         "altText": "300",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg.w320.webp",
+            "path": "01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 23434
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg.w640.webp",
+            "path": "01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 60942
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg.w1200.webp",
+            "path": "01993048-89c3-4ba7-89ff-8cf9ca0f1269/da4028ed-e501-5f0f-b8f7-071f94916d79.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 132332
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -117,6 +163,29 @@
         "id": "9458aa86-f2a4-45be-a0b2-ebd06f2742d3",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png",
         "altText": "Airborne",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png.w320.webp",
+            "path": "0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 24298
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png.w640.webp",
+            "path": "0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 64882
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png.w1200.webp",
+            "path": "0a97804d-50ba-43b0-b6f3-1c1d8826fcd9/388d8677-b8e5-5c3d-951d-6832619f6796.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 177456
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -158,6 +227,29 @@
         "id": "8c86debf-1344-4c8d-b9c8-817b64d93e38",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg",
         "altText": "Alien Poker",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg.w320.webp",
+            "path": "19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg.w320.webp",
+            "width": 320,
+            "height": 214,
+            "sizeBytes": 25818
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg.w640.webp",
+            "path": "19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg.w640.webp",
+            "width": 640,
+            "height": 428,
+            "sizeBytes": 73924
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg.w1200.webp",
+            "path": "19bde826-559f-42b5-b008-e6e8682f1ccf/f18ba740-892b-5e2e-9af7-0a2df77c6786.jpg.w1200.webp",
+            "width": 800,
+            "height": 535,
+            "sizeBytes": 103002
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -204,6 +296,34 @@
       "playerCount": 4,
       "releaseDate": "1973-01-01",
       "manufacturer": "Bally",
+      "primaryImage": {
+        "id": "8389874c-a59a-48dc-bca4-90a8de53691d",
+        "url": "https://img.opdb.org/9d202889-8be5-4a2d-9ef0-972675608b9b-large.jpg",
+        "altText": "Amigo playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/9d202889-8be5-4a2d-9ef0-972675608b9b-small.jpg",
+            "width": 211,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/9d202889-8be5-4a2d-9ef0-972675608b9b-medium.jpg",
+            "width": 540,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/9d202889-8be5-4a2d-9ef0-972675608b9b-large.jpg",
+            "width": 1044,
+            "height": 1236
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G4ONX-MQY24",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G4ONX-MQY24",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/amigo",
       "locationStints": [
         {
@@ -241,6 +361,29 @@
         "id": "11db3799-238d-4189-9c16-6b9a71d6b569",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png",
         "altText": "Apollo",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png.w320.webp",
+            "path": "25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 12166
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png.w640.webp",
+            "path": "25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 28118
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png.w1200.webp",
+            "path": "25a7d611-1df9-4399-9cff-15371c7a98df/3df66cb8-5a81-53ae-914e-e06dae3b9f87.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 72292
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -270,12 +413,40 @@
       "title": "Aquarius",
       "atClub": false,
       "opdbId": "GreKP-MLXzY",
-      "details": "From Pinball Map location activity (not on our site list before). First listed on the map on 2021-06-11. Removed from the map on 2022-05-07.",
+      "details": "Gottlieb's Aquarius, an electromechanical pinball machine, features a unique aquatic theme with engaging gameplay elements.",
       "display": "reels",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=79",
       "mapAtClub": false,
       "playerCount": 1,
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "394804e7-cff9-452d-8d50-d5315b694ddb",
+        "url": "https://img.opdb.org/1cfc591f-4ea2-4e0b-8927-2826e7ee759d-large.jpg",
+        "altText": "Backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/1cfc591f-4ea2-4e0b-8927-2826e7ee759d-small.jpg",
+            "width": 222,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/1cfc591f-4ea2-4e0b-8927-2826e7ee759d-medium.jpg",
+            "width": 534,
+            "height": 600
+          },
+          {
+            "url": "https://img.opdb.org/1cfc591f-4ea2-4e0b-8927-2826e7ee759d-large.jpg",
+            "width": 534,
+            "height": 600
+          }
+        ],
+        "imageType": "backglass",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GreKP-MLXzY",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GreKP-MLXzY",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -312,6 +483,29 @@
         "id": "60842711-6987-476c-aaf8-a4edb2c600ca",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png",
         "altText": "Argosy",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png.w320.webp",
+            "path": "7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 12590
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png.w640.webp",
+            "path": "7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 29034
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png.w1200.webp",
+            "path": "7d880f24-ec74-43df-9555-e7aada871501/ed54f968-7874-5a95-8bd2-f1827bbcfb56.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 64032
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -353,6 +547,29 @@
         "id": "9f165976-cfed-4758-84ba-9b25b66addec",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg",
         "altText": "Avengers: Infinity Quest (Pro)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg.w320.webp",
+            "path": "0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg.w320.webp",
+            "width": 320,
+            "height": 213,
+            "sizeBytes": 27262
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg.w640.webp",
+            "path": "0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg.w640.webp",
+            "width": 640,
+            "height": 427,
+            "sizeBytes": 76916
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg.w1200.webp",
+            "path": "0a2dc349-c6ae-4d4c-a86f-e8de0da3a292/e2ea7cf8-43bf-57eb-928e-8efd1bc2e023.jpg.w1200.webp",
+            "width": 1024,
+            "height": 683,
+            "sizeBytes": 147718
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -394,6 +611,29 @@
         "id": "62b02ccc-1516-4e79-bef5-7e680fc90626",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg",
         "altText": "Aztec",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg.w320.webp",
+            "path": "b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 34460
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg.w640.webp",
+            "path": "b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 96612
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg.w1200.webp",
+            "path": "b34e8641-41dd-482e-b51f-fde6e4c2cfd5/ca96ec3b-e09f-5696-8cbf-1b23dbb56f91.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 230560
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -435,6 +675,29 @@
         "id": "3cfa65ee-1e2b-42fa-8984-425c639539c2",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png",
         "altText": "Barb Wire",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png.w320.webp",
+            "path": "c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png.w320.webp",
+            "width": 320,
+            "height": 238,
+            "sizeBytes": 28714
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png.w640.webp",
+            "path": "c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png.w640.webp",
+            "width": 640,
+            "height": 477,
+            "sizeBytes": 91646
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png.w1200.webp",
+            "path": "c9764a59-901a-4928-bed7-90c66f58f139/c5232bc0-707e-5fb8-955e-c3119cfb1dc5.png.w1200.webp",
+            "width": 734,
+            "height": 547,
+            "sizeBytes": 115542
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -476,6 +739,29 @@
         "id": "3462ce71-9538-4b43-aa83-f73b213dffd9",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg",
         "altText": "Baywatch",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg.w320.webp",
+            "path": "ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 23892
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg.w640.webp",
+            "path": "ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 62592
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg.w1200.webp",
+            "path": "ed2a9f39-d4ff-470c-b87f-61e86fce5e82/9d7b4134-15ea-5d19-a112-71918915ea7b.jpg.w1200.webp",
+            "width": 1200,
+            "height": 900,
+            "sizeBytes": 145202
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -514,6 +800,22 @@
         "id": "488d3104-a889-4131-b571-cee0664a6343",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3528417f-60f8-4a7f-8b78-8306b6e69f4b/1fd344ee-ddc0-58db-a732-5046db822f9b.jpg",
         "altText": "Black Jack",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3528417f-60f8-4a7f-8b78-8306b6e69f4b/1fd344ee-ddc0-58db-a732-5046db822f9b.jpg.w320.webp",
+            "path": "3528417f-60f8-4a7f-8b78-8306b6e69f4b/1fd344ee-ddc0-58db-a732-5046db822f9b.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 19682
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3528417f-60f8-4a7f-8b78-8306b6e69f4b/1fd344ee-ddc0-58db-a732-5046db822f9b.jpg.w640.webp",
+            "path": "3528417f-60f8-4a7f-8b78-8306b6e69f4b/1fd344ee-ddc0-58db-a732-5046db822f9b.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 56110
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -585,6 +887,29 @@
         "id": "bf3c0771-a349-4bb8-81bd-2bda591a5b86",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png",
         "altText": "Black Pyramid",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png.w320.webp",
+            "path": "df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png.w320.webp",
+            "width": 320,
+            "height": 214,
+            "sizeBytes": 23956
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png.w640.webp",
+            "path": "df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png.w640.webp",
+            "width": 640,
+            "height": 428,
+            "sizeBytes": 61518
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png.w1200.webp",
+            "path": "df6b271b-db0f-4804-b4d6-cd9cd38a178a/bd106fdf-0713-5258-8f31-6834ac506ce5.png.w1200.webp",
+            "width": 800,
+            "height": 535,
+            "sizeBytes": 82472
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -626,6 +951,29 @@
         "id": "d87333f0-92b9-4912-92e3-e3fb14e7edb9",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png",
         "altText": "Charlie's Angels",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png.w320.webp",
+            "path": "4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png.w320.webp",
+            "width": 320,
+            "height": 317,
+            "sizeBytes": 28550
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png.w640.webp",
+            "path": "4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png.w640.webp",
+            "width": 640,
+            "height": 634,
+            "sizeBytes": 75788
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png.w1200.webp",
+            "path": "4e0d5e8a-2767-48c1-9afe-0950339e6ee3/4cc11885-117c-5962-b503-bc09f17b2880.png.w1200.webp",
+            "width": 642,
+            "height": 636,
+            "sizeBytes": 77108
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -676,6 +1024,29 @@
         "id": "9d4ddc6c-cc7d-403d-bc1e-46ded988e7e9",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg",
         "altText": "Cleopatra",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg.w320.webp",
+            "path": "4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 27578
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg.w640.webp",
+            "path": "4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 71694
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg.w1200.webp",
+            "path": "4e2bd83f-abf1-4b29-aa86-4cacb776f333/ab41ab4d-e56b-59c5-8460-fc4afa8140b5.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 162482
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -714,12 +1085,32 @@
       "releaseDate": "1995-11-01",
       "manufacturer": "Williams",
       "primaryImage": {
-        "id": "9bcb6d4b-0dd5-4bc3-98a8-de9909f54ab2",
-        "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e2967f7c-77cf-4d38-aa8e-25300cd269c7/35409c6e-f2bf-5aec-b07e-f2d52aa12e63.gif",
-        "altText": "Congo",
-        "imageType": "game_photo",
-        "sourceType": "club",
-        "locationType": "remote_url"
+        "id": "525a20cd-aaad-4486-809d-3ec791aeb5d1",
+        "url": "https://img.opdb.org/45709a54-aede-49b7-8386-436fc7050a79-05b0bb55-large.jpg",
+        "altText": "Congo closeup",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/45709a54-aede-49b7-8386-436fc7050a79-05b0bb55-small.jpg",
+            "width": 188,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/45709a54-aede-49b7-8386-436fc7050a79-05b0bb55-medium.jpg",
+            "width": 482,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/45709a54-aede-49b7-8386-436fc7050a79-05b0bb55-large.jpg",
+            "width": 1130,
+            "height": 1500
+          }
+        ],
+        "imageType": "closeup",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GrNd0-MJNW1",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GrNd0-MJNW1",
+        "attributionText": "Open Pinball Database (OPDB)"
       },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/congo",
       "locationStints": [
@@ -758,6 +1149,29 @@
         "id": "5d741135-7831-438f-aaa0-bb5af23aabd5",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg",
         "altText": "Count-Down",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg.w320.webp",
+            "path": "e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 34574
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg.w640.webp",
+            "path": "e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 104216
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg.w1200.webp",
+            "path": "e82d758e-cf80-4844-ba0f-e2b88e80e9cd/332b5a23-22f2-576e-a417-1884efee785b.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 257492
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -795,6 +1209,34 @@
       "playerCount": 2,
       "releaseDate": "1970-01-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "091a7465-f352-458f-90c8-437838206771",
+        "url": "https://img.opdb.org/f798bc22-7671-4df9-8285-1e80dde8bf1b-large.jpg",
+        "altText": "Backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/f798bc22-7671-4df9-8285-1e80dde8bf1b-small.jpg",
+            "width": 250,
+            "height": 224
+          },
+          {
+            "url": "https://img.opdb.org/f798bc22-7671-4df9-8285-1e80dde8bf1b-medium.jpg",
+            "width": 640,
+            "height": 574
+          },
+          {
+            "url": "https://img.opdb.org/f798bc22-7671-4df9-8285-1e80dde8bf1b-large.jpg",
+            "width": 669,
+            "height": 600
+          }
+        ],
+        "imageType": "backglass",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GRpKY-MJYo1",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GRpKY-MJYo1",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/groovy-crescendo",
       "locationStints": [
         {
@@ -832,6 +1274,29 @@
         "id": "578c32a4-45fb-4f13-8410-81b076afa190",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg",
         "altText": "Deadpool (Pro)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg.w320.webp",
+            "path": "d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg.w320.webp",
+            "width": 320,
+            "height": 214,
+            "sizeBytes": 27358
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg.w640.webp",
+            "path": "d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg.w640.webp",
+            "width": 640,
+            "height": 427,
+            "sizeBytes": 85490
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg.w1200.webp",
+            "path": "d91173a0-ce2b-4e49-a26a-4fe61637014f/c5ac6b69-d080-5ecf-aef7-e0a388c7a2df.jpg.w1200.webp",
+            "width": 1200,
+            "height": 801,
+            "sizeBytes": 228950
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -913,6 +1378,22 @@
         "id": "dd74bc58-eebf-4001-9782-21957edf5eee",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/811d0930-3c6a-4f13-9a4a-17d40f172196/bd809cb1-e184-5419-972c-3d8abdf7a4b9.png",
         "altText": "Disco Fever",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/811d0930-3c6a-4f13-9a4a-17d40f172196/bd809cb1-e184-5419-972c-3d8abdf7a4b9.png.w320.webp",
+            "path": "811d0930-3c6a-4f13-9a4a-17d40f172196/bd809cb1-e184-5419-972c-3d8abdf7a4b9.png.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 23270
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/811d0930-3c6a-4f13-9a4a-17d40f172196/bd809cb1-e184-5419-972c-3d8abdf7a4b9.png.w640.webp",
+            "path": "811d0930-3c6a-4f13-9a4a-17d40f172196/bd809cb1-e184-5419-972c-3d8abdf7a4b9.png.w640.webp",
+            "width": 528,
+            "height": 396,
+            "sizeBytes": 58284
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -954,6 +1435,29 @@
         "id": "5dca0b4a-54e3-4de1-a299-571f273caa5c",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg",
         "altText": "Dogies",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg.w320.webp",
+            "path": "07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 18602
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg.w640.webp",
+            "path": "07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 49022
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg.w1200.webp",
+            "path": "07c33a3a-7b4b-4a98-a156-4414e0ec0510/01210a09-ca91-55f9-bf28-f56563839873.jpg.w1200.webp",
+            "width": 1024,
+            "height": 768,
+            "sizeBytes": 91436
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -995,6 +1499,29 @@
         "id": "d126d115-de1d-4a28-ba46-eb858aa23b72",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg",
         "altText": "Doodle Bug",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg.w320.webp",
+            "path": "fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 21958
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg.w640.webp",
+            "path": "fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 59452
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg.w1200.webp",
+            "path": "fcb43ef1-0097-48e5-924d-3f21ddb1855b/93a8a19f-7961-5b05-91f4-9dce130cc937.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 137490
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1067,6 +1594,29 @@
         "id": "79c7fe97-955a-460b-ad72-06089781f5a3",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg",
         "altText": "Embryon",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg.w320.webp",
+            "path": "8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 21146
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg.w640.webp",
+            "path": "8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 64464
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg.w1200.webp",
+            "path": "8260de9b-3f91-4f24-b557-a64bcb1bb677/f6669b36-fbda-5783-9520-6aa0d90dce13.jpg.w1200.webp",
+            "width": 800,
+            "height": 600,
+            "sizeBytes": 91932
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1108,6 +1658,29 @@
         "id": "78284d46-abb0-430b-a616-b78183ec0849",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png",
         "altText": "Evel Knievel",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w320.webp",
+            "path": "dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w320.webp",
+            "width": 320,
+            "height": 206,
+            "sizeBytes": 21934
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w640.webp",
+            "path": "dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w640.webp",
+            "width": 640,
+            "height": 412,
+            "sizeBytes": 59940
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w1200.webp",
+            "path": "dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w1200.webp",
+            "width": 682,
+            "height": 439,
+            "sizeBytes": 67928
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1149,6 +1722,29 @@
         "id": "966b9d7b-66a8-4955-8b99-152e063b5236",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg",
         "altText": "F-14 Tomcat",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg.w320.webp",
+            "path": "79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg.w320.webp",
+            "width": 320,
+            "height": 427,
+            "sizeBytes": 35312
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg.w640.webp",
+            "path": "79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg.w640.webp",
+            "width": 640,
+            "height": 853,
+            "sizeBytes": 101734
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg.w1200.webp",
+            "path": "79ace005-3dbf-41e8-ab0c-dcdaaa5f8528/2f37b7c4-7bf3-54ca-abd2-eb9c5bcad958.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1600,
+            "sizeBytes": 257678
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1190,6 +1786,29 @@
         "id": "ba0ad2a2-334d-40da-8e6c-016b15f7035e",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg",
         "altText": "Firepower",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg.w320.webp",
+            "path": "37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 36938
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg.w640.webp",
+            "path": "37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 112648
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg.w1200.webp",
+            "path": "37899d2a-af6c-4669-84d0-ded94fa45e44/278637e5-dc6c-5cc6-b8cc-9f8be531232e.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 272050
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1228,6 +1847,29 @@
         "id": "b60a147d-9970-4079-99f0-2ef805d2b1ca",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg",
         "altText": "Flash",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg.w320.webp",
+            "path": "e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 33400
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg.w640.webp",
+            "path": "e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 94052
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg.w1200.webp",
+            "path": "e8b92191-bc84-47e1-9ea1-add5ecae3b80/91f31f06-fb42-54fe-adc3-f21bc2bca03c.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 213142
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1266,6 +1908,29 @@
         "id": "2e69d018-245f-4729-a18f-4f370b826019",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg",
         "altText": "Flash Gordon",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg.w320.webp",
+            "path": "d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 28946
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg.w640.webp",
+            "path": "d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 78372
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg.w1200.webp",
+            "path": "d4bc8b42-4cc6-4b8e-8e6c-1600bfb44f51/1d3cffde-8808-5b9c-bd65-eba8d2a68640.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 175832
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1307,6 +1972,29 @@
         "id": "1b8023d1-1089-4d13-8a39-2b56f963e7b8",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png",
         "altText": "Flight 2000",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png.w320.webp",
+            "path": "190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 21304
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png.w640.webp",
+            "path": "190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 52324
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png.w1200.webp",
+            "path": "190ee8aa-534d-4421-b2f1-01bb07546985/fd942509-1056-53d8-bd29-aa6442149f25.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 118236
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1356,6 +2044,23 @@
         "id": "da86a505-3865-4a84-a11c-82f0da2feec7",
         "url": "https://img.opdb.org/4432d18e-a68c-4f1c-b52b-06703458c9df-large.jpg",
         "altText": "Freddy: A Nightmare On Elm Street playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/4432d18e-a68c-4f1c-b52b-06703458c9df-small.jpg",
+            "width": 159,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/4432d18e-a68c-4f1c-b52b-06703458c9df-medium.jpg",
+            "width": 406,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/4432d18e-a68c-4f1c-b52b-06703458c9df-large.jpg",
+            "width": 864,
+            "height": 1363
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/GRzB7-MD8ld",
         "sourceType": "opdb",
@@ -1399,6 +2104,22 @@
         "id": "27c7e369-9101-4527-baf3-0d86cde6fccb",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4d5704cf-47bc-46fc-85ba-af4c96df3b3f/2369e5eb-c240-5b78-9d1d-d742c10b20f5.jpg",
         "altText": "Fun Land",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4d5704cf-47bc-46fc-85ba-af4c96df3b3f/2369e5eb-c240-5b78-9d1d-d742c10b20f5.jpg.w320.webp",
+            "path": "4d5704cf-47bc-46fc-85ba-af4c96df3b3f/2369e5eb-c240-5b78-9d1d-d742c10b20f5.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 15058
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4d5704cf-47bc-46fc-85ba-af4c96df3b3f/2369e5eb-c240-5b78-9d1d-d742c10b20f5.jpg.w640.webp",
+            "path": "4d5704cf-47bc-46fc-85ba-af4c96df3b3f/2369e5eb-c240-5b78-9d1d-d742c10b20f5.jpg.w640.webp",
+            "width": 576,
+            "height": 432,
+            "sizeBytes": 33830
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1440,6 +2161,29 @@
         "id": "9a40fd19-7f41-412c-83b3-5853c01ddb28",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg",
         "altText": "Future Spa",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg.w320.webp",
+            "path": "25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg.w320.webp",
+            "width": 320,
+            "height": 213,
+            "sizeBytes": 24104
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg.w640.webp",
+            "path": "25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg.w640.webp",
+            "width": 640,
+            "height": 427,
+            "sizeBytes": 68458
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg.w1200.webp",
+            "path": "25703a70-e35a-4b34-b0ff-23bcbd2bcaaf/2b27b34e-d601-5004-ac5e-eaee85fb7961.jpg.w1200.webp",
+            "width": 1200,
+            "height": 800,
+            "sizeBytes": 160444
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1490,6 +2234,29 @@
         "id": "de927cac-6f01-4406-b4f2-86c62e0de58b",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg",
         "altText": "Genesis",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg.w320.webp",
+            "path": "3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg.w320.webp",
+            "width": 320,
+            "height": 180,
+            "sizeBytes": 10034
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg.w640.webp",
+            "path": "3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg.w640.webp",
+            "width": 640,
+            "height": 360,
+            "sizeBytes": 25594
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg.w1200.webp",
+            "path": "3b982d7a-f4d8-4912-ba64-5461b36e6afe/4423d46c-33da-5612-b6d2-a0fb3c28a176.jpg.w1200.webp",
+            "width": 1024,
+            "height": 576,
+            "sizeBytes": 47776
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1528,6 +2295,29 @@
         "id": "2c16a1cd-7441-46d1-a668-c8678e11f9ef",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png",
         "altText": "Genie",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png.w320.webp",
+            "path": "393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 17650
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png.w640.webp",
+            "path": "393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 41768
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png.w1200.webp",
+            "path": "393cf0d2-8f5a-4e69-b07f-73f35ce195f5/6510c85f-a030-5767-b387-8cc2f82b8b77.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 91518
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1578,6 +2368,29 @@
         "id": "154be16d-c547-4e39-97bd-ad8f8a81d735",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg",
         "altText": "Godzilla (Pro)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg.w320.webp",
+            "path": "7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg.w320.webp",
+            "width": 320,
+            "height": 214,
+            "sizeBytes": 33022
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg.w640.webp",
+            "path": "7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg.w640.webp",
+            "width": 640,
+            "height": 427,
+            "sizeBytes": 112368
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg.w1200.webp",
+            "path": "7c983960-bf4f-4958-b972-29715fc577da/2d42caa7-97f1-58db-b015-ff764b120db9.jpg.w1200.webp",
+            "width": 1200,
+            "height": 801,
+            "sizeBytes": 308020
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1628,6 +2441,29 @@
         "id": "5012037b-eb2c-4d0b-b561-1298c87a5317",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg",
         "altText": "Grand Prix",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg.w320.webp",
+            "path": "af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 27090
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg.w640.webp",
+            "path": "af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 75130
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg.w1200.webp",
+            "path": "af7744df-cff1-42d8-a401-9b33af7ea004/d1b4f47d-560c-5887-a2b5-b2b1e76324ae.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 167920
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1669,6 +2505,29 @@
         "id": "ef505f13-95c9-4838-b078-01aa75c7aab4",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg",
         "altText": "Guns N' Roses (SE)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg.w320.webp",
+            "path": "2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg.w320.webp",
+            "width": 320,
+            "height": 228,
+            "sizeBytes": 28622
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg.w640.webp",
+            "path": "2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg.w640.webp",
+            "width": 640,
+            "height": 455,
+            "sizeBytes": 74162
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg.w1200.webp",
+            "path": "2ec4be4b-b0e9-4764-95c6-5593cb40db2e/eef14120-f993-5d92-b155-2ea3ce3d1723.jpg.w1200.webp",
+            "width": 1024,
+            "height": 728,
+            "sizeBytes": 130462
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1710,6 +2569,29 @@
         "id": "f92c4ec3-03ea-46f8-8c08-1bb7a89ed14d",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg",
         "altText": "Harley-Davidson (2nd Edition)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg.w320.webp",
+            "path": "2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg.w320.webp",
+            "width": 320,
+            "height": 239,
+            "sizeBytes": 20934
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg.w640.webp",
+            "path": "2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg.w640.webp",
+            "width": 640,
+            "height": 479,
+            "sizeBytes": 63570
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg.w1200.webp",
+            "path": "2c515dbe-7ece-460c-8ddd-0999a4add624/5804c2d2-f901-5135-a728-d5827b2aacc7.jpg.w1200.webp",
+            "width": 1024,
+            "height": 766,
+            "sizeBytes": 122418
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1751,6 +2633,22 @@
         "id": "ca17a779-1132-46ff-9bbe-df45296e236d",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/656806e3-36af-45fd-9489-6d3ff8c1956c/b99db1a9-0c58-5095-a154-0a5665f08f93.jpg",
         "altText": "Heavy Metal Meltdown",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/656806e3-36af-45fd-9489-6d3ff8c1956c/b99db1a9-0c58-5095-a154-0a5665f08f93.jpg.w320.webp",
+            "path": "656806e3-36af-45fd-9489-6d3ff8c1956c/b99db1a9-0c58-5095-a154-0a5665f08f93.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 23742
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/656806e3-36af-45fd-9489-6d3ff8c1956c/b99db1a9-0c58-5095-a154-0a5665f08f93.jpg.w640.webp",
+            "path": "656806e3-36af-45fd-9489-6d3ff8c1956c/b99db1a9-0c58-5095-a154-0a5665f08f93.jpg.w640.webp",
+            "width": 400,
+            "height": 300,
+            "sizeBytes": 34044
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1791,6 +2689,23 @@
         "id": "dd7c5116-cdd0-4c8c-9531-4bfaaa09f6fd",
         "url": "https://img.opdb.org/655ce027-d183-48a2-944b-d00f51f115ee-large.jpg",
         "altText": "High Hand playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/655ce027-d183-48a2-944b-d00f51f115ee-small.jpg",
+            "width": 182,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/655ce027-d183-48a2-944b-d00f51f115ee-medium.jpg",
+            "width": 465,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/655ce027-d183-48a2-944b-d00f51f115ee-large.jpg",
+            "width": 1090,
+            "height": 1500
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/GRYbJ-MnKex",
         "sourceType": "opdb",
@@ -1834,6 +2749,29 @@
         "id": "51922fb1-f90c-4ca8-834e-9cee5e760b26",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg",
         "altText": "High Speed",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg.w320.webp",
+            "path": "acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg.w320.webp",
+            "width": 320,
+            "height": 213,
+            "sizeBytes": 14854
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg.w640.webp",
+            "path": "acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg.w640.webp",
+            "width": 640,
+            "height": 427,
+            "sizeBytes": 43186
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg.w1200.webp",
+            "path": "acbc4741-f74b-4ddf-8d22-041d1b4dee25/a4dd1ef3-6f44-558a-98d7-0509541006da.jpg.w1200.webp",
+            "width": 960,
+            "height": 640,
+            "sizeBytes": 95654
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1875,6 +2813,29 @@
         "id": "407267e1-d425-4faf-bb63-e93f1fc2202e",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg",
         "altText": "Hokus Pokus",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg.w320.webp",
+            "path": "d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 31346
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg.w640.webp",
+            "path": "d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 81872
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg.w1200.webp",
+            "path": "d6aaae80-13a6-4658-988a-d8bfd7b7b2e8/3219297d-d68f-5e99-a936-4ccedd7a521c.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 192048
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1925,6 +2886,29 @@
         "id": "736e9a60-2d1a-434a-9f0d-dae72da17b40",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg",
         "altText": "Hot Line",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg.w320.webp",
+            "path": "25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 16660
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg.w640.webp",
+            "path": "25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 43540
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg.w1200.webp",
+            "path": "25afe7c9-6fae-44ba-9060-918acd175c1c/9b7cf72c-a22f-572a-aa40-7adeefa2d505.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 97096
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -1966,6 +2950,29 @@
         "id": "485ea1a4-34a4-4aef-9fa9-c36b453a3011",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png",
         "altText": "Hot Shot",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png.w320.webp",
+            "path": "60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 11894
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png.w640.webp",
+            "path": "60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 29604
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png.w1200.webp",
+            "path": "60d05f23-202d-4570-805b-073e134a7257/c1a16f97-3e0f-520f-8895-f46e454dda5d.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 87802
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2007,6 +3014,29 @@
         "id": "128f3cb6-9477-4232-b1e2-67f65cb3ac01",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg",
         "altText": "Ice Fever",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg.w320.webp",
+            "path": "f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 25340
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg.w640.webp",
+            "path": "f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 78962
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg.w1200.webp",
+            "path": "f8c431c4-46ae-41b7-b5c1-06fbe90b1ec7/bc15e5f1-62ea-56eb-98ea-0201acc077ca.jpg.w1200.webp",
+            "width": 1024,
+            "height": 768,
+            "sizeBytes": 161492
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2044,6 +3074,23 @@
         "id": "c91a3b5a-c4aa-42e5-9105-da5bd897f99a",
         "url": "https://img.opdb.org/b6342d69-170f-4c81-8795-7f589da91953-large.jpg",
         "altText": "Iron Maiden: Legacy of the Beast playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/b6342d69-170f-4c81-8795-7f589da91953-small.jpg",
+            "width": 157,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/b6342d69-170f-4c81-8795-7f589da91953-medium.jpg",
+            "width": 403,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/b6342d69-170f-4c81-8795-7f589da91953-large.jpg",
+            "width": 864,
+            "height": 1373
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/G4dOQ-MyNbb",
         "sourceType": "opdb",
@@ -2087,6 +3134,29 @@
         "id": "ce9756b8-f8fc-4dd2-bd42-34140ffb843d",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png",
         "altText": "Jacks Open",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png.w320.webp",
+            "path": "265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 17196
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png.w640.webp",
+            "path": "265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 45040
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png.w1200.webp",
+            "path": "265a7d9b-dedc-427d-8c4a-923fe78e9d95/e471722a-3927-59aa-b0e4-64716246c576.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 99450
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2137,6 +3207,29 @@
         "id": "2a0509b4-3878-493a-8612-706e1e922a87",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg",
         "altText": "Johnny Mnemonic",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg.w320.webp",
+            "path": "0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 34304
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg.w640.webp",
+            "path": "0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 105990
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg.w1200.webp",
+            "path": "0da9042a-71d3-4d71-a187-f4094096f1c6/fe35ad0b-b398-59ac-88d8-92ee5b908350.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 285244
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2178,6 +3271,23 @@
         "id": "2c3c90b9-dd41-43e5-adcc-0cb6bd0961ec",
         "url": "https://img.opdb.org/0e217c60-36ab-463f-b3b6-10ec951c004d-large.jpg",
         "altText": "Joust playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/0e217c60-36ab-463f-b3b6-10ec951c004d-small.jpg",
+            "width": 167,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/0e217c60-36ab-463f-b3b6-10ec951c004d-medium.jpg",
+            "width": 427,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/0e217c60-36ab-463f-b3b6-10ec951c004d-large.jpg",
+            "width": 1001,
+            "height": 1500
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/Grxk8-MJdwl",
         "sourceType": "opdb",
@@ -2222,6 +3332,29 @@
         "id": "80f96bba-1cf4-45c3-a9df-2caaf7ab338e",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg",
         "altText": "Judge Dredd",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg.w320.webp",
+            "path": "e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg.w320.webp",
+            "width": 320,
+            "height": 428,
+            "sizeBytes": 52182
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg.w640.webp",
+            "path": "e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg.w640.webp",
+            "width": 640,
+            "height": 857,
+            "sizeBytes": 142736
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg.w1200.webp",
+            "path": "e54c41f4-e158-41ad-903d-85a77b0c2529/bc227729-cea6-53f5-b467-8cc7128c558f.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1607,
+            "sizeBytes": 306590
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2263,6 +3396,29 @@
         "id": "ed46f05f-2177-4e0c-98bd-888ef7fe2951",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg",
         "altText": "Jurassic Park (Pro)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg.w320.webp",
+            "path": "7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg.w320.webp",
+            "width": 320,
+            "height": 480,
+            "sizeBytes": 41642
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg.w640.webp",
+            "path": "7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg.w640.webp",
+            "width": 640,
+            "height": 960,
+            "sizeBytes": 108974
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg.w1200.webp",
+            "path": "7314de84-07d8-4b29-b18f-0e80863d2f9c/9f628c83-1977-586a-a9c8-04ed70f37981.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1799,
+            "sizeBytes": 254396
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2313,6 +3469,29 @@
         "id": "f41f87e7-2d4a-4df7-aa25-14567266ac14",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png",
         "altText": "Kings of Steel",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w320.webp",
+            "path": "c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w320.webp",
+            "width": 320,
+            "height": 206,
+            "sizeBytes": 21934
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w640.webp",
+            "path": "c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w640.webp",
+            "width": 640,
+            "height": 412,
+            "sizeBytes": 59940
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w1200.webp",
+            "path": "c54f2ecd-6bfe-43b8-abc1-2ff409b45397/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w1200.webp",
+            "width": 682,
+            "height": 439,
+            "sizeBytes": 67928
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2354,6 +3533,29 @@
         "id": "c3a09bed-65bd-4c42-9720-19a1dcd85915",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg",
         "altText": "KISS (Pro)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg.w320.webp",
+            "path": "9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg.w320.webp",
+            "width": 320,
+            "height": 428,
+            "sizeBytes": 31680
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg.w640.webp",
+            "path": "9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg.w640.webp",
+            "width": 640,
+            "height": 857,
+            "sizeBytes": 80624
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg.w1200.webp",
+            "path": "9226626b-21f1-4451-88f8-445fc30d4bc0/fe176fe4-1fda-54c2-a1bb-977a6679675f.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1607,
+            "sizeBytes": 178750
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2395,6 +3597,29 @@
         "id": "841b9616-fa4f-4086-8d70-e3233aaa8931",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png",
         "altText": "Last Action Hero",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png.w320.webp",
+            "path": "b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 14598
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png.w640.webp",
+            "path": "b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 33826
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png.w1200.webp",
+            "path": "b14ffd05-581f-4783-b72d-298bef3f20f7/3b2f7d4a-9227-5fc1-940b-e3dc436e9791.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 73802
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2431,6 +3656,34 @@
       "playerCount": 4,
       "releaseDate": "1978-01-01",
       "manufacturer": "Stern Electronics",
+      "primaryImage": {
+        "id": "1deb4e94-bc33-4da1-a738-7cdb9616b71c",
+        "url": "https://img.opdb.org/f06505d0-e3cb-41a3-8337-12c436731307-large.jpg",
+        "altText": "Lectronamo playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/f06505d0-e3cb-41a3-8337-12c436731307-small.jpg",
+            "width": 193,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/f06505d0-e3cb-41a3-8337-12c436731307-medium.jpg",
+            "width": 494,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/f06505d0-e3cb-41a3-8337-12c436731307-large.jpg",
+            "width": 1080,
+            "height": 1399
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GRWd2-MQ4Ye",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GRWd2-MQ4Ye",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -2466,6 +3719,23 @@
         "id": "3ab6f6fb-c1e6-4c62-9f94-6adf7310e910",
         "url": "https://img.opdb.org/732d6716-ba83-4858-be53-e8cff863b99a-large.jpg",
         "altText": "Led Zeppelin (Pro) playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/732d6716-ba83-4858-be53-e8cff863b99a-small.jpg",
+            "width": 204,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/732d6716-ba83-4858-be53-e8cff863b99a-medium.jpg",
+            "width": 520,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/732d6716-ba83-4858-be53-e8cff863b99a-large.jpg",
+            "width": 761,
+            "height": 936
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/Gweel-M9Rk0",
         "sourceType": "opdb",
@@ -2504,6 +3774,34 @@
       "playerCount": 1,
       "releaseDate": "1959-01-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "c4c01304-6d39-4ef4-9c06-0490082d6aee",
+        "url": "https://img.opdb.org/4c5e31d8-81e1-4e53-b44c-922053367045-large.jpg",
+        "altText": "Backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/4c5e31d8-81e1-4e53-b44c-922053367045-small.jpg",
+            "width": 236,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/4c5e31d8-81e1-4e53-b44c-922053367045-medium.jpg",
+            "width": 565,
+            "height": 600
+          },
+          {
+            "url": "https://img.opdb.org/4c5e31d8-81e1-4e53-b44c-922053367045-large.jpg",
+            "width": 565,
+            "height": 600
+          }
+        ],
+        "imageType": "backglass",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GR66d-M5Rw0",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GR66d-M5Rw0",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -2571,6 +3869,29 @@
         "id": "4f3123c1-4395-4978-aab8-13c66a855fad",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg",
         "altText": "Lost World",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg.w320.webp",
+            "path": "ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg.w320.webp",
+            "width": 320,
+            "height": 315,
+            "sizeBytes": 21012
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg.w640.webp",
+            "path": "ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg.w640.webp",
+            "width": 640,
+            "height": 631,
+            "sizeBytes": 56990
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg.w1200.webp",
+            "path": "ef3a54ed-9484-4fde-88df-4cec7f508bd4/937371f5-373c-5714-8f70-97bb8b36b822.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1183,
+            "sizeBytes": 126228
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2610,6 +3931,23 @@
         "id": "0c887f4e-152c-4373-baa0-8e62a4298b7f",
         "url": "https://img.opdb.org/56ad40f8-9682-417f-8dac-6a9ef6c18dee-large.jpg",
         "altText": "Backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/56ad40f8-9682-417f-8dac-6a9ef6c18dee-small.jpg",
+            "width": 250,
+            "height": 228
+          },
+          {
+            "url": "https://img.opdb.org/56ad40f8-9682-417f-8dac-6a9ef6c18dee-medium.jpg",
+            "width": 514,
+            "height": 468
+          },
+          {
+            "url": "https://img.opdb.org/56ad40f8-9682-417f-8dac-6a9ef6c18dee-large.jpg",
+            "width": 514,
+            "height": 468
+          }
+        ],
         "imageType": "backglass",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/G5D3O-MJKe0",
         "sourceType": "opdb",
@@ -2648,6 +3986,29 @@
         "id": "0ee2002b-3e67-4e19-9f34-f9bb900c44f1",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg",
         "altText": "Major League",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg.w320.webp",
+            "path": "0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 11380
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg.w640.webp",
+            "path": "0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 34632
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg.w1200.webp",
+            "path": "0ad0b2e1-235c-453e-b73b-78c6d87be997/326b9cf9-7a2b-5ec0-aac4-823b64878f71.jpg.w1200.webp",
+            "width": 1024,
+            "height": 768,
+            "sizeBytes": 69734
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2681,6 +4042,29 @@
         "id": "d8e7ef63-7418-43fb-aa6e-017a5232db4b",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg",
         "altText": "Metallica (Pro)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg.w320.webp",
+            "path": "94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 35026
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg.w640.webp",
+            "path": "94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 88286
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg.w1200.webp",
+            "path": "94154478-0464-4fd9-9846-d22a46ad2aeb/edd4c596-1b1c-54d1-850f-20171f7690be.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 195994
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2722,6 +4106,22 @@
         "id": "66cfadbd-d37d-4119-9e05-462c0f2cd06f",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d40afcbf-19e1-4dcf-8da0-f33eec64a973/d47123e0-ac16-5e7e-bef6-d6b3f479996f.png",
         "altText": "Monopoly",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d40afcbf-19e1-4dcf-8da0-f33eec64a973/d47123e0-ac16-5e7e-bef6-d6b3f479996f.png.w320.webp",
+            "path": "d40afcbf-19e1-4dcf-8da0-f33eec64a973/d47123e0-ac16-5e7e-bef6-d6b3f479996f.png.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 17934
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d40afcbf-19e1-4dcf-8da0-f33eec64a973/d47123e0-ac16-5e7e-bef6-d6b3f479996f.png.w640.webp",
+            "path": "d40afcbf-19e1-4dcf-8da0-f33eec64a973/d47123e0-ac16-5e7e-bef6-d6b3f479996f.png.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 44652
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2759,6 +4159,34 @@
       "playerCount": 4,
       "releaseDate": "1987-01-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "9b7720fd-d591-4f30-aba6-2483de65cbee",
+        "url": "https://img.opdb.org/6375d4c6-5126-419e-ad1a-dbdf7bc15c84-large.jpg",
+        "altText": "Monte Carlo playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/6375d4c6-5126-419e-ad1a-dbdf7bc15c84-small.jpg",
+            "width": 178,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/6375d4c6-5126-419e-ad1a-dbdf7bc15c84-medium.jpg",
+            "width": 456,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/6375d4c6-5126-419e-ad1a-dbdf7bc15c84-large.jpg",
+            "width": 1008,
+            "height": 1414
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G578Y-MJNzE",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G578Y-MJNzE",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/monte-carlo-1987",
       "locationStints": [
         {
@@ -2796,6 +4224,29 @@
         "id": "53b68215-23ab-4555-98c1-3e37ab6bf241",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg",
         "altText": "Mr. & Mrs. Pac-Man",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg.w320.webp",
+            "path": "ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg.w320.webp",
+            "width": 320,
+            "height": 233,
+            "sizeBytes": 20776
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg.w640.webp",
+            "path": "ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg.w640.webp",
+            "width": 640,
+            "height": 467,
+            "sizeBytes": 57836
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg.w1200.webp",
+            "path": "ca7f8da4-ac57-4757-abc7-ca4807f7c891/a517c63d-eff8-5402-90e8-bc65056fbb2f.jpg.w1200.webp",
+            "width": 1200,
+            "height": 875,
+            "sizeBytes": 145862
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2837,6 +4288,29 @@
         "id": "25471253-2416-4f60-b448-4e2b4e24fdf0",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png",
         "altText": "Mustang",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png.w320.webp",
+            "path": "ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png.w320.webp",
+            "width": 320,
+            "height": 214,
+            "sizeBytes": 19992
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png.w640.webp",
+            "path": "ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png.w640.webp",
+            "width": 640,
+            "height": 428,
+            "sizeBytes": 51076
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png.w1200.webp",
+            "path": "ccfeb14c-5361-43d0-a69d-99d14f158425/2ed2495b-93ca-5233-8b62-8608fae67514.png.w1200.webp",
+            "width": 800,
+            "height": 535,
+            "sizeBytes": 68408
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2878,6 +4352,29 @@
         "id": "7d10bb9b-b098-4126-9d68-1ff8fec856c3",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg",
         "altText": "NASCAR",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg.w320.webp",
+            "path": "77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 32712
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg.w640.webp",
+            "path": "77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 87408
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg.w1200.webp",
+            "path": "77297e3b-a404-40a0-bca5-6074cfcca0c5/53fd0916-d153-5906-afda-37fcfee480bf.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 189284
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2919,6 +4416,29 @@
         "id": "11331ea7-bb6b-472c-8ae1-46587e3ac0cc",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg",
         "altText": "NBA Fastbreak",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg.w320.webp",
+            "path": "cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 29802
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg.w640.webp",
+            "path": "cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 79548
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg.w1200.webp",
+            "path": "cde4f3be-5ef0-4186-a003-a3afa97dc535/e43d1371-feff-5d65-8fcc-79b1402ed18d.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 178708
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -2969,6 +4489,23 @@
         "id": "d0ccfcc8-278b-4d25-9e33-0f0e65c8ac63",
         "url": "https://img.opdb.org/91d80752-1abe-4816-ade5-b43e5643e184-large.jpg",
         "altText": "Oktoberfest playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/91d80752-1abe-4816-ade5-b43e5643e184-small.jpg",
+            "width": 229,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/91d80752-1abe-4816-ade5-b43e5643e184-medium.jpg",
+            "width": 587,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/91d80752-1abe-4816-ade5-b43e5643e184-large.jpg",
+            "width": 792,
+            "height": 864
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/GLWBV-Mz2El",
         "sourceType": "opdb",
@@ -3013,6 +4550,29 @@
         "id": "c0bec7fe-8fc9-485d-9e18-e3a7f82347f6",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg",
         "altText": "Old Chicago",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg.w320.webp",
+            "path": "9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 26466
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg.w640.webp",
+            "path": "9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 66502
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg.w1200.webp",
+            "path": "9063eb40-1284-45db-a134-a780d23e88c3/68360c53-f867-5312-bd84-a7b992fdc3ab.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 146868
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3053,6 +4613,23 @@
         "id": "60afa054-790b-4e35-bb76-21da3fb2d606",
         "url": "https://img.opdb.org/24ee525a-8086-44a1-be1a-9d4b8e9c44c7-large.jpg",
         "altText": "Paragon playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/24ee525a-8086-44a1-be1a-9d4b8e9c44c7-small.jpg",
+            "width": 250,
+            "height": 246
+          },
+          {
+            "url": "https://img.opdb.org/24ee525a-8086-44a1-be1a-9d4b8e9c44c7-medium.jpg",
+            "width": 640,
+            "height": 630
+          },
+          {
+            "url": "https://img.opdb.org/24ee525a-8086-44a1-be1a-9d4b8e9c44c7-large.jpg",
+            "width": 864,
+            "height": 851
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/GrXy3-ML0Ey",
         "sourceType": "opdb",
@@ -3096,6 +4673,29 @@
         "id": "0075708b-f8a7-493b-899e-8f2e96c2e41e",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg",
         "altText": "PIN-BOT",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg.w320.webp",
+            "path": "b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 29494
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg.w640.webp",
+            "path": "b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 75246
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg.w1200.webp",
+            "path": "b8e62026-c8e6-416f-8673-c35fe1a1b95a/c77c393e-9938-528c-a31c-11a8a2b4b230.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 170544
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3131,6 +4731,29 @@
         "id": "d6982610-03e2-450e-93ca-3ad9645667b4",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png",
         "altText": "Play Boy",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png.w320.webp",
+            "path": "4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png.w320.webp",
+            "width": 320,
+            "height": 230,
+            "sizeBytes": 17704
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png.w640.webp",
+            "path": "4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png.w640.webp",
+            "width": 640,
+            "height": 461,
+            "sizeBytes": 51084
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png.w1200.webp",
+            "path": "4f014c0c-424f-4e47-86be-4163f328f5a7/a41fa751-ee77-51d4-a05a-77703001dab9.png.w1200.webp",
+            "width": 800,
+            "height": 576,
+            "sizeBytes": 80086
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3161,6 +4784,34 @@
       "playerCount": 4,
       "releaseDate": "1990-01-01",
       "manufacturer": "Bally",
+      "primaryImage": {
+        "id": "d3e78a15-050c-41ae-b374-3f567743453f",
+        "url": "https://img.opdb.org/2f860a4f-3f87-4ca9-98ce-443c4a5b0145-large.jpg",
+        "altText": "Pool Sharks playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/2f860a4f-3f87-4ca9-98ce-443c4a5b0145-small.jpg",
+            "width": 157,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/2f860a4f-3f87-4ca9-98ce-443c4a5b0145-medium.jpg",
+            "width": 404,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/2f860a4f-3f87-4ca9-98ce-443c4a5b0145-large.jpg",
+            "width": 945,
+            "height": 1500
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GR68o-M0o2O",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GR68o-M0o2O",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -3197,6 +4848,29 @@
         "id": "512447be-4eaa-429e-a2fe-ae59e9206171",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg",
         "altText": "Road Kings",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg.w320.webp",
+            "path": "4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg.w320.webp",
+            "width": 320,
+            "height": 427,
+            "sizeBytes": 37498
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg.w640.webp",
+            "path": "4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg.w640.webp",
+            "width": 640,
+            "height": 853,
+            "sizeBytes": 119342
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg.w1200.webp",
+            "path": "4994ffc3-30ec-4d9b-9f5c-8ff3909ca7c6/ced57663-4b2c-599d-88c4-e51303759855.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1600,
+            "sizeBytes": 300058
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3241,6 +4915,34 @@
       "mapAtClub": false,
       "playerCount": 4,
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "304e75f5-99ac-4c53-a2f5-dcb8f956b291",
+        "url": "https://img.opdb.org/39a50a0b-16ab-4b99-b308-09d664118a64-large.jpg",
+        "altText": "Robo-War playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/39a50a0b-16ab-4b99-b308-09d664118a64-small.jpg",
+            "width": 191,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/39a50a0b-16ab-4b99-b308-09d664118a64-medium.jpg",
+            "width": 490,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/39a50a0b-16ab-4b99-b308-09d664118a64-large.jpg",
+            "width": 1008,
+            "height": 1317
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GryK3-MQrWk",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GryK3-MQrWk",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -3277,6 +4979,29 @@
         "id": "6d268544-cd8e-464d-b7f3-3fc67de132bb",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg",
         "altText": "Robocop",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg.w320.webp",
+            "path": "eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 27938
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg.w640.webp",
+            "path": "eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 77414
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg.w1200.webp",
+            "path": "eaad9b8f-67c3-474d-b1af-786e81c29612/ab1eb12c-bac9-5341-a2a4-4daa7ac1f623.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 177082
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3318,6 +5043,29 @@
         "id": "3701a978-3d04-42d0-956d-2f1c92e34d46",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg",
         "altText": "Rock",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg.w320.webp",
+            "path": "fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg.w320.webp",
+            "width": 320,
+            "height": 424,
+            "sizeBytes": 32984
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg.w640.webp",
+            "path": "fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg.w640.webp",
+            "width": 640,
+            "height": 849,
+            "sizeBytes": 84744
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg.w1200.webp",
+            "path": "fbd3d3a5-ccbe-47c1-8ef0-d034e30ba8b7/ca4758a2-c7ef-5de2-a5c1-e57543cc700d.jpg.w1200.webp",
+            "width": 772,
+            "height": 1024,
+            "sizeBytes": 111502
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3358,6 +5106,23 @@
         "id": "d0148d1c-13b2-4d27-b710-7a39c02b3449",
         "url": "https://img.opdb.org/180e478b-2b8c-422e-b064-53b35782b0b4-large.jpg",
         "altText": "Rollergames playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/180e478b-2b8c-422e-b064-53b35782b0b4-small.jpg",
+            "width": 193,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/180e478b-2b8c-422e-b064-53b35782b0b4-medium.jpg",
+            "width": 493,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/180e478b-2b8c-422e-b064-53b35782b0b4-large.jpg",
+            "width": 722,
+            "height": 936
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/Gr1Ko-MnKyx",
         "sourceType": "opdb",
@@ -3401,6 +5166,29 @@
         "id": "8c3d8610-d87f-47bd-a536-39f634b682f4",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg",
         "altText": "Roy Clark The Entertainer",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg.w320.webp",
+            "path": "4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg.w320.webp",
+            "width": 320,
+            "height": 427,
+            "sizeBytes": 32434
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg.w640.webp",
+            "path": "4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg.w640.webp",
+            "width": 640,
+            "height": 854,
+            "sizeBytes": 94292
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg.w1200.webp",
+            "path": "4e58eb5a-ba9f-426e-ada3-4429cdc17525/026de38e-621f-5b13-a6ad-dbb84873f071.jpg.w1200.webp",
+            "width": 767,
+            "height": 1024,
+            "sizeBytes": 128540
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3439,6 +5227,29 @@
         "id": "116e78bd-0c32-4f49-9c64-e3a7e6ad29cf",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg",
         "altText": "Royal Flush",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg.w320.webp",
+            "path": "6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 21702
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg.w640.webp",
+            "path": "6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 60948
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg.w1200.webp",
+            "path": "6c76d069-3d02-443f-8c33-3f0da3946609/93afd80b-c2cd-59bd-b08a-2ccb9a6346a9.jpg.w1200.webp",
+            "width": 1024,
+            "height": 768,
+            "sizeBytes": 119368
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3472,6 +5283,34 @@
       "mapAtClub": false,
       "releaseDate": "2022-01-01",
       "manufacturer": "Stern",
+      "primaryImage": {
+        "id": "1d0eb578-23b3-4681-a736-64c8fcb8e78f",
+        "url": "https://img.opdb.org/b21a7a29-5fc8-4399-a536-b7933d46aae2-large.jpg",
+        "altText": "Rush (LE) backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/b21a7a29-5fc8-4399-a536-b7933d46aae2-small.jpg",
+            "width": 250,
+            "height": 157
+          },
+          {
+            "url": "https://img.opdb.org/b21a7a29-5fc8-4399-a536-b7933d46aae2-medium.jpg",
+            "width": 640,
+            "height": 403
+          },
+          {
+            "url": "https://img.opdb.org/b21a7a29-5fc8-4399-a536-b7933d46aae2-large.jpg",
+            "width": 1200,
+            "height": 755
+          }
+        ],
+        "imageType": "backglass",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G2Lkd-M0ope-A97xV",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G2Lkd-M0ope-A97xV",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -3508,6 +5347,29 @@
         "id": "334aae10-668c-4f7a-940e-0e2bb416b51e",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg",
         "altText": "Rush (Premium)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg.w320.webp",
+            "path": "8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg.w320.webp",
+            "width": 320,
+            "height": 214,
+            "sizeBytes": 27336
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg.w640.webp",
+            "path": "8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg.w640.webp",
+            "width": 640,
+            "height": 427,
+            "sizeBytes": 79254
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg.w1200.webp",
+            "path": "8483f5b4-8434-4ede-9443-8ae0d78c9883/b469244d-9cd9-5109-88ab-dc66ee004524.jpg.w1200.webp",
+            "width": 1200,
+            "height": 801,
+            "sizeBytes": 199024
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3545,6 +5407,34 @@
       "playerCount": 1,
       "releaseDate": "1976-06-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "a54314a3-70ca-4735-8035-86a52d1136c9",
+        "url": "https://img.opdb.org/006374ba-d7be-4fce-958a-1f2eb3b8340b-large.jpg",
+        "altText": "Ship Ahoy playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/006374ba-d7be-4fce-958a-1f2eb3b8340b-small.jpg",
+            "width": 250,
+            "height": 242
+          },
+          {
+            "url": "https://img.opdb.org/006374ba-d7be-4fce-958a-1f2eb3b8340b-medium.jpg",
+            "width": 640,
+            "height": 620
+          },
+          {
+            "url": "https://img.opdb.org/006374ba-d7be-4fce-958a-1f2eb3b8340b-large.jpg",
+            "width": 864,
+            "height": 837
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G4lNn-MkPZ8",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G4lNn-MkPZ8",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/buccaneer-ship-ahoy-high-seas",
       "locationStints": [
         {
@@ -3575,6 +5465,34 @@
       "playerCount": 2,
       "releaseDate": "1977-01-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "78807fcc-d477-4ee9-9744-fdfb195b7d74",
+        "url": "https://img.opdb.org/15418d32-fa01-49f2-a939-cfcbe1db9ada-large.jpg",
+        "altText": "Solar City playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/15418d32-fa01-49f2-a939-cfcbe1db9ada-small.jpg",
+            "width": 215,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/15418d32-fa01-49f2-a939-cfcbe1db9ada-medium.jpg",
+            "width": 549,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/15418d32-fa01-49f2-a939-cfcbe1db9ada-large.jpg",
+            "width": 1152,
+            "height": 1343
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GrEZ5-MJ9y3",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GrEZ5-MJ9y3",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -3611,6 +5529,29 @@
         "id": "b3ba0c95-b3cd-4631-9ed5-97a9d8224810",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg",
         "altText": "Solar Ride",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg.w320.webp",
+            "path": "f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 29250
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg.w640.webp",
+            "path": "f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg.w640.webp",
+            "width": 640,
+            "height": 481,
+            "sizeBytes": 86142
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg.w1200.webp",
+            "path": "f8132f6a-a46a-4a10-9b8d-e9e13fa71bd0/6bf500a5-afd4-5f26-8d0a-70761d22bead.jpg.w1200.webp",
+            "width": 1024,
+            "height": 769,
+            "sizeBytes": 167700
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3688,6 +5629,34 @@
       "mapAtClub": false,
       "playerCount": 4,
       "manufacturer": "Bally",
+      "primaryImage": {
+        "id": "91188c78-185c-404d-b12f-67615dbb7ea4",
+        "url": "https://img.opdb.org/56787dce-cc1f-42ab-8900-900ccf5871e5-large.jpg",
+        "altText": "Backglass",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/56787dce-cc1f-42ab-8900-900ccf5871e5-small.jpg",
+            "width": 250,
+            "height": 199
+          },
+          {
+            "url": "https://img.opdb.org/56787dce-cc1f-42ab-8900-900ccf5871e5-medium.jpg",
+            "width": 640,
+            "height": 509
+          },
+          {
+            "url": "https://img.opdb.org/56787dce-cc1f-42ab-8900-900ccf5871e5-large.jpg",
+            "width": 754,
+            "height": 600
+          }
+        ],
+        "imageType": "backglass",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G42PX-MyNXo",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G42PX-MyNXo",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -3724,6 +5693,29 @@
         "id": "96fafbbe-e3c9-4fe8-8392-a12af903a9e3",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg",
         "altText": "Space Shuttle",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg.w320.webp",
+            "path": "224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 22382
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg.w640.webp",
+            "path": "224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 59634
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg.w1200.webp",
+            "path": "224c9508-6a10-4e1f-8033-2b93969ca72a/6d3a852a-e48a-50a6-9981-058425a05b56.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 130234
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3761,6 +5753,34 @@
       "playerCount": 4,
       "releaseDate": "2007-01-01",
       "manufacturer": "Stern",
+      "primaryImage": {
+        "id": "a44be4a3-c13f-4e02-822e-b18e9f28032e",
+        "url": "https://img.opdb.org/77c7ee0a-1837-4bca-a9e9-0b8dcf5c204c-large.jpg",
+        "altText": "Spider-Man playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/77c7ee0a-1837-4bca-a9e9-0b8dcf5c204c-small.jpg",
+            "width": 167,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/77c7ee0a-1837-4bca-a9e9-0b8dcf5c204c-medium.jpg",
+            "width": 428,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/77c7ee0a-1837-4bca-a9e9-0b8dcf5c204c-large.jpg",
+            "width": 900,
+            "height": 1345
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G5D94-MLnXq",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G5D94-MLnXq",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man-2007",
       "locationStints": [
         {
@@ -3798,6 +5818,29 @@
         "id": "0629de61-2e59-42b0-b79e-66a80f238ca3",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg",
         "altText": "Star Trek",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg.w320.webp",
+            "path": "cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 40166
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg.w640.webp",
+            "path": "cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 122622
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg.w1200.webp",
+            "path": "cb90d4c6-3c6e-4dbc-84fc-4d6f70437e38/01866baa-3e03-5246-b851-f7f59012c82e.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 311468
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3835,6 +5878,23 @@
         "id": "aa57ffd6-f05e-40bb-945e-1d0d9eb9249b",
         "url": "https://img.opdb.org/0d73d597-ba4f-42e7-85e7-1df77f269b72-c0db01b1-large.jpg",
         "altText": "Star Wars (Premium) closeup",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/0d73d597-ba4f-42e7-85e7-1df77f269b72-c0db01b1-small.jpg",
+            "width": 188,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/0d73d597-ba4f-42e7-85e7-1df77f269b72-c0db01b1-medium.jpg",
+            "width": 482,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/0d73d597-ba4f-42e7-85e7-1df77f269b72-c0db01b1-large.jpg",
+            "width": 1129,
+            "height": 1500
+          }
+        ],
         "imageType": "closeup",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/G5vLR-ME049",
         "sourceType": "opdb",
@@ -3871,6 +5931,23 @@
         "id": "606b05ab-00dc-4670-bb53-392e4150ad47",
         "url": "https://img.opdb.org/aa2694a1-92c5-49e6-8a67-a0060d3aa06b-large.jpg",
         "altText": "Star Wars (Pro) playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/aa2694a1-92c5-49e6-8a67-a0060d3aa06b-small.jpg",
+            "width": 153,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/aa2694a1-92c5-49e6-8a67-a0060d3aa06b-medium.jpg",
+            "width": 393,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/aa2694a1-92c5-49e6-8a67-a0060d3aa06b-large.jpg",
+            "width": 920,
+            "height": 1500
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/G5vLR-MwNwy",
         "sourceType": "opdb",
@@ -3899,7 +5976,7 @@
       "title": "Starship Troopers",
       "atClub": false,
       "opdbId": "G5we0-MDx6b",
-      "details": "1997 Sega. Current club machine.",
+      "details": "Starship Troopers, released by Sega in 1997, features engaging gameplay with notable shots and flow, capturing the sci-fi theme of the iconic film.",
       "display": "dmd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=4341",
       "mapAtClub": false,
@@ -3911,6 +5988,29 @@
         "id": "c61633af-020a-406b-bd8a-71e28c4a09df",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg",
         "altText": "Starship Troopers",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg.w320.webp",
+            "path": "fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg.w320.webp",
+            "width": 320,
+            "height": 213,
+            "sizeBytes": 20202
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg.w640.webp",
+            "path": "fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg.w640.webp",
+            "width": 640,
+            "height": 426,
+            "sizeBytes": 53644
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg.w1200.webp",
+            "path": "fe1f2376-f440-41a7-9a24-22833f104b14/911a3d8f-3470-5e33-ad54-175f70c8d6e2.jpg.w1200.webp",
+            "width": 1200,
+            "height": 798,
+            "sizeBytes": 117398
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -3982,6 +6082,29 @@
         "id": "24c2734d-c17f-4895-ab12-90deb2de94da",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg",
         "altText": "Strikes and Spares",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg.w320.webp",
+            "path": "267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 23566
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg.w640.webp",
+            "path": "267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 59478
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg.w1200.webp",
+            "path": "267650d2-8aa8-4063-b2f0-84c6cf1d4f09/f27a7c22-fc77-551f-9427-842aa58cf4ce.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 124514
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4023,6 +6146,29 @@
         "id": "e48896d0-00db-4b27-8f35-aad5df61c040",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg",
         "altText": "Swords of Fury",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg.w320.webp",
+            "path": "d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg.w320.webp",
+            "width": 320,
+            "height": 180,
+            "sizeBytes": 8662
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg.w640.webp",
+            "path": "d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg.w640.webp",
+            "width": 640,
+            "height": 360,
+            "sizeBytes": 20852
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg.w1200.webp",
+            "path": "d2e03f1d-4160-4bd6-91ed-908b0ceafdb4/93ba17d2-c515-55a9-b33d-65f355e6b9c8.jpg.w1200.webp",
+            "width": 1200,
+            "height": 675,
+            "sizeBytes": 54344
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4061,6 +6207,29 @@
         "id": "e4fc74a1-2d35-4ee0-8ccf-a538015a508c",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png",
         "altText": "Target Alpha",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png.w320.webp",
+            "path": "4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 15046
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png.w640.webp",
+            "path": "4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 34582
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png.w1200.webp",
+            "path": "4ebf2a7f-784b-47cd-b48d-6996232f999b/c3a83e89-4369-501b-b4c3-2d8ab2317eb1.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 95010
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4101,6 +6270,29 @@
         "id": "8c82606c-6403-42b4-a72d-1c8fb79bbce4",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg",
         "altText": "Target Pool",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg.w320.webp",
+            "path": "d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 18568
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg.w640.webp",
+            "path": "d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 48114
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg.w1200.webp",
+            "path": "d03529f4-acf7-4d06-a50a-1f3509ccbaeb/7a47673f-f27a-5e42-8034-f31704f99b47.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 102986
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4151,6 +6343,29 @@
         "id": "f707bc59-34f4-4562-b435-8cfc03c1e9e9",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png",
         "altText": "Terminator 2: Judgment Day",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png.w320.webp",
+            "path": "963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 18034
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png.w640.webp",
+            "path": "963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 43242
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png.w1200.webp",
+            "path": "963187eb-f540-4ea8-b8db-76428540b327/6d50fb94-f5fd-5ac7-8653-6bd2420ba080.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 129718
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4180,7 +6395,7 @@
       "title": "The Amazing Spider-Man",
       "atClub": false,
       "opdbId": "GrXlr-MOEE2",
-      "details": "1980 Gottlieb.",
+      "details": "The Amazing Spider-Man, released by Gottlieb in 1980, features engaging gameplay with notable shots and flow, including ramps and a scoop.",
       "display": "alphanumeric",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=2285",
       "mapAtClub": false,
@@ -4188,6 +6403,34 @@
       "playerCount": 4,
       "releaseDate": "1980-01-01",
       "manufacturer": "Gottlieb",
+      "primaryImage": {
+        "id": "768bee74-2bda-46ff-ad65-99b738e9795c",
+        "url": "https://img.opdb.org/590dd7e7-a7c3-445a-8574-d99a0590c5eb-large.jpg",
+        "altText": "The Amazing Spider-Man playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/590dd7e7-a7c3-445a-8574-d99a0590c5eb-small.jpg",
+            "width": 225,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/590dd7e7-a7c3-445a-8574-d99a0590c5eb-medium.jpg",
+            "width": 576,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/590dd7e7-a7c3-445a-8574-d99a0590c5eb-large.jpg",
+            "width": 1080,
+            "height": 1199
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/GrXlr-MOEE2",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/GrXlr-MOEE2",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/spider-man",
       "locationStints": [
         {
@@ -4225,6 +6468,29 @@
         "id": "99c97c72-d8b3-485f-84cf-2319e8de122f",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg",
         "altText": "The Bally Game Show",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg.w320.webp",
+            "path": "1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 30106
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg.w640.webp",
+            "path": "1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 93270
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg.w1200.webp",
+            "path": "1ee897bb-b61c-4d35-bb66-a21263fcc238/ad0d9538-b9ac-5191-8942-70549be1af3f.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 232692
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4266,6 +6532,29 @@
         "id": "88b3fbe1-5ffa-4e2c-852f-61eae652675c",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg",
         "altText": "The Flintstones",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg.w320.webp",
+            "path": "73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 32044
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg.w640.webp",
+            "path": "73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 86490
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg.w1200.webp",
+            "path": "73746eef-869e-43d7-a055-ff83e389e31b/93a65c2d-ed1a-5579-99b3-b7c942c39e3a.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 193376
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4307,6 +6596,29 @@
         "id": "12c274b4-262a-458d-8a17-b5ef5d5e315a",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png",
         "altText": "The Getaway: High Speed II",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png.w320.webp",
+            "path": "1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 19352
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png.w640.webp",
+            "path": "1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 46490
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png.w1200.webp",
+            "path": "1e7876f7-d1ce-4e6d-bb8e-796f9f502be5/56505162-5063-5948-8c58-3a584c348405.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 148610
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4345,6 +6657,29 @@
         "id": "52f05072-0362-41b8-afcb-b4ba73402827",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg",
         "altText": "The Hobbit (Smaug)",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg.w320.webp",
+            "path": "15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg.w320.webp",
+            "width": 320,
+            "height": 212,
+            "sizeBytes": 17722
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg.w640.webp",
+            "path": "15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg.w640.webp",
+            "width": 640,
+            "height": 425,
+            "sizeBytes": 51586
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg.w1200.webp",
+            "path": "15d13986-47a3-46b6-b115-ce40ee743dfc/ab6c2a95-e26e-5c8b-8381-88621e9b2f7d.jpg.w1200.webp",
+            "width": 1024,
+            "height": 680,
+            "sizeBytes": 106102
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4383,6 +6718,29 @@
         "id": "8cb41418-21e6-4a7f-960a-1caa352c990d",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg",
         "altText": "The Lord of the Rings",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg.w320.webp",
+            "path": "79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 22834
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg.w640.webp",
+            "path": "79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 64572
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg.w1200.webp",
+            "path": "79dc4e14-64f1-44c2-917c-8610cbe19890/2aa3d650-c7c7-5c90-83f6-99989ab2c5c0.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 153240
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4424,6 +6782,29 @@
         "id": "e0945bee-5448-4367-adc5-895be6020594",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg",
         "altText": "The Lost World Jurassic Park",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg.w320.webp",
+            "path": "3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 27044
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg.w640.webp",
+            "path": "3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 74644
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg.w1200.webp",
+            "path": "3f9c42d3-51ec-429a-83dc-f6f20f2268cd/3d2f5cb5-434a-5cda-a325-7e4e5834d720.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 163744
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4459,6 +6840,23 @@
         "id": "be42a481-186e-403b-b1a1-e61974760731",
         "url": "https://img.opdb.org/5707be23-2a0f-4310-9e45-ce0bb376b6de-large.jpg",
         "altText": "The Mandalorian (Premium) playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/5707be23-2a0f-4310-9e45-ce0bb376b6de-small.jpg",
+            "width": 171,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/5707be23-2a0f-4310-9e45-ce0bb376b6de-medium.jpg",
+            "width": 438,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/5707be23-2a0f-4310-9e45-ce0bb376b6de-large.jpg",
+            "width": 1008,
+            "height": 1474
+          }
+        ],
         "imageType": "playfield",
         "sourceUrl": "https://app.matchplay.events/opdb/entries/GBLLP-MW900-AOEEN",
         "sourceType": "opdb",
@@ -4530,6 +6928,29 @@
         "id": "393c5d7e-2042-4f3e-9ae2-35da0905d4e1",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png",
         "altText": "The Simpsons Pinball Party",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png.w320.webp",
+            "path": "d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 12294
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png.w640.webp",
+            "path": "d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 30854
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png.w1200.webp",
+            "path": "d2e229b4-51d9-4a3e-b4e3-53bb4fbba686/72e73fda-bc0d-548f-81a9-eb7e4275bf0b.png.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 68808
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4565,6 +6986,34 @@
       "mapAtClub": false,
       "playerCount": 4,
       "manufacturer": "Williams",
+      "primaryImage": {
+        "id": "64758cfc-4375-4616-b1c5-78d8ac9a79e6",
+        "url": "https://img.opdb.org/eecc0ef2-26c4-4589-b45e-f7f0afe8460d-large.jpg",
+        "altText": "Time Fantasy playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/eecc0ef2-26c4-4589-b45e-f7f0afe8460d-small.jpg",
+            "width": 217,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/eecc0ef2-26c4-4589-b45e-f7f0afe8460d-medium.jpg",
+            "width": 555,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/eecc0ef2-26c4-4589-b45e-f7f0afe8460d-large.jpg",
+            "width": 792,
+            "height": 913
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G42Nz-MNEpl",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G42Nz-MNEpl",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -4631,6 +7080,29 @@
         "id": "16376614-7101-41be-a78d-2aa51eee7d44",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg",
         "altText": "Time Warp",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg.w320.webp",
+            "path": "2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg.w320.webp",
+            "width": 320,
+            "height": 428,
+            "sizeBytes": 35144
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg.w640.webp",
+            "path": "2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg.w640.webp",
+            "width": 640,
+            "height": 857,
+            "sizeBytes": 92768
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg.w1200.webp",
+            "path": "2d7820a2-3b67-4cce-a323-a043d20f1afe/6e689827-5602-5ac0-9d6b-75f4d934d89f.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1607,
+            "sizeBytes": 205414
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4663,6 +7135,34 @@
       "mapAtClub": false,
       "playerCount": 4,
       "manufacturer": "Data East",
+      "primaryImage": {
+        "id": "2490a319-7bb9-40ed-b83c-0d55ee10b3b5",
+        "url": "https://img.opdb.org/afc19de2-ce94-4c3e-aa24-d666a2de2607-large.jpg",
+        "altText": "Torpedo Alley playfield",
+        "variants": [
+          {
+            "url": "https://img.opdb.org/afc19de2-ce94-4c3e-aa24-d666a2de2607-small.jpg",
+            "width": 169,
+            "height": 250
+          },
+          {
+            "url": "https://img.opdb.org/afc19de2-ce94-4c3e-aa24-d666a2de2607-medium.jpg",
+            "width": 432,
+            "height": 640
+          },
+          {
+            "url": "https://img.opdb.org/afc19de2-ce94-4c3e-aa24-d666a2de2607-large.jpg",
+            "width": 936,
+            "height": 1387
+          }
+        ],
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G48on-ML8B9",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G48on-ML8B9",
+        "attributionText": "Open Pinball Database (OPDB)"
+      },
       "locationStints": [
         {
           "address": "134 Haines Street, Nashua, NH",
@@ -4699,6 +7199,29 @@
         "id": "545b098c-aadb-472f-9d1d-839f7214ef77",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg",
         "altText": "Total Nuclear Annihilation",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg.w320.webp",
+            "path": "d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 24214
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg.w640.webp",
+            "path": "d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 64848
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg.w1200.webp",
+            "path": "d3006105-8bb9-486b-b545-b89a1c34e59c/70c6250a-659d-5cbe-9f7d-802171f1192c.jpg.w1200.webp",
+            "width": 1024,
+            "height": 1024,
+            "sizeBytes": 118812
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4740,6 +7263,29 @@
         "id": "6c7f6ab8-cab5-4742-9af8-524c627332b2",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg",
         "altText": "Truck Stop",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg.w320.webp",
+            "path": "e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg.w320.webp",
+            "width": 320,
+            "height": 180,
+            "sizeBytes": 17154
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg.w640.webp",
+            "path": "e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg.w640.webp",
+            "width": 640,
+            "height": 360,
+            "sizeBytes": 44144
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg.w1200.webp",
+            "path": "e68175e7-091a-4258-9b66-49141b6bc193/46722c2f-4cff-5a2c-86e2-a49be1efb88f.jpg.w1200.webp",
+            "width": 1200,
+            "height": 675,
+            "sizeBytes": 107620
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4820,6 +7366,29 @@
         "id": "8468905a-4f77-4745-8c5d-0c6d163aeb6f",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg",
         "altText": "WHO dunnit",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg.w320.webp",
+            "path": "be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 25804
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg.w640.webp",
+            "path": "be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 70574
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg.w1200.webp",
+            "path": "be55c57e-5c48-4e1f-a6a5-707cda6a9278/c24fc33a-14e0-5442-aba5-c015ef7c0e91.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 174452
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4858,6 +7427,29 @@
         "id": "e12a6452-38ab-42b0-a7e4-1d9024aebc9d",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg",
         "altText": "World Cup Soccer",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg.w320.webp",
+            "path": "00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg.w320.webp",
+            "width": 320,
+            "height": 320,
+            "sizeBytes": 23910
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg.w640.webp",
+            "path": "00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg.w640.webp",
+            "width": 640,
+            "height": 640,
+            "sizeBytes": 58998
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg.w1200.webp",
+            "path": "00918566-e29b-4f4e-8d8c-0089f4d62a0a/86c5972f-de5e-510b-a753-c579ba0077a6.jpg.w1200.webp",
+            "width": 1200,
+            "height": 1200,
+            "sizeBytes": 128214
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4908,6 +7500,29 @@
         "id": "12376da0-36ee-4466-9c9c-343a37c19cfd",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg",
         "altText": "World Poker Tour",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg.w320.webp",
+            "path": "f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg.w320.webp",
+            "width": 320,
+            "height": 180,
+            "sizeBytes": 16608
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg.w640.webp",
+            "path": "f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg.w640.webp",
+            "width": 640,
+            "height": 360,
+            "sizeBytes": 45384
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg.w1200.webp",
+            "path": "f1125ee6-9b92-4c1e-90f0-1979ab9bc3be/f97d1082-a9b0-55da-b8bf-62129c4c15f3.jpg.w1200.webp",
+            "width": 1024,
+            "height": 576,
+            "sizeBytes": 86006
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4946,6 +7561,29 @@
         "id": "c56c6e72-b209-40db-8274-42b2ff109f7a",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg",
         "altText": "X-Men Wolverine LE",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg.w320.webp",
+            "path": "7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg.w320.webp",
+            "width": 320,
+            "height": 240,
+            "sizeBytes": 23038
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg.w640.webp",
+            "path": "7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg.w640.webp",
+            "width": 640,
+            "height": 480,
+            "sizeBytes": 66446
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg.w1200.webp",
+            "path": "7ffec9a0-b372-49a7-87ea-0cc7e3ce82aa/cb134bf0-e819-5916-b52b-d1ac7a1052e0.jpg.w1200.webp",
+            "width": 1024,
+            "height": 768,
+            "sizeBytes": 133252
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"
@@ -4984,6 +7622,22 @@
         "id": "b922f61f-4440-496e-b2b6-8d863bb4c861",
         "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f47d1550-17a1-43a1-a89a-4e8b0a5a061e/458d9f0a-f9c5-5836-9a00-939fedfeced8.png",
         "altText": "Xenon",
+        "variants": [
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f47d1550-17a1-43a1-a89a-4e8b0a5a061e/458d9f0a-f9c5-5836-9a00-939fedfeced8.png.w320.webp",
+            "path": "f47d1550-17a1-43a1-a89a-4e8b0a5a061e/458d9f0a-f9c5-5836-9a00-939fedfeced8.png.w320.webp",
+            "width": 320,
+            "height": 222,
+            "sizeBytes": 29074
+          },
+          {
+            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/f47d1550-17a1-43a1-a89a-4e8b0a5a061e/458d9f0a-f9c5-5836-9a00-939fedfeced8.png.w640.webp",
+            "path": "f47d1550-17a1-43a1-a89a-4e8b0a5a061e/458d9f0a-f9c5-5836-9a00-939fedfeced8.png.w640.webp",
+            "width": 576,
+            "height": 400,
+            "sizeBytes": 79176
+          }
+        ],
         "imageType": "game_photo",
         "sourceType": "club",
         "locationType": "remote_url"

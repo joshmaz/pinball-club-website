@@ -297,3 +297,62 @@ unreferenced derivatives. Cleanup remains a separate reviewed Admin operation.
 
 Focused regression command:
 `node --test scripts/game-image-delivery.test.mjs scripts/game-image-authorization.test.mjs scripts/opdb-images.test.mjs scripts/game-image-cleanup.test.mjs`.
+
+### Full-catalog OPDB image refresh
+
+`scripts/sync-opdb-images.mjs` reuses the shared OPDB parser and existing
+service-role import RPC. It covers every non-deleted catalog game with an
+OPDB ID, including historical games, and fetches the export once per run.
+It refreshes known image groups and imports newly discovered images as
+reference-only; it does not auto-approve images or change primary selection.
+Existing canonical source URLs and source metadata follow the normal OPDB
+refresh rules. No OPDB image binaries are copied into Storage.
+
+Use local credentials without putting keys in command arguments or reports:
+
+```sh
+node --env-file=.env scripts/sync-opdb-images.mjs --report /tmp/opdb-image-sync-dry-run.json
+node --env-file=.env scripts/sync-opdb-images.mjs --apply --limit 3 --report /tmp/opdb-image-sync-canary.json
+node --env-file=.env scripts/sync-opdb-images.mjs --apply --report /tmp/opdb-image-sync-full.json
+node --env-file=.env scripts/export-games-json-from-supabase.mjs
+```
+
+Dry-run is the default. `--limit` limits distinct OPDB IDs, not games or
+images; `--opdb-id ID` selects one catalog ID. Reports distinguish refreshed
+and new associations, missing OPDB IDs, unmatched export IDs, old unmatched
+image groups, and missing size candidates. Unmatched existing images are
+retained. Apply verifies candidate metadata and unchanged approval/primary
+flags after each ID, checkpoints the report, and stops on the first error.
+Rerunning upserts by the stable image-group key without duplicate associations.
+Concurrent editor changes can trigger a verification failure; inspect the
+report before retrying. Each RPC is atomic; the full run spans multiple RPCs.
+
+Browser verification should inspect `currentSrc` at representative widths
+and display densities. A high-density card can legitimately select `large`;
+medium/small are candidates, not forced size caps. Refresh the public games
+snapshot afterward so fallback rendering retains those candidates. Games
+without OPDB IDs require separate identity matching.
+
+October 8, 2026 operational verification: 126 non-deleted catalog games,
+124 with OPDB IDs (123 distinct IDs), all IDs matched the export. The canary
+and full run together added 189 reference-only associations and refreshed 88
+existing associations, for 277 associations from 274 exported images. Every
+imported group had three usable size candidates; no existing groups were
+unmatched. All 123 IDs passed post-write candidate and approval/primary
+verification. A subsequent dry-run planned zero new associations. Major League
+and Play Boy had no OPDB IDs and were not synced.
+
+The public snapshot was refreshed to 126 games / 117 selected primary images;
+all 117 expose delivery variants, including all 29 OPDB primaries. This also
+incorporates previously approved live records missing from the September
+snapshot; the sync itself does not approve newly discovered images.
+Live Rush (LE) verification selected medium on a 346.8 CSS-pixel card at
+DPR 1.5, and large in its Photos detail. The narrow DPR 3 browser selected
+large for the card. These checks do not constitute a full DPR 1/2 benchmark.
+For this image, HTTP HEAD Content-Length was 22,326 bytes (250px), 92,768
+bytes (640px), and 678,905 bytes (1200px). Medium is about 86% smaller than
+large for this sample; this is not a whole-page or billed-egress measurement.
+Local reports: `/tmp/opdb-image-sync-dry-run.json`,
+`/tmp/opdb-image-sync-canary.json`, `/tmp/opdb-image-sync-full.json`, and
+`/tmp/opdb-image-sync-after.json`. Reports are operational artifacts, not
+committed source files. Snapshot/frontend deployment is separate from this run.
