@@ -2,9 +2,15 @@
 <html lang="en" class="clubhouse club-public club-about">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#0f1216">
+    <meta name="theme-color" content="#f4f2eb">
+    <meta name="application-name" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-title" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="assets/pwa/manifest.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
     <meta name="description" content="About the Southern New Hampshire Pinball Club: nonprofit pinball community in Nashua, NEPL host, membership, history, and our new location at 48 Bridge St, Unit 3A.">
     <title>SNHPC - About</title>
     <script src="assets/js/theme.js"></script>
@@ -14,7 +20,7 @@
 </head>
 <body>
     <a class="club-skip" href="#about-main">Skip to content</a>
-    <header>
+    <header id="page-top" tabindex="-1">
         <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
         <div class="club-header-links">
 <nav aria-label="Main navigation">
@@ -73,7 +79,7 @@
             <p>If you have any questions, we&rsquo;d love to hear from you.</p>
 
             <h3>Visit or get involved</h3>
-            <p>Our new location is <strong>48 Bridge St, Unit 3A, Nashua, NH</strong>. Use <a href="https://maps.google.com/?q=48+Bridge+St+Unit+3A+Nashua+NH" target="_blank" rel="noopener noreferrer">Google Maps</a> for directions and follow <a href="https://www.facebook.com/snhpinball/events" target="_blank" rel="noopener noreferrer">Facebook events</a> for reopening announcements, parking notes, and entry details. Day-to-day chat now happens on <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>, our primary community space, so join us there. Use <a href="signin.html">member sign-in</a> for accounts and future membership tools, and you can <a href="donate/">support the move</a> anytime.</p>
+            <p>Find us at <strong>48 Bridge St, Unit 3A, Nashua, NH</strong>. We’re open full-time, with 24/7 access for members. Get directions with <a href="https://maps.apple.com/?daddr=48+Bridge+St+Unit+3A+Nashua+NH" target="_blank" rel="noopener noreferrer" aria-label="Get directions to Southern New Hampshire Pinball Club in Apple Maps (opens in a new tab)" title="Get directions in Apple Maps">Apple Maps</a> or <a href="https://www.google.com/maps/dir/?api=1&amp;destination=48+Bridge+St+Unit+3A+Nashua+NH" target="_blank" rel="noopener noreferrer" aria-label="Get directions to Southern New Hampshire Pinball Club in Google Maps (opens in a new tab)" title="Get directions in Google Maps">Google Maps</a>, and follow <a href="https://www.facebook.com/snhpinball/events" target="_blank" rel="noopener noreferrer">Facebook events</a> for upcoming events and visitor details. Join us on <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a>, our primary community space, to connect with other players. Use <a href="signin.html">member sign-in</a> to manage your account and access member tools, or <a href="donate/">support the club</a> to help keep the games running.</p>
 
             <h3>Contact</h3>
             <ul class="contact-block">
@@ -91,7 +97,7 @@
     </main>
 
     <footer>
-        <img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo">
+        <a href="#page-top" aria-label="Back to top of this page"><img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo"></a>
         <p>©2026 Southern New Hampshire Pinball Club</p>
     </footer>
 
