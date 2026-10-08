@@ -158,3 +158,8 @@ html.clubhouse {
   padding-inline: .25rem;
 }
 .clubhouse footer a[href="#page-top"] { display: inline-block; }
+
+/* Small, labelled map choices shared by Home and About. */
+.club-directions { display: inline-flex; align-items: center; gap: .75rem; flex-wrap: wrap; vertical-align: middle; }
+.club-directions a { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; font-size: .875rem; }
+.club-directions svg { flex: none; }

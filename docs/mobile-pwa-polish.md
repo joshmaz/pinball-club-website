@@ -4,7 +4,7 @@
 
 The site previously had no web app manifest or apple-touch-icon. Header links, including the nested donation page and dynamic account links, already use same-origin relative URLs and same-window navigation. Keep those links and genuine external links as authored. A shared manifest now sets an explicit root scope/start URL and standalone display. This addresses missing app boundaries; the reported iOS overlay symptom still needs confirmation on a device.
 
-All nine app pages share the manifest, club artwork icons, and the short installation title **SNH Pinball**. The 180px iOS and 192/512px manifest PNGs come from `assets/images/SNHPC_logo_color.png`, centered at 80% of a square neutral background. Icons use `purpose: any`; they are not advertised as maskable.
+All nine app pages share the manifest, club artwork icons, and the short installation title **SNH Pinball**. The 180px iOS and 192/512px manifest PNGs come from `assets/images/SNHPC_logo_color.png`, centered on a square neutral background. The manifest icons retain the original 80% source scale; the iPhone artwork now uses 94% (17.5% larger), preserving the original artwork’s internal margins and the opaque 180×180 RGB PNG format. Icons use `purpose: any`; they are not advertised as maskable.
 
 The footer logo links to a focusable header anchor on the current page. Native anchor/history behavior is retained, including the hash history entry and browser Back scroll restoration. There is no global scroll reset, click interception, smooth-scroll override, service worker, caching, or push feature.
 
@@ -27,3 +27,12 @@ These cannot be verified by a desktop preview or Node tests. After deployment to
 
 - [Apple: configuring web applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
 - [Apple: what's new in web apps, including navigation scope](https://developer.apple.com/videos/play/wwdc2023/10120/)
+
+## Finishing changes
+
+Home and About both offer understated, side-by-side Apple Maps and Google Maps links with a small location icon, visible vendor names, accessible directions labels and tooltips. Both retain the existing destination, 48 Bridge St, Unit 3A, Nashua, NH. Origin and travel mode are omitted so the map provider can offer the appropriate route choices.
+
+- [Apple Map Links](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html): `daddr` directions destination.
+- [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started): `/maps/dir/?api=1&destination=…`.
+
+After deployment, check both providers on iPhone and desktop, including the destination and available route choices. To validate the larger iPhone icon, remove the existing Home Screen shortcut, reload the deployed site in Safari and add it again. If stale artwork persists, clear this site’s Safari website data and retry (this may sign you out).
