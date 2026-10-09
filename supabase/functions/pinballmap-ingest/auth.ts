@@ -4,6 +4,7 @@ export const SCHEDULER_HEADER = "x-pinballmap-scheduler-secret";
 
 type Dependencies = {
   schedulerSecret: string | undefined;
+  schedulerHeader?: string;
   getUser: (token: string) => Promise<string | null>;
   hasGamesAccess: (userId: string) => Promise<boolean>;
 };
@@ -32,12 +33,13 @@ export function ingestMethodResponse(req: Request): Response | null {
 
 export async function authorizeIngest(req: Request, deps: Dependencies): Promise<Authorization> {
   // Presence selects scheduler mode, including an empty header. Never fall back.
-  if (req.headers.has(SCHEDULER_HEADER)) {
+  const schedulerHeader = deps.schedulerHeader || SCHEDULER_HEADER;
+  if (req.headers.has(schedulerHeader)) {
     const expected = deps.schedulerSecret;
     if (!expected || !expected.trim()) {
       return { ok: false, status: 503, error: "Scheduler authentication is not configured" };
     }
-    const supplied = req.headers.get(SCHEDULER_HEADER) || "";
+    const supplied = req.headers.get(schedulerHeader) || "";
     // Fixed-size digests allow timing-safe comparison even for different lengths.
     const matches = timingSafeEqual(
       createHash("sha256").update(supplied).digest(),

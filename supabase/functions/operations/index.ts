@@ -29,6 +29,7 @@ Deno.serve(async req => {
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (action === "configuration") return json({
       providers: [
+        { provider: "pintips", configured: Boolean(Deno.env.get("PINTIPS_IMPORT_SCHEDULER_SECRET")), test_supported: false, note: "Daily export import. Manual refresh is in Games; counts are in Jobs." },
         { provider: "matchplay", configured: Boolean(token), test_supported: true },
         { provider: "ifpa", configured: null, test_supported: false, note: "Adapter not connected" },
         { provider: "pinballmap", configured: true, test_supported: false, note: "Public API; ingestion health is not instrumented yet" },
