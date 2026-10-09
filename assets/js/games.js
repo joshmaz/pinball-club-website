@@ -729,13 +729,12 @@ function renderGameTips(panel, tips, state, game) {
   const links = document.createElement("div");
   links.className = "games-profile-links";
   addGameProfileLink(links, "View on PinTips", getPinTipsUrl(game) || "https://app.matchplay.events/pintips");
-  panel.appendChild(links);
   if (!tips.length) {
     const note = document.createElement("p");
     note.className = state === "error" ? "games-more-info-error" : "games-more-info-empty";
     note.textContent = state === "loading" ? "Loading tips…" : state === "error"
       ? "Tips could not be loaded. Please try again." : "No PinTips are available for this game yet.";
-    panel.appendChild(note);
+    panel.append(note, links);
     return;
   }
   const list = document.createElement("ul");
@@ -757,7 +756,7 @@ function renderGameTips(panel, tips, state, game) {
     }
     list.appendChild(item);
   });
-  panel.appendChild(list);
+  panel.append(list, links);
 }
 
 function renderGameProfile(game, payload, error, tips = [], tipsState = "empty") {
