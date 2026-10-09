@@ -83,12 +83,12 @@
     }
     return el;
   }
-  function renderAssignments(container, roles) {
+  function renderAssignments(container, roles, fullLabel) {
     container.replaceChildren();
     var assigned = assignments(roles);
     if (!assigned.length) { container.textContent = "None"; return; }
     var list = node("ul", "", "member-role-badges");
-    assigned.forEach(function (slug) { var li = node("li"); li.appendChild(badge(slug)); list.appendChild(li); });
+    assigned.forEach(function (slug) { var li = node("li"); li.appendChild(badge(slug, fullLabel)); list.appendChild(li); });
     container.appendChild(list);
   }
   function renderAccess(container, roles) {
@@ -129,7 +129,7 @@
     container.replaceChildren();
     if (failed) { container.appendChild(node("p", "Couldn’t load your website roles. Reload the page to try again.", "member-role-load-error")); return; }
     container.appendChild(node("h4", "Assigned roles"));
-    var assigned = node("div"); renderAssignments(assigned, roles); container.appendChild(assigned);
+    var assigned = node("div"); renderAssignments(assigned, roles, true); container.appendChild(assigned);
     container.appendChild(node("h4", "Effective access"));
     var access = node("div"); renderAccess(access, roles); container.appendChild(access);
   }

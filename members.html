@@ -1289,9 +1289,9 @@
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       rolePresentation.assignments(row.role_slugs || []).forEach(function (slug) {
         var roleName = rolePresentation.name(slug);
-        var li = document.createElement("li"); li.appendChild(rolePresentation.badge(slug, true));
+        var li = document.createElement("li"); li.appendChild(rolePresentation.badge(slug));
         if (adminMayRemoveRole(row, slug)) {
-          var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove";
+          var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove " + roleName;
           remove.setAttribute("data-member-focus", row.member_id);
           remove.setAttribute("aria-label", "Remove " + roleName + " from " + adminMemberName(row));
           remove.addEventListener("click", async function () {

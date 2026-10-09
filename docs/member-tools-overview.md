@@ -15,7 +15,7 @@ The current directory and door-code checks use the latest membership's active st
 
 ## Assigned-role presentation
 
-The existing shared role presentation component now renders compact icons in the directory and profile summary. Each domain has one SVG outline; Editor and Admin share the domain symbol. Admin also has a heavier border, and every icon has the complete role name through its accessible label and tooltip on hover/focus. Club Admin preserves the star-shield. The expanded member editor retains full role labels, including remove and assign controls. Effective access stays explanatory text; inherited capabilities are never expanded into extra assigned-role icons.
+The existing shared role presentation component now renders compact icons in the directory and expanded member cards, with full labeled badges on the user Profile. Each domain has one SVG outline; Editor and Admin share the domain symbol. Admin also has a heavier border, and every icon has the complete role name through its accessible label and tooltip on hover/focus. Club Admin preserves the star-shield. The expanded member editor uses compact role icons; remove buttons and the assign selector retain full role labels. Effective access stays explanatory text; inherited capabilities are never expanded into extra assigned-role icons.
 
 ## Verification
 

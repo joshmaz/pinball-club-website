@@ -131,8 +131,8 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
     assert.match(root.textContent, /Games Admin/);
     assert.doesNotMatch(root.textContent, /games_admin/);
     const buttons = all(root, el => el.tag === 'button');
-    assert.equal(buttons.some(el => el.textContent === 'Remove'), actor !== 'membership_editor');
-    assert.equal(buttons.filter(el => el.textContent === 'Remove').length, actor === 'membership_editor' ? 0 : 1);
+    assert.equal(buttons.some(el => el.textContent === 'Remove Games Admin'), actor !== 'membership_editor');
+    assert.equal(buttons.filter(el => el.textContent === 'Remove Games Admin').length, actor === 'membership_editor' ? 0 : 1);
     assert.equal(buttons.some(el => el.textContent === 'Assign role'), actor !== 'membership_editor');
     const options = all(root, el => el.tag === 'option' && el.value && auth.ROLE_CATALOG[el.value]);
     for (const option of options) {
@@ -183,4 +183,17 @@ test('every assigned domain has a shared icon with keyboard tooltip and full acc
     assert.equal(path(domain + '_editor'), path(domain + '_admin'));
   }
   assert.equal(new Set(['games', 'events', 'photos', 'membership'].map(d => ui.badge(d + '_editor').children[0].children[0].attributes.d)).size, 4);
+});
+
+
+test('profile uses full domain badges while member cards use compact icons', () => {
+  const { ui } = setup();
+  const profile = new Element('div');
+  ui.renderProfile(profile, ['games_editor', 'club_admin'], false);
+  const badges = all(profile, el => (el.className || '').startsWith('member-role-badge '));
+  assert.equal(badges.length, 2);
+  for (const badge of badges) assert.ok(!badge.className.includes('member-role-icon'));
+  assert.deepEqual(badges.map(el => el.textContent.trim()), ['Games Editor', 'Website Administrator']);
+  assert.match(html, /li.appendChild\(rolePresentation.badge\(slug\)\)/);
+  assert.match(html, /remove.textContent = "Remove " \+ roleName/);
 });
