@@ -67,7 +67,7 @@
       star.setAttribute("d", "m12 7 1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3L10 12 8 10l2.8-.4Z");
       svg.appendChild(star);
     }
-    var label = slug === "club_admin" ? "Club Admin" : name(slug);
+    var label = name(slug);
     el.appendChild(svg);
     if (fullLabel) {
       el.appendChild(node("span", name(slug)));

@@ -41,7 +41,7 @@ test('assignment badges retain actual assignments, never expand inheritance or d
   for (const [roles, names, kinds] of [
     [['games_editor'], ['Games Editor'], ['editor']],
     [['photos_admin'], ['Photos Admin'], ['admin']],
-    [['club_admin'], ['Club Admin'], ['website']],
+    [['club_admin'], ['Website Administrator'], ['website']],
     [['events_editor', 'games_admin'], ['Events Editor', 'Games Admin'], ['editor', 'admin']],
     [['games_admin', 'games_editor'], ['Games Admin', 'Games Editor'], ['admin', 'editor']],
     [['website_volunteer'], [], []]
@@ -170,7 +170,7 @@ test('every assigned domain has a shared icon with keyboard tooltip and full acc
   const { ui, auth } = setup();
   for (const slug of Object.keys(auth.ROLE_CATALOG).filter(s => auth.ROLE_CATALOG[s].assignable)) {
     const icon = ui.badge(slug);
-    const label = slug === 'club_admin' ? 'Club Admin' : auth.ROLE_CATALOG[slug].displayName;
+    const label = auth.ROLE_CATALOG[slug].displayName;
     assert.equal(icon.attributes['aria-label'], label);
     assert.equal(icon.attributes.title, label);
     assert.equal(icon.attributes.tabindex, '0');
