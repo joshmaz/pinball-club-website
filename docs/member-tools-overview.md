@@ -20,3 +20,7 @@ The existing shared role presentation component now renders compact icons in the
 ## Verification
 
 The regression tests exercise latest-record ordering, historical rows, expiration, account verification, missing profiles, unique volunteer totals, the Notes/Issues predicate, RPC authorization, all nine role icons, accessible labels, and full-text management controls. Live database reconciliation and desktop/mobile browser preview review remain necessary before merge.
+
+## Directory verification
+
+Apply `20261009004500_member_directory_verification.sql` to expose `email_verified` from `auth.users.email_confirmed_at` through the existing protected directory RPC. Basic filtering requires verification and a non-active latest membership. Unverified Accounts has its own filter and label. Full Access still follows membership status; an unverified Full-Access account is labeled with both states and appears in both relevant filters. Missing verification data displays “Verification unavailable” rather than assuming Basic membership.

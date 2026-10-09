@@ -300,6 +300,7 @@
               <option value="with-roles">Members with roles</option>
               <option value="active">Full Access Members</option>
               <option value="inactive">Basic Members</option>
+              <option value="unverified">Unverified Accounts</option>
             </select>
           </div>
           <div class="members-admin-table-wrap">
@@ -1178,7 +1179,7 @@
       var roles = Array.isArray(row.role_slugs) ? row.role_slugs : [];
       var active = String(row.membership_status || "").trim().toLowerCase() === "active";
       return (!query || [row.first_name, row.last_name, row.display_name, row.email, adminMemberName(row)].join(" ").toLowerCase().includes(query)) &&
-        (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active));
+        (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active && row.email_verified === true) || (mode === "unverified" && row.email_verified === false));
     }
 
     function adminRender() {
@@ -1209,7 +1210,9 @@
           adminRender();
         });
         nameCell.appendChild(toggle);
-        adminCell(tr, row.membership_status === "active" ? "Full Access Member" : "Basic Member");
+        adminCell(tr, row.membership_status === "active"
+          ? "Full Access Member" + (row.email_verified === false ? " · Unverified" : "")
+          : row.email_verified === true ? "Basic Member" : row.email_verified === false ? "Unverified" : "Verification unavailable");
         rolePresentation.renderAssignments(adminCell(tr, ""), row.role_slugs || []);
         memberAdminTableBody.appendChild(tr);
         if (adminExpandedId === row.member_id) adminRenderEditor(row);
