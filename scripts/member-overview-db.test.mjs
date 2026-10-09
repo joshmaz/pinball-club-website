@@ -23,6 +23,7 @@ test('overview counts accounts using verification, latest membership and canonic
     const helper = await read('20260928220000_canonical_persisted_member_roles.sql');
     await db.exec(helper.slice(helper.indexOf('create or replace function public.snh_member_has_any_assigned_role'), helper.indexOf('revoke all')));
     await db.exec(await read('20261008233000_member_admin_overview.sql'));
+    await db.exec(await read('20261009003000_member_overview_ignore_legacy_end_date.sql'));
     for (let n = 1; n <= 7; n++) {
       await db.query('insert into auth.users values ($1,$2)', [id(n), n === 1 ? null : '2026-01-01']);
       if (n !== 7) await db.query('insert into members values ($1,$1)', [id(n)]);
@@ -42,7 +43,7 @@ test('overview counts accounts using verification, latest membership and canonic
     }
     await db.exec("set test.authorized = 'yes'");
     const stats = (await db.query('select snh_get_member_admin_stats() as stats')).rows[0].stats;
-    assert.deepEqual(stats, {account_count:7, full_access_count:2, basic_count:4, volunteer_count:2});
+    assert.deepEqual(stats, {account_count:7, full_access_count:3, basic_count:3, volunteer_count:2});
     const metadata = (await db.query(`select prosecdef, has_function_privilege('authenticated',oid,'execute') as allowed,
       has_function_privilege('anon',oid,'execute') as anonymous from pg_proc where proname='snh_get_member_admin_stats'`)).rows[0];
     assert.deepEqual(metadata, {prosecdef:true, allowed:true, anonymous:false});

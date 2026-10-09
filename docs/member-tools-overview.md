@@ -1,17 +1,17 @@
 # Member Tools overview and assigned roles
 
-The overview RPC keeps its existing Membership Editor authorization boundary. Deploy `20261008233000_member_admin_overview.sql` before checking the new cards. No tables, assignment rules, RLS policies or access checks change.
+The overview RPC keeps its existing Membership Editor authorization boundary. Deploy both overview migrations, including `20261009003000_member_overview_ignore_legacy_end_date.sql`, before checking the new cards. No tables, assignment rules, RLS policies or access checks change.
 
 - **Accounts:** rows in `auth.users`, including accounts without a member profile and accounts awaiting email confirmation. Orphaned member profiles are not registered accounts.
-- **Full-Access Members:** accounts whose latest membership (ordered by `created_at`, then `id`, descending) has status `active` and no end date or an end date on/after the database current date. Each account counts once.
+- **Full-Access Members:** accounts whose latest membership (ordered by `created_at`, then `id`, descending) has status `active`. Legacy end dates do not affect membership status. Each account counts once.
 - **Basic Members:** email-confirmed accounts (`auth.users.email_confirmed_at`) outside the Full-Access count. This includes accounts without any membership record.
 - **Website Volunteers:** unique accounts for which an associated member satisfies `private.snh_member_has_effective_role(member_id, 'website_volunteer')`. This existing internal canonical predicate recognizes assigned website roles and derives Volunteer eligibility. Notes/Issues use `snh_member_has_any_assigned_role`, which checks the canonical assignable-role allowlist; the database regression test compares both predicates. Multiple assigned roles do not increase the total.
 
 Volunteer status overlaps membership. Full Access follows the membership record regardless of email verification, consistent with the existing access model; Basic requires email verification explicitly.
 
-## Historical end-date discrepancy
+## Legacy end dates
 
-The current directory and door-code checks use the latest membership's active status without inspecting end dates. Manual membership updates now require a null end date. Historical active rows can still carry past end dates. The overview excludes those rows as requested; the existing authorization and directory behavior are preserved. This is a reporting distinction, not an access-policy change.
+Membership end dates are deprecated. Overview, directory and door access all use the latest membership's status; historical end dates do not override `active`. Latest `inactive`, `expired`, `canceled` or `past_due` records do not count as Full Access. The corrective migration only changes reporting; authorization is unchanged.
 
 ## Assigned-role presentation
 
