@@ -263,8 +263,9 @@
           <h2>Door code</h2>
           <div class="membership-card">
             <p>Full Access Members can reveal the current code here.</p>
-            <button type="button" id="door-code-reveal">Reveal door code</button>
+            <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal Door Code</button>
             <p id="door-code-value" role="status" aria-live="polite"></p>
+            <p id="door-code-reminder" class="membership-card-note" hidden>Our club runs on trust and the honor system. Please keep the door code private and do not share it, post it online, or let others use your access. Each Full Access Member should retrieve the code through their own account. Help keep the club secure by making sure the door closes and locks behind you.</p>
           </div>
           <form id="door-code-admin" class="members-profile-form" hidden>
             <h4>Update door code</h4>
@@ -2060,11 +2061,29 @@
     membershipStatus.textContent = membership && membership.status === "active" ? "Full Access Member" : "Basic Member";
     var doorReveal = document.getElementById("door-code-reveal");
     var doorValue = document.getElementById("door-code-value");
+    var doorReminder = document.getElementById("door-code-reminder");
+    var doorCodeVisible = false;
     var doorAdmin = document.getElementById("door-code-admin");
     doorAdmin.hidden = !userRoles.includes("club_admin");
     doorReveal.addEventListener("click", async function () {
+      if (doorCodeVisible) {
+        doorValue.textContent = "";
+        doorCodeVisible = false;
+        doorReveal.textContent = "Reveal Door Code";
+        doorReveal.setAttribute("aria-expanded", "false");
+        return;
+      }
       doorReveal.disabled = true; doorValue.textContent = "Checking access…";
-      try { doorValue.textContent = await window.SNHMemberPortal.fetchDoorCode() || "No code is set yet."; }
+      try {
+        var code = await window.SNHMemberPortal.fetchDoorCode();
+        doorValue.textContent = code || "No code is set yet.";
+        if (code) {
+          doorCodeVisible = true;
+          doorReveal.textContent = "Hide Door Code";
+          doorReveal.setAttribute("aria-expanded", "true");
+          doorReminder.hidden = false;
+        }
+      }
       catch (err) { doorValue.textContent = "Door code unavailable: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err); }
       finally { doorReveal.disabled = false; }
     });
