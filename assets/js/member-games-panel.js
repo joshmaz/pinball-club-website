@@ -1890,6 +1890,27 @@
     toggleRow.appendChild(document.createTextNode(" Only at club today"));
     wrap.appendChild(toggleRow);
     wrap.appendChild(buildPinballMapFoot());
+    if (hasDeleteAccess()) {
+      var tipsFoot = el("div", { className: "member-games-pinballmap-foot" });
+      var tipsStatus = el("p", { className: "member-games-meta", text: "PinTips refresh daily. Imported tips are read-only; club content is kept separately." });
+      tipsStatus.setAttribute("role", "status");
+      var tipsRefresh = el("button", { type: "button", className: "members-sidebar-link", text: "Refresh PinTips now" });
+      tipsRefresh.addEventListener("click", async function () {
+        if (!hasDeleteAccess() || tipsRefresh.disabled) return;
+        tipsRefresh.disabled = true;
+        tipsStatus.textContent = "Refreshing PinTips…";
+        try {
+          var result = await window.SNHMemberPortal.pintipsImportInvoke();
+          tipsStatus.textContent = "PinTips refreshed: " + result.tips + " tips, " + result.matched_games + " games matched. " +
+            result.added + " added, " + result.changed + " changed, " + result.removed + " removed. " +
+            result.missing_opdb_games + " games missing OPDB IDs, " + result.invalid_opdb_games + " invalid IDs, " + result.games_without_tips + " games without tips.";
+        } catch (error) { tipsStatus.textContent = error.message || "PinTips refresh failed. Please try again."; }
+        finally { tipsRefresh.disabled = false; }
+      });
+      tipsFoot.appendChild(tipsStatus);
+      tipsFoot.appendChild(tipsRefresh);
+      wrap.appendChild(tipsFoot);
+    }
     comboboxInputEl.addEventListener("focus", function () {
       if (!catalogLoaded) return;
       setComboboxOpen(true);

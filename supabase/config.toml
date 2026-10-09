@@ -40,3 +40,7 @@ verify_jwt = false
 [functions.operations]
 # Authentication and club_admin membership are checked before every action.
 verify_jwt = true
+
+[functions.pintips-import]
+# Handler verifies its dedicated scheduler secret or a user JWT + Games Admin capability.
+verify_jwt = false

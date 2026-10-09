@@ -604,13 +604,21 @@
     return data;
   }
 
+  async function pintipsImportInvoke() {
+    return invokeGameImport("pintips-import");
+  }
+
   async function pinballmapIngestInvoke() {
+    return invokeGameImport("pinballmap-ingest");
+  }
+
+  async function invokeGameImport(functionName) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
     if (!client.functions || typeof client.functions.invoke !== "function") {
       throw new Error("Edge Functions are not available in this browser build.");
     }
-    var result = await client.functions.invoke("pinballmap-ingest", { body: {} });
+    var result = await client.functions.invoke(functionName, { body: {} });
     if (result.error) {
       var msg = result.error.message || String(result.error);
       var ctx = result.error.context;
@@ -1390,6 +1398,7 @@
     gamesEditorLoad: gamesEditorLoad,
     pinballmapIngestStatus: pinballmapIngestStatus,
     pinballmapIngestInvoke: pinballmapIngestInvoke,
+    pintipsImportInvoke: pintipsImportInvoke,
     gamesCreate: gamesCreate,
     gamesUpsert: gamesUpsert,
     gameImageUpsert: gameImageUpsert,

@@ -722,7 +722,44 @@ function addGameProfileLink(row, label, url) {
   row.appendChild(link);
 }
 
-function renderGameProfile(game, payload, error) {
+function renderGameTips(panel, tips, state, game) {
+  const credit = document.createElement("p");
+  credit.textContent = "Tips from PinTips";
+  panel.appendChild(credit);
+  const links = document.createElement("div");
+  links.className = "games-profile-links";
+  addGameProfileLink(links, "View on PinTips", getPinTipsUrl(game) || "https://app.matchplay.events/pintips");
+  if (!tips.length) {
+    const note = document.createElement("p");
+    note.className = state === "error" ? "games-more-info-error" : "games-more-info-empty";
+    note.textContent = state === "loading" ? "Loading tips…" : state === "error"
+      ? "Tips could not be loaded. Please try again." : "No PinTips are available for this game yet.";
+    panel.append(note, links);
+    return;
+  }
+  const list = document.createElement("ul");
+  list.className = "games-tips-list";
+  tips.forEach(tip => {
+    const item = document.createElement("li");
+    const category = document.createElement("h4");
+    category.textContent = String(tip.category || "Tip").replace(/_/g, " ");
+    const text = document.createElement("p");
+    text.className = "games-tip-text";
+    text.textContent = tip.text;
+    item.append(category, text);
+    // The current official export has no contributor field. Never infer authorship.
+    if (tip.contributor) {
+      const author = document.createElement("p");
+      author.className = "games-tip-credit";
+      author.textContent = "By " + tip.contributor;
+      item.appendChild(author);
+    }
+    list.appendChild(item);
+  });
+  panel.append(list, links);
+}
+
+function renderGameProfile(game, payload, error, tips = [], tipsState = "empty") {
   const body = gameMoreInfoUi.bodyEl;
   if (!body) return;
   const selectedLabel = body.querySelector('[role="tab"][aria-selected="true"]')?.textContent;
@@ -827,6 +864,10 @@ function renderGameProfile(game, payload, error) {
   const play = document.createElement("div");
   play.className = "games-profile-panel";
   if (renderGameMoreInfoSections(payload, play, "play")) addTab("Play", play);
+  const tipsPanel = document.createElement("div");
+  tipsPanel.className = "games-profile-panel";
+  renderGameTips(tipsPanel, tips, tipsState, game);
+  addTab("Tips", tipsPanel);
   body.appendChild(tabs);
   panels.forEach(({ panel }) => body.appendChild(panel));
   activate(Math.max(0, panels.findIndex(({ tab }) => tab.textContent === selectedLabel)));
@@ -843,7 +884,7 @@ async function openGameMoreInfoModal(game) {
   gameMoreInfoUi.lastFocus = /** @type {HTMLElement} */ (document.activeElement);
   root.hidden = false;
   titleEl.textContent = game.title ? `More about ${game.title}` : "Game details";
-  renderGameProfile(game, null, false);
+  renderGameProfile(game, null, false, [], getPublicSupabaseClient() && gameHasCatalogUuid(game) ? "loading" : "empty");
   gameMoreInfoUi.onKeyDown = (ev) => {
     if (ev.key === "Escape") {
       ev.preventDefault();
@@ -855,15 +896,19 @@ async function openGameMoreInfoModal(game) {
 
   const client = getPublicSupabaseClient();
   if (!client || !gameHasCatalogUuid(game)) return;
-  try {
-    const res = await client.rpc("snh_public_game_more_info", { p_game_id: game.id });
-    if (res.error) throw new Error(res.error.message || String(res.error));
-    let data = res.data;
-    if (typeof data === "string") data = JSON.parse(data);
-    if (!root.hidden && requestId === gameMoreInfoUi.requestId) renderGameProfile(game, data, false);
-  } catch (err) {
-    console.error("More Info RPC failed:", err);
-    if (!root.hidden && requestId === gameMoreInfoUi.requestId) renderGameProfile(game, null, true);
+  const [infoResult, tipsResult] = await Promise.allSettled([
+    client.rpc("snh_public_game_more_info", { p_game_id: game.id }),
+    client.rpc("snh_public_game_tips", { p_game_id: game.id }),
+  ]);
+  const read = result => {
+    if (result.status === "rejected" || result.value.error) return { error: true, data: null };
+    try { return { error: false, data: typeof result.value.data === "string" ? JSON.parse(result.value.data) : result.value.data }; }
+    catch { return { error: true, data: null }; }
+  };
+  const info = read(infoResult), imported = read(tipsResult);
+  const tips = Array.isArray(imported.data) ? imported.data : [];
+  if (!root.hidden && requestId === gameMoreInfoUi.requestId) {
+    renderGameProfile(game, info.data, info.error, tips, imported.error ? "error" : "empty");
   }
 }
 

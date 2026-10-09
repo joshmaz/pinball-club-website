@@ -1,7 +1,7 @@
 (function () {
   var allowed = false, initialized = false, busy = false, snapshot, configuration, current = 'overview';
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
-  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map' };
+  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips' };
   function el(tag, text, parent) {
     var node = document.createElement(tag);
     if (text != null) node.textContent = String(text);
@@ -176,7 +176,7 @@
     }
     if (current === 'jobs') {
       el('p','Schedules are managed by the existing scheduler. Next-run times are not reported yet. Runs recorded before this update are unavailable.',content);
-      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'}];
+      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'}];
       snapshot.jobs.forEach(function (r) { if (!jobs.some(function (j) { return j.key === r.job; })) jobs.push({key:r.job,name:r.job}); });
       jobs.forEach(function (job) {
         var section = el('section',null,content); section.className='operations-provider'; el('h4',job.name,section);
@@ -187,6 +187,10 @@
           else if (job.key === 'notification_dispatch') {
             var result = run.result;
             el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? 'Test mode. ' + (result.sent ? 'Sent to the configured test inbox.' : 'No test message sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+          } else if (job.key === 'pintips_import' && run.status === 'succeeded') {
+            var counts = run.result;
+            el('p', counts.tips + ' tips; ' + counts.added + ' added, ' + counts.changed + ' changed, ' + counts.removed + ' removed.', section);
+            el('p', counts.matched_games + ' games matched; ' + counts.missing_opdb_games + ' missing OPDB IDs; ' + counts.invalid_opdb_games + ' invalid IDs; ' + counts.games_without_tips + ' games without tips; ' + counts.unmatched_tip_groups + ' tip groups outside the catalog.', section);
           } if (run.error) el('p',run.error,section);
           if (run.status==='running') el('p','Completion has not been recorded. The worker may still be running or may have stopped.',section); }
         if (job.key==='cache_cleanup') button('Run Now',section,function () { mutate(cleanup,'Run cache cleanup for search resources expired more than seven days ago?'); });

@@ -7,3 +7,6 @@ supabase/.temp/
 node_modules/
 dist/
 .netlify/
+
+# Local PinTips browser QA screenshots
+temp/pintips-qa/

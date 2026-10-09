@@ -207,3 +207,7 @@ See `docs/email.md` for SMTP field values and the branded auth-template checklis
 - The Supabase anon key is expected to be public in browser code.
 - Protect sensitive data with Row Level Security policies.
 - Never expose the Supabase service role key in frontend code or GitHub Actions secrets.
+
+### Imported PinTips
+
+Game cards include a read-only Tips tab backed by the official daily PinTips export. Games Admins can refresh it in Member Tools; Operations shows refresh health and matching counts. See [PinTips imports and deployment](docs/pintips.md) for matching limitations, migrations, secrets, scheduling, and validation.

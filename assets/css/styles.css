@@ -3303,3 +3303,10 @@ footer {
 }
 
 #door-code-value { overflow-wrap: anywhere; font-size: 1.25rem; font-weight: 700; }
+
+/* PinTips uses the existing keyboard-accessible game profile tabs. */
+.games-tips-list { list-style: none; padding: 0; margin: 1rem 0 0; }
+.games-tips-list li { padding: 0.9rem 0; border-top: 1px solid var(--border-color, #ddd); }
+.games-tips-list h4 { text-transform: capitalize; margin: 0 0 0.35rem; }
+.games-tip-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; margin: 0; }
+.games-tip-credit { font-size: 0.875rem; margin: 0.4rem 0 0; }
