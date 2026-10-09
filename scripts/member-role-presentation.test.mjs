@@ -50,7 +50,7 @@ test('assignment badges retain actual assignments, never expand inheritance or d
     ui.renderAssignments(root, roles);
     const badges = all(root, el => (el.className || '').startsWith('member-role-badge '));
     assert.deepEqual(badges.map(el => el.textContent.trim()), names);
-    assert.deepEqual(badges.map(el => el.className.split('--')[1]), kinds);
+    assert.deepEqual(badges.map(el => el.className.split('--')[1].split(' ')[0]), kinds);
     for (const icon of all(root, el => el.tag === 'svg')) assert.equal(icon.attributes['aria-hidden'], 'true');
   }
 });
@@ -131,8 +131,8 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
     assert.match(root.textContent, /Games Admin/);
     assert.doesNotMatch(root.textContent, /games_admin/);
     const buttons = all(root, el => el.tag === 'button');
-    assert.equal(buttons.some(el => el.textContent === 'Remove'), actor !== 'membership_editor');
-    assert.equal(buttons.filter(el => el.textContent === 'Remove').length, actor === 'membership_editor' ? 0 : 1);
+    assert.equal(buttons.some(el => el.textContent === 'Remove Games Admin'), actor !== 'membership_editor');
+    assert.equal(buttons.filter(el => el.textContent === 'Remove Games Admin').length, actor === 'membership_editor' ? 0 : 1);
     assert.equal(buttons.some(el => el.textContent === 'Assign role'), actor !== 'membership_editor');
     const options = all(root, el => el.tag === 'option' && el.value && auth.ROLE_CATALOG[el.value]);
     for (const option of options) {
@@ -158,9 +158,42 @@ test('existing directory filtering keeps membership and name/email matching inde
 test('directory wiring retains search, pagination, expansion, focus and unsaved safeguards', () => {
   assert.match(html, /rolePresentation\.renderAssignments\(adminCell\(tr, ""\), row\.role_slugs/);
   assert.match(html, /<th scope="col">Assigned roles<\/th>/);
-  assert.match(html, /\["Role assignments", stats.member_roles_count\]/);
+  assert.match(html, /\["Website Volunteers", stats.volunteer_count\]/);
   for (const text of ['memberMatchesDirectoryFilter(row, mode, query)', 'filtered.slice((adminPage - 1) * 25, adminPage * 25)',
     'aria-expanded', 'aria-controls', 'restore.focus()', 'if (!adminConfirmDiscard()) return;', 'beforeunload']) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /slug\.replace\(/);
   assert.match(html, /rolePresentation\.name\(granted\) \+ " assigned to "/);
+});
+
+
+test('every assigned domain has a shared icon with keyboard tooltip and full accessible name', () => {
+  const { ui, auth } = setup();
+  for (const slug of Object.keys(auth.ROLE_CATALOG).filter(s => auth.ROLE_CATALOG[s].assignable)) {
+    const icon = ui.badge(slug);
+    const label = auth.ROLE_CATALOG[slug].displayName;
+    assert.equal(icon.attributes['aria-label'], label);
+    assert.equal(icon.attributes.title, label);
+    assert.equal(icon.attributes.tabindex, '0');
+    assert.equal(icon.children[1].className, 'member-role-tooltip');
+    assert.equal(icon.children[1].textContent, label);
+    assert.equal(ui.badge(slug, true).children[1].textContent, auth.ROLE_CATALOG[slug].displayName);
+  }
+  for (const domain of ['games', 'events', 'photos', 'membership']) {
+    const path = slug => ui.badge(slug).children[0].children[0].attributes.d;
+    assert.equal(path(domain + '_editor'), path(domain + '_admin'));
+  }
+  assert.equal(new Set(['games', 'events', 'photos', 'membership'].map(d => ui.badge(d + '_editor').children[0].children[0].attributes.d)).size, 4);
+});
+
+
+test('profile uses full domain badges while member cards use compact icons', () => {
+  const { ui } = setup();
+  const profile = new Element('div');
+  ui.renderProfile(profile, ['games_editor', 'club_admin'], false);
+  const badges = all(profile, el => (el.className || '').startsWith('member-role-badge '));
+  assert.equal(badges.length, 2);
+  for (const badge of badges) assert.ok(!badge.className.includes('member-role-icon'));
+  assert.deepEqual(badges.map(el => el.textContent.trim()), ['Games Editor', 'Website Administrator']);
+  assert.match(html, /li.appendChild\(rolePresentation.badge\(slug\)\)/);
+  assert.match(html, /remove.textContent = "Remove " \+ roleName/);
 });

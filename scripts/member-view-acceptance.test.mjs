@@ -14,13 +14,20 @@ test('directory labels map Basic and Full Access to existing inactive and active
   const filterSource = html.slice(html.indexOf('    function memberMatchesDirectoryFilter('), html.indexOf('    function adminRender()'));
   const context = {};
   vm.runInNewContext(source + '\n' + filterSource, context);
-  const basic = { first_name: 'Alice', membership_status: null, role_slugs: [] };
+  const basic = { first_name: 'Alice', membership_status: null, email_verified: true, role_slugs: [] };
   const full = { first_name: 'Bob', membership_status: 'active', role_slugs: [] };
   assert.equal(context.memberMatchesDirectoryFilter(basic, 'inactive', ''), true);
   assert.equal(context.memberMatchesDirectoryFilter(full, 'inactive', ''), false);
   assert.equal(context.memberMatchesDirectoryFilter(full, 'active', ''), true);
   assert.equal(context.memberMatchesDirectoryFilter(basic, 'active', ''), false);
   assert.equal(context.memberMatchesDirectoryFilter(full, 'all', 'bob'), true);
+  const unverified = { ...basic, email_verified: false };
+  assert.equal(context.memberMatchesDirectoryFilter(unverified, 'inactive', ''), false);
+  assert.equal(context.memberMatchesDirectoryFilter(unverified, 'unverified', ''), true);
+  assert.equal(context.memberMatchesDirectoryFilter(basic, 'unverified', ''), false);
+  assert.equal(context.memberMatchesDirectoryFilter({ ...basic, email_verified: undefined }, 'inactive', ''), false);
+  assert.equal(context.memberMatchesDirectoryFilter({ ...full, email_verified: false }, 'active', ''), true);
+
 });
 
 test('Events source note is hidden publicly and shown to permitted editors', async () => {

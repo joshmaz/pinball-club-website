@@ -300,6 +300,7 @@
               <option value="with-roles">Members with roles</option>
               <option value="active">Full Access Members</option>
               <option value="inactive">Basic Members</option>
+              <option value="unverified">Unverified Accounts</option>
             </select>
           </div>
           <div class="members-admin-table-wrap">
@@ -1178,7 +1179,7 @@
       var roles = Array.isArray(row.role_slugs) ? row.role_slugs : [];
       var active = String(row.membership_status || "").trim().toLowerCase() === "active";
       return (!query || [row.first_name, row.last_name, row.display_name, row.email, adminMemberName(row)].join(" ").toLowerCase().includes(query)) &&
-        (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active));
+        (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active && row.email_verified === true) || (mode === "unverified" && row.email_verified === false));
     }
 
     function adminRender() {
@@ -1209,7 +1210,9 @@
           adminRender();
         });
         nameCell.appendChild(toggle);
-        adminCell(tr, row.membership_status === "active" ? "Full Access Member" : "Basic Member");
+        adminCell(tr, row.membership_status === "active"
+          ? "Full Access Member" + (row.email_verified === false ? " · Unverified" : "")
+          : row.email_verified === true ? "Basic Member" : row.email_verified === false ? "Unverified" : "Verification unavailable");
         rolePresentation.renderAssignments(adminCell(tr, ""), row.role_slugs || []);
         memberAdminTableBody.appendChild(tr);
         if (adminExpandedId === row.member_id) adminRenderEditor(row);
@@ -1291,7 +1294,7 @@
         var roleName = rolePresentation.name(slug);
         var li = document.createElement("li"); li.appendChild(rolePresentation.badge(slug));
         if (adminMayRemoveRole(row, slug)) {
-          var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove";
+          var remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remove " + roleName;
           remove.setAttribute("data-member-focus", row.member_id);
           remove.setAttribute("aria-label", "Remove " + roleName + " from " + adminMemberName(row));
           remove.addEventListener("click", async function () {
@@ -1349,9 +1352,9 @@
         setMemberAdminPanelIntro(userRoles);
       }
       memberAdminStats.replaceChildren();
-      [["Members", stats.member_count], ["Membership records", stats.membership_count], ["Full Access Members", stats.active_membership_count], ["Role assignments", stats.member_roles_count]].forEach(function (pair) {
+      [["Accounts", stats.account_count], ["Full-Access Members", stats.full_access_count], ["Basic Members", stats.basic_count], ["Website Volunteers", stats.volunteer_count]].forEach(function (pair) {
         var p = document.createElement("p"); p.className = "members-admin-stat";
-        var strong = document.createElement("strong"); strong.textContent = String(pair[1]);
+        var strong = document.createElement("strong"); strong.textContent = pair[1] == null ? "—" : String(pair[1]);
         var span = document.createElement("span"); span.textContent = pair[0]; p.append(strong, span); memberAdminStats.appendChild(p);
       });
       adminRender();
