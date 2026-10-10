@@ -14,7 +14,9 @@ management remains in Member Tools; self-delete remains in My Account.
   Test Connection using its uncached profile endpoint; the response is discarded.
   Historical errors remain visible after recovery. “Last request succeeded” does
   not claim that a provider is currently healthy. IFPA is not connected; Pinball
-  Map uses a public API but its existing ingestion is not yet instrumented here.
+  Map ingestion now records authorized attempts, completions, committed changes,
+  manual actors, safe failures and image warnings. Its configured state reflects
+  the required provider token, not a live connectivity test.
 - Cache edits persist in `external_api_cache_policies`. Only known provider/policy
   pairs and integer seconds from 1 to 604800 are accepted. Reset deletes an override.
   The additive migration removes seeded values equal to the original defaults,
@@ -84,7 +86,7 @@ next-run times are not inferred from run history.
 
 ## Deliberately deferred
 
-Tournament standings, IFPA adapters, Pinball Map ingest instrumentation, arbitrary
+Tournament standings, IFPA adapters, arbitrary
 cache purges/refreshes, dangerous account tools, scheduler editing/next-run reporting,
 provider delivery webhooks, job-run history pagination/retention, and richer cache
 hit/miss metrics. The generic job ledger accepts future server-side job names;

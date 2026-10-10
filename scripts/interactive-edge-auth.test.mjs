@@ -52,6 +52,8 @@ function fixture(name, db, options = {}) {
     assert.equal(headers.get('Authorization'), 'Bearer service-key');
     if (url.pathname === '/rest/v1/games') return Response.json(name === 'opdb-image-sync' ? { id: uid(20), opdb_id: 'G-test' } : []);
     if (url.pathname === '/rest/v1/game_location_stints') return Response.json([]);
+    if (url.pathname === '/rest/v1/rpc/snh_pinballmap_begin') return Response.json(uid(500));
+    if (url.pathname === '/rest/v1/rpc/snh_pinballmap_finish') return Response.json(null);
     if (url.pathname === '/rest/v1/rpc/snh_pinballmap_upsert_from_activity') return Response.json({ ok: true });
     throw new Error(`Unexpected protected request: ${url}`);
   };
