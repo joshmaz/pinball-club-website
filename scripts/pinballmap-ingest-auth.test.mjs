@@ -97,7 +97,7 @@ test('authentication and role lookup errors fail closed without leaking details'
 });
 
 // Execute the real entrypoint with local dependencies: no network or Deno server.
-async function handlerFixture({ allowed = false, schedulerSecret = secret, roleError = false } = {}) {
+async function handlerFixture({ allowed = false, schedulerSecret = secret, roleError = false, failure = null } = {}) {
   let handler;
   const effects = [];
   const source = await readFile(new URL('../supabase/functions/pinballmap-ingest/index.ts', import.meta.url), 'utf8');
@@ -110,12 +110,16 @@ async function handlerFixture({ allowed = false, schedulerSecret = secret, roleE
       effects.push(['read', table]);
       return { select: async () => ({ data: [], error: null }) };
     },
-    rpc: async (name, args) => { effects.push(['rpc', name, args]); return { data: { ok: true }, error: null }; },
+    rpc: async (name, args) => {
+      effects.push(['rpc', name, args]);
+      return { data: name === 'snh_pinballmap_begin' ? (failure==='busy' ? null : 'test-run') : { ok: true },
+        error: failure==='conditions' && name==='snh_pinballmap_import_conditions' || failure==='finish' && name==='snh_pinballmap_finish' ? {message:'private details'} : null };
+    },
   };
   const env = { SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'test-anon-key', SUPABASE_SERVICE_ROLE_KEY: 'test-service-key', PINBALLMAP_API_TOKEN: 'test-provider-key', PINBALLMAP_INGEST_SCHEDULER_SECRET: schedulerSecret };
   vm.runInNewContext(code, {
     Deno: { serve: callback => { handler = callback; }, env: { get: name => env[name] } },
-    Response, URL, authorizeIngest, ingestMethodResponse,
+    Response, URL, AbortSignal, authorizeIngest, ingestMethodResponse,
     createClient: (_url, key, opts) => {
       if (key === 'test-anon-key') {
         assert.ok(opts.global.headers.Authorization.startsWith('Bearer '));
@@ -130,10 +134,10 @@ async function handlerFixture({ allowed = false, schedulerSecret = secret, roleE
       effects.push(['service-client']);
       return db;
     },
-    fetch: async () => { effects.push(['fetch']); return { ok: true, json: async () => ({ user_submissions: [], machines: [] }) }; },
-    buildPinballRpcPayload: () => ({ location_id: 8908, updates: [], creates: [] }),
-    buildPinballConditionPayload: () => ({ rows: [] }),
-    importOpdbImages: async () => { effects.push(['opdb']); },
+    fetch: async () => { effects.push(['fetch']); if(failure==='fetch') throw new Error('private details'); return { ok: true, json: async () => ({ user_submissions: [], machines: [] }) }; },
+    buildPinballRpcPayload: () => ({ location_id: 8908, updates: failure==='images' ? [{opdbId:'Gtest'}] : [], creates: [] }),
+    buildPinballConditionPayload: () => ({ rows: failure==='conditions' ? [{}] : [] }),
+    importOpdbImages: async () => { effects.push(['opdb']); if(failure==='images') throw new Error('private details'); },
   });
   return { handler, effects };
 }
@@ -153,12 +157,27 @@ test('real handler rejects unauthorized requests before all ingestion side effec
   }
 });
 
+test('tracked worker records failures, warnings and unknown completion without retrying work',async()=>{
+ for(const [failure,status] of [['fetch',500],['conditions',500],['images',200],['finish',503],['busy',409]]) {
+   const {handler,effects}=await handlerFixture({allowed:true,failure});
+   const response=await handler(request({Authorization:'Bearer valid-user-jwt'}));
+   assert.equal(response.status,status,failure);
+   const finish=effects.find(e=>e[1]==='snh_pinballmap_finish');
+   if(failure==='busy') {assert.ok(!finish);assert.ok(!effects.some(e=>e[0]==='fetch'));continue;}
+   assert.equal(finish[2].p_run,'test-run');
+   if(failure==='images') {assert.equal(finish[2].p_error,null);assert.match(finish[2].p_warning,/image refresh failed/);}
+   if(failure==='fetch' || failure==='conditions') assert.match(finish[2].p_error,/failed/);
+   assert.doesNotMatch(JSON.stringify(finish[2]),/private details/);
+   if(failure==='finish') assert.match((await response.json()).error,/Completion could not be recorded/);
+ }
+});
+
 test('real handler preserves verified manual versus System attribution and ignores forged body actor', async () => {
   for (const scheduled of [false, true]) {
     const { handler, effects } = await handlerFixture({ allowed: true });
     const response = await handler(request(scheduled ? { [SCHEDULER_HEADER]: secret } : { Authorization: 'Bearer valid-user-jwt' }));
     assert.equal(response.status, 200);
-    const payload = effects.find(effect => effect[0] === 'rpc')[2].p_payload;
+    const payload = effects.find(effect => effect[1] === 'snh_pinballmap_upsert_from_activity')[2].p_payload;
     assert.equal(payload.manual_actor_user_id, scheduled ? undefined : 'verified-user');
     assert.equal(Object.hasOwn(payload, 'manual_actor_user_id'), !scheduled);
   }

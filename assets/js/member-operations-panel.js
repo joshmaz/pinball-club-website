@@ -1,5 +1,6 @@
 (function () {
   var allowed = false, initialized = false, busy = false, snapshot, configuration, current = 'overview';
+  var pinballmap = null, pinballmapError = '';
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
   var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips' };
   function el(tag, text, parent) {
@@ -71,14 +72,83 @@
     if (rows.some(function (r) { return r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); })) return 'Needs attention';
     return rows.some(function (r) { return r.last_success_at; }) ? 'Last request succeeded' : 'Awaiting result';
   }
-  function table(headers) {
-    var wrap = el('div', null, content); wrap.className = 'operations-table-wrap';
+  function table(headers, parent) {
+    var wrap = el('div', null, parent || content); wrap.className = 'operations-table-wrap';
     var t = el('table', null, wrap), head = el('tr', null, el('thead', null, t));
     headers.forEach(function (h) { var th = el('th', h, head); th.scope = 'col'; });
     return el('tbody', null, t);
   }
   function cell(row, text) { return el('td', text, row); }
   function providerRows(provider) { return snapshot.integrations.filter(function (r) { return r.provider === provider; }); }
+  function runOutcome(run) {
+    if (!run) return 'Not recorded';
+    if (run.status === 'running') return Date.now() - new Date(run.started_at).getTime() > 600000 ? 'Completion unknown' : 'Running';
+    return run.status === 'succeeded' && run.result.warning ? 'Succeeded with warning' : run.status === 'succeeded' ? 'Succeeded' : 'Failed';
+  }
+  function changeSummary(run) {
+    if (!run || !run.result) return 'Changes not recorded';
+    var count = run.result.change_count || 0, c = run.result.counts || {};
+    if (!count) return run.status === 'succeeded' ? 'No changes' : 'No committed changes recorded';
+    return (c.games || 0) + ' game records, ' + (c.locations || 0) + ' location records, ' + (c.conditions || 0) + ' condition reports, ' + (c.images || 0) + ' image records added or changed';
+  }
+  function changes(run, parent) {
+    el('p', changeSummary(run), parent);
+    var rows = run && run.result.changes || [];
+    if (!rows.length) return;
+    var details = el('details', null, parent); el('summary', 'Game names and changed fields', details);
+    var labels = {map_at_club:'At club',joined_club_date:'Arrival date',left_club_date:'Departure date',
+      opdb_id:'OPDB ID',ipdb_url:'IPDB link',location_value:'Image URL',metadata:'Image metadata'};
+    var list = el('ul', null, details);
+    rows.forEach(function (change) {
+      var item = el('li', null, list);
+      if (change.game_id) {
+        var link = el('a',change.title,item); link.href = 'members.html?panel=games&game=' + encodeURIComponent(change.game_id);
+      } else el('span',change.title || 'Unmatched game',item);
+      el('span', ': ' + change.kind + ' ' + change.action + ' (' + (change.fields || []).map(function (f) { return labels[f] || f.replace(/_/g,' '); }).join(', ') + ')', item);
+    });
+    if (run.result.change_count > rows.length) el('p','Showing the first ' + rows.length + ' changed records.',details);
+  }
+  function pinballmapSummary(parent) {
+    if (!pinballmap) { el('p',pinballmapError || 'Import information unavailable.',parent); return; }
+    var latest = pinballmap.runs[0], manual = pinballmap.last_manual, schedule = pinballmap.schedule;
+    el('p','Last attempt: ' + (latest ? date(latest.started_at) + ' | ' + runOutcome(latest) : 'Not recorded'),parent);
+    el('p','Last successful completion: ' + date(pinballmap.last_success && pinballmap.last_success.finished_at),parent);
+    el('p','Last manual invocation: ' + (manual ? date(manual.started_at) + ' | ' + manual.actor + ' | ' + runOutcome(manual) : 'Not recorded'),parent);
+    el('p','Schedule: ' + (schedule ? (schedule.enabled ? 'Enabled' : 'Disabled') + ' | ' + schedule.cadence : 'Not available'),parent);
+    if (schedule && schedule.enabled && schedule.cron === '0 */6 * * *') {
+      var observed = new Date(pinballmap.observed_at), next = new Date(observed);
+      next.setUTCMinutes(0,0,0); next.setUTCHours(Math.floor(observed.getUTCHours()/6)*6+6);
+      el('p','Next scheduled invocation: ' + date(next.toISOString()),parent);
+      if (pinballmap.last_success && observed - new Date(pinballmap.last_success.finished_at) > 7*3600000) {
+        el('p','Import may be overdue. No successful completion in more than seven hours.',parent);
+      } else if (!pinballmap.last_success) el('p','No successful completion recorded yet.',parent);
+    }
+    if (latest && latest.error) el('p',latest.error,parent);
+    if (latest && latest.result.warning) el('p',latest.result.warning,parent);
+    if (latest && latest.status === 'failed' && latest.result.change_count) el('p','Some changes were committed before this import failed.',parent);
+  }
+  function pinballmapJobs(parent) {
+    pinballmapSummary(parent);
+    button('Run Now',parent,function () { mutate(async function () {
+      var result = await window.snhSupabase.functions.invoke('pinballmap-ingest',{body:{}});
+      if (result.error || !result.data || !result.data.ok) return {message:'Import did not report success. Refresh Jobs and check its outcome before retrying.'};
+      return {message:result.data.imageSyncWarning ? 'Import completed with an image warning. See Jobs.' : 'Import completed. Information refreshed.'};
+    },'Import the latest Pinball Map activity and machine details now?'); });
+    if (!pinballmap) return;
+    el('p','Latest ten runs. Older audit entries are not reconstructed. Times use your local timezone.',parent);
+    var body = table(['Started / duration','Trigger','Outcome','Changes / details'],parent);
+    pinballmap.runs.forEach(function (run) {
+      var row = el('tr',null,body), c = cell(row,date(run.started_at));
+      if (run.finished_at) el('p',Math.max(0,Math.round((new Date(run.finished_at)-new Date(run.started_at))/1000)) + ' seconds',c);
+      cell(row,run.result.trigger === 'manual' ? 'Manual: ' + run.actor : 'Scheduled');
+      c=cell(row,runOutcome(run));
+      if (run.error) el('p',run.error,c);
+      if (run.result.warning) el('p',run.result.warning,c);
+      if (run.status==='failed' && run.result.change_count) el('p','Some changes committed before failure.',c);
+      changes(run,cell(row));
+    });
+    if (!pinballmap.runs.length) el('p','No recorded import runs.',parent);
+  }
   function render() {
     content.replaceChildren();
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.section === current ? 'true' : 'false'); });
@@ -97,7 +167,7 @@
       el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
       el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
       card = el('section', null, cards); el('h4', 'Jobs', card);
-      ['notification_dispatch', 'cache_cleanup'].forEach(function (key) {
+      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
         el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
       });
@@ -115,6 +185,16 @@
         var config = configuration && configuration.providers.find(function (x) { return x.provider === p; });
         el('p', 'Configuration: ' + (!config || config.configured === null ? 'Unknown / not connected' : config.configured ? 'Configured' : 'Not configured') + ' | ' + health(providerRows(p)), section);
         if (config && config.note) el('p', config.note, section);
+        if (p === 'pinballmap') {
+          if (config) el('p','Worker scheduler credential: ' + (config.scheduler_configured ? 'Present' : 'Missing'),section);
+          pinballmapSummary(section);
+          if (pinballmap && pinballmap.last_change) {
+            el('h5','Most recent changes: ' + date(pinballmap.last_change.started_at),section);
+            if (pinballmap.last_change.status==='failed') el('p','These changes were retained from a failed import.',section);
+            changes(pinballmap.last_change,section);
+          } else el('p','No data changes recorded yet.',section);
+          button('View import runs',section,function () { selectSection('jobs'); });
+        }
         if (config && config.test_supported) button('Test Connection', section, function () { mutate(function () { return edge('test_matchplay'); }); });
         providerRows(p).forEach(function (r) {
           var details = el('dl', null, section);
@@ -175,11 +255,12 @@
       if (cursor) button('Load older messages',content,function () { loadMessages(true); });
     }
     if (current === 'jobs') {
-      el('p','Schedules are managed by the existing scheduler. Next-run times are not reported yet. Runs recorded before this update are unavailable.',content);
-      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'}];
+      el('p','Schedules are managed by the existing scheduler. Import history starts when tracking was enabled.',content);
+      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'pinballmap_ingest',name:'Pinball Map ingest'}];
       snapshot.jobs.forEach(function (r) { if (!jobs.some(function (j) { return j.key === r.job; })) jobs.push({key:r.job,name:r.job}); });
       jobs.forEach(function (job) {
         var section = el('section',null,content); section.className='operations-provider'; el('h4',job.name,section);
+        if (job.key==='pinballmap_ingest') { pinballmapJobs(section); return; }
         var run = snapshot.jobs.find(function (j) { return j.job === job.key; });
         el('p',run ? run.status + ' | Started ' + date(run.started_at) + ' | Finished ' + date(run.finished_at) : 'No recorded run',section);
         if (run) {
@@ -220,6 +301,8 @@
   async function refresh() {
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); return; }
     snapshot = await rpc('snh_operations_snapshot');
+    try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
+    catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }
     try { configuration = await edge('configuration'); } catch { configuration=null; }
     if (current==='messaging') await fetchMessages(false);
     render();
