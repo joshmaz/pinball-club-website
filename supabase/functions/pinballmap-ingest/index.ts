@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 import {
   buildPinballConditionPayload,
   buildPinballRpcPayload,
@@ -38,6 +38,21 @@ Deno.serve(async (req) => {
   const methodResponse = ingestMethodResponse(req);
   if (methodResponse) return methodResponse;
 
+  let runId: string | null = null;
+  let worker: SupabaseClient | null = null;
+  let stage = "Import configuration";
+  let warning: string | null = null;
+  async function outcome(body: Record<string, unknown>, status = 200): Promise<Response> {
+    if (runId && worker) {
+      const recorded = await worker.rpc("snh_pinballmap_finish", {
+        p_run: runId, p_error: status >= 400 ? `${stage} failed. Check configuration and retry from Jobs.` : null,
+        p_warning: warning,
+      });
+      if (recorded.error) return jsonResponse({ ok: false, error: "Completion could not be recorded. Check Jobs before retrying." }, 503);
+      runId = null;
+    }
+    return jsonResponse(body, status);
+  }
   try {
     const supabaseUrl = (Deno.env.get("SUPABASE_URL") || "").trim().replace(/\/+$/, "");
     const supabaseKey = resolveElevatedApiKey();
@@ -63,7 +78,7 @@ Deno.serve(async (req) => {
     }
 
     // Created lazily only on the manual path; scheduler auth needs no member client.
-    let userClient: ReturnType<typeof createClient> | undefined;
+    let userClient: SupabaseClient | undefined;
     const authorization = await authorizeIngest(req, {
       schedulerSecret: Deno.env.get("PINBALLMAP_INGEST_SCHEDULER_SECRET"),
       getUser: async (bearer) => {
@@ -86,9 +101,19 @@ Deno.serve(async (req) => {
     if (!authorization.ok) return jsonResponse({ ok: false, error: authorization.error }, authorization.status);
     const manualActorUserId = authorization.manualActorUserId;
 
+    const locationId = Number(Deno.env.get("PINBALLMAP_LOCATION_ID") || LOCATION_DEFAULT) || LOCATION_DEFAULT;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    worker = supabase;
+    const start = await supabase.rpc("snh_pinballmap_begin", { p_actor: manualActorUserId, p_location: locationId });
+    if (start.error) return jsonResponse({ ok: false, error: "Could not record import start. Check the Operations migration." }, 503);
+    if (!start.data) return jsonResponse({ ok: false, error: "An import is running or was just requested. Check Jobs before retrying." }, 409);
+    runId = String(start.data);
+    const fetchSignal = AbortSignal.timeout(240000);
     const pinballMapApiToken = (Deno.env.get("PINBALLMAP_API_TOKEN") || "").trim();
     if (!pinballMapApiToken) {
-      return jsonResponse(
+      return await outcome(
         {
           ok: false,
           error: "Missing PINBALLMAP_API_TOKEN. Add the approved Pinball Map token to the Edge Function secrets.",
@@ -97,7 +122,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    const locationId = Number(Deno.env.get("PINBALLMAP_LOCATION_ID") || LOCATION_DEFAULT) || LOCATION_DEFAULT;
     const baseQs = `id=${locationId}&limit=50`;
     const rawActivityBase =
       Deno.env.get("PINBALLMAP_ACTIVITY_URL") ||
@@ -106,26 +130,29 @@ Deno.serve(async (req) => {
     activityUrl.searchParams.set("api_token", pinballMapApiToken);
     const activityBase = activityUrl.toString();
 
+    stage = "Pinball Map activity fetch";
     const merged: ActivityPayload = { meta: { location_id: locationId }, user_submissions: [] };
     const seen = new Set<string>();
     for (let page = 1; page <= 80; page += 1) {
       const sep = activityBase.includes("?") ? "&" : "?";
       const url = activityBase.includes("page=") ? activityBase : `${activityBase}${sep}page=${page}`;
-      const actRes = await fetch(url);
+      const actRes = await fetch(url, { signal: fetchSignal });
       if (!actRes.ok) {
-        return jsonResponse({ ok: false, error: `Pinball Map fetch failed: ${actRes.status}` }, 502);
+        stage = `Pinball Map activity fetch (HTTP ${actRes.status})`;
+        return await outcome({ ok: false, error: `Pinball Map fetch failed: ${actRes.status}` }, 502);
       }
       let pageJson = (await actRes.json()) as ActivityPayload & { errors?: string };
       if (pageJson.errors && pageJson.errors.toLowerCase().includes("failed to find location") && url.includes("location_id=")) {
         const retryUrl = url.replace(/([?&])location_id=/g, "$1id=");
-        const retry = await fetch(retryUrl);
+        const retry = await fetch(retryUrl, { signal: fetchSignal });
         if (!retry.ok) {
-          return jsonResponse({ ok: false, error: `Pinball Map fetch failed: ${retry.status}` }, 502);
+          stage = `Pinball Map activity fetch (HTTP ${retry.status})`;
+          return await outcome({ ok: false, error: `Pinball Map fetch failed: ${retry.status}` }, 502);
         }
         pageJson = (await retry.json()) as ActivityPayload & { errors?: string };
       }
       if (pageJson.errors) {
-        return jsonResponse({ ok: false, error: `Pinball Map API error: ${pageJson.errors}` }, 502);
+        return await outcome({ ok: false, error: `Pinball Map API error: ${pageJson.errors}` }, 502);
       }
       if (page === 1) merged.meta = { ...merged.meta, ...(pageJson.meta || {}) };
       const subs = pageJson.user_submissions || [];
@@ -136,22 +163,25 @@ Deno.serve(async (req) => {
         merged.user_submissions!.push(row);
       }
       if (subs.length < 50) break;
+      if (page === 80) { stage = "Activity pagination limit reached"; throw new Error(stage); }
     }
     const rawDetailsUrl =
       Deno.env.get("PINBALLMAP_MACHINE_DETAILS_URL") ||
       `https://pinballmap.com/api/v1/locations/${locationId}/machine_details.json`;
     const detailsUrl = new URL(rawDetailsUrl);
     detailsUrl.searchParams.set("api_token", pinballMapApiToken);
-    const detailsRes = await fetch(detailsUrl);
+    stage = "Pinball Map machine details fetch";
+    const detailsRes = await fetch(detailsUrl, { signal: fetchSignal });
     if (!detailsRes.ok) {
-      return jsonResponse(
+      stage = `Pinball Map machine details fetch (HTTP ${detailsRes.status})`;
+      return await outcome(
         { ok: false, error: `Pinball Map machine details fetch failed: ${detailsRes.status}` },
         502,
       );
     }
     const detailsJson = (await detailsRes.json()) as { machines?: MachineDetail[]; errors?: string };
     if (detailsJson.errors) {
-      return jsonResponse(
+      return await outcome(
         { ok: false, error: `Pinball Map machine details API error: ${detailsJson.errors}` },
         502,
       );
@@ -161,17 +191,15 @@ Deno.serve(async (req) => {
 
     // Do not force Authorization: Bearer for sb_secret_* keys; PostgREST rejects non-JWT Bearer.
     // createClient sets the correct headers for both legacy JWT and new secret API keys.
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
 
+    stage = "Catalog read";
     const { data: gameRows, error: gErr } = await supabase.from("games").select("id,slug,title,map_at_club,manual_at_club_override,release_date,manufacturer,ipdb_url,opdb_id,opdb_matched_via,opdb_canonical_name");
-    if (gErr) return jsonResponse({ ok: false, error: gErr.message }, 500);
+    if (gErr) return await outcome({ ok: false, error: gErr.message }, 500);
 
     const { data: stintRows, error: sErr } = await supabase.from("game_location_stints").select(
       "id,game_id,address,pinball_map_location_id,pinball_map_machine_id,joined_club_date,left_club_date,date_unknown,created_at"
     );
-    if (sErr) return jsonResponse({ ok: false, error: sErr.message }, 500);
+    if (sErr) return await outcome({ ok: false, error: sErr.message }, 500);
 
     const stintsByGameId = new Map<string, DbStint[]>();
     for (const s of stintRows || []) {
@@ -195,11 +223,13 @@ Deno.serve(async (req) => {
     const payload = buildPinballRpcPayload(activity, games, stintsByGameId);
     if (manualActorUserId) (payload as Record<string, unknown>).manual_actor_user_id = manualActorUserId;
 
+    stage = "Catalog import";
+    (payload as Record<string, unknown>).run_id = runId;
     const { data, error } = await supabase.rpc("snh_pinballmap_upsert_from_activity", {
       p_payload: payload,
     });
     if (error) {
-      return jsonResponse(
+      return await outcome(
         {
           ok: false,
           error: error.message,
@@ -222,9 +252,10 @@ Deno.serve(async (req) => {
     let imageSyncWarning: string | null = null;
     if (opdbIds.length) {
       try {
-        imageSync = await importOpdbImages(supabase, opdbIds);
+        imageSync = await importOpdbImages({ rpc: (_name, args) => supabase.rpc("snh_pinballmap_import_images", { ...args, p_run: runId }) }, opdbIds);
       } catch (syncError) {
-        imageSyncWarning = syncError instanceof Error ? syncError.message : String(syncError);
+        imageSyncWarning = "OPDB image refresh failed. Catalog changes were retained.";
+        warning = imageSyncWarning;
         try {
           const warningAudit = await supabase.from("audit_log").insert({
             module: "games",
@@ -242,14 +273,15 @@ Deno.serve(async (req) => {
       }
     }
 
+    stage = "Condition import";
     const conditionPayload = buildPinballConditionPayload(activity);
     let conditionResult: unknown = { ok: true, imported: 0 };
     if (conditionPayload.rows.length) {
       const cond = await supabase.rpc("snh_pinballmap_import_conditions", {
-        p_payload: conditionPayload,
+        p_payload: { ...conditionPayload, run_id: runId },
       });
       if (cond.error) {
-        return jsonResponse(
+        return await outcome(
           {
             ok: false,
             error: cond.error.message,
@@ -264,7 +296,7 @@ Deno.serve(async (req) => {
       conditionResult = cond.data;
     }
 
-    return jsonResponse({
+    return await outcome({
       ok: true,
       result: data,
       imageSync,
@@ -277,8 +309,8 @@ Deno.serve(async (req) => {
       },
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    return jsonResponse({ ok: false, error: msg }, 500);
+    const msg = `${stage} failed. Check Jobs before retrying.`;
+    return await outcome({ ok: false, error: msg }, 500);
   }
 });
 

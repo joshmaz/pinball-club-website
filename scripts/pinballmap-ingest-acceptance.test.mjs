@@ -15,10 +15,10 @@ const { importOpdbImages } = new Function(opdbCode + '\nreturn { importOpdbImage
 
 test('ingest calls shared OPDB image importer after creating game rows and isolates failure', async () => {
   const source = await read('supabase/functions/pinballmap-ingest/index.ts');
-  assert.ok(source.indexOf('supabase.rpc("snh_pinballmap_upsert_from_activity"') < source.indexOf('await importOpdbImages(supabase, opdbIds)'));
+  assert.ok(source.indexOf('supabase.rpc("snh_pinballmap_upsert_from_activity"') < source.indexOf('await importOpdbImages('));
   assert.match(source, /const opdbIds = \[\.\.\.payload\.updates, \.\.\.payload\.creates\]/);
   assert.match(source, /catch \(syncError\) \{[\s\S]*?imageSyncWarning =/);
-  assert.match(source, /return jsonResponse\(\{\s*ok: true,[\s\S]*?imageSyncWarning/);
+  assert.match(source, /return await outcome\(\{\s*ok: true,[\s\S]*?imageSyncWarning/);
   const sql = await read('supabase/migrations/20260916100000_game_images.sql');
   const importSql = sql.slice(sql.indexOf('create or replace function public.snh_game_images_import_opdb'), sql.indexOf('revoke all on function public.snh_game_images_import_opdb'));
   assert.match(importSql, /on conflict \(game_id, source_type, source_key\) do update/);

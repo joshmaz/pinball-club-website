@@ -1,0 +1,100 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+const uid=n=>`00000000-0000-0000-0000-${String(n).padStart(12,'0')}`;
+const source=name=>readFile(new URL('../supabase/migrations/'+name,import.meta.url),'utf8');
+test('Pinball Map Operations: actual changes, rollback, partial failures, authorization and alerts',async()=>{
+ const db=new PGlite();
+ const q=async(sql,args=[]) => (await db.query(sql,args)).rows;
+ try {
+  await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
+   create schema auth; create schema private;
+   create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+   create function auth.jwt() returns jsonb language sql as $$select jsonb_build_object('role',current_setting('request.jwt.claim.role',true))$$;
+   create table members(id uuid primary key,user_id uuid,email text,display_name text,first_name text,last_name text);
+   create table member_roles(member_id uuid,role_slug text);
+   create table audit_log(module text,action text,actor_user_id uuid,entity_type text,entity_id text,old_data jsonb,new_data jsonb,metadata jsonb);
+   insert into members values('${uid(1)}','${uid(1)}','admin@example.com','Josh',null,null),('${uid(2)}','${uid(2)}','other@example.com',null,null,null);
+   insert into member_roles values('${uid(1)}','club_admin'),('${uid(2)}','games_admin');
+   create schema cron; create table cron.job(jobid integer,jobname text,active boolean,schedule text);
+   insert into cron.job values(1,'pinballmap-ingest-every-6h',true,'0 */6 * * *');
+   create schema vault; create table vault.decrypted_secrets(name text,decrypted_secret text);
+   create schema net; create function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds integer) returns bigint language sql as $$select 1::bigint$$;`);
+  await db.exec(await source('20260924130000_notification_foundation.sql'));
+  await db.exec(await source('20260928150000_external_api_cache.sql'));
+  await db.exec(await source('20260928160000_operations.sql'));
+  const catalog=await source('20260501103000_games_catalog.sql');
+  const schema=catalog.slice(catalog.indexOf('create table if not exists public.games ('),catalog.indexOf('create table if not exists public.game_sale_listings'));
+  await db.exec(schema+`alter table games add column deleted_at timestamptz;
+   create unique index stint_key on game_location_stints(game_id,pinball_map_location_id,joined_club_date) where pinball_map_location_id is not null and joined_club_date is not null;
+   create table club_issues(id uuid primary key default gen_random_uuid(),game_id uuid,title text,body text,status text,created_at timestamptz,updated_at timestamptz,submitted_at timestamptz,created_by uuid,submission_origin text);
+   create table club_issue_import_keys(source text,source_key text,club_issue_id uuid,primary key(source,source_key));
+   create function private.snh_pinballmap_resolve_game_for_condition(integer,text,timestamptz) returns uuid language sql as $$select id from games limit 1$$;
+   create function private.snh_audit_game(text,text,text,jsonb,jsonb,jsonb) returns void language sql as $$select$$;`);
+  await db.exec(await source('20260921160000_pinballmap_manual_audit_actor.sql'));
+  const conditions=await source('20260524120000_club_issues_submission_provenance.sql');
+  await db.exec(conditions.slice(conditions.indexOf('create or replace function public.snh_pinballmap_import_conditions'),conditions.indexOf('-- ---------------------------------------------------------------------------',conditions.indexOf('create or replace function public.snh_pinballmap_import_conditions'))));
+  const images=await source('20260916100000_game_images.sql');
+  await db.exec(images.slice(images.indexOf('create table public.game_images ('),images.indexOf('create index')));
+  await db.exec('create unique index game_images_source on game_images(game_id,source_type,source_key)');
+  await db.exec(images.slice(images.indexOf('create or replace function public.snh_game_images_import_opdb')));
+  await db.exec(await source('20261009010000_pinballmap_operations.sql'));
+  for(const role of ['anon','authenticated']) {
+   await db.exec(`set role ${role}; set request.jwt.claim.sub='${uid(2)}'`);
+   for(const sql of ['select snh_operations_pinballmap()','select snh_pinballmap_begin()',`select snh_pinballmap_finish('${uid(9)}')`,
+    `select snh_pinballmap_upsert_from_activity('{}')`,`select snh_pinballmap_import_conditions('{}')`,
+    `select snh_pinballmap_import_images('${uid(9)}','Gtest','[]')`,'select * from operations_job_runs'])
+    await assert.rejects(q(sql),/permission denied|not authorized/);
+   await db.exec('reset role');
+  }
+  const begin=async()=>{
+   await db.exec(`reset role; update operations_job_runs set started_at=started_at-interval '1 minute' where status<>'running'; set role service_role; set request.jwt.claim.role='service_role'`);
+   return (await q('select snh_pinballmap_begin($1) id',[uid(1)]))[0].id;
+  };
+  const finish=(id,error=null,warning=null)=>q('select snh_pinballmap_finish($1,$2,$3)',[id,error,warning]);
+  const result=async id=>{await db.exec('reset role');return (await q('select result from operations_job_runs where id=$1',[id]))[0].result;};
+  const snapshot=async()=>{await db.exec(`reset role; set role authenticated; set request.jwt.claim.sub='${uid(1)}'`);return (await q('select snh_operations_pinballmap() s'))[0].s;};
+  let id=await begin(); assert.ok(id);
+  assert.equal((await q('select snh_pinballmap_begin() id'))[0].id,null,'overlapping import rejected');
+  const payload={run_id:id,manual_actor_user_id:uid(1),location_id:8908,location_address:'Club',updates:[],creates:[{slug:'rush',title:'Rush',opdbId:'Gtest',mapAtClub:true,locationStints:[{pinballMapLocationId:8908,address:'Club',joinedClubDate:'2026-01-01'}]}]};
+  await q('select snh_pinballmap_upsert_from_activity($1)',[payload]);
+  let r=await result(id);assert.equal(r.counts.games,1);assert.equal(r.counts.locations,1);
+  await db.exec('set role service_role');
+  const condition={run_id:id,rows:[{submissionId:'one',comment:'Needs repair',machineName:'Rush',machineId:1,createdAt:'2026-01-02'}]};
+  await q('select snh_pinballmap_import_conditions($1)',[condition]);
+  const image=[{sourceKey:'one',imageUrl:'https://example.com/image',sourceUrl:'https://example.com/source'}];
+  await q('select snh_pinballmap_import_images($1,$2,$3)',[id,'Gtest',image]);
+  await finish(id,null,'Image provider warning');
+  r=await result(id);assert.equal(r.counts.conditions,1);assert.equal(r.counts.images,1);assert.equal(r.change_count,4);
+  assert.ok(r.changes.every(c=>c.title==='Rush'));assert.ok(r.changes.some(c=>c.fields.includes('map_at_club')));
+  let s=await snapshot();assert.equal(s.last_success.id,id);assert.equal(s.last_manual.actor,'Josh');assert.equal(s.schedule.enabled,true);
+  const changed=id;
+  id=await begin();
+  const repeat={...payload,run_id:id,creates:[],updates:[{slug:'rush',title:'Rush',opdbId:'Gtest',mapAtClub:true,stint:{pinballMapLocationId:8908,address:'Club',joinedClubDate:'2026-01-01',leftClubDate:null}}]};
+  await q('select snh_pinballmap_upsert_from_activity($1)',[repeat]);
+  await q('select snh_pinballmap_import_conditions($1)',[{...condition,run_id:id}]);
+  await q('select snh_pinballmap_import_images($1,$2,$3)',[id,'Gtest',image]);
+  await finish(id);assert.equal((await result(id)).change_count,0,'repeated import counts zero actual changes');
+  s=await snapshot();assert.equal(s.last_change.id,changed,'no-change run retains latest meaningful changes');
+  id=await begin();repeat.run_id=id;repeat.updates[0].mapAtClub=false;
+  await q('select snh_pinballmap_upsert_from_activity($1)',[repeat]);
+  await assert.rejects(q('select snh_pinballmap_upsert_from_activity($1)',[{...repeat,updates:[{slug:'rush',mapAtClub:'invalid'}]}]));
+  await finish(id,'Condition import failed');
+  r=await result(id);assert.equal(r.change_count,1,'failed transaction does not add changes; earlier commit is retained');
+  let alerts=(await q("select count(*)::int n from notification_outbox where kind='pinballmap_failure'"))[0].n;assert.equal(alerts,1);
+  id=await begin();await finish(id,'Repeated failure');await db.exec('reset role');
+  assert.equal((await q("select count(*)::int n from notification_outbox where kind='pinballmap_failure'"))[0].n,alerts);
+  id=await begin();await finish(id);id=await begin();await finish(id,'New failure after recovery');await db.exec('reset role');
+  assert.equal((await q("select count(*)::int n from notification_outbox where kind='pinballmap_failure'"))[0].n,2);
+  await db.exec("update operations_job_runs set started_at=started_at-interval '1 minute'; select private.snh_pinballmap_ingest_cron_invoke()");
+  s=await snapshot();assert.match(s.runs[0].error,/Vault/);assert.equal(s.runs[0].status,'failed');
+  await db.exec('reset role; update cron.job set active=false');s=await snapshot();assert.equal(s.schedule.enabled,false);
+  await db.exec(`reset role; insert into operations_job_runs(id,job,started_at,result) values('${uid(77)}','pinballmap_ingest',now()-interval '11 minutes','{}')`);
+  id=await begin();assert.ok(id);await finish(id);await db.exec('reset role');
+  assert.equal((await q('select status from operations_job_runs where id=$1',[uid(77)]))[0].status,'failed','stale running job closed before replacement');
+  await db.exec(`insert into operations_job_runs(job,status,finished_at,result) select 'pinballmap_ingest','succeeded',now(),'{}' from generate_series(1,12)`);
+  s=await snapshot();assert.equal(s.runs.length,10,'history response bounded to ten');assert.ok(s.last_manual,'last manual remains available outside recent history');
+  await db.exec('reset role; drop schema cron cascade');s=await snapshot();assert.equal(s.schedule,null);
+ } finally {await db.close();}
+});
