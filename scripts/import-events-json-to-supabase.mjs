@@ -122,26 +122,28 @@ async function main() {
     }
     const startsAt = importedStart(row, dateOnly);
     const event = {
+      ...(row.id ? { id: row.id } : {}),
       title,
       description: cleanText(row.description, 4000),
       location: cleanText(row.location, 500),
       starts_at: startsAt,
+      ...Object.fromEntries(["ends_at", "lifecycle_status", "previous_schedule", "reschedule_note"].filter(key => Object.hasOwn(row, key)).map(key => [key, row[key]])),
       ...(typeof row.all_day === "boolean" ? { all_day: row.all_day } : {}),
-      ...(typeof row.time_known === "boolean" ? { time_known: row.time_known } : {}),
+      ...(Object.hasOwn(row, "time_known") ? { time_known: row.time_known } : {}),
       external_url: safeUrl(row.url || row.external_url),
       ...(Array.isArray(row.external_links) || Array.isArray(row.externalLinks)
         ? { external_links: eventLinks.normalize(eventLinks.fromEvent(row), true) } : {}),
       source: cleanText(row.source, 80) || "json_backfill",
-      published: true,
+      published: typeof row.published === "boolean" ? row.published : true,
     };
     if (event.external_links) event.external_url = event.external_links[0]?.url || null;
-    event.legacy_import_key = makeLegacyImportKey(event, dateOnly);
+    if (!event.id) event.legacy_import_key = makeLegacyImportKey(event, dateOnly);
     normalized.push(event);
   }
 
   const byKey = new Map();
   for (const event of normalized) {
-    byKey.set(event.legacy_import_key, event);
+    byKey.set(event.id || event.legacy_import_key, event);
   }
   const deduped = [...byKey.values()];
 
@@ -160,26 +162,29 @@ async function main() {
 
   const batchSize = 250;
   let upserted = 0;
-  for (let i = 0; i < deduped.length; i += batchSize) {
-    const batch = deduped.slice(i, i + batchSize);
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/events?on_conflict=legacy_import_key`,
-      {
-        method: "POST",
-        headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
-          "Content-Type": "application/json",
-          Prefer: "resolution=merge-duplicates,return=minimal",
-        },
-        body: JSON.stringify(batch),
+  for (const conflict of ["id", "legacy_import_key"]) {
+    const rows = deduped.filter(event => conflict === "id" ? !!event.id : !event.id);
+    for (let i = 0; i < rows.length; i += batchSize) {
+      const batch = rows.slice(i, i + batchSize);
+      const response = await fetch(
+        `${supabaseUrl}/rest/v1/events?on_conflict=${conflict}`,
+        {
+          method: "POST",
+          headers: {
+            apikey: serviceRoleKey,
+            Authorization: `Bearer ${serviceRoleKey}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates,return=minimal",
+          },
+          body: JSON.stringify(batch),
+        }
+      );
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Upsert failed on batch starting ${i}: ${text}`);
       }
-    );
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Upsert failed on batch starting ${i}: ${text}`);
+      upserted += batch.length;
     }
-    upserted += batch.length;
   }
 
   console.log(`Upserted rows: ${upserted}`);

@@ -101,7 +101,7 @@ export/validation failures, and applies an agreed freshness threshold. No workfl
 in this foundation PR automatically refreshes data or writes directly to `main`.
 
 Event snapshots now preserve the canonical `starts_at` timestamp. Cards use it
-for both local date and time, matching the editor's browser-local conversion;
+for both Eastern date and time; the editor labels its browser-local inputs;
 `date` remains available for older date-only snapshots. Existing snapshots without
 `starts_at` keep showing “Time not listed” until refreshed. The legacy migration
 and JSON importer encoded date-only values as midnight UTC, so cards preserve
@@ -149,3 +149,10 @@ Migration `20260925180000_event_time_precision.sql` was applied and recorded
 before these readers were deployed. The former UUID-specific midnight exception
 has been removed. All eight remaining records were resolved by the user's
 corrections; see `event-time-recovery-completed.md`.
+
+### Event timing and lifecycle
+
+Snapshots carry optional `ends_at`, `lifecycle_status`, `previous_schedule`, and
+`reschedule_note`. Missing lifecycle defaults to Scheduled and missing ends keep
+the same-day behavior. These additions preserve the version-1 snapshot contract.
+See [event timing and lifecycle](event-timing-lifecycle.md) for behavior and rollout.
