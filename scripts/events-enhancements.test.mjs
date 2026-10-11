@@ -12,7 +12,7 @@ const event = (date, extra = {}) => ({ date, ...extra });
 const at = value => new Date(value);
 test('Eastern labels use Monday calendar weeks, Friday evening, and bounded Soon', () => {
  const now = at('2026-10-05T14:00:00Z'); // Monday
- for (const [date, label] of [['2026-10-05','Today'],['2026-10-06','Tomorrow'],['2026-10-08','This Week'],['2026-10-10','This Weekend'],['2026-10-11','This Weekend'],['2026-10-12','Next Week'],['2026-10-18','Next Week'],['2026-10-19','Soon'],['2026-11-05','Upcoming'],['TBD','Upcoming']]) assert.equal(ctx.eventTimingLabel(event(date), now), label, date);
+ for (const [date, label] of [['2026-10-05','Today'],['2026-10-06','Tomorrow'],['2026-10-08','This Week'],['2026-10-10','This Weekend'],['2026-10-11','This Weekend'],['2026-10-12','Next Week'],['2026-10-18','Next Week'],['2026-10-19','Soon'],['2026-10-20','Upcoming'],['2026-11-05','Upcoming'],['TBD','Upcoming']]) assert.equal(ctx.eventTimingLabel(event(date), now), label, date);
  assert.equal(ctx.eventTimingLabel(event('2026-10-09'), now), 'This Week');
  assert.equal(ctx.eventTimingLabel(event('2026-10-09', { starts_at:'2026-10-09T20:59:00Z',time_known:true }), now), 'This Week');
  assert.equal(ctx.eventTimingLabel(event('2026-10-09', { starts_at:'2026-10-09T21:00:00Z',time_known:true }), now), 'This Weekend');

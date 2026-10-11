@@ -4,7 +4,7 @@ Public cards keep exact dates and show Eastern-time relative timing. Labels take
 precedence in this order: In Progress, Today, Tomorrow, This Weekend, This Week,
 Next Week, Soon, Upcoming. Calendar weeks run Monday–Sunday. This Weekend covers
 Saturday/Sunday and a confirmed Friday start at or after 5 PM Eastern in the
-current calendar week. Soon covers dates within 30 days after the nearer labels.
+current calendar week. Soon covers dates within 14 days after the nearer labels.
 Unknown dates stay Upcoming. Calendar-only and legacy unknown-time dates retain
 their original calendar date; confirmed timestamps display in America/New_York.
 The editor continues to label its browser-local date/time inputs explicitly.

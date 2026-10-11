@@ -138,7 +138,7 @@ function eventTimingLabel(event, now = new Date()) {
   if (day >= monday + 4 && day <= monday + 6 && (fridayEvening || eventWeekday === 6 || eventWeekday === 0)) return 'This Weekend';
   if (day < monday + 7) return 'This Week';
   if (day < monday + 14) return 'Next Week';
-  return delta <= 30 ? 'Soon' : 'Upcoming';
+  return delta <= 14 ? 'Soon' : 'Upcoming';
 }
 function eventBadgeLabel(event, now = new Date()) {
   const status = event.lifecycle_status;
