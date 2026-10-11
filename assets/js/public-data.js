@@ -29,6 +29,11 @@
       if ((metadata || row.id) && !UUID.test(row.id || '')) throw new Error(`Invalid ${dataset} record UUID.`);
       if (row.id && ids.has(row.id)) throw new Error(`Duplicate ${dataset} UUID: ${row.id}`);
       if (row.id) ids.add(row.id);
+      if (dataset === 'events') {
+        if (row.lifecycle_status != null && !['scheduled', 'canceled', 'postponed'].includes(row.lifecycle_status)) throw new Error('Invalid event lifecycle status.');
+        if (row.ends_at != null && (!Number.isFinite(Date.parse(row.ends_at)) || !row.starts_at || row.all_day || row.time_known === false || Date.parse(row.ends_at) <= Date.parse(row.starts_at))) throw new Error('Invalid event end time.');
+        if (row.previous_schedule != null && (typeof row.previous_schedule !== 'object' || Array.isArray(row.previous_schedule))) throw new Error('Invalid previous event schedule.');
+      }
       if (dataset === 'events' && row.date !== 'TBD') {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(row.date || '') ||
             !Number.isFinite(Date.parse(row.date)) || new Date(row.date).toISOString().slice(0, 10) !== row.date) {
@@ -59,6 +64,8 @@
       date = new Date(row.starts_at).toISOString().slice(0, 10);
     }
     return {
+      ends_at: row.ends_at || null, lifecycle_status: row.lifecycle_status || 'scheduled',
+      previous_schedule: row.previous_schedule || null, reschedule_note: row.reschedule_note || null,
       id: row.id, title: row.title, date, starts_at: row.starts_at || null, location: row.location || 'TBD',
       all_day: !!row.all_day, time_known: typeof row.time_known === 'boolean' ? row.time_known : null,
       external_links: Array.isArray(row.external_links) ? row.external_links : (row.external_url ? [{ url: row.external_url }] : []),
@@ -114,7 +121,7 @@
     const client = root.snhSupabase;
     return load('events', {
       live: client && (() => readPages(() => client.from('events')
-        .select('id,title,description,location,starts_at,external_url,source,all_day,time_known,external_links', { count: 'exact' })
+        .select('id,title,description,location,starts_at,external_url,source,all_day,time_known,external_links,ends_at,lifecycle_status,previous_schedule,reschedule_note', { count: 'exact' })
         .or('published.eq.true,published.is.null')
         .order('starts_at', { ascending: true, nullsFirst: false }).order('id'))
         .then((rows) => rows.map(eventFromRow))),

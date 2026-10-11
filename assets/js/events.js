@@ -50,12 +50,6 @@ function setDataSourceNote(container, result, allowed) {
   if (allowed) note.textContent = window.SNHPublicData.sourceLabel(result);
 }
 
-function startOfToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
 /** @returns {Date | null} start of that calendar day in local time, or null if unknown */
 function parseEventDate(dateStr) {
   if (!dateStr || String(dateStr).trim() === '' || String(dateStr).trim().toUpperCase() === 'TBD') {
@@ -91,7 +85,7 @@ function eventHasKnownTime(start, event) {
 
 function eventCalendarDate(event) {
   const start = eventStart(event);
-  if (eventHasKnownTime(start, event)) return start;
+  if (eventHasKnownTime(start, event)) return parseEventDate(easternDateKey(start));
   return parseEventDate(start ? start.toISOString().slice(0, 10) : event.date);
 }
 
@@ -99,8 +93,61 @@ function eventTimeLabel(event) {
   if (event.all_day) return 'All day';
   const start = eventStart(event);
   return eventHasKnownTime(start, event)
-    ? start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    ? start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' })
     : 'Time not listed';
+}
+
+// Calendar arithmetic uses Eastern date keys, independent of the visitor's timezone.
+function easternDateKey(date) {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
+  const value = type => parts.find(part => part.type === type).value;
+  return `${value('year')}-${value('month')}-${value('day')}`;
+}
+function eventDayNumber(event) {
+  const start = eventStart(event);
+  const key = eventHasKnownTime(start, event) ? easternDateKey(start) : (start ? start.toISOString().slice(0, 10) : event.date);
+  return /^\d{4}-\d{2}-\d{2}$/.test(key || '') ? Date.parse(key) / 86400000 : null;
+}
+function confirmedEventEnd(event) {
+  const start = eventStart(event);
+  const end = event.ends_at ? new Date(event.ends_at) : null;
+  return eventHasKnownTime(start, event) && end && Number.isFinite(end.getTime()) && end > start ? end : null;
+}
+function eventIsUpcoming(event, now = new Date()) {
+  const end = confirmedEventEnd(event);
+  if (end) return now < end;
+  const day = eventDayNumber(event);
+  return day === null || day >= Date.parse(easternDateKey(now)) / 86400000;
+}
+function eventTimingLabel(event, now = new Date()) {
+  const end = confirmedEventEnd(event);
+  if ((event.lifecycle_status || 'scheduled') === 'scheduled' && end && now >= eventStart(event) && now < end) return 'In Progress';
+  if (!eventIsUpcoming(event, now)) return 'Past event';
+  const day = eventDayNumber(event);
+  if (day === null) return 'Upcoming';
+  const today = Date.parse(easternDateKey(now)) / 86400000;
+  const delta = day - today;
+  if (delta < 0) return 'Upcoming';
+  if (delta === 0) return 'Today';
+  if (delta === 1) return 'Tomorrow';
+  const weekday = new Date(today * 86400000).getUTCDay();
+  const monday = today - (weekday + 6) % 7;
+  const eventWeekday = new Date(day * 86400000).getUTCDay();
+  const start = eventStart(event);
+  const fridayEvening = eventWeekday === 5 && eventHasKnownTime(start, event) && Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', hourCycle: 'h23' }).format(start)) >= 17;
+  if (day >= monday + 4 && day <= monday + 6 && (fridayEvening || eventWeekday === 6 || eventWeekday === 0)) return 'This Weekend';
+  if (day < monday + 7) return 'This Week';
+  if (day < monday + 14) return 'Next Week';
+  return delta <= 14 ? 'Soon' : 'Upcoming';
+}
+function eventBadgeLabel(event, now = new Date()) {
+  const status = event.lifecycle_status;
+  const labels = [];
+  if (status === 'canceled') labels.push('Canceled');
+  if (status === 'postponed') labels.push('Postponed');
+  if (event.previous_schedule) labels.push('Rescheduled');
+  labels.push(eventTimingLabel(event, now));
+  return labels.join(' · ');
 }
 
 function eventPresentationLinks(event) {
@@ -134,7 +181,7 @@ function createEventCard(event, options = {}) {
 
   const badge = document.createElement('p');
   badge.className = 'event-card-badge';
-  badge.textContent = isUpcoming ? 'Upcoming' : 'Past event';
+  badge.textContent = eventBadgeLabel(event);
   body.appendChild(badge);
   const h3 = document.createElement('h3');
   h3.textContent = event.title || event.name || 'Untitled Event';
@@ -148,8 +195,19 @@ function createEventCard(event, options = {}) {
     ? date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
     : 'Date to be announced';
   dateP.appendChild(time);
-  dateP.appendChild(document.createTextNode(` · ${eventTimeLabel(event)}`));
+  dateP.appendChild(document.createTextNode(` · ${eventTimeLabel(event)}${eventHasKnownTime(eventStart(event), event) ? " ET" : ""}`));
+  const end = confirmedEventEnd(event);
+  if (end) dateP.appendChild(document.createTextNode(` – ${end.toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })} ET`));
   body.appendChild(dateP);
+  if (event.previous_schedule) {
+    const previous = document.createElement('p');
+    previous.className = 'event-card-meta';
+    const old = event.previous_schedule;
+    const oldEvent = { starts_at: old.starts_at, all_day: old.all_day, time_known: old.time_known };
+    const oldDate = eventCalendarDate(oldEvent);
+    previous.textContent = `Previously: ${oldDate ? oldDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Date to be announced'} · ${eventTimeLabel(oldEvent)}${event.reschedule_note ? ' · ' + event.reschedule_note : ''}`;
+    body.appendChild(previous);
+  }
 
   const locP = document.createElement('p');
   locP.className = 'event-card-location';
@@ -213,7 +271,7 @@ function createEventCard(event, options = {}) {
  * @returns {{ upcoming: object[], past: object[] }}
  */
 function splitUpcomingAndPast(events) {
-  const today = startOfToday();
+  const now = new Date();
   const upcoming = [];
   const past = [];
 
@@ -223,7 +281,7 @@ function splitUpcomingAndPast(events) {
       upcoming.push(event);
       continue;
     }
-    if (d >= today) {
+    if (eventIsUpcoming(event, now)) {
       upcoming.push(event);
     } else {
       past.push(event);

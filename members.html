@@ -353,7 +353,7 @@
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h2>Events</h2>
-          <p id="member-events-intro" class="member-panel-intro">Keep the public events calendar accurate. Add tournaments, open houses, and league nights, edit details if plans change, and unpublish anything that gets cancelled. Anything you publish here lands on the public Events page right away.</p>
+          <p id="member-events-intro" class="member-panel-intro">Keep the public events calendar accurate. Add tournaments, open houses, and league nights, edit details if plans change, and mark canceled or postponed events while keeping their original date. Anything you publish here lands on the public Events page right away.</p>
           <p id="member-events-access" class="member-panel-access-note" hidden></p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
@@ -425,6 +425,15 @@
             <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
             <label for="member-events-starts-at">Starts at (local)</label>
             <input id="member-events-starts-at" type="datetime-local">
+            <label for="member-events-ends-at">Ends at (local, optional)</label>
+            <input id="member-events-ends-at" type="datetime-local">
+            <p class="member-form-hint">New timed events default to 3 hours. Edit or clear the end time as needed.</p>
+            <label for="member-events-lifecycle">Event status</label>
+            <select id="member-events-lifecycle"><option value="scheduled">Scheduled</option><option value="canceled">Canceled</option><option value="postponed">Postponed</option></select>
+            <label class="members-checkbox-label"><input id="member-events-reschedule" type="checkbox" disabled> Explicitly reschedule this existing event</label>
+            <label for="member-events-reschedule-note">Reschedule note (optional)</label>
+            <input id="member-events-reschedule-note" type="text" maxlength="1000">
+            <p class="member-form-hint">Rescheduling records the previous schedule, keeps the event Scheduled, and displays Rescheduled publicly. Routine date corrections do not mark it rescheduled.</p>
 
             <label for="member-events-location">Location</label>
             <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
@@ -573,6 +582,13 @@
     var memberEventsTitle = document.getElementById("member-events-title");
     var memberEventsAllDay = document.getElementById("member-events-all-day");
     var memberEventsOriginalSchedule = null;
+    var memberEventsOriginalRow = null;
+    var memberEventsDefaultEnd = null;
+    var memberEventsEndTouched = false;
+    var memberEventsEndsAt = document.getElementById("member-events-ends-at");
+    var memberEventsLifecycle = document.getElementById("member-events-lifecycle");
+    var memberEventsReschedule = document.getElementById("member-events-reschedule");
+    var memberEventsRescheduleNote = document.getElementById("member-events-reschedule-note");
     var memberEventsStartsAt = document.getElementById("member-events-starts-at");
     var memberEventsLocation = document.getElementById("member-events-location");
     var memberEventsLinks = window.SNHEventLinks.createEditor(document.getElementById("member-events-links"), document.getElementById("member-events-add-link"));
@@ -1386,13 +1402,37 @@
     }
     if (memberEventsAllDay) memberEventsAllDay.addEventListener("change", function () {
       setEventDateInputMode(memberEventsAllDay.checked);
+      updateEventEndDefault();
     });
+
+    function updateEventEndDefault() {
+      if (memberEventsAllDay.checked) {
+        memberEventsEndsAt.value = "";
+        memberEventsEndsAt.disabled = true;
+        memberEventsDefaultEnd = null;
+        return;
+      }
+      memberEventsEndsAt.disabled = false;
+      // Only a new event's untouched default follows the start. Existing/custom ends stay fixed.
+      if (!memberEventsId.value && !memberEventsEndTouched) {
+        var start = toIsoOrNull(memberEventsStartsAt.value);
+        memberEventsDefaultEnd = start ? toLocalDateTimeInputValue(new Date(Date.parse(start) + 3 * 3600000).toISOString()) : "";
+        memberEventsEndsAt.value = memberEventsDefaultEnd;
+      }
+    }
+    memberEventsStartsAt.addEventListener("input", updateEventEndDefault);
+    memberEventsEndsAt.addEventListener("input", function () { memberEventsDefaultEnd = null; memberEventsEndTouched = true; });
 
     function resetEventsForm() {
       if (!memberEventsForm) return;
       memberEventsForm.reset();
       memberEventsLinks.set([]);
       memberEventsOriginalSchedule = null;
+      memberEventsOriginalRow = null;
+      memberEventsDefaultEnd = null;
+      memberEventsEndTouched = false;
+      memberEventsEndsAt.disabled = false;
+      memberEventsReschedule.disabled = true;
       if (memberEventsStartsAt) memberEventsStartsAt.type = "datetime-local";
       if (memberEventsId) memberEventsId.value = "";
       if (memberEventsPublished) memberEventsPublished.checked = true;
@@ -1403,6 +1443,15 @@
     function setEventsFormFromRow(row) {
       if (!row || !memberEventsForm) return;
       if (memberEventsId) memberEventsId.value = String(row.id || "");
+      memberEventsOriginalRow = row;
+      memberEventsDefaultEnd = null;
+      memberEventsEndTouched = true;
+      memberEventsEndsAt.value = toLocalDateTimeInputValue(row.ends_at);
+      memberEventsEndsAt.disabled = !!row.all_day;
+      memberEventsLifecycle.value = row.lifecycle_status || "scheduled";
+      memberEventsReschedule.checked = false;
+      memberEventsReschedule.disabled = false;
+      memberEventsRescheduleNote.value = row.reschedule_note || "";
       if (memberEventsTitle) memberEventsTitle.value = row.title || "";
       if (memberEventsAllDay) memberEventsAllDay.checked = !!row.all_day;
       if (memberEventsStartsAt) {
@@ -1462,7 +1511,7 @@
         var tr = document.createElement("tr");
         tr.setAttribute("data-event-row-id", String(row.id));
         var tdTitle = document.createElement("td");
-        tdTitle.textContent = row.title || "(untitled)";
+        tdTitle.textContent = (row.title || "(untitled)") + (row.lifecycle_status && row.lifecycle_status !== "scheduled" ? " · " + row.lifecycle_status : "") + (row.previous_schedule ? " · Rescheduled" : "");
 
         var tdDate = document.createElement("td");
         tdDate.textContent = row.all_day ? String(row.starts_at || "").slice(0, 10) + " · All day" : window.SNHMemberPortal.formatDate(row.starts_at);
@@ -1740,6 +1789,7 @@
         }
         if (memberEventsStartsAt && !memberEventsStartsAt.value) {
           memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
+          updateEventEndDefault();
         }
         try {
           if (tournament.url) memberEventsLinks.append({ url: tournament.url });
@@ -1758,6 +1808,7 @@
         resetEventsForm();
         if (memberEventsTitle) memberEventsTitle.value = String(tournament.title || "").slice(0, 300);
         if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
+        updateEventEndDefault();
         if (memberEventsLocation) memberEventsLocation.value = String(tournament.location || "").slice(0, 500);
         try {
           if (tournament.url) memberEventsLinks.append({ url: tournament.url });
@@ -1899,7 +1950,11 @@
           time_known: allDay ? false : (unchangedSchedule ? memberEventsOriginalSchedule.time_known : !!startValue),
           id: trimOrEmpty(memberEventsId ? memberEventsId.value : ""),
           title: title,
-          starts_at: allDay ? (startValue ? startValue + "T00:00:00Z" : null) : toIsoOrNull(startValue),
+          starts_at: unchangedSchedule ? memberEventsOriginalRow.starts_at : (allDay ? (startValue ? startValue + "T00:00:00Z" : null) : toIsoOrNull(startValue)),
+          ends_at: allDay ? null : (memberEventsOriginalRow && memberEventsEndsAt.value === toLocalDateTimeInputValue(memberEventsOriginalRow.ends_at) ? memberEventsOriginalRow.ends_at : toIsoOrNull(memberEventsEndsAt.value)),
+          lifecycle_status: memberEventsLifecycle.value,
+          previous_schedule: memberEventsOriginalRow ? memberEventsOriginalRow.previous_schedule || null : null,
+          reschedule_note: memberEventsOriginalRow ? memberEventsOriginalRow.reschedule_note || null : null,
           location: trimOrEmpty(memberEventsLocation ? memberEventsLocation.value : ""),
           external_links: externalLinks,
           source: trimOrEmpty(memberEventsSource ? memberEventsSource.value : "") || "manual",
@@ -1907,6 +1962,13 @@
           published: !!(memberEventsPublished && memberEventsPublished.checked)
         };
         try {
+          if (payload.ends_at && (!payload.starts_at || payload.time_known === false || Date.parse(payload.ends_at) <= Date.parse(payload.starts_at))) throw new Error("End time requires a confirmed start and must be after it.");
+          if (memberEventsReschedule.checked) {
+            if (!memberEventsOriginalRow || (unchangedSchedule && payload.ends_at === (memberEventsOriginalRow.ends_at || null))) throw new Error("Change the schedule before recording a reschedule.");
+            payload.previous_schedule = { starts_at: memberEventsOriginalRow.starts_at, ends_at: memberEventsOriginalRow.ends_at || null, all_day: !!memberEventsOriginalRow.all_day, time_known: memberEventsOriginalRow.time_known };
+            payload.reschedule_note = trimOrEmpty(memberEventsRescheduleNote.value) || null;
+            payload.lifecycle_status = "scheduled";
+          }
           setEventsStatus("Saving event…");
           await window.SNHMemberPortal.saveEventForAdmin(payload);
           resetEventsForm();
