@@ -1064,8 +1064,14 @@
             var counts = alb.assetCounts || {};
             var pub = counts.published != null ? counts.published : 0;
             var tot = counts.total != null ? counts.total : 0;
-            li.textContent =
-              (alb.title || "(untitled)") +
+            var albumTitle = alb.title || "(untitled)";
+            if (alb.published && pub > 0) {
+              var albumLink = document.createElement("a");
+              albumLink.href = "photos.html?album=" + encodeURIComponent(alb.id);
+              albumLink.textContent = albumTitle;
+              li.appendChild(albumLink);
+            } else li.appendChild(document.createTextNode(albumTitle));
+            li.appendChild(document.createTextNode(
               " · slug " +
               (alb.slug || "") +
               (alb.published ? " · published album" : " · draft album") +
@@ -1073,7 +1079,7 @@
               pub +
               "/" +
               tot +
-              " published assets";
+              " published assets"));
             ul.appendChild(li);
           }
           memberEventsPhotoDigestBody.appendChild(ul);

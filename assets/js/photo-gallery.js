@@ -8,7 +8,7 @@
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? "members.html?panel=photos&album=" + encodeURIComponent(id) : "";
   }
   function updateEditActions() {
-    root.querySelectorAll(".photos-album-actions").forEach(function (actions) {
+    root.querySelectorAll(".photos-edit-actions").forEach(function (actions) {
       actions.replaceChildren();
       var href = canEdit ? albumEditorHref(actions.dataset.albumId) : "";
       actions.hidden = !href;
@@ -78,7 +78,12 @@
         if (!section.open) { body.replaceChildren(); return; }
         if (body.children.length) return;
         var actions = node("p"); actions.className = "event-card-actions photos-album-actions";
-        actions.dataset.albumId = album.id; actions.dataset.albumTitle = album.title; body.appendChild(actions);
+        var albumHref = "photos.html?album=" + encodeURIComponent(album.id);
+        var view = node("a", "View album"); view.href = albumHref; view.className = "event-edit-link";
+        view.setAttribute("aria-label", "View " + album.title + " album"); actions.appendChild(view);
+        var editActions = node("span"); editActions.className = "photos-edit-actions";
+        editActions.dataset.albumId = album.id; editActions.dataset.albumTitle = album.title;
+        actions.appendChild(editActions); body.appendChild(actions);
         updateEditActions();
         if (album.description) body.appendChild(node('p', album.description));
         if (album.eventTitle) body.appendChild(node('p', 'From ' + album.eventTitle));

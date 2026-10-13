@@ -92,3 +92,12 @@ Links use `members.html?panel=photos&album=<uuid>` and the existing Photos panel
 The requested album is selected with its details expanded; Back to public album
 returns to `photos.html?album=<uuid>`, which reopens it. Invalid IDs are rejected
 by the shared member router. No new roles, migrations or functions are required.
+
+## Album sharing and event digest correction
+
+Opened public albums provide View album for everyone. It opens a standalone
+album page with a shareable URL using the stable album UUID.
+The event editor links published albums with published photos to that public view.
+Migration `20261013200000_photo_event_digest_album_links.sql` fixes an out-of-scope
+SQL alias in the event digest while preserving existing role checks. Apply it after
+the preceding migrations; no Edge Function deployment is needed.

@@ -46,17 +46,25 @@ try {
  await page.locator('#album-'+albumId+' > summary').click();
  await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===2);
  assert.equal(await page.locator('.photos-grid button').count(),2);
- assert.equal(await page.locator('.photos-album-actions a').count(),0,'anonymous visitors have no edit controls');
+ assert.equal(await page.locator('.photos-edit-actions a').count(),0,'anonymous visitors have no edit controls');
+ assert.equal(await page.getByRole('link',{name:'View Club night album'}).getAttribute('href'),'photos.html?album='+albumId);
+ await page.getByRole('link',{name:'View Club night album'}).click();
+ await page.waitForFunction(()=>document.querySelector('.photos-album')?.open);
+ assert.equal(new URL(page.url()).searchParams.get('album'),albumId,'individual album link opens directly');
+ await page.goto(base+'/photos.html');
+ await page.locator('#album-'+albumId+' > summary').click();
+ await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===2);
+
  await page.evaluate(()=>{window.testCapabilityChecks=[];const can=SNHSiteAuth.can;SNHSiteAuth.can=(roles,capability)=>{const result=can(roles,capability);testCapabilityChecks.push(capability);return result;};});
  for(const [role,allowed] of [['membership_editor',false],['events_admin',false],['photos_editor',true],['photos_admin',true],['club_admin',true]]) {
   await page.evaluate(role=>{testCapabilityChecks=[];testRoles=[role];testSession={user:{id:'editor-user'}};testAuthListeners.forEach(fn=>fn('SIGNED_IN',testSession));},role);
   await page.waitForFunction(()=>testCapabilityChecks.includes('photos.manage'));
-  assert.equal(await page.locator('.photos-album-actions a').count(),allowed?1:0,role+' edit visibility');
+  assert.equal(await page.locator('.photos-edit-actions a').count(),allowed?1:0,role+' edit visibility');
  }
  const editHref=await page.getByRole('link',{name:'Edit Club night in Member Tools'}).getAttribute('href');
  assert.equal(editHref,'members.html?panel=photos&album='+albumId);
  await page.evaluate(()=>{testSession=null;testAuthListeners.forEach(fn=>fn('SIGNED_OUT',null));});
- assert.equal(await page.locator('.photos-album-actions a').count(),0,'sign-out removes visible edit controls');
+ assert.equal(await page.locator('.photos-edit-actions a').count(),0,'sign-out removes visible edit controls');
  assert.equal(await page.locator('[download]').count(),0);
  await page.locator('.photos-grid button').first().click();assert.ok(await page.locator('#photos-lightbox').evaluate(e=>e.open));
  await page.keyboard.press('ArrowRight');assert.match(await page.locator('#photos-caption').textContent(),/Second photo.*2 of 2/);
@@ -71,7 +79,7 @@ try {
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile gallery does not overflow');
  await page.locator('#album-'+albumId+' > summary').click();
  await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===0);
- assert.equal(await page.locator('.photos-album-actions a').count(),0,'closed albums have no edit controls');
+ assert.equal(await page.locator('.photos-edit-actions a').count(),0,'closed albums have no edit controls');
  await page.getByRole('button',{name:/Show more albums/}).click();
  assert.equal(await page.locator('.photos-album').count(),14);
  assert.equal(await page.locator('.photos-grid button').count(),0);
@@ -152,6 +160,19 @@ try {
  await page.unroute('**/assets/vendor/jsquash-webp/webp_enc.wasm');
  assert.deepEqual(await page.evaluate(convertSamples),conversion,'retry after encoder load failure succeeds');
  await page.evaluate(()=>restorePhotoToBlob());
+ // Exercise the event editor's actual linked-album rendering with public and draft albums.
+ const membersHtml=await readFile(path.join(root,'members.html'),'utf8');
+ const digestLoopStart=membersHtml.indexOf('          for (var a = 0; a < albums.length; a += 1)');
+ const digestLoop=membersHtml.slice(digestLoopStart,membersHtml.indexOf('          memberEventsPhotoDigestBody.appendChild(ul);',digestLoopStart));
+ const eventLinks=await page.evaluate(({source,albumId})=>{
+  const ul=document.createElement('ul');
+  new Function('albums','document','ul',source)([
+   {id:albumId,title:'Published album',published:true,assetCounts:{published:1,total:1}},
+   {id:'draft',title:'Draft album',published:false,assetCounts:{published:0,total:1}}
+  ],document,ul);
+  return [...ul.querySelectorAll('a')].map(a=>({text:a.textContent,href:a.getAttribute('href')}));
+ },{source:digestLoop,albumId});
+ assert.deepEqual(eventLinks,[{text:'Published album',href:'photos.html?album='+albumId}],'event digest links published albums and keeps drafts private');
  // Phase 2 volunteer workspace: drag/drop, weighted progress, retry, covers and one-action publication.
  await page.setContent('<main><div id="member-photos-status" role="status"></div><div id="member-photos-app"></div></main>');
  for(const stylesheet of ['styles.css','clubhouse.css','club-account.css']) await page.addStyleTag({url:base+'/assets/css/'+stylesheet});
@@ -297,5 +318,5 @@ try {
  await page.waitForFunction(()=>document.querySelector('.photos-album')?.open);
  assert.equal(new URL(page.url()).searchParams.get('album'),albumId,'return navigation opens the same public album');
  assert.deepEqual(errors,[]);
- console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, individual album view links, event digest links, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

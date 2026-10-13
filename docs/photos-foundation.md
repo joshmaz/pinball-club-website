@@ -232,3 +232,12 @@ ordering migration, using `npx supabase db push --linked --dry-run`, then
 `npx supabase db push --linked`. No Edge Function or frontend redeployment is
 required for this database correction. The failed album transaction rolls back;
 retry creation after applying the migration.
+
+## Event photo digest alias correction
+
+Migration `20261013200000_photo_event_digest_album_links.sql` replaces the event
+digest function, ordering by the subquery column rather than an unavailable
+`alb` table alias. Run `npx supabase db push --linked --dry-run`, then
+`npx supabase db push --linked` from the updated branch. No new Edge Function
+deployment is needed. Album view/copy controls and clickable event-editor album
+links are website changes delivered through the existing reviewed release.
