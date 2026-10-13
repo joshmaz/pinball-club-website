@@ -23,6 +23,7 @@
   var orderDraft = null;
   var orderSaving = false;
   var selectedAlbumId = null;
+  var contextAlbumId = null;
   var assetsByAlbum = {};
   var eventsForLink = [];
   var lastUserRoles = [];
@@ -190,6 +191,7 @@
         var id = await window.SNHMemberPortal.photoAlbumUpsert(album ? album.id : null, form.photoFields());
         delete albumDrafts[key];
         selectedAlbumId = String(id || (album && album.id));
+        if (window.SNHMemberRoutes) window.SNHMemberRoutes.setAlbum(selectedAlbumId);
         await refreshAlbums();
         await refreshAssets(selectedAlbumId);
         await renderApp();
@@ -503,6 +505,7 @@
       var result = await window.SNHMemberPortal.photoDeleteAlbumAndCleanup(albumId);
       setStatus(result.cleanupPending ? "Album deleted; storage cleanup is queued for retry." : "Album deleted.");
       selectedAlbumId = null;
+      if (window.SNHMemberRoutes) window.SNHMemberRoutes.setAlbum(null);
       await refreshAlbums();
       await renderApp();
     } catch (err) {
@@ -746,7 +749,7 @@
     library.appendChild(el("h3", { text: "Albums" }));
     var newAlbum = el("button", { type: "button", className: "members-events-form-action", text: "New album" });
     newAlbum.disabled = publishing;
-    newAlbum.onclick = function () { selectedAlbumId = null; void renderApp(); };
+    newAlbum.onclick = function () { selectedAlbumId = null; if (window.SNHMemberRoutes) window.SNHMemberRoutes.setAlbum(null); void renderApp(); };
     library.appendChild(newAlbum);
     var arrange = el("button", { type: "button", text: "Arrange albums" });
     arrange.disabled = publishing || uploading || !orderSettings;
@@ -776,6 +779,7 @@
       button.appendChild(el("span", { text: (album.published ? "Published" : "Draft") + " · " + (counts.total || 0) + " photos" }));
       button.onclick = function () {
         selectedAlbumId = String(album.id);
+        if (window.SNHMemberRoutes) window.SNHMemberRoutes.setAlbum(selectedAlbumId);
         void refreshAssets(selectedAlbumId).then(renderApp).catch(function (error) { setStatus(friendlyError(error), "error"); });
       };
       item.appendChild(button); list.appendChild(item);
@@ -802,6 +806,7 @@
     }
     layout.appendChild(library);
     var workspace = el("section", { className: "member-photos-main-col photo-album-workspace" });
+    if (contextAlbumId) workspace.appendChild(el("a", { className: "members-events-form-action", href: "photos.html?album=" + encodeURIComponent(contextAlbumId), text: "Back to public album" }));
     var album = albumsCache.find(function (item) { return String(item.id) === selectedAlbumId; });
     if (!album) {
       workspace.appendChild(el("h3", { text: "Create a photo album" }));
@@ -839,6 +844,7 @@
       workspace.appendChild(el("p", { className: "member-form-hint", text: "Publishing makes all ready photos and this album visible together. Choose a cover below before publishing." }));
       var details = el("details", { className: "photo-album-details" });
       details.appendChild(el("summary", { text: "Edit album details" }));
+      details.open = contextAlbumId === String(album.id);
       details.appendChild(buildAlbumForm(album));
       workspace.appendChild(details);
       workspace.appendChild(buildUploadZone(album));
@@ -879,6 +885,13 @@
         setStatus("Loading albums...");
         await refreshAlbums();
         await loadEventsForLink();
+        var route = window.SNHMemberRoutes ? window.SNHMemberRoutes.read() : {};
+        if (route.albumId) {
+          contextAlbumId = route.albumId;
+          if (albumsCache.some(function (album) { return String(album.id) === route.albumId; })) {
+            selectedAlbumId = route.albumId; await refreshAssets(selectedAlbumId);
+          } else { setStatus("The requested album is unavailable or you do not have access to it.", "error"); await renderApp(); return; }
+        }
         setStatus("");
       } catch (err) {
         setStatus(friendlyError(err), "error");

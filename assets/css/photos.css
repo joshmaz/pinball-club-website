@@ -27,3 +27,7 @@
   .photos-album > summary { gap: .7rem; padding: .8rem; }
   .photos-album > summary img { width: 72px; height: 54px; }
 }
+
+.clubhouse .photos-album-actions { text-align: left; margin: 0 0 1rem; }
+.clubhouse .photos-album-actions[hidden] { display: none; }
+.clubhouse .photos-album-actions .event-edit-link { min-height: 44px; padding: .5rem .8rem; box-sizing: border-box; }

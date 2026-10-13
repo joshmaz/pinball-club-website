@@ -23,7 +23,7 @@ let browser;
 try {
  browser=await engine.launch({headless:true,...(engineName==='chromium'?{executablePath:process.env.PLAYWRIGHT_CHROMIUM || engine.executablePath(),args:['--no-sandbox']}:(process.env.PLAYWRIGHT_WEBKIT?{executablePath:process.env.PLAYWRIGHT_WEBKIT}:{}))});
  const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const albumId='00000000-0000-0000-0000-000000000200';
+ const albumId='00000000-0000-4000-8000-000000000200';
  const assetId='00000000-0000-0000-0000-000000000100';
  const albums=[{id:albumId,title:'Club night',eventId:'event-one',eventTitle:'Pinball night',description:'Our community',coverAssetId:assetId,
  assets:[0,1].map(n=>({id:n?assetId+'1':assetId,caption:n?'Second photo':'Cover photo',altText:'Pinball machines',variants:['web','thumb'].map(variant=>({variant,bucket:'photos-public',objectKey:variant+'.webp',width:640,height:427}))}))}];
@@ -33,7 +33,10 @@ try {
  await page.route('https://**/*',route=>route.fulfill({contentType:'text/javascript',body:''}));
  await page.route('**/assets/js/config.js',route=>route.fulfill({contentType:'text/javascript',body:'window.SNH_CONFIG={supabaseUrl:"https://test.supabase.co",supabaseAnonKey:"test"};'}));
  await page.addInitScript(albums=>{
-  window.supabase={createClient:()=>({rpc:async()=>({data:albums,error:null}),auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})}})};
+  window.testSession=null; window.testRoles=[]; window.testAuthListeners=[];
+  window.supabase={createClient:()=>({rpc:async()=>({data:albums,error:null}),
+   from:table=>({select:()=>({eq:()=>table==='members'?{maybeSingle:async()=>({data:{id:'test-member'},error:null})}:Promise.resolve({data:testRoles.map(role_slug=>({role_slug})),error:null})})}),
+   auth:{getSession:async()=>({data:{session:testSession}}),onAuthStateChange:callback=>{testAuthListeners.push(callback);return {data:{subscription:{unsubscribe(){}}}}}}})};
  },albums);
  await page.route('**/storage/v1/object/public/photos-public/**',route=>route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="427"><rect width="640" height="427" fill="#153c42"/><rect x="80" y="60" width="170" height="300" fill="#ffa020"/><text x="285" y="220" fill="white" font-size="30">Pinball night</text></svg>'}));
  await page.goto(base+'/photos.html');
@@ -43,15 +46,32 @@ try {
  await page.locator('#album-'+albumId+' > summary').click();
  await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===2);
  assert.equal(await page.locator('.photos-grid button').count(),2);
+ assert.equal(await page.locator('.photos-album-actions a').count(),0,'anonymous visitors have no edit controls');
+ await page.evaluate(()=>{window.testCapabilityChecks=[];const can=SNHSiteAuth.can;SNHSiteAuth.can=(roles,capability)=>{const result=can(roles,capability);testCapabilityChecks.push(capability);return result;};});
+ for(const [role,allowed] of [['membership_editor',false],['events_admin',false],['photos_editor',true],['photos_admin',true],['club_admin',true]]) {
+  await page.evaluate(role=>{testCapabilityChecks=[];testRoles=[role];testSession={user:{id:'editor-user'}};testAuthListeners.forEach(fn=>fn('SIGNED_IN',testSession));},role);
+  await page.waitForFunction(()=>testCapabilityChecks.includes('photos.manage'));
+  assert.equal(await page.locator('.photos-album-actions a').count(),allowed?1:0,role+' edit visibility');
+ }
+ const editHref=await page.getByRole('link',{name:'Edit Club night in Member Tools'}).getAttribute('href');
+ assert.equal(editHref,'members.html?panel=photos&album='+albumId);
+ await page.evaluate(()=>{testSession=null;testAuthListeners.forEach(fn=>fn('SIGNED_OUT',null));});
+ assert.equal(await page.locator('.photos-album-actions a').count(),0,'sign-out removes visible edit controls');
  assert.equal(await page.locator('[download]').count(),0);
  await page.locator('.photos-grid button').first().click();assert.ok(await page.locator('#photos-lightbox').evaluate(e=>e.open));
  await page.keyboard.press('ArrowRight');assert.match(await page.locator('#photos-caption').textContent(),/Second photo.*2 of 2/);
  await page.keyboard.press('Escape');assert.equal(await page.locator('#photos-lightbox').evaluate(e=>e.open),false);
  assert.equal(await page.locator('.photos-grid button').first().evaluate(e=>e===document.activeElement),true);
- await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/photo-gallery-mobile.png',fullPage:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.evaluate(()=>{testCapabilityChecks=[];testRoles=['photos_editor'];testSession={user:{id:'mobile-editor'}};testAuthListeners.forEach(fn=>fn('SIGNED_IN',testSession));});
+ await page.waitForFunction(()=>testCapabilityChecks.includes('photos.manage'));
+ const mobileEdit=page.getByRole('link',{name:'Edit Club night in Member Tools'});
+ assert.ok((await mobileEdit.boundingBox()).height>=44,'contextual edit meets mobile touch target');
+ await page.screenshot({path:'/tmp/photo-gallery-mobile.png',fullPage:true});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile gallery does not overflow');
  await page.locator('#album-'+albumId+' > summary').click();
  await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===0);
+ assert.equal(await page.locator('.photos-album-actions a').count(),0,'closed albums have no edit controls');
  await page.getByRole('button',{name:/Show more albums/}).click();
  assert.equal(await page.locator('.photos-album').count(),14);
  assert.equal(await page.locator('.photos-grid button').count(),0);
@@ -76,6 +96,9 @@ try {
  assert.equal(await page.locator('.photos-grid button').count(),0);
  await page.goto(base+'/photos.html?event=missing');await page.getByText('No published photos are available yet.').waitFor();
  await page.goto(base+'/photos.html?album='+albumId);await page.getByRole('link',{name:'All albums',exact:true}).waitFor();
+ await page.evaluate(()=>{testRoles=['photos_admin'];testSession={user:{id:'direct-editor'}};testAuthListeners.forEach(fn=>fn('SIGNED_IN',testSession));});
+ await page.getByRole('link',{name:'Edit Club night in Member Tools'}).waitFor();
+ assert.equal(await page.getByRole('link',{name:'Edit Club night in Member Tools'}).getAttribute('href'),editHref,'direct public album links expose the same editor route');
  // Real canvas/WebP encoding, resize limits, no enlargement, and metadata rejection behavior.
  await page.addScriptTag({url:base+'/assets/js/photo-conversion.js'});
  let fallbackRequests=0;
@@ -165,10 +188,13 @@ try {
    photoCleanup:async()=>({cleanup:{removed:0,failed:0,pending:0}})
   };
  },{albumId,assetId});
+ await page.evaluate(albumId=>history.replaceState(null,'','/members.html?panel=photos&album='+albumId),albumId);
+ await page.addScriptTag({url:base+'/assets/js/member-routes.js'});
  await page.addScriptTag({url:base+'/assets/js/member-photos-panel.js'});
  await page.evaluate(()=>window.SNHMemberPhotosPanel.init(['photos_admin']));
- await page.getByRole('button',{name:/Club night/}).click();
- await page.getByText('Edit album details',{exact:true}).click();
+ assert.equal(await page.locator('#member-photos-album-title').inputValue(),'Club night','deep link selects the requested album');
+ assert.ok(await page.locator('.photo-album-details').evaluate(e=>e.open),'contextual edit opens album details');
+ assert.equal(await page.getByRole('link',{name:'Back to public album'}).getAttribute('href'),'photos.html?album='+albumId);
  assert.equal(await page.locator('#member-photos-album-sort').count(),0,'album position numbers are not shown');
  await page.locator('#member-photos-album-title').fill('Updated club night');
  const transfer=await page.evaluateHandle(()=>{
@@ -264,10 +290,12 @@ try {
  await page.getByRole('button',{name:'Refresh albums',exact:true}).click();
  assert.equal(await page.getByRole('button',{name:'Arrange albums',exact:true}).isDisabled(),true,'missing migration disables sorter safely');
  await page.getByRole('button',{name:/Updated club night/}).click();
- await page.getByText('Edit album details',{exact:true}).click();
  await page.getByRole('button',{name:'Save details',exact:true}).click();
  await page.getByText('Album details saved.',{exact:true}).waitFor();
  assert.equal(await page.evaluate(()=>albumSaves.at(-1).sortPosition),2,'old-backend metadata saves preserve album position');
+ await page.getByRole('link',{name:'Back to public album'}).click();
+ await page.waitForFunction(()=>document.querySelector('.photos-album')?.open);
+ assert.equal(new URL(page.url()).searchParams.get('album'),albumId,'return navigation opens the same public album');
  assert.deepEqual(errors,[]);
- console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

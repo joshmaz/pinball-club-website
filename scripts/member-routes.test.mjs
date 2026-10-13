@@ -108,3 +108,15 @@ test("Operations section routes survive reload and legacy hashes", () => {
   assert.equal(loadRoutes({ hash: "#audit-log" }).routes.read().operationsSection, "audit");
   assert.equal(loadRoutes({ search: "?panel=operations&section=invalid" }).routes.read().operationsSection, "overview");
 });
+
+ test("photo album routes validate ids and remove them outside Photos",()=>{
+  const fixture=loadRoutes({search:`?panel=photos&album=${GAME_ID}`});
+  assert.equal(fixture.routes.read().albumId,GAME_ID);
+  assert.equal(fixture.routes.build("photos"),`/members.html?panel=photos&album=${GAME_ID}`);
+  assert.equal(fixture.routes.build("games"),"/members.html?panel=games");
+  fixture.routes.setAlbum(EVENT_ID);
+  assert.equal(fixture.replacedUrl(),`/members.html?panel=photos&album=${EVENT_ID}`);
+  fixture.routes.setAlbum("https://evil.invalid");
+  assert.equal(fixture.replacedUrl(),"/members.html?panel=photos");
+  assert.equal(loadRoutes({search:"?panel=photos&album=bad"}).routes.read().albumId,"");
+ });

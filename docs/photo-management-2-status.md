@@ -80,3 +80,15 @@ uploaded photo. iOS Chrome reported native WebP encoding unavailable; the bundle
 worker addresses that path. Chromium and WebKit checks passed for actual WASM
 encoding, resize/orientation, backend acceptance and encoder download failure/retry.
 All 308 regression tests passed. A physical iOS retest remains necessary.
+
+## Contextual Edit Album access
+
+Opened public albums show the established text-only outlined Edit Album link only
+when the existing `photos.manage` effective capability allows it. Photos Editor,
+Photos Admin and inherited Website Administrator access are supported; anonymous
+visitors and other members see no link. Auth changes refresh visibility.
+
+Links use `members.html?panel=photos&album=<uuid>` and the existing Photos panel.
+The requested album is selected with its details expanded; Back to public album
+returns to `photos.html?album=<uuid>`, which reopens it. Invalid IDs are rejected
+by the shared member router. No new roles, migrations or functions are required.

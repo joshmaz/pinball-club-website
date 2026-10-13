@@ -3,6 +3,31 @@
   var root = document.getElementById('photos-albums'), status = document.getElementById('photos-status');
   var dialog = document.getElementById('photos-lightbox'), full = document.getElementById('photos-full');
   var current = [], index = 0, lastTrigger;
+  var canEdit = false, accessRevision = 0;
+  function albumEditorHref(id) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? "members.html?panel=photos&album=" + encodeURIComponent(id) : "";
+  }
+  function updateEditActions() {
+    root.querySelectorAll(".photos-album-actions").forEach(function (actions) {
+      actions.replaceChildren();
+      var href = canEdit ? albumEditorHref(actions.dataset.albumId) : "";
+      actions.hidden = !href;
+      if (!href) return;
+      var edit = node("a", "Edit Album"); edit.className = "event-edit-link"; edit.href = href;
+      edit.setAttribute("aria-label", "Edit " + actions.dataset.albumTitle + " in Member Tools");
+      actions.appendChild(edit);
+    });
+  }
+  async function refreshEditAccess() {
+    var revision = ++accessRevision; canEdit = false; updateEditActions();
+    try {
+      var auth = window.SNHSiteAuth; if (!auth) return;
+      var session = await auth.getSession(); if (!session || !session.user) return;
+      var roles = await auth.fetchMemberRoles(session.user.id);
+      if (revision !== accessRevision) return;
+      canEdit = auth.can(roles, "photos.manage"); updateEditActions();
+    } catch (_) { /* Public browsing remains available if edit access cannot be resolved. */ }
+  }
   function variant(asset, name) { return (asset.variants || []).find(function (v) { return v.variant === name && v.bucket === 'photos-public'; }); }
   function url(v) {
     var base = String((window.SNH_CONFIG || {}).supabaseUrl || '').replace(/\/+$/, '');
@@ -52,6 +77,9 @@
       function openAlbum() {
         if (!section.open) { body.replaceChildren(); return; }
         if (body.children.length) return;
+        var actions = node("p"); actions.className = "event-card-actions photos-album-actions";
+        actions.dataset.albumId = album.id; actions.dataset.albumTitle = album.title; body.appendChild(actions);
+        updateEditActions();
         if (album.description) body.appendChild(node('p', album.description));
         if (album.eventTitle) body.appendChild(node('p', 'From ' + album.eventTitle));
         var date = album.displayAt || album.eventStartsAt;
@@ -98,7 +126,7 @@
       return first;
     }
     moreAlbums.onclick = function () { var first = addAlbums(); if (first) first.focus(); };
-    addAlbums();
+    addAlbums(); updateEditActions();
   }
   async function load() {
     try {
@@ -111,5 +139,7 @@
       var retry = node('button', 'Try again'); retry.type = 'button'; retry.onclick = function () { status.textContent = 'Loading albums…'; void load(); }; status.appendChild(retry);
     }
   }
+  if (window.SNHSiteAuth) window.SNHSiteAuth.onAuthStateChange(function () { void refreshEditAccess(); });
+  void refreshEditAccess();
   void load();
 })();
