@@ -753,7 +753,9 @@
     arrange.onclick = async function () {
       arrange.disabled = true;
       try {
+      var before = await window.SNHMemberPortal.photoAlbumOrderSettings();
       await refreshAlbums();
+      if (orderSettings && before.revision !== orderSettings.revision) throw new Error("Album order changed while loading. Please try again.");
       if (!orderSettings) throw new Error("Album ordering needs the database update.");
       orderDraft = { mode: orderSettings.mode, revision: orderSettings.revision, ids: albumsCache.slice().sort(function (a,b) { return a.sortPosition-b.sortPosition || a.title.toLowerCase().localeCompare(b.title.toLowerCase()); }).map(function (album) { return album.id; }) };
       // A small collection permits cover previews without a new listing API.

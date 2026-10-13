@@ -140,7 +140,7 @@ try {
   window.editorAssets=[]; window.extraAlbums=[]; window.galleryOrder={mode:'custom',revision:1}; window.orderSaves=[]; window.failOrder=false;
   const copy=value=>JSON.parse(JSON.stringify(value));
   window.SNHMemberPortal={
-   photoAlbumsListEditor:async()=>[copy({...editorAlbum,sortPosition:editorAlbum.sortPosition || 0,assetCounts:{total:editorAssets.length,published:editorAssets.filter(a=>a.status==='published').length}}),...copy(extraAlbums)],
+   photoAlbumsListEditor:async()=>{if(window.albumListRace){galleryOrder.revision++;window.albumListRace=false;}return [copy({...editorAlbum,sortPosition:editorAlbum.sortPosition || 0,assetCounts:{total:editorAssets.length,published:editorAssets.filter(a=>a.status==='published').length}}),...copy(extraAlbums)];},
    photoAlbumOrderSettings:async()=>copy(galleryOrder),
    photoAlbumOrderSave:async(mode,ids,revision)=>{if(failOrder){failOrder=false;throw new Error('Album order changed. Cancel and reopen the sorter.');}orderSaves.push({mode,ids:ids.slice(),revision});if(mode==='custom')ids.forEach((id,i)=>{const a=id===editorAlbum.id?editorAlbum:extraAlbums.find(a=>a.id===id);a.sortPosition=i+1;});galleryOrder={mode,revision:revision+1};return copy(galleryOrder);},
    photoAssetsListEditor:async()=>copy(editorAssets),photoEventsListForPhotoLink:async()=>[],
@@ -222,6 +222,10 @@ try {
  assert.equal(await page.locator('#member-photos-album-sort').count(),0);
  await page.evaluate(()=>extraAlbums=[{id:'album-two',title:'Second album',published:false,sortPosition:1,displayAt:'2025-01-01'}, {id:'album-three',title:'Third album',published:true,sortPosition:2,displayAt:'2026-01-01'}]);
  await page.getByRole('button',{name:'Refresh albums',exact:true}).click();
+ await page.evaluate(()=>window.albumListRace=true);
+ await page.getByRole('button',{name:'Arrange albums',exact:true}).click();
+ await page.getByText('Album order changed while loading. Please try again.',{exact:true}).waitFor();
+ assert.equal(await page.locator('#photo-album-order-mode').count(),0,'a raced read cannot create a stale sorter draft');
  await page.getByRole('button',{name:'Arrange albums',exact:true}).click();
  await page.locator('#photo-album-order-mode').waitFor();
  assert.equal(await page.locator('#member-photos-album-sort').count(),0);

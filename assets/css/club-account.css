@@ -221,3 +221,5 @@
 .club-account .photo-sort-title span { font-size: .85rem; }
 .club-account .photo-album-sorter :is(button,select) { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; cursor: pointer; }
 .club-account .photo-album-sorter .photo-primary-action { background: var(--club-teal); color: var(--club-surface); }
+
+.club-account .photo-album-sorter button:disabled { opacity: .5; cursor: not-allowed; }
