@@ -2,8 +2,6 @@
   const DESKTOP_MAX_VISIBLE = 8;
   const MOBILE_MAX_VISIBLE = 4;
   const MOBILE_MEDIA_QUERY = "(max-width: 700px)";
-  const HIGHLIGHTS_URL = "data/highlights.json";
-  const STATIC_IMAGE_BASE = "assets/images/highlights/processed/";
 
   function shuffleInPlace(array) {
     for (let i = array.length - 1; i > 0; i -= 1) {
@@ -139,38 +137,6 @@
     });
   }
 
-  function sanitizeStaticHighlights(input) {
-    if (!Array.isArray(input)) return [];
-    return input
-      .filter(function (item) {
-        return (
-          item &&
-          typeof item.filename === "string" && item.filename &&
-          typeof item.alt === "string" && item.alt &&
-          typeof item.caption === "string" && item.caption
-        );
-      })
-      .map(function (item) {
-        const src = STATIC_IMAGE_BASE + item.filename;
-        const variants = (Array.isArray(item.deliveryVariants) ? item.deliveryVariants : [])
-          .filter(function (v) { return v && typeof v.url === "string" && v.url.startsWith(STATIC_IMAGE_BASE + "responsive/") && Number.isInteger(v.width) && v.width > 0 && Number.isInteger(v.height) && v.height > 0; })
-          .sort(function (a, b) { return a.width - b.width; });
-        const cards = variants.filter(function (v) { return v.width <= 960; });
-        const thumb = cards[0];
-        const full = variants[variants.length - 1];
-        return {
-          source: "static",
-          alt: item.alt,
-          caption: item.caption,
-          thumbSrc: thumb ? thumb.url : src,
-          fullSrc: full ? full.url : src,
-          srcset: cards.map(function (v) { return v.url + " " + v.width + "w"; }).join(", "),
-          width: thumb && thumb.width,
-          height: thumb && thumb.height
-        };
-      });
-  }
-
   function flattenDynamicAlbums(albums) {
     if (!Array.isArray(albums)) return [];
     const out = [];
@@ -225,19 +191,10 @@
     }
   }
 
-  async function loadStaticHighlights() {
-    const response = await fetch(HIGHLIGHTS_URL, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("Highlights request failed (" + response.status + ")");
-    }
-    const payload = await response.json();
-    return sanitizeStaticHighlights(payload.highlights);
-  }
-
   async function loadHighlights() {
     const dynamic = await loadDynamicHighlights();
-    if (dynamic && dynamic.length > 0) return dynamic;
-    return loadStaticHighlights();
+    if (dynamic === null) throw new Error("Photo service unavailable");
+    return dynamic;
   }
 
   async function initHighlights() {

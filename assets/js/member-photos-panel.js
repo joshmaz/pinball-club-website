@@ -14,6 +14,8 @@
   var statusEl = null;
   var inited = false;
   var albumsCache = [];
+  var uploadJobs = [];
+  var uploading = false;
   var selectedAlbumId = null;
   var assetsByAlbum = {};
   var eventsForLink = [];
@@ -116,6 +118,7 @@
     form.appendChild(el("label", { for: "member-photos-album-title", text: "Title" }));
     var titleInput = el("input", { type: "text", id: "member-photos-album-title", maxlength: "200", required: "required" });
     titleInput.value = titleVal;
+    titleInput.addEventListener("input",function(){if(!album) slugInput.value=titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,80)||"album";});
     form.appendChild(titleInput);
 
     form.appendChild(el("label", { for: "member-photos-album-slug", text: "Slug" }));
@@ -202,6 +205,11 @@
         actions.appendChild(deleteBtn);
       }
     }
+    var advanced=el("details");advanced.appendChild(el("summary",{text:"Album URL and order"}));
+    [slugInput,sortInput].forEach(function(input){
+      var label=form.querySelector('label[for="'+input.id+'"]');if(label) advanced.appendChild(label);
+      advanced.appendChild(input);
+    });advanced.appendChild(slugHint);form.insertBefore(advanced,actions.parentNode===form?actions:null);
     form.appendChild(actions);
 
     form.addEventListener("submit", async function (ev) {
@@ -243,7 +251,9 @@
         loading: "lazy",
         decoding: "async"
       });
-      img.src = window.SNHMemberPortal.buildPublicPhotoUrl(thumbVariant.objectKey);
+      if(thumbVariant.bucket === "photos-private") {
+        void window.SNHMemberPortal.photoPreview(asset.id).then(function(url){img.src=url;}).catch(function(){img.alt="Preview unavailable; retry after refreshing.";});
+      } else img.src = window.SNHMemberPortal.buildPublicPhotoUrl(thumbVariant.objectKey);
       thumbWrap.appendChild(img);
     } else {
       thumbWrap.appendChild(el("p", {
@@ -312,17 +322,22 @@
     saveBtn.addEventListener("click", function () { void saveAssetMeta(asset.id, captionInput, altInput, sortInput, excludeInput, promoSelect); });
     actions.appendChild(saveBtn);
 
-    if (asset.status === "uploaded" || asset.status === "unpublished") {
-      var publishBtn = el("button", { type: "button", className: "members-events-form-action", text: "Generate & publish" });
-      publishBtn.addEventListener("click", function () { void publishAsset(asset.id); });
+    if (asset.status === "uploaded" || asset.status === "unpublished" || (asset.status === "pending" && asset.hasOriginal)) {
+      var publishBtn = el("button", { type: "button", className: "members-events-form-action", text: "Publish photo" });
+      var legacyJob={};
+      publishBtn.addEventListener("click", async function () {
+        publishBtn.disabled=true;
+        try {
+          if((asset.uploadMode==="legacy" && !pickVariant(asset,"web")) || (asset.status==="pending" && asset.hasOriginal)) await window.SNHMemberPortal.photoConvertLegacy(album.id,asset.id,legacyJob);
+          await publishAsset(asset.id);
+        } catch(err){setStatus(friendlyError(err),"error");}finally{publishBtn.disabled=false;}
+      });
       actions.appendChild(publishBtn);
     } else if (asset.status === "published") {
       var unpubBtn = el("button", { type: "button", className: "members-admin-revoke", text: "Unpublish" });
       unpubBtn.addEventListener("click", function () { void unpublishAsset(asset.id); });
       actions.appendChild(unpubBtn);
-      var regenBtn = el("button", { type: "button", className: "members-events-form-action", text: "Regenerate variants" });
-      regenBtn.addEventListener("click", function () { void publishAsset(asset.id); });
-      actions.appendChild(regenBtn);
+
     }
 
     if (isAdmin(lastUserRoles)) {
@@ -331,6 +346,31 @@
       actions.appendChild(delBtn);
     }
 
+    var coverBtn = el("button", { type: "button", className:"members-events-form-action", text: album.coverAssetId === asset.id ? "Album cover" : "Use as cover" });
+    coverBtn.disabled = album.coverAssetId === asset.id;
+    coverBtn.addEventListener("click", async function () {
+      try {
+        await window.SNHMemberPortal.photoAlbumUpsert(album.id, {slug:album.slug,title:album.title,description:album.description,
+          sortPosition:album.sortPosition,published:album.published,includeInHighlights:album.includeInHighlights,coverAssetId:asset.id});
+        await refreshAlbums(); await renderApp();
+      } catch (err) { setStatus(friendlyError(err), "error"); }
+    });
+    actions.appendChild(coverBtn);
+    if (asset.status === "published" && album.published) {
+      var reuse = el("details"); reuse.appendChild(el("summary", {text:"Reuse for event promotion"}));
+      var picker = el("select", {"aria-label":"Event to promote with this photo"});
+      eventsForLink.forEach(function (event) { picker.appendChild(el("option", {value:event.id,text:event.title})); });
+      reuse.appendChild(picker);
+      [false,true].forEach(function(clear) {
+        var use = el("button", {type:"button",text:clear?"Clear event override":"Use as event hero"});
+        use.addEventListener("click",async function(){
+          if (!picker.value) return;
+          try { await window.SNHMemberPortal.photoSetEventPromo(picker.value,clear?null:asset.id); setStatus(clear?"Event override cleared.":"Photo linked for event promotion."); }
+          catch(err){setStatus(friendlyError(err),"error");}
+        }); reuse.appendChild(use);
+      });
+      meta.appendChild(reuse);
+    }
     meta.appendChild(actions);
     card.appendChild(meta);
 
@@ -365,7 +405,7 @@
 
   async function publishAsset(assetId) {
     try {
-      setStatus("Generating derivatives and publishing...");
+      setStatus("Publishing photo...");
       await window.SNHMemberPortal.photoPublishAsset(assetId, { publish: true });
       setStatus("Asset published.");
       await refreshAssets(selectedAlbumId);
@@ -376,7 +416,7 @@
   }
 
   async function unpublishAsset(assetId) {
-    if (!window.confirm("Unpublish this asset? Public derivatives will be removed.")) return;
+    if (!window.confirm("Unpublish this photo? It will leave the gallery. Its resized copies remain available for republishing.")) return;
     try {
       setStatus("Unpublishing...");
       await window.SNHMemberPortal.photoPurgeAsset(assetId, "unpublish");
@@ -404,14 +444,11 @@
 
   async function deleteAlbum(albumId) {
     if (!isAdmin(lastUserRoles)) return;
-    if (!window.confirm("Delete this album? This will cascade and delete all assets in the album. Storage objects must be cleaned up via per-asset delete first to avoid orphans.")) return;
+    if (!window.confirm("Delete this album and all its photos permanently? Storage cleanup will be queued and retried if needed.")) return;
     try {
       setStatus("Deleting album...");
-      var result = await window.SNHMemberPortal.photoAlbumDelete(albumId);
-      var orphans = (result && result.cascadedAssetIds) || [];
-      setStatus(orphans.length
-        ? "Album deleted. " + orphans.length + " asset rows removed; storage objects may remain and need a cleanup pass."
-        : "Album deleted.");
+      var result = await window.SNHMemberPortal.photoDeleteAlbumAndCleanup(albumId);
+      setStatus(result.cleanupPending ? "Album deleted; storage cleanup is queued for retry." : "Album deleted.");
       selectedAlbumId = null;
       await refreshAlbums();
       await renderApp();
@@ -420,25 +457,47 @@
     }
   }
 
-  async function uploadFiles(albumId, files) {
-    if (!files || !files.length) return;
-    try {
-      for (var i = 0; i < files.length; i += 1) {
-        var line = "Uploading " + (i + 1) + " of " + files.length + ": " + files[i].name;
-        setStatus(line);
-        setUploadInlineStatus(line);
-        await window.SNHMemberPortal.photoUploadAndRegister(albumId, files[i]);
-      }
-      var doneMsg = "Uploaded " + files.length + " file(s). Click Generate & publish to make them visible.";
-      setStatus(doneMsg);
-      await refreshAssets(albumId);
-      await renderApp();
-      setUploadInlineStatus(doneMsg);
-    } catch (err) {
-      var errMsg = friendlyError(err);
-      setStatus(errMsg, "error");
-      setUploadInlineStatus(errMsg);
+  function renderUploadJobs() {
+    var list = document.getElementById("member-photos-upload-jobs");
+    if (!list) return;
+    list.replaceChildren();
+    var jobs=uploadJobs.filter(function(job){return job.albumId===selectedAlbumId;});
+    if(jobs.length) {
+      var progress=el("progress",{max:String(jobs.length),value:String(jobs.filter(function(job){return job.done;}).length),"aria-label":"Photo upload progress"});
+      list.appendChild(el("li",{text:jobs.filter(function(job){return job.done;}).length+" of "+jobs.length+" photos ready"}));list.lastChild.appendChild(progress);
     }
+    uploadJobs.filter(function(job){return job.albumId===selectedAlbumId;}).forEach(function(job){
+      var row=el("li",{text:job.filename+": "+job.status});
+      if(job.error && !uploading) {
+        var retry=el("button",{type:"button",text:"Retry"});
+        retry.addEventListener("click",function(){job.error=false;job.status="Waiting";void runUploadJobs();});
+        row.appendChild(retry);
+      }
+      list.appendChild(row);
+    });
+    var input=document.getElementById("member-photos-upload-input");
+    if(input) input.disabled=uploading;
+  }
+  async function runUploadJobs() {
+    if(uploading) return;
+    uploading=true;renderUploadJobs();
+    for(var job of uploadJobs) {
+      if(job.done || job.error) continue;
+      try {
+        job.onProgress=function(text){job.status=text;renderUploadJobs();};
+        var result=await window.SNHMemberPortal.photoUploadAndRegister(job.albumId,job.file,job);
+        job.assetId=result.assetId;job.done=true;job.status="Ready to publish";job.file=null;
+      } catch(err) {job.error=true;job.status=friendlyError(err);}
+      renderUploadJobs();
+    }
+    uploading=false;
+    try { if(selectedAlbumId) await refreshAssets(selectedAlbumId);await refreshAlbums();await renderApp(); }
+    catch(err){setStatus(friendlyError(err),"error");}
+    renderUploadJobs();
+  }
+  async function uploadFiles(albumId, files) {
+    Array.from(files || []).forEach(function(file){uploadJobs.push({albumId:String(albumId),file:file,filename:file.name,status:"Waiting"});});
+    await runUploadJobs();
   }
 
   async function refreshAlbums() {
@@ -482,6 +541,14 @@
       }
     });
     topBar.appendChild(refreshBtn);
+    if(isAdmin(lastUserRoles)) {
+      var cleanupBtn=el("button",{type:"button",className:"members-events-form-action",text:"Retry storage cleanup"});
+      cleanupBtn.addEventListener("click",async function(){
+        cleanupBtn.disabled=true;
+        try {var r=await window.SNHMemberPortal.photoCleanup();setStatus("Cleanup: "+r.cleanup.removed+" objects removed, "+r.cleanup.pending+" queued for retry (some wait for the upload safety window).");}
+        catch(err){setStatus(friendlyError(err),"error");}finally{cleanupBtn.disabled=false;}
+      });topBar.appendChild(cleanupBtn);
+    }
     appEl.appendChild(topBar);
 
     var layout = el("div", { className: "member-photos-layout" });
@@ -559,11 +626,11 @@
       var uploadBlock = el("div", { className: "member-photos-upload-block" });
       var uploadRow = el("div", { className: "member-photos-upload-row" });
       var fileWrap = el("div", { className: "member-photos-upload-file-wrap" });
-      fileWrap.appendChild(el("label", { for: "member-photos-upload-input", text: "Upload (JPEG or PNG, up to 50 MB):" }));
+      fileWrap.appendChild(el("label", { for: "member-photos-upload-input", text: "Add photos (JPEG, PNG or WebP, up to 50 MB):" }));
       var fileInput = el("input", {
         type: "file",
         id: "member-photos-upload-input",
-        accept: "image/jpeg,image/png",
+        accept: "image/jpeg,image/png,image/webp",
         multiple: "multiple"
       });
       fileInput.addEventListener("change", function () {
@@ -581,6 +648,7 @@
         "aria-live": "polite"
       }));
       uploadBlock.appendChild(uploadRow);
+      uploadBlock.appendChild(el("ul", {id:"member-photos-upload-jobs", "aria-live":"polite"}));
       assetsSection.appendChild(uploadBlock);
 
       var assets = assetsByAlbum[selectedAlbum.id] || [];
@@ -595,12 +663,22 @@
           grid.appendChild(buildAssetCard(selectedAlbum, assets[j]));
         }
         assetsSection.appendChild(grid);
+        var publishAll=el("button",{type:"button",className:"members-events-form-action",text:"Publish ready photos"});
+        publishAll.addEventListener("click",async function(){
+          publishAll.disabled=true;var failed=0;
+          for(var photo of assets.filter(function(a){return a.status==="uploaded" || a.status==="unpublished";})) {
+            try {if(photo.uploadMode==="legacy" && !pickVariant(photo,"web")) await window.SNHMemberPortal.photoConvertLegacy(selectedAlbum.id,photo.id);await window.SNHMemberPortal.photoPublishAsset(photo.id,{publish:true});}catch(err){failed++;setStatus(friendlyError(err),"error");}
+          }
+          await refreshAssets(selectedAlbum.id);await refreshAlbums();await renderApp();
+          setStatus(failed?failed+" photo(s) could not be published. Retry individually.":"Photos published. Publish the album above when it is ready.");
+        });assetsSection.appendChild(publishAll);
       }
       mainCol.appendChild(assetsSection);
     }
 
     layout.appendChild(mainCol);
     appEl.appendChild(layout);
+    renderUploadJobs();
   }
 
   async function init(userRoles) {

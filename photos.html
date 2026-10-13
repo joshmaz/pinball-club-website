@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" class="clubhouse">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>SNHPC - Photos</title><meta name="description" content="Photo albums from Southern New Hampshire Pinball Club events and community.">
+  <script src="assets/js/theme.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css"><link rel="stylesheet" href="assets/css/clubhouse.css"><link rel="stylesheet" href="assets/css/photos.css">
+  <script src="assets/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/supabase-init.js"></script>
+</head>
+<body>
+  <a class="club-skip" href="#photos-main">Skip to photos</a>
+  <header id="page-top"><a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+    <div class="club-header-links"><nav aria-label="Main navigation">
+      <a href="index.html">Home</a><a href="events.html">Events</a><a href="photos.html" aria-current="page">Photos</a><a href="games.html">Games</a><a href="merch.html">Merch</a><a href="resources.html">Resources</a><a href="about.html">About</a><a href="signin.html" data-site-account-link>Members</a>
+    </nav><div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label><span data-site-account-actions></span></div></div>
+  </header>
+  <main id="photos-main" class="content">
+    <p class="club-eyebrow">Our club in pictures</p><h1>Photos</h1>
+    <p id="photos-status" role="status">Loading albums…</p>
+    <nav id="photos-album-nav" aria-label="Photo albums"></nav>
+    <section id="photos-albums" aria-label="Club photo albums"></section>
+  </main>
+  <dialog id="photos-lightbox" aria-label="Expanded club photo">
+    <div class="photos-lightbox-controls"><button type="button" id="photos-close">Close</button><button type="button" id="photos-prev" aria-label="Previous photo">Previous</button><button type="button" id="photos-next" aria-label="Next photo">Next</button></div>
+    <img id="photos-full" alt=""><p id="photos-caption" aria-live="polite"></p>
+  </dialog>
+  <script src="assets/js/clubhouse.js"></script><script src="assets/js/site-auth.js"></script><script src="assets/js/photo-gallery.js"></script><script src="assets/js/site-account.js"></script>
+</body>
+</html>

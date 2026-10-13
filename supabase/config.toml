@@ -23,7 +23,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.photo-publish]
-# Called from the member portal to generate derivatives and publish an asset.
+# Called from the member portal to copy verified browser derivatives and publish an asset.
 # Requires a user JWT for the role + audit trail.
 verify_jwt = true
 
@@ -44,3 +44,6 @@ verify_jwt = true
 [functions.pintips-import]
 # Handler verifies its dedicated scheduler secret or a user JWT + Games Admin capability.
 verify_jwt = false
+
+[functions.photo-finalize]
+verify_jwt = true

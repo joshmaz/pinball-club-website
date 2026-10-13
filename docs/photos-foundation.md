@@ -1,300 +1,169 @@
-# Dynamic Photos Foundation
+# SNHPC Photo Management 2.0
 
-This is the durable design + ops note for the photos system. It documents
-the storage contract, the authorization model, the threat model, the test
-plan we expect to run before declaring the feature production-ready, and the
-operational controls in place. Pair this with `docs/multi-tenant-notes.md`
-and `docs/multi-tenant-foundation-tracker.md`.
+The gallery is public. It offers viewing and a keyboard-accessible lightbox,
+without a download button. Browser users can still save a publicly displayed
+image; this is a product choice, not a DRM promise.
 
-## Goals
+## Upload and publication contract
 
-- Photos are first-class data: members can change them without a code deploy.
-- Authorization is enforced server-side (RLS + RPC + Edge Function role
-  checks). UI gating is convenience only.
-- Originals never appear in any public bucket.
-- Public delivery uses stable IDs and content-hashed URLs so publish /
-  unpublish / delete take effect immediately and CDN caches do not stale.
-- Schema and storage paths are tenant-friendly: `scope_type` + `scope_id`
-  are present from day one so a future `tenants` table is a mechanical
-  migration, not a schema rewrite.
+- New JPEG, PNG and WebP inputs are converted **in the browser** to still WebP
+  at quality 0.82: longest edge at most 1920 px for `web`, 640 px for `thumb`.
+  Small photos are not enlarged. Browser decoding applies EXIF orientation;
+  canvas output discards source metadata. Inputs are capped at 50 MB and
+  80 million decoded pixels; each output is capped at 8 MB.
+- There is **no enabled server image-conversion fallback**. The retired
+  ImageScript JPEG converter was not a verified hosted WebP fallback. Unsupported
+  browsers/formats receive an actionable error and a retry control.
+- `photo-upload-intent` checks the caller's identity and Photos capability,
+  allocates a pending row, and signs **insert-only private derivative** paths.
+  Supabase signed upload URLs last two hours, not the old implementation's
+  advertised five minutes. No source original is uploaded for new photos.
+- `photo-finalize` downloads the two bounded derivatives, verifies WebP container,
+  still-frame headers, dimensions, metadata exclusions and SHA-256, then records
+  them in a service-only, locked transaction. This checks the container and frame
+  header, not a full pixel decode in the Edge runtime.
+- The per-file queue continues past failures and retains its reservation for
+  retries, including lost upload/finalization responses. Queue state lives in the
+  current page; after a reload, incomplete new uploads can be reselected and old
+  abandoned reservations are collected. Legacy conversion reservations can be
+  resumed from the retained original.
+- `photo-publish` copies the verified private derivatives to fresh public keys.
+  Every publication has a new UUID plus a content hash. A revision check prevents
+  an earlier publish from undoing a later unpublish. Uploads are tracked for
+  cleanup **before** public storage writes, including failed commits.
+- Private resized copies remain available for previews and republication.
+  They are derivatives, not originals. Existing legacy originals and JPEG
+  variants are not bulk converted, rewritten or deleted by this migration.
+  Legacy uploaded/unpublished photos without derivatives can be converted in
+  the editor by downloading their retained original to the browser. Explicit
+  administrator deletion still removes a photo and its original.
+- A photo's publication and its album's publication are separate. Album
+  publication controls gallery discovery. Public bucket URLs are accessible
+  independently of that discovery flag, as in the previous system.
 
-## Components
+## Editor, gallery and event integration
 
-### Database
+The volunteer editor auto-fills album URLs from titles, places URL/order controls
+in optional settings, shows progress for each file, supports individual retry,
+selects album covers and can publish all ready photos. Captions, accessibility
+text, event links, highlight exclusions and the existing promo flags remain.
+Album/asset deletion retains the existing administrator boundary.
 
-Migrations:
+`photos.html` lists published albums and photos, honors covers, supports
+`?album=<id-or-slug>` and `?event=<event-id>`, and offers previous/next, arrow keys,
+Escape, native dialog focus containment and focus restoration. Event cards link
+to their albums; the Events spotlight title links to the full album.
 
-- `supabase/migrations/20260512100000_photos_foundation.sql`
-  - `public.photo_albums` (scope columns + slug + publish flag)
-  - `public.photo_assets` (scope columns + status lifecycle + original
-    metadata)
-  - `public.photo_asset_variants` (server-generated derivatives)
-  - Helper functions `snh_member_has_photos_access()` and
-    `snh_member_has_photos_admin_access()`
-  - Audit shim `private.snh_audit_photo()`
-  - RLS policies: public read only when published; editors read all; no
-    direct INSERT / UPDATE / DELETE for client roles.
-  - Public read views `photo_albums_public_v1`, `photo_assets_public_v1`,
-    `photo_asset_variants_public_v1`.
+A published photo in a published album can be reused as the promotional hero for
+multiple published events without copying its storage objects. The editor's
+“Reuse for event promotion” control writes `event_photo_promotions`; a cleared
+or unavailable override falls back to the previous album-linked hero. Public
+and editor hero readers honor overrides. No Games or Merch image code or
+storage is changed.
 
-- `supabase/migrations/20260512110000_photos_storage_buckets.sql`
-  - Creates `photos-private` (private) and `photos-public` (public).
-  - Drops any prior storage.objects policies for these buckets.
-  - No INSERT / UPDATE / DELETE policy for client roles. service_role
-    bypasses RLS, which is how the Edge Functions write.
+## Durable storage cleanup
 
-- `supabase/migrations/20260512130000_photos_drop_redundant_public_select_policy.sql`
-  - Drops the `photos_public_anon_read` SELECT policy added in the
-    previous migration. Public reads of derivatives go through the
-    `photos-public` bucket's `public = true` flag and the
-    `/storage/v1/object/public/...` URL, which bypasses RLS. The SELECT
-    policy on `storage.objects` was redundant for serving images and
-    enabled anonymous bucket enumeration, which Supabase Security
-    Advisor correctly flagged.
+The migration adds a private outbox, with no client table access. Triggers
+record variant replacement/deletion and asset/album cascade deletion in the
+same database transaction. Current references, staged copies and retained
+originals are checked before removing storage.
 
-- `supabase/migrations/20260512120000_photos_rpcs.sql`
-  - Editor RPCs: `snh_photo_albums_list_editor`,
-    `snh_photo_album_upsert`,
-    `snh_photo_assets_list_editor`, `snh_photo_asset_set_metadata`,
-    `snh_photo_asset_finalize_upload`, `snh_photo_asset_publish`,
-    `snh_photo_asset_unpublish`.
-  - Admin-only RPCs: `snh_photo_album_delete`, `snh_photo_asset_delete`.
-  - Service-only RPCs: `snh_photo_assets_create_pending`,
-    `snh_photo_asset_record_variants`. Granted `execute` to service_role
-    only.
-  - Public RPC: `snh_public_photo_albums` (anon + authenticated).
-  - All write RPCs are `SECURITY DEFINER` with `set search_path = public`,
-    explicit role checks, allow-listed mutable fields, and audit log
-    inserts via `private.snh_audit_photo`.
+`photo-purge` runs a bounded cleanup pass after unpublish/delete/album-delete.
+Photos administrators also have a **Retry storage cleanup** control. Storage
+failures retain the job, its attempt count and error, with a five-minute retry
+backoff; they are reported as queued work rather than silent success. A pass
+processes at most 100 objects. Keep invoking cleanup until the eligible queue is
+empty; no hosted scheduler is installed by this PR. Administrators can invoke
+`photo-purge` with `{ "action": "cleanup" }` using their user JWT.
 
-### Edge Functions
+Signed stage paths are held until their two-hour upload window plus a ten-minute
+safety margin has elapsed when deleting an asset, so a late signed PUT cannot
+recreate a permanently untracked object. Abandoned new reservations are removed
+24 hours after expiry during a cleanup pass. Expired legacy upgrades instead
+return to the legacy state; their original is retained. Unpublishing removes
+public paths and keeps private resized copies. Fresh publication paths avoid
+old cleanup jobs deleting republished photos.
 
-- `supabase/functions/photo-upload-intent` — issues short-lived signed PUT
-  URLs to `photos-private`. Validates JWT, role, content-type, byte size.
-  Reserves the asset_id and final object key server-side.
-- `supabase/functions/photo-publish` — downloads original from
-  `photos-private`, re-encodes via imagescript (strips EXIF), writes
-  `web` and `thumb` derivatives to `photos-public`, records variant rows,
-  then publishes the asset.
-- `supabase/functions/photo-purge` — wraps `snh_photo_asset_unpublish` and
-  `snh_photo_asset_delete`, then removes the storage objects the RPC
-  reported as safe to purge.
+Storage deletion cannot erase an already downloaded browser/CDN copy. Public
+photo cache lifetime for new objects is one hour. Removing an album from gallery
+discovery alone does not remove its published object bytes; unpublish the photos
+or delete the album for a storage takedown.
 
-`supabase/config.toml` enables JWT verification for all three functions.
+## Stale static fallback
 
-### Frontend
+The homepage now shows only managed published photos. An empty gallery or outage
+cannot resurrect old static highlight photos. `data/highlights.json` and
+`assets/images/highlights/` are retained as existing photo/archive material;
+there is no destructive static-file removal or unverified bulk import.
 
-- `assets/js/member-portal.js` exports the photo helpers
-  (`photoAlbumsListEditor`, `photoUploadAndRegister`, `photoPublishAsset`,
-  `photoPurgeAsset`, `publicPhotoAlbums`, `buildPublicPhotoUrl`, etc.).
-- `assets/js/member-photos-panel.js` renders the `Photos` panel inside
-  `members.html`: album list, album editor, per-asset upload, captions,
-  publish/unpublish, regenerate, delete (admin).
-- `assets/js/home-highlights.js` prefers
-  `snh_public_photo_albums` and falls back to `data/highlights.json` +
-  `assets/images/highlights/processed/*` if Supabase is unavailable or
-  empty.
+## Authorization and migration
 
-## Storage path layout
+Migration: `20261013120000_photo_management_v2.sql`.
+Existing effective role helpers, RLS policies and the Games/Merch systems remain.
+Editor operations use Photos Editor effective access; deletion/cleanup uses the
+existing Photos Administrator effective access. All service-only ingestion,
+commit and cleanup RPCs revoke execution from public/anon/authenticated. The
+retired original-ingestion and client-finalization RPC grants are revoked.
 
-All photos use the same path prefix so a future tenant migration can
-mechanically rewrite the prefix:
+The migration touches only the two photo buckets, allowing legacy JPEG/PNG and
+new WebP, with an 8 MB limit on **new writes**. Existing stored originals remain.
+Cross-album cover assignments are rejected when assigning a new cover.
 
+## Release commands — operator action after PR review
+
+Run from the repository root, using the committed Supabase CLI dependency. The
+project reference below was read from the existing local linked-project file.
+Confirm it is the intended release target. **None of these commands were run
+against the hosted project during implementation.** Keep the editor unavailable
+while changing functions: the migration revokes the old original-upload path.
+Apply the database first, then all functions, then release the website assets
+through the normal reviewed workflow. Do not publish the new frontend before
+the backend is ready.
+
+```sh
+npx supabase link --project-ref dawypferbucqanrkcdkj
+npx supabase db push --linked --dry-run
+npx supabase db push --linked
+npx supabase functions deploy photo-upload-intent --project-ref dawypferbucqanrkcdkj
+npx supabase functions deploy photo-finalize --project-ref dawypferbucqanrkcdkj
+npx supabase functions deploy photo-publish --project-ref dawypferbucqanrkcdkj
+npx supabase functions deploy photo-purge --project-ref dawypferbucqanrkcdkj
 ```
-<scope_type>/<scope_id>/<album_id>/<asset_id>/<file>
+
+Inspect the dry run: it must include the new migration and no unexpected pending
+migrations. Existing Supabase authentication/service-role environment variables
+are sufficient; no new secret is required. All four functions retain gateway JWT
+verification and independently authenticate/authorize the user.
+
+After release, verify signed uploads, role denials, a legacy conversion, album
+publication, anonymous gallery access, covers/event reuse, unpublish/republish,
+and administrator album deletion on a disposable album. Hosted Storage behavior,
+gateway behavior and Edge runtime execution still need this smoke test: local
+checks use an embedded PostgreSQL engine and mocked Storage/auth services.
+
+Do not roll back only the frontend/functions: their old original-upload grants
+are intentionally revoked. Any rollback needs a reviewed forward migration;
+never drop photo tables or delete existing originals as rollback.
+
+## Local verification
+
+```sh
+node --test --test-concurrency=2 scripts/*.test.mjs
+node scripts/check-events-duplicates.mjs
+node scripts/snapshots.mjs check
+node scripts/photo-management-browser.mjs
 ```
 
-- `photos-private`: `<prefix>/original.<ext>`
-- `photos-public`: `<prefix>/web-<hash12>.jpg` and `<prefix>/thumb-<hash12>.jpg`
+Browser QA needs Playwright and Chromium. Set `PLAYWRIGHT_MODULE` and
+`PLAYWRIGHT_CHROMIUM` when using a separately installed runtime. It uses only a
+local server and synthetic/mocked data, including real canvas WebP conversion,
+EXIF orientation, no enlargement, gallery filtering, keyboard/focus behavior,
+mobile layout, and multi-upload failure/continuation/retry. Database tests apply
+the actual photo migrations and exercise permissions, publication, cross-album
+covers, event reuse, revision races, cleanup failures, cascade deletion,
+expired/abandoned uploads and original retention. Edge tests execute the actual
+handlers against mocked clients and cover authentication, limits, metadata
+rejection, signed URLs, queued upload failure and storage deletion failure.
 
-`<scope_type>` defaults to `club`; `<scope_id>` defaults to `snh`. We treat
-both as opaque strings today; the tenant migration will populate them from
-a tenants table without changing the path shape.
-
-## Asset lifecycle
-
-```
-pending  -> uploaded  -> published  <-> unpublished
-```
-
-- `pending`: row exists; original has not yet been finalized.
-- `uploaded`: client confirmed the original landed in `photos-private` and
-  reported `byte_size` + `content_hash`.
-- `published`: at least one `web` derivative exists in `photos-public` and
-  the public read views/RPC will surface this asset.
-- `unpublished`: assets that were once public and have been pulled back.
-  Public derivatives are removed from `photos-public` immediately.
-
-`snh_photo_asset_publish` refuses to flip status without a `web` variant
-in `photos-public`; this prevents accidentally publishing an asset whose
-derivatives never made it to the public bucket.
-
-## Authorization matrix
-
-| Action                              | Required roles                                    | Enforcement layer            |
-|-------------------------------------|---------------------------------------------------|------------------------------|
-| Read public albums / assets / URLs  | `anon`, `authenticated`                           | RLS on tables + RPC          |
-| List editor album / asset metadata  | `photos_editor`, `photos_admin`, `club_admin`     | RPC role check               |
-| Create / update album               | `photos_editor`, `photos_admin`, `club_admin`     | RPC role check               |
-| Delete album                        | `photos_admin`, `club_admin`                      | RPC role check (admin)       |
-| Issue upload intent                 | `photos_editor`, `photos_admin`, `club_admin`     | Edge Function role check     |
-| Finalize upload                     | `photos_editor`, `photos_admin`, `club_admin`     | RPC role check               |
-| Publish / regenerate variants       | `photos_editor`, `photos_admin`, `club_admin`     | Edge Function + RPC          |
-| Unpublish                           | `photos_editor`, `photos_admin`, `club_admin`     | RPC + Edge Function purge    |
-| Delete asset                        | `photos_admin`, `club_admin`                      | RPC role check (admin)       |
-| Direct write to either bucket       | none (no policy)                                  | Storage policy               |
-
-These assignments confer effective Photos access through canonical inheritance; `club_admin` displays as Website Administrator. See the [canonical policy](website-roles-and-authorization-policy.md). UI gating is not the security boundary.
-
-## Threat model (for Phase 1.5 gate)
-
-| Threat                                                        | Mitigation                                                                                          |
-|---------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| Authenticated user uploads to an arbitrary path               | Object key is computed server-side in `snh_photo_assets_create_pending` from album/asset IDs only.   |
-| Authenticated user uploads outside their role                 | Edge Function checks `snh_member_has_photos_access()` before issuing a signed URL.                   |
-| Anyone reads originals via public bucket                      | Originals only exist in `photos-private`; bucket has no public/anon read policy.                     |
-| Anyone reads originals via authenticated client               | `photos-private` has no select/insert/update/delete policy for client roles. service_role only.      |
-| Anyone reads private metadata via PostgREST                   | `photo_assets` SELECT for anon/authenticated is gated on `status='published'` + album published.     |
-| Stale CDN cache after unpublish                               | Public URLs include a 12-char content hash; new uploads/regen produce new URLs and new objects.      |
-| Unpublish leaves orphan public objects                        | `snh_photo_asset_unpublish` returns key list; `photo-purge` Edge Function removes them immediately.  |
-| Image processor runs untrusted EXIF / metadata into variants  | imagescript decodes pixels and re-encodes JPEG; metadata is dropped on re-encode.                    |
-| Oversized upload / DoS via huge files                         | Hard limits in DB constraint, RPC validation, and Edge Function (50 MB).                             |
-| Wrong content type / non-image upload                         | Allowlist (`image/jpeg`, `image/png`) checked in Edge Function and RPC. WebP intentionally excluded for now (decoder limitation; see Future work). |
-| Publish without derivatives                                   | `snh_photo_asset_publish` errors unless a `web` variant exists in `photos-public`.                   |
-| Audit gaps                                                    | Every privileged write inserts to `public.audit_log` via `private.snh_audit_photo`.                  |
-| Multi-tenant leakage when tenants are added later             | `scope_type` + `scope_id` are present everywhere already; queries can be scoped without a rewrite.    |
-
-## Test plan
-
-Manual / scripted tests to run before declaring this stack ready for the
-public site:
-
-### DB policy tests (run with three personas: anon, member-without-role, photos_editor, club_admin)
-
-- [ ] anon SELECT on `photo_albums` returns only `published = true`.
-- [ ] anon SELECT on `photo_assets` returns only `status='published'` AND parent album published.
-- [ ] anon SELECT on `photo_asset_variants` returns only `bucket='photos-public'` for published assets.
-- [ ] authenticated user without photos role gets the same view as anon.
-- [ ] photos_editor SELECT returns all albums / assets / variants regardless of publish state.
-- [ ] No client role can `insert`, `update`, or `delete` rows in `photo_albums`, `photo_assets`, `photo_asset_variants`.
-- [ ] `snh_public_photo_albums` returns only published albums and only published assets.
-
-### RPC tests (executing as photos_editor and as a member without the role)
-
-- [ ] All editor RPCs raise `42501` for callers without the role.
-- [ ] `snh_photo_album_delete` raises `42501` for `photos_editor`; succeeds for `photos_admin` and `club_admin`.
-- [ ] `snh_photo_asset_delete` raises `42501` for `photos_editor`; succeeds for `photos_admin` and `club_admin`.
-- [ ] `snh_photo_album_upsert` rejects bad slug, missing title, oversized title.
-- [ ] `snh_photo_asset_set_metadata` rejects oversized caption / alt text.
-- [ ] `snh_photo_asset_finalize_upload` rejects byte size out of range and non-hex content hash.
-- [ ] `snh_photo_asset_publish` raises `22023` if no `web` variant in `photos-public`.
-- [ ] `snh_photo_assets_create_pending` and `snh_photo_asset_record_variants` are not callable by `authenticated` (only `service_role`).
-
-### Storage policy tests
-
-- [ ] anon attempting `select` on `photos-private` is denied.
-- [ ] authenticated attempting `select` on `photos-private` is denied.
-- [ ] authenticated attempting `insert` / `update` / `delete` on either bucket is denied.
-- [ ] anon `select` on `photos-public` is allowed.
-- [ ] A signed PUT URL issued for asset A cannot be reused to write to asset B's path.
-- [ ] After unpublish or delete, GET on the previously-public derivative URL returns 404.
-
-### Edge Function smoke tests
-
-- [ ] `photo-upload-intent` returns 401 without a Bearer token.
-- [ ] `photo-upload-intent` returns 403 for an authenticated member without photos roles.
-- [ ] `photo-upload-intent` rejects unsupported content types and oversized byte sizes.
-- [ ] `photo-publish` decodes JPEG, PNG, WebP originals; rejects multi-frame inputs cleanly.
-- [ ] `photo-publish` upload, record_variants, and publish are idempotent (regenerate works).
-- [ ] `photo-purge` with `unpublish` removes only `photos-public` objects; with `delete` removes both buckets.
-
-### Frontend integration tests
-
-- [ ] Member portal Photos panel hidden for members without `photos_*` / `club_admin` roles.
-- [ ] Editors can upload, finalize, publish, unpublish, and regenerate from the UI; album/asset deletion requires Photos Admin or Website Administrator.
-- [ ] Public homepage falls back to `data/highlights.json` when Supabase is unreachable or returns no published albums.
-
-## Operational controls
-
-- **Quota**: 50 MB per file (DB constraint + Edge Function check). Per-scope
-  quota and per-album cap can be added later by reading aggregate
-  `original_byte_size` in a new RPC; flagged for follow-up.
-- **Retention / cleanup**: assets stuck in `pending` for more than 24 hours
-  should be considered orphaned. A future maintenance job (Edge Function)
-  should delete the row and any `photos-private` object found at the
-  reserved key. Tracked in `docs/multi-tenant-foundation-tracker.md`.
-- **Moderation takedown**: photos_admin / club_admin can call
-  `snh_photo_asset_unpublish` (immediate revoke + public-bucket purge) or
-  `snh_photo_asset_delete` (full removal); both go through the
-  `photo-purge` Edge Function, so DB state and storage state stay in sync.
-- **Audit**: every privileged write inserts a row in `public.audit_log`
-  with `module = 'photos'`. Use this to investigate uploads, publishes,
-  unpublishes, deletes, and variant generation.
-
-## Bootstrap checklist
-
-1. Apply the migrations with `supabase db push` (initial three plus the
-   `..._photos_drop_redundant_public_select_policy.sql` follow-up).
-2. Deploy the three Edge Functions with `supabase functions deploy`.
-3. Verify both buckets exist in the Supabase dashboard and that
-   `photos-public` is marked public.
-4. Grant `photos_editor` to at least one member via the SQL editor or
-   the existing Member Tools UI.
-5. Sign in to the member portal as that member; the Photos panel should
-   appear.
-6. Create a test album, upload a small JPEG, publish, confirm the home
-   page picks it up.
-
-## Future work
-
-- WebP upload support (current `imagescript` decoder does not handle
-  WebP; either swap to a decoder that does or transcode WebP to JPEG/PNG
-  client-side before upload).
-- Per-scope storage quota + visible quota in the editor UI.
-- Pending-asset garbage collection job.
-- Drag-and-drop reorder UX (the `sort_position` field is wired but the
-  panel currently exposes a numeric input).
-- Optional moderation queue for non-admin uploads.
-- Migrate `home-gallery.js` (machine cabinet rotation) to a similar
-  pattern when the games-photo workflow is in scope.
-
-## Albums linked to events (2026-05-19)
-
-Migrations:
-
-- `supabase/migrations/20260519090000_photo_albums_events_schema.sql`
-  - `photo_albums.event_id` optional FK to `events(id)` on delete set null.
-  - `photo_albums.display_at` optional timestamptz for album display or sort.
-  - `photo_assets.exclude_from_slideshow` boolean (home mosaic skips when true).
-  - `photo_assets.promo_role` null or `event_hero` or `event_branding` (check constraint).
-  - Index on `photo_albums(event_id)` where not null. Public views updated.
-
-- `supabase/migrations/20260519091000_photo_albums_events_rpcs.sql`
-  - Extends editor and public JSON with event and promo fields.
-  - `snh_photo_album_upsert` accepts `eventId` and `displayAt` in `p_fields`;
-    only **published** events may be linked; **effective Photos Editor access** (same
-    `snh_member_has_photos_access()` gate). When `event_id` on an album
-    changes, promo roles on assets in that album are cleared.
-  - `snh_photo_asset_set_metadata` accepts `excludeFromSlideshow` and
-    `promoRole`. `event_hero` and `event_branding` require the album to have
-    an `event_id`. At most one **`event_hero` per event** across all albums
-    sharing that event (other heroes cleared when a new one is set).
-  - `snh_public_photo_albums` includes `eventId`, `eventStartsAt`,
-    `eventTitle`, `displayAt` on albums and promo fields on assets.
-  - `snh_events_list_for_photo_link()` for the member Photos event picker
-    (published events only).
-  - `snh_public_event_promo_asset(p_event_id)` small public payload for the
-    event hero image (Open Graph style use cases).
-
-- `supabase/migrations/20260520100000_event_editor_photo_digest.sql` (and follow-up
-  `20260520103000_event_digest_editor_hero.sql`): `snh_event_photo_digest_for_editor(p_event_id)`
-  returns linked albums plus the event hero asset JSON for **authenticated** events or
-  photos editors. The member Events form shows this digest under **Photos for this event**
-  (hero preview and album list; linking still happens from the Photos panel).
-
-Product rules (locked):
-
-- Multiple albums may share the same `event_id` (no unique constraint).
-- Home highlights mosaic skips assets with `excludeFromSlideshow` or
-  `promoRole === 'event_hero'`.
-
+References: [signed upload URL lifetime](https://supabase.com/docs/reference/javascript/file-buckets-createsigneduploadurl),
+[hosted Edge runtime limits](https://supabase.com/docs/guides/functions/limits).

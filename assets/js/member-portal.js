@@ -1162,19 +1162,6 @@
     };
   }
 
-  async function photoAssetFinalizeUpload(assetId, byteSize, contentHashHex, width, height) {
-    var client = getClient();
-    if (!client) throw new Error("Supabase is not available.");
-    var result = await client.rpc("snh_photo_asset_finalize_upload", {
-      p_asset_id: assetId,
-      p_byte_size: byteSize,
-      p_content_hash: contentHashHex,
-      p_width: width != null ? width : null,
-      p_height: height != null ? height : null
-    });
-    if (result.error) throw result.error;
-  }
-
   function getFunctionsBaseUrl() {
     var cfg = window.SNH_CONFIG || {};
     if (cfg.functionsBaseUrl) return String(cfg.functionsBaseUrl).replace(/\/+$/, "");
@@ -1217,12 +1204,13 @@
     return payload;
   }
 
-  async function photoUploadIntent(albumId, contentType, byteSize, originalFilename) {
+  async function photoUploadIntent(albumId, contentType, byteSize, originalFilename, existingAssetId) {
     return callPhotoFunction("photo-upload-intent", {
       albumId: albumId,
       contentType: contentType,
       byteSize: byteSize,
-      originalFilename: originalFilename || null
+      originalFilename: originalFilename || null,
+      existingAssetId: existingAssetId || null
     });
   }
 
@@ -1240,14 +1228,14 @@
     });
   }
 
-  async function uploadOriginalToSignedUrl(intent, fileBlob, contentType) {
+  async function uploadDerivativeToSignedUrl(intent, fileBlob, contentType) {
     var client = getClient();
     if (client && intent && intent.objectKey && intent.token && intent.bucket) {
       var bucketRef = client.storage.from(intent.bucket);
       if (bucketRef && typeof bucketRef.uploadToSignedUrl === "function") {
         var result = await bucketRef.uploadToSignedUrl(intent.objectKey, intent.token, fileBlob, {
           contentType: contentType || "application/octet-stream",
-          upsert: true
+          upsert: false
         });
         if (result && result.error) {
           throw new Error("Upload failed: " + (result.error.message || "unknown"));
@@ -1265,74 +1253,53 @@
     }
   }
 
-  async function sha256HexOfBlob(blob) {
-    var buffer = await blob.arrayBuffer();
-    var digest = await crypto.subtle.digest("SHA-256", buffer);
-    var bytes = new Uint8Array(digest);
-    var hex = "";
-    for (var i = 0; i < bytes.length; i += 1) {
-      var b = bytes[i].toString(16);
-      if (b.length < 2) b = "0" + b;
-      hex += b;
+  async function photoUploadAndRegister(albumId, file, job) {
+    job = job || {};
+    var progress = job.onProgress || function () {};
+    // Keep the reservation in the queue item so retry never duplicates a completed photo.
+    if (!job.variants) job.variants = await window.SNHPhotoConversion.convert(file, progress);
+    if (!job.intent) job.intent = await photoUploadIntent(albumId, "image/webp", job.variants[0].blob.size, file.name, job.existingAssetId);
+    if (Date.parse(job.intent.expiresAt) < Date.now()) {
+      job.intent = null; job.sent = {};
+      throw new Error("Upload expired. Retry to start a fresh upload.");
     }
-    return hex;
-  }
-
-  function readImageDimensions(blob) {
-    return new Promise(function (resolve) {
-      try {
-        var url = URL.createObjectURL(blob);
-        var img = new Image();
-        img.onload = function () {
-          var w = img.naturalWidth || img.width || 0;
-          var h = img.naturalHeight || img.height || 0;
-          URL.revokeObjectURL(url);
-          resolve({ width: w, height: h });
-        };
-        img.onerror = function () {
-          URL.revokeObjectURL(url);
-          resolve({ width: 0, height: 0 });
-        };
-        img.src = url;
-      } catch (_e) {
-        resolve({ width: 0, height: 0 });
+    job.sent = job.sent || {};
+    for (var i = 0; i < job.intent.uploads.length; i += 1) {
+      var target = job.intent.uploads[i];
+      if (job.sent[target.variant]) continue;
+      progress("Uploading " + target.variant);
+      var variant = job.variants.find(function (item) { return item.variant === target.variant; });
+      try { await uploadDerivativeToSignedUrl(target, variant.blob, "image/webp"); }
+      catch (error) {
+        // Signed URLs use insert-only semantics. A lost upload response may report an existing object.
+        if (!/already exists|duplicate|resource already/i.test(error.message || "")) throw error;
       }
-    });
+      job.sent[target.variant] = true;
+    }
+    progress("Checking upload");
+    await callPhotoFunction("photo-finalize", { assetId: job.intent.assetId, uploadToken: job.intent.uploadToken });
+    job.variants = null;
+    return { assetId: job.intent.assetId };
   }
 
-  async function photoUploadAndRegister(albumId, file) {
-    if (!file) throw new Error("No file selected.");
-    var contentType = String(file.type || "").toLowerCase();
-    if (["image/jpeg", "image/png"].indexOf(contentType) === -1) {
-      throw new Error("Unsupported image type. Use JPEG or PNG.");
+  async function photoPreview(assetId) { return (await callPhotoFunction("photo-finalize",{assetId:assetId,action:"preview"})).url; }
+  async function photoConvertLegacy(albumId,assetId,job) {
+    job=job || {};job.existingAssetId=assetId;
+    if(!job.file) {
+      var source=await callPhotoFunction("photo-publish",{assetId:assetId,action:"source"});
+      var response=await fetch(source.url);if(!response.ok) throw new Error("Could not read retained original.");
+      job.file=new File([await response.blob()],source.filename || "Legacy photo",{type:source.contentType});
     }
-    var byteSize = file.size || 0;
-    if (!byteSize || byteSize > 50 * 1024 * 1024) {
-      throw new Error("File must be between 1 byte and 50 MB.");
-    }
-
-    var intent = await photoUploadIntent(albumId, contentType, byteSize, file.name || null);
-    if (!intent || !intent.signedUrl || !intent.assetId) {
-      throw new Error("Could not get upload URL.");
-    }
-
-    await uploadOriginalToSignedUrl(intent, file, contentType);
-
-    var dims = await readImageDimensions(file);
-    var hashHex = await sha256HexOfBlob(file);
-    await photoAssetFinalizeUpload(intent.assetId, byteSize, hashHex, dims.width, dims.height);
-
-    return {
-      assetId: intent.assetId,
-      objectKey: intent.objectKey,
-      bucket: intent.bucket,
-      width: dims.width,
-      height: dims.height,
-      contentHash: hashHex,
-      byteSize: byteSize,
-      contentType: contentType
-    };
+    return photoUploadAndRegister(albumId,job.file,job);
   }
+  async function photoSetEventPromo(eventId, assetId) {
+    var result = await getClient().rpc("snh_photo_event_promo_set", { p_event_id: eventId, p_asset_id: assetId });
+    if (result.error) throw result.error;
+  }
+  async function photoDeleteAlbumAndCleanup(albumId) {
+    return callPhotoFunction("photo-purge", { albumId: albumId, action: "album-delete" });
+  }
+  async function photoCleanup() { return callPhotoFunction("photo-purge", { action: "cleanup" }); }
 
   async function publicPhotoAlbums() {
     var client = getClient();
@@ -1443,8 +1410,12 @@
     photoEventsListForPhotoLink: photoEventsListForPhotoLink,
     publicEventPromoAsset: publicEventPromoAsset,
     eventPhotoDigestForEditor: eventPhotoDigestForEditor,
-    photoAssetFinalizeUpload: photoAssetFinalizeUpload,
     photoUploadAndRegister: photoUploadAndRegister,
+    photoSetEventPromo: photoSetEventPromo,
+    photoDeleteAlbumAndCleanup: photoDeleteAlbumAndCleanup,
+    photoCleanup: photoCleanup,
+    photoPreview: photoPreview,
+    photoConvertLegacy: photoConvertLegacy,
     photoPublishAsset: photoPublishAsset,
     photoPurgeAsset: photoPurgeAsset,
     publicPhotoAlbums: publicPhotoAlbums,
