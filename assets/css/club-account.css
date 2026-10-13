@@ -140,3 +140,74 @@
 .member-role-icon:hover, .member-role-icon:focus-visible { outline: 2px solid var(--club-ink); outline-offset: 2px; }
 .member-role-tooltip { position: absolute; left: 50%; bottom: calc(100% + .4rem); transform: translateX(-50%); z-index: 10; white-space: nowrap; padding: .3rem .5rem; border: 1px solid var(--club-line); border-radius: .3rem; background: var(--club-surface); color: var(--club-ink); font-size: .8rem; visibility: hidden; pointer-events: none; }
 .member-role-icon:hover .member-role-tooltip, .member-role-icon:focus .member-role-tooltip { visibility: visible; }
+
+/* Photo Management 2.0: album workspace and visible batch processing. */
+.club-account .photo-workspace { max-width: none; display: grid; grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.club-account .photo-album-library { position: sticky; top: 1rem; min-width: 0; }
+.club-account .photo-album-library h3 { margin-top: 0; }
+.club-account .photo-album-library > button { width: 100%; margin-block: .3rem; }
+.club-account .photo-album-link { display: grid; gap: .35rem; width: 100%; text-align: left; padding: .8rem; border: 1px solid var(--club-line); border-radius: .6rem; background: var(--club-surface); color: var(--club-ink); cursor: pointer; }
+.club-account .photo-album-link span { font-size: .85rem; color: var(--club-muted); }
+.club-account .photo-album-workspace { padding: 1.5rem; min-width: 0; }
+.club-account .photo-album-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.club-account .photo-album-heading h3 { margin-block: .4rem; }
+.club-account .photo-album-heading p { margin: 0; }
+.club-account .photo-album-cover-preview { width: 6rem; height: 6rem; flex: 0 0 6rem; object-fit: cover; border-radius: .6rem; }
+.club-account .photo-album-state, .club-account .photo-cover-badge { display: inline-block; font-size: .78rem; font-weight: 700; padding: .3rem .65rem; border-radius: 1rem; background: var(--club-soft); color: var(--club-teal); }
+.club-account .photo-album-state.is-published { border: 1px solid var(--club-teal); }
+.club-account .photo-publication-bar, .club-account .photo-action-row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+.club-account .photo-primary-action { background: var(--club-teal); color: var(--club-surface); font-weight: 700; }
+.club-account .photo-album-details { margin-block: 1rem; border-block: 1px solid var(--club-line); padding-block: .8rem; }
+.club-account .photo-album-details > summary, .club-account .photo-optional-settings > summary { cursor: pointer; font-weight: 600; }
+.club-account .photo-album-details .member-photos-album-form { border: 0; padding: 1rem 0 0; }
+.club-account .photo-optional-settings { width: 100%; }
+.club-account .photo-optional-settings[open] { display: grid; gap: .6rem; }
+.club-account .photo-drop-zone { padding: 1.8rem 1rem; border: 2px dashed var(--club-teal); border-radius: .8rem; text-align: center; background: var(--club-soft); margin-block: 1rem; transition: border-color .15s, background .15s; }
+.club-account .photo-drop-zone h4 { margin: 0; font-size: 1.3rem; }
+.club-account .photo-drop-zone p { margin-block: .6rem; }
+.club-account .photo-drop-zone.is-dragging { outline: 3px solid var(--club-teal); outline-offset: 3px; }
+.club-account .photo-drop-zone[aria-disabled="true"] { opacity: .65; }
+.club-account .photo-batch-panel { border: 1px solid var(--club-line); border-radius: .8rem; padding: 1rem; margin-block: 1rem; background: var(--club-surface); }
+.club-account .photo-batch-panel[hidden] { display: none; }
+.club-account .photo-batch-panel h4 { margin-top: 0; }
+.club-account .photo-batch-panel > progress { width: calc(100% - 4rem); vertical-align: middle; }
+.club-account progress { accent-color: var(--club-teal); height: .8rem; }
+.club-account .photo-batch-percent { display: inline-block; width: 3.5rem; text-align: right; }
+.club-account .photo-upload-jobs { list-style: none; padding: 0; margin-block: 1rem; }
+.club-account .photo-upload-job { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .45rem .6rem; padding-block: .8rem; border-top: 1px solid var(--club-line); }
+.club-account .photo-upload-job strong { overflow-wrap: anywhere; }
+.club-account .photo-job-status { grid-column: 1 / -1; font-size: .9rem; }
+.club-account .photo-upload-job progress { width: 100%; align-self: center; }
+.club-account .photo-upload-job.is-error .photo-job-status { color: var(--club-danger, #a13225); }
+.club-account .photo-job-percent { font-size: .85rem; }
+.club-account .photo-gallery-heading { justify-content: space-between; margin-block: 1.4rem 1rem; }
+.club-account .photo-gallery-heading h4 { margin: 0; }
+.club-account .photo-empty-state { padding: 2rem 1rem; text-align: center; border: 1px solid var(--club-line); border-radius: .8rem; }
+.club-account .photo-album-workspace .member-photos-asset { display: flex; flex-direction: column; padding: .7rem; gap: .7rem; }
+.club-account .member-photos-asset.is-cover { border: 2px solid var(--club-teal); }
+.club-account .member-photos-asset-thumb { position: relative; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.club-account .member-photos-asset-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.club-account .photo-cover-badge { position: absolute; bottom: .5rem; left: .5rem; background: var(--club-surface); }
+.club-account .member-photos-asset-status { margin: 0; overflow-wrap: anywhere; }
+.club-account .photo-cover-action { width: 100%; }
+.club-account .member-photos-asset-meta > summary { cursor: pointer; font-size: .9rem; }
+.club-account .member-photos-asset-meta[open] { display: flex; flex-direction: column; gap: .5rem; }
+.club-account .photo-maintenance { margin-top: 1rem; font-size: .85rem; }
+.club-account .photo-maintenance summary { cursor: pointer; }
+.club-account .photo-workspace button:disabled { opacity: .6; cursor: default; }
+@media (max-width: 900px) {
+  .club-account .photo-workspace { grid-template-columns: minmax(0, 1fr); }
+  .club-account .photo-album-library { position: static; }
+  .club-account .photo-album-library .member-photos-album-list { display: flex; flex-direction: row; overflow-x: auto; padding-bottom: .4rem; }
+  .club-account .photo-album-library .member-photos-album-list-item { flex: 0 0 12rem; }
+}
+@media (max-width: 500px) {
+  .club-account .photo-album-workspace { padding: 1rem; }
+  .club-account .photo-album-cover-preview { width: 4rem; height: 4rem; flex-basis: 4rem; }
+  .club-account .photo-publication-bar > * { flex: 1 1 auto; text-align: center; }
+}
+.club-account .member-photos-asset-meta { display: block; }
+.club-account .member-photos-asset-meta[open] { display: flex; }
+
+.club-account .photo-workspace button { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; font-size: .85rem; cursor: pointer; }
+.club-account .photo-workspace .photo-primary-action { background: var(--club-teal); color: var(--club-surface); font-weight: 700; }

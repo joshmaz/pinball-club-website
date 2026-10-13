@@ -1,4 +1,4 @@
-// Member Photos panel: album list, metadata form, then photos + upload in one column.
+// Member Photos panel: album workspace, drag/drop queue, covers and publication.
 //
 // Wires the dynamic photos foundation into the member portal. Lets photos
 // editors manage albums, upload images via server-issued signed URLs, edit
@@ -16,6 +16,9 @@
   var albumsCache = [];
   var uploadJobs = [];
   var uploading = false;
+  var publishing = false;
+  var albumDrafts = {};
+  var publicationStatus = "";
   var selectedAlbumId = null;
   var assetsByAlbum = {};
   var eventsForLink = [];
@@ -100,143 +103,187 @@
     }
   }
 
+  function albumFields(album) {
+    var form = document.getElementById("member-photos-album-form");
+    return form && form.photoFields ? form.photoFields() : {
+      slug: album.slug, title: album.title, description: album.description,
+      sortPosition: album.sortPosition, published: album.published,
+      includeInHighlights: album.includeInHighlights, eventId: album.eventId, displayAt: album.displayAt
+    };
+  }
+
   function buildAlbumForm(album) {
-    var idVal = album ? album.id : "";
-    var slugVal = album ? (album.slug || "") : "";
-    var titleVal = album ? (album.title || "") : "";
-    var descVal = album ? (album.description || "") : "";
-    var sortVal = album ? (album.sortPosition != null ? String(album.sortPosition) : "0") : "0";
-    var publishedVal = album ? !!album.published : false;
-    var includeHighlightsVal = album ? !!album.includeInHighlights : false;
-
-    var form = el("form", { className: "member-photos-album-form members-profile-form" });
-
-    var idInput = el("input", { type: "hidden", id: "member-photos-album-id" });
-    idInput.value = idVal;
-    form.appendChild(idInput);
-
-    form.appendChild(el("label", { for: "member-photos-album-title", text: "Title" }));
-    var titleInput = el("input", { type: "text", id: "member-photos-album-title", maxlength: "200", required: "required" });
-    titleInput.value = titleVal;
-    titleInput.addEventListener("input",function(){if(!album) slugInput.value=titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,80)||"album";});
-    form.appendChild(titleInput);
-
-    form.appendChild(el("label", { for: "member-photos-album-slug", text: "Slug" }));
-    var slugHint = el("p", {
-      className: "member-form-hint",
-      text: "Lowercase letters, digits, dash or underscore. Used in URLs and storage paths."
-    });
-    form.appendChild(slugHint);
-    var slugInput = el("input", { type: "text", id: "member-photos-album-slug", maxlength: "80", required: "required", pattern: "[a-z0-9][a-z0-9_\\-]{0,80}" });
-    slugInput.value = slugVal;
-    form.appendChild(slugInput);
-
-    form.appendChild(el("label", { for: "member-photos-album-description", text: "Description (optional)" }));
-    var descInput = el("textarea", { id: "member-photos-album-description", rows: "3", maxlength: "1000" });
-    descInput.value = descVal;
-    form.appendChild(descInput);
-
-    form.appendChild(el("label", { for: "member-photos-album-sort", text: "Sort position" }));
-    var sortInput = el("input", { type: "number", id: "member-photos-album-sort", step: "1" });
-    sortInput.value = sortVal;
-    form.appendChild(sortInput);
-
-    form.appendChild(el("label", { for: "member-photos-album-event", text: "Linked event (optional)" }));
-    form.appendChild(el("p", {
-      className: "member-form-hint",
-      text: "Only published events are listed. Multiple albums may link to the same event."
-    }));
-    var eventSelect = el("select", { id: "member-photos-album-event" });
-    eventSelect.appendChild(el("option", { value: "", text: "None" }));
-    for (var ei = 0; ei < (eventsForLink || []).length; ei += 1) {
-      var ev = eventsForLink[ei];
-      if (!ev || !ev.id) continue;
-      var evLabel = (ev.title || "(untitled)") + (ev.startsAt ? " (" + fmtDate(ev.startsAt) + ")" : "");
-      var evOpt = el("option", { value: String(ev.id), text: evLabel });
-      if (album && album.eventId && String(album.eventId) === String(ev.id)) evOpt.selected = true;
-      eventSelect.appendChild(evOpt);
+    var key = album ? String(album.id) : "new";
+    var values = Object.assign({}, album || {}, albumDrafts[key] || {});
+    var form = el("form", { id: "member-photos-album-form", className: "member-photos-album-form members-profile-form" });
+    function field(label, id, type, value, max) {
+      form.appendChild(el("label", { for: id, text: label }));
+      var input = el(type === "textarea" ? "textarea" : "input", { id: id });
+      if (type !== "textarea") input.type = type;
+      else input.rows = 3;
+      if (max) input.maxLength = max;
+      input.value = value || "";
+      form.appendChild(input);
+      return input;
     }
-    form.appendChild(eventSelect);
+    var title = field("Album title", "member-photos-album-title", "text", values.title, 200);
+    title.required = true;
+    var description = field("Description (optional)", "member-photos-album-description", "textarea", values.description, 1000);
+    form.appendChild(el("label", { for: "member-photos-album-event", text: "Event (optional)" }));
+    var event = el("select", { id: "member-photos-album-event" });
+    event.appendChild(el("option", { value: "", text: "No linked event" }));
+    eventsForLink.forEach(function (item) {
+      event.appendChild(el("option", { value: item.id, text: item.title + (item.startsAt ? " · " + fmtDate(item.startsAt) : "") }));
+    });
+    event.value = values.eventId || "";
+    form.appendChild(event);
 
-    form.appendChild(el("label", { for: "member-photos-album-display-at", text: "Display date (optional)" }));
-    form.appendChild(el("p", {
-      className: "member-form-hint",
-      text: "Optional date for sorting or display, especially for albums with no linked event."
-    }));
-    var displayAtInput = el("input", { type: "datetime-local", id: "member-photos-album-display-at" });
-    displayAtInput.value = album && album.displayAt ? toDatetimeLocalValue(album.displayAt) : "";
-    form.appendChild(displayAtInput);
-
-    var publishedLabel = el("label", { className: "members-checkbox-label" });
-    var publishedInput = el("input", { type: "checkbox", id: "member-photos-album-published", checked: publishedVal });
-    publishedLabel.appendChild(publishedInput);
-    publishedLabel.appendChild(document.createTextNode(" Published (visible on public gallery)"));
-    form.appendChild(publishedLabel);
-
+    var optional = el("details", { className: "photo-optional-settings" });
+    optional.appendChild(el("summary", { text: "More album options" }));
+    var slug = field("Album URL", "member-photos-album-slug", "text", values.slug, 80);
+    slug.required = true;
+    slug.pattern = "[a-z0-9][a-z0-9_-]{0,80}";
+    var order = field("Display order", "member-photos-album-sort", "number", values.sortPosition || "0");
+    var date = field("Display date (optional)", "member-photos-album-display-at", "datetime-local", toDatetimeLocalValue(values.displayAt));
+    [slug, order, date].forEach(function (input) {
+      optional.appendChild(form.querySelector('label[for="' + input.id + '"]'));
+      optional.appendChild(input);
+    });
     var highlightsLabel = el("label", { className: "members-checkbox-label" });
-    var highlightsInput = el("input", { type: "checkbox", id: "member-photos-album-include-highlights", checked: includeHighlightsVal });
-    highlightsLabel.appendChild(highlightsInput);
-    highlightsLabel.appendChild(document.createTextNode(" Include in highlights (Events page photo block)"));
-    form.appendChild(highlightsLabel);
-    form.appendChild(el("p", {
-      className: "member-form-hint",
-      text: "If several albums are checked, the public site picks one at random on each load for variety. The album must be published to appear."
-    }));
-
-    var actions = el("p", { className: "members-admin-toolbar" });
-    var saveBtn = el("button", { type: "submit", className: "members-events-form-action", text: album ? "Save changes" : "Create album" });
-    actions.appendChild(saveBtn);
-    if (album) {
-      var cancelBtn = el("button", {
-        type: "button",
-        className: "members-events-form-action",
-        id: "member-photos-album-cancel",
-        text: "Clear form"
-      });
-      actions.appendChild(cancelBtn);
-
-      if (isAdmin(lastUserRoles)) {
-        var deleteBtn = el("button", {
-          type: "button",
-          className: "members-events-form-action",
-          id: "member-photos-album-delete",
-          text: "Delete album"
-        });
-        actions.appendChild(deleteBtn);
-      }
-    }
-    var advanced=el("details");advanced.appendChild(el("summary",{text:"Album URL and order"}));
-    [slugInput,sortInput].forEach(function(input){
-      var label=form.querySelector('label[for="'+input.id+'"]');if(label) advanced.appendChild(label);
-      advanced.appendChild(input);
-    });advanced.appendChild(slugHint);form.insertBefore(advanced,actions.parentNode===form?actions:null);
-    form.appendChild(actions);
-
-    form.addEventListener("submit", async function (ev) {
-      ev.preventDefault();
-      var fields = {
-        slug: slugInput.value.trim().toLowerCase(),
-        title: titleInput.value.trim(),
-        description: descInput.value.trim(),
-        sortPosition: Number(sortInput.value || 0) || 0,
-        published: publishedInput.checked,
-        includeInHighlights: highlightsInput.checked,
-        eventId: eventSelect.value ? eventSelect.value : null,
-        displayAt: displayAtInput.value ? new Date(displayAtInput.value).toISOString() : null
-      };
-      try {
-        setStatus(album ? "Saving album..." : "Creating album...");
-        var newId = await window.SNHMemberPortal.photoAlbumUpsert(idVal || null, fields);
-        setStatus(album ? "Album updated." : "Album created.");
-        await refreshAlbums();
-        selectedAlbumId = String(newId || idVal || "");
-        await renderApp();
-      } catch (err) {
-        setStatus(friendlyError(err), "error");
-      }
+    var highlights = el("input", { type: "checkbox", checked: !!values.includeInHighlights });
+    highlightsLabel.appendChild(highlights);
+    highlightsLabel.appendChild(document.createTextNode(" Feature on the Events page"));
+    optional.appendChild(highlightsLabel);
+    form.appendChild(optional);
+    title.addEventListener("input", function () {
+      if (!album) slug.value = title.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "album";
     });
+    form.photoFields = function () {
+      return { title: title.value.trim(), description: description.value.trim(), slug: slug.value.trim().toLowerCase(),
+        sortPosition: Number(order.value || 0) || 0, displayAt: date.value ? new Date(date.value).toISOString() : null,
+        eventId: event.value || null, includeInHighlights: highlights.checked, published: !!(album && album.published) };
+    };
+    function remember() { albumDrafts[key] = form.photoFields(); }
+    form.addEventListener("input", remember);
+    form.addEventListener("change", remember);
+    var actions = el("div", { className: "photo-action-row" });
+    var save = el("button", { type: "submit", className: "members-events-form-action", text: album ? "Save details" : "Create album" });
+    save.disabled = publishing;
+    actions.appendChild(save);
+    if (album && isAdmin(lastUserRoles)) {
+      var remove = el("button", { type: "button", className: "members-admin-revoke", text: "Delete album" });
+      remove.disabled = uploading || publishing;
+      remove.onclick = function () { void deleteAlbum(album.id); };
+      actions.appendChild(remove);
+    }
+    form.appendChild(actions);
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      if (publishing) return;
+      save.disabled = true;
+      try {
+        var id = await window.SNHMemberPortal.photoAlbumUpsert(album ? album.id : null, form.photoFields());
+        delete albumDrafts[key];
+        selectedAlbumId = String(id || (album && album.id));
+        await refreshAlbums();
+        await refreshAssets(selectedAlbumId);
+        await renderApp();
+        setStatus(album ? "Album details saved." : "Album created. Add photos, choose a cover, then publish when ready.");
+      } catch (error) { setStatus(friendlyError(error), "error"); save.disabled = false; }
+    });
+    if (publishing) form.querySelectorAll("input, textarea, select, button").forEach(function (control) { control.disabled = true; });
+    return form;
+  }
 
-    return { form: form, cancelBtnId: "member-photos-album-cancel", deleteBtnId: "member-photos-album-delete" };
+  function setPhotoPreview(image, asset) {
+    var variant = pickVariant(asset, "thumb") || pickVariant(asset, "web");
+    if (!variant) return;
+    if (variant.bucket === "photos-private") {
+      void window.SNHMemberPortal.photoPreview(asset.id).then(function (url) { image.src = url; })
+        .catch(function () { image.alt = "Preview unavailable. Refresh to try again."; });
+    } else image.src = window.SNHMemberPortal.buildPublicPhotoUrl(variant.objectKey);
+  }
+
+  async function selectCover(album, assetId) {
+    if (publishing || uploading) return;
+    try {
+      var fields = albumFields(album);
+      fields.coverAssetId = assetId;
+      await window.SNHMemberPortal.photoAlbumUpsert(album.id, fields);
+      delete albumDrafts[String(album.id)];
+      await refreshAlbums();
+      await renderApp();
+      setStatus(assetId ? "Album cover selected." : "The first published photo will be used as the cover.");
+    } catch (error) { setStatus(friendlyError(error), "error"); }
+  }
+
+  async function publishAlbum(album) {
+    if (uploading || publishing) return;
+    var failedUploads = uploadJobs.filter(function (job) { return job.albumId === String(album.id) && job.error; });
+    if (failedUploads.length) { setStatus("Retry or dismiss failed uploads before publishing this album.", "error"); return; }
+    var form = document.getElementById("member-photos-album-form");
+    if (!form.checkValidity()) {
+      form.closest("details").open = true;
+      form.querySelector(".photo-optional-settings").open = true;
+      form.reportValidity();
+      return;
+    }
+    var fields = form.photoFields();
+    publishing = true;
+    publicationStatus = "Checking photos…";
+    await renderApp();
+    var failures = [];
+    try {
+      await refreshAssets(album.id);
+      var assets = assetsByAlbum[album.id] || [];
+      var ready = assets.filter(function (asset) { return asset.status === "uploaded" || (asset.status === "pending" && asset.hasOriginal); });
+      if (!ready.length && !assets.some(function (asset) { return asset.status === "published"; })) throw new Error("Add at least one photo before publishing.");
+      for (var i = 0; i < ready.length; i += 1) {
+        var photo = ready[i];
+        publicationStatus = "Publishing photo " + (i + 1) + " of " + ready.length + "…";
+        updatePublicationControls();
+        try {
+          if ((photo.uploadMode === "legacy" && !pickVariant(photo, "web")) || (photo.status === "pending" && photo.hasOriginal)) {
+            await window.SNHMemberPortal.photoConvertLegacy(album.id, photo.id);
+          }
+          await window.SNHMemberPortal.photoPublishAsset(photo.id, { publish: true });
+        } catch (error) { failures.push((photo.originalFilename || "Photo") + ": " + friendlyError(error)); }
+      }
+      if (failures.length) throw new Error("Album publication did not finish. " + failures.join(" · ") + ". Retry publishing to finish the remaining photos.");
+      fields.published = true;
+      await window.SNHMemberPortal.photoAlbumUpsert(album.id, fields);
+      delete albumDrafts[String(album.id)];
+      setStatus("Album published. It is now visible in the public gallery.");
+    } catch (error) { setStatus(friendlyError(error), "error"); }
+    finally {
+      publishing = false;
+      publicationStatus = "";
+      try { await refreshAssets(album.id); await refreshAlbums(); await renderApp(); }
+      catch (error) { setStatus(friendlyError(error), "error"); }
+    }
+  }
+
+  async function hideAlbum(album) {
+    if (uploading || publishing) return;
+    try {
+      var fields = albumFields(album);
+      fields.published = false;
+      await window.SNHMemberPortal.photoAlbumUpsert(album.id, fields);
+      delete albumDrafts[String(album.id)];
+      await refreshAlbums(); await renderApp();
+      setStatus("Album hidden from the public gallery. Its photos are retained.");
+    } catch (error) { setStatus(friendlyError(error), "error"); }
+  }
+
+  function updatePublicationControls() {
+    var button = document.getElementById("member-photos-publish-album");
+    if (button) {
+      button.disabled = uploading || publishing;
+      button.textContent = publishing ? publicationStatus : button.dataset.idleLabel;
+    }
+    var zone = document.getElementById("member-photos-drop-zone");
+    if (zone) zone.setAttribute("aria-disabled", String(publishing));
+    if (uploading || publishing) appEl.querySelectorAll(".member-photos-asset button").forEach(function (control) { control.disabled = true; });
   }
 
   function buildAssetCard(album, asset) {
@@ -265,12 +312,13 @@
     }
     card.appendChild(thumbWrap);
 
-    var meta = el("div", { className: "member-photos-asset-meta" });
+    var meta = el("details", { className: "member-photos-asset-meta" });
+    meta.appendChild(el("summary", { text: "Caption and photo settings" }));
     var statusLine = el("p", {
       className: "member-photos-asset-status",
-      text: "Status: " + (asset.status || "pending") + " · " + (asset.originalFilename || "(no filename)")
+      text: ({pending:"Upload unfinished",uploaded:"Ready to publish",published:"Published",unpublished:"Hidden"}[asset.status] || "Photo") + " · " + (asset.originalFilename || "Photo")
     });
-    meta.appendChild(statusLine);
+    card.appendChild(statusLine);
 
     var captionLabel = el("label", { text: "Caption" });
     var captionInput = el("input", { type: "text", maxlength: "1000" });
@@ -346,16 +394,15 @@
       actions.appendChild(delBtn);
     }
 
-    var coverBtn = el("button", { type: "button", className:"members-events-form-action", text: album.coverAssetId === asset.id ? "Album cover" : "Use as cover" });
-    coverBtn.disabled = album.coverAssetId === asset.id;
-    coverBtn.addEventListener("click", async function () {
-      try {
-        await window.SNHMemberPortal.photoAlbumUpsert(album.id, {slug:album.slug,title:album.title,description:album.description,
-          sortPosition:album.sortPosition,published:album.published,includeInHighlights:album.includeInHighlights,coverAssetId:asset.id});
-        await refreshAlbums(); await renderApp();
-      } catch (err) { setStatus(friendlyError(err), "error"); }
-    });
-    actions.appendChild(coverBtn);
+    var isCover = album.coverAssetId === asset.id;
+    if (isCover) {
+      card.classList.add("is-cover");
+      thumbWrap.appendChild(el("span", { className: "photo-cover-badge", text: "Album cover" }));
+    }
+    var coverBtn = el("button", { type: "button", className: "members-events-form-action photo-cover-action", text: isCover ? "Selected cover" : "Use as cover", "aria-pressed": String(isCover) });
+    coverBtn.disabled = isCover || uploading || publishing || asset.status === "pending";
+    coverBtn.onclick = function () { void selectCover(album, asset.id); };
+    card.appendChild(coverBtn);
     if (asset.status === "published" && album.published) {
       var reuse = el("details"); reuse.appendChild(el("summary", {text:"Reuse for event promotion"}));
       var picker = el("select", {"aria-label":"Event to promote with this photo"});
@@ -374,6 +421,7 @@
     meta.appendChild(actions);
     card.appendChild(meta);
 
+    if (uploading || publishing) card.querySelectorAll("input, select, button").forEach(function (control) { control.disabled = true; });
     return card;
   }
 
@@ -459,45 +507,139 @@
 
   function renderUploadJobs() {
     var list = document.getElementById("member-photos-upload-jobs");
-    if (!list) return;
+    var summary = document.getElementById("member-photos-batch-summary");
+    var panel = document.getElementById("member-photos-batch");
+    if (!list || !summary || !panel) return;
+    var jobs = uploadJobs.filter(function (job) { return job.albumId === selectedAlbumId; });
+    panel.hidden = !jobs.length;
     list.replaceChildren();
-    var jobs=uploadJobs.filter(function(job){return job.albumId===selectedAlbumId;});
-    if(jobs.length) {
-      var progress=el("progress",{max:String(jobs.length),value:String(jobs.filter(function(job){return job.done;}).length),"aria-label":"Photo upload progress"});
-      list.appendChild(el("li",{text:jobs.filter(function(job){return job.done;}).length+" of "+jobs.length+" photos ready"}));list.lastChild.appendChild(progress);
-    }
-    uploadJobs.filter(function(job){return job.albumId===selectedAlbumId;}).forEach(function(job){
-      var row=el("li",{text:job.filename+": "+job.status});
-      if(job.error && !uploading) {
-        var retry=el("button",{type:"button",text:"Retry"});
-        retry.addEventListener("click",function(){job.error=false;job.status="Waiting";void runUploadJobs();});
+    var ready = jobs.filter(function (job) { return job.done; }).length;
+    var failed = jobs.filter(function (job) { return job.error; }).length;
+    var percent = jobs.length ? Math.round(jobs.reduce(function (total, job) { return total + (job.progress || 0); }, 0) / jobs.length) : 0;
+    summary.textContent = ready + " of " + jobs.length + " photos ready" + (failed ? " · " + failed + " need attention" : "") + (uploading ? " · Uploading" : "");
+    var overall = document.getElementById("member-photos-batch-progress");
+    overall.value = percent;
+    document.getElementById("member-photos-batch-percent").textContent = percent + "%";
+    jobs.forEach(function (job) {
+      var row = el("li", { className: "photo-upload-job" + (job.error ? " is-error" : job.done ? " is-done" : "") });
+      row.appendChild(el("strong", { text: job.filename }));
+      row.appendChild(el("span", { className: "photo-job-status", text: job.status }));
+      var progress = el("progress", { max: "100", value: String(job.progress || 0), "aria-label": "Processing " + job.filename });
+      row.appendChild(progress);
+      row.appendChild(el("span", { className: "photo-job-percent", text: Math.round(job.progress || 0) + "%" }));
+      if (job.error) {
+        var retry = el("button", { type: "button", className: "members-events-form-action", text: "Retry", "aria-label": "Retry " + job.filename });
+        retry.disabled = uploading || publishing;
+        retry.onclick = function () { job.error = false; job.status = "Waiting"; void runUploadJobs(); };
         row.appendChild(retry);
+        var dismiss = el("button", { type: "button", className: "members-events-form-action", text: "Dismiss", "aria-label": "Dismiss " + job.filename });
+        dismiss.disabled = uploading || publishing;
+        dismiss.onclick = function () { uploadJobs = uploadJobs.filter(function (item) { return item !== job; }); renderUploadJobs(); };
+        row.appendChild(dismiss);
       }
       list.appendChild(row);
     });
-    var input=document.getElementById("member-photos-upload-input");
-    if(input) input.disabled=uploading;
+    var retryAll = document.getElementById("member-photos-retry-failed");
+    retryAll.hidden = !failed;
+    retryAll.disabled = uploading || publishing;
+    var clear = document.getElementById("member-photos-clear-completed");
+    clear.hidden = !ready;
+    clear.disabled = uploading || publishing;
+    var input = document.getElementById("member-photos-upload-input");
+    if (input) input.disabled = publishing;
+    updatePublicationControls();
   }
+
   async function runUploadJobs() {
-    if(uploading) return;
-    uploading=true;renderUploadJobs();
-    for(var job of uploadJobs) {
-      if(job.done || job.error) continue;
+    if (uploading || publishing) return;
+    uploading = true;
+    renderUploadJobs();
+    for (var job of uploadJobs) {
+      if (job.done || job.error) continue;
       try {
-        job.onProgress=function(text){job.status=text;renderUploadJobs();};
-        var result=await window.SNHMemberPortal.photoUploadAndRegister(job.albumId,job.file,job);
-        job.assetId=result.assetId;job.done=true;job.status="Ready to publish";job.file=null;
-      } catch(err) {job.error=true;job.status=friendlyError(err);}
+        job.onProgress = function (text, percent) {
+          job.status = text;
+          if (Number.isFinite(percent)) job.progress = Math.max(0, Math.min(100, percent));
+          renderUploadJobs();
+        };
+        var result = await window.SNHMemberPortal.photoUploadAndRegister(job.albumId, job.file, job);
+        job.assetId = result.assetId;
+        job.done = true;
+        job.progress = 100;
+        job.status = "Ready to publish";
+        job.file = null;
+      } catch (error) { job.error = true; job.status = friendlyError(error); }
       renderUploadJobs();
     }
-    uploading=false;
-    try { if(selectedAlbumId) await refreshAssets(selectedAlbumId);await refreshAlbums();await renderApp(); }
-    catch(err){setStatus(friendlyError(err),"error");}
+    uploading = false;
+    try { if (selectedAlbumId) await refreshAssets(selectedAlbumId); await refreshAlbums(); await renderApp(); }
+    catch (error) { setStatus(friendlyError(error), "error"); }
     renderUploadJobs();
   }
+
   async function uploadFiles(albumId, files) {
-    Array.from(files || []).forEach(function(file){uploadJobs.push({albumId:String(albumId),file:file,filename:file.name,status:"Waiting"});});
+    if (publishing) return;
+    Array.from(files || []).forEach(function (file) {
+      uploadJobs.push({ albumId: String(albumId), file: file, filename: file.name, status: "Waiting", progress: 0 });
+    });
     await runUploadJobs();
+  }
+
+  function buildUploadZone(album) {
+    var zone = el("div", { id: "member-photos-drop-zone", className: "photo-drop-zone", role: "group", "aria-label": "Add photos to " + album.title });
+    zone.appendChild(el("h4", { text: "Drop photos here" }));
+    zone.appendChild(el("p", { text: "JPEG, PNG or WebP · Up to 50 MB each" }));
+    zone.appendChild(el("p", { className: "member-form-hint", text: "Photos are resized automatically. You can keep adding files while a batch uploads." }));
+    var input = el("input", { type: "file", id: "member-photos-upload-input", accept: "image/jpeg,image/png,image/webp", multiple: "multiple", className: "sr-only", "aria-label": "Choose photos" });
+    input.onchange = function () { var files = Array.from(input.files || []); input.value = ""; void uploadFiles(album.id, files); };
+    var choose = el("button", { type: "button", className: "members-events-form-action", text: "Choose photos" });
+    choose.disabled = publishing;
+    choose.onclick = function () { input.click(); };
+    zone.appendChild(input); zone.appendChild(choose);
+    var dragDepth = 0;
+    function fileDrag(event) { return Array.from(event.dataTransfer ? event.dataTransfer.types : []).includes("Files"); }
+    zone.addEventListener("dragenter", function (event) {
+      if (!fileDrag(event)) return;
+      event.preventDefault(); dragDepth += 1;
+      if (!publishing) zone.classList.add("is-dragging");
+    });
+    zone.addEventListener("dragover", function (event) {
+      if (!fileDrag(event)) return;
+      event.preventDefault(); event.dataTransfer.dropEffect = publishing ? "none" : "copy";
+    });
+    zone.addEventListener("dragleave", function (event) {
+      if (!fileDrag(event)) return;
+      event.preventDefault(); dragDepth = Math.max(0, dragDepth - 1);
+      if (!dragDepth) zone.classList.remove("is-dragging");
+    });
+    zone.addEventListener("drop", function (event) {
+      if (!fileDrag(event)) return;
+      event.preventDefault(); dragDepth = 0; zone.classList.remove("is-dragging");
+      if (publishing) return;
+      var files = Array.from(event.dataTransfer.files || []);
+      if (!files.length) { setStatus("Drop photo files rather than folders.", "error"); return; }
+      void uploadFiles(album.id, files);
+    });
+    return zone;
+  }
+
+  function buildBatchPanel() {
+    var panel = el("section", { id: "member-photos-batch", className: "photo-batch-panel", "aria-label": "Upload batch" });
+    panel.appendChild(el("h4", { text: "Upload progress" }));
+    panel.appendChild(el("p", { id: "member-photos-batch-summary", role: "status" }));
+    panel.appendChild(el("progress", { id: "member-photos-batch-progress", max: "100", value: "0", "aria-label": "Batch processing progress" }));
+    panel.appendChild(el("span", { id: "member-photos-batch-percent", className: "photo-batch-percent" }));
+    panel.appendChild(el("ul", { id: "member-photos-upload-jobs", className: "photo-upload-jobs" }));
+    var actions = el("div", { className: "photo-action-row" });
+    var retry = el("button", { id: "member-photos-retry-failed", type: "button", className: "members-events-form-action", text: "Retry failed files" });
+    retry.onclick = function () {
+      uploadJobs.forEach(function (job) { if (job.albumId === selectedAlbumId && job.error) { job.error = false; job.status = "Waiting"; } });
+      void runUploadJobs();
+    };
+    var clear = el("button", { id: "member-photos-clear-completed", type: "button", className: "members-events-form-action", text: "Clear completed files" });
+    clear.onclick = function () { uploadJobs = uploadJobs.filter(function (job) { return job.albumId !== selectedAlbumId || !job.done; }); renderUploadJobs(); };
+    actions.appendChild(retry); actions.appendChild(clear); panel.appendChild(actions);
+    return panel;
   }
 
   async function refreshAlbums() {
@@ -524,161 +666,109 @@
 
   async function renderApp() {
     if (!appEl) return;
-    appEl.innerHTML = "";
-
-    var topBar = el("p", { className: "members-admin-toolbar" });
-    var refreshBtn = el("button", { type: "button", className: "members-sidebar-link", text: "Refresh" });
-    refreshBtn.addEventListener("click", async function () {
-      try {
-        setStatus("Refreshing...");
-        await refreshAlbums();
-        await loadEventsForLink();
-        if (selectedAlbumId) await refreshAssets(selectedAlbumId);
-        setStatus("");
-        await renderApp();
-      } catch (err) {
-        setStatus(friendlyError(err), "error");
-      }
+    appEl.replaceChildren();
+    var layout = el("div", { className: "member-photos-layout photo-workspace" });
+    var library = el("aside", { className: "photo-album-library", "aria-label": "Your photo albums" });
+    library.appendChild(el("h3", { text: "Albums" }));
+    var newAlbum = el("button", { type: "button", className: "members-events-form-action", text: "New album" });
+    newAlbum.disabled = publishing;
+    newAlbum.onclick = function () { selectedAlbumId = null; void renderApp(); };
+    library.appendChild(newAlbum);
+    if (!albumsCache.length) library.appendChild(el("p", { text: "Create an album to get started." }));
+    var list = el("ul", { className: "member-photos-album-list" });
+    albumsCache.forEach(function (album) {
+      var item = el("li", { className: "member-photos-album-list-item" + (selectedAlbumId === String(album.id) ? " is-active" : "") });
+      var button = el("button", { type: "button", className: "photo-album-link", "aria-pressed": String(selectedAlbumId === String(album.id)) });
+      button.disabled = publishing;
+      button.appendChild(el("strong", { text: album.title || "Untitled album" }));
+      var counts = album.assetCounts || {};
+      button.appendChild(el("span", { text: (album.published ? "Published" : "Draft") + " · " + (counts.total || 0) + " photos" }));
+      button.onclick = function () {
+        selectedAlbumId = String(album.id);
+        void refreshAssets(selectedAlbumId).then(renderApp).catch(function (error) { setStatus(friendlyError(error), "error"); });
+      };
+      item.appendChild(button); list.appendChild(item);
     });
-    topBar.appendChild(refreshBtn);
-    if(isAdmin(lastUserRoles)) {
-      var cleanupBtn=el("button",{type:"button",className:"members-events-form-action",text:"Retry storage cleanup"});
-      cleanupBtn.addEventListener("click",async function(){
-        cleanupBtn.disabled=true;
-        try {var r=await window.SNHMemberPortal.photoCleanup();setStatus("Cleanup: "+r.cleanup.removed+" objects removed, "+r.cleanup.pending+" queued for retry (some wait for the upload safety window).");}
-        catch(err){setStatus(friendlyError(err),"error");}finally{cleanupBtn.disabled=false;}
-      });topBar.appendChild(cleanupBtn);
+    library.appendChild(list);
+    var refresh = el("button", { type: "button", className: "members-events-form-action", text: "Refresh albums" });
+    refresh.disabled = publishing;
+    refresh.onclick = async function () {
+      try { await refreshAlbums(); await loadEventsForLink(); if (selectedAlbumId) await refreshAssets(selectedAlbumId); await renderApp(); }
+      catch (error) { setStatus(friendlyError(error), "error"); }
+    };
+    library.appendChild(refresh);
+    if (isAdmin(lastUserRoles)) {
+      var maintenance = el("details", { className: "photo-maintenance" });
+      maintenance.appendChild(el("summary", { text: "Storage maintenance" }));
+      var cleanup = el("button", { type: "button", className: "members-events-form-action", text: "Retry storage cleanup" });
+      cleanup.onclick = async function () {
+        cleanup.disabled = true;
+        try { var result = await window.SNHMemberPortal.photoCleanup(); setStatus(result.cleanup.removed + " objects removed; " + result.cleanup.pending + " queued for retry."); }
+        catch (error) { setStatus(friendlyError(error), "error"); }
+        finally { cleanup.disabled = false; }
+      };
+      maintenance.appendChild(cleanup); library.appendChild(maintenance);
     }
-    appEl.appendChild(topBar);
-
-    var layout = el("div", { className: "member-photos-layout" });
-
-    var mainCol = el("section", { className: "member-photos-main-col" });
-    mainCol.appendChild(el("h4", { text: "Albums" }));
-
-    if (!albumsCache.length) {
-      mainCol.appendChild(el("p", {
-        className: "member-form-hint",
-        text: "No albums yet. Create one below to start uploading photos."
-      }));
+    layout.appendChild(library);
+    var workspace = el("section", { className: "member-photos-main-col photo-album-workspace" });
+    var album = albumsCache.find(function (item) { return String(item.id) === selectedAlbumId; });
+    if (!album) {
+      workspace.appendChild(el("h3", { text: "Create a photo album" }));
+      workspace.appendChild(el("p", { text: "Give it a title, add your photos, and publish when it is ready." }));
+      workspace.appendChild(buildAlbumForm(null));
     } else {
-      var ul = el("ul", { className: "member-photos-album-list" });
-      for (var i = 0; i < albumsCache.length; i += 1) {
-        var alb = albumsCache[i];
-        var li = el("li", {
-          className: selectedAlbumId === String(alb.id)
-            ? "member-photos-album-list-item is-active"
-            : "member-photos-album-list-item"
-        });
-        var btn = el("button", { type: "button", className: "members-sidebar-link" });
-        var counts = alb.assetCounts || { total: 0, published: 0 };
-        btn.textContent = (alb.title || "(untitled)") +
-          " (" + (counts.published || 0) + "/" + (counts.total || 0) + " published)" +
-          (alb.published ? "" : " [draft]") +
-          (alb.includeInHighlights ? " · Events page" : "");
-        (function (id) {
-          btn.addEventListener("click", function () {
-            selectedAlbumId = String(id);
-            void refreshAssets(selectedAlbumId).then(renderApp).catch(function (err) {
-              setStatus(friendlyError(err), "error");
-            });
-          });
-        })(alb.id);
-        li.appendChild(btn);
-        ul.appendChild(li);
+      var assets = assetsByAlbum[album.id] || [];
+      var header = el("div", { className: "photo-album-heading" });
+      var cover = assets.find(function (asset) { return asset.id === album.coverAssetId; }) || assets.find(function (asset) { return pickVariant(asset, "thumb") || pickVariant(asset, "web"); });
+      if (cover) {
+        var image = el("img", { className: "photo-album-cover-preview", alt: "Cover for " + album.title });
+        setPhotoPreview(image, cover); header.appendChild(image);
       }
-      mainCol.appendChild(ul);
+      var heading = el("div");
+      heading.appendChild(el("span", { className: "photo-album-state" + (album.published ? " is-published" : ""), text: album.published ? "Published album" : "Draft album" }));
+      heading.appendChild(el("h3", { text: album.title }));
+      var ready = assets.filter(function (asset) { return asset.status === "uploaded" || (asset.status === "pending" && asset.hasOriginal); }).length;
+      heading.appendChild(el("p", { text: assets.length + " photos · " + ready + " ready to publish" }));
+      header.appendChild(heading);
+      workspace.appendChild(header);
+      var publication = el("div", { className: "photo-publication-bar" });
+      var publish = el("button", { id: "member-photos-publish-album", type: "button", className: "members-events-form-action photo-primary-action" });
+      publish.dataset.idleLabel = album.published ? "Publish new photos" : "Publish album";
+      publish.onclick = function () { void publishAlbum(album); };
+      publication.appendChild(publish);
+      if (album.published) {
+        var view = el("a", { className: "members-events-form-action", href: "photos.html?album=" + encodeURIComponent(album.id), text: "View album" });
+        publication.appendChild(view);
+        var hide = el("button", { type: "button", className: "members-events-form-action", text: "Hide from gallery" });
+        hide.disabled = uploading || publishing;
+        hide.onclick = function () { void hideAlbum(album); };
+        publication.appendChild(hide);
+      }
+      workspace.appendChild(publication);
+      workspace.appendChild(el("p", { className: "member-form-hint", text: "Publishing makes all ready photos and this album visible together. Choose a cover below before publishing." }));
+      var details = el("details", { className: "photo-album-details" });
+      details.appendChild(el("summary", { text: "Edit album details" }));
+      details.appendChild(buildAlbumForm(album));
+      workspace.appendChild(details);
+      workspace.appendChild(buildUploadZone(album));
+      workspace.appendChild(buildBatchPanel());
+      var galleryHeading = el("div", { className: "photo-action-row photo-gallery-heading" });
+      galleryHeading.appendChild(el("h4", { text: "Photos and cover" }));
+      if (album.coverAssetId) {
+        var reset = el("button", { type: "button", className: "members-events-form-action", text: "Use automatic cover" });
+        reset.disabled = uploading || publishing;
+        reset.onclick = function () { void selectCover(album, null); }; galleryHeading.appendChild(reset);
+      }
+      workspace.appendChild(galleryHeading);
+      if (!assets.length) workspace.appendChild(el("p", { className: "photo-empty-state", text: "No photos yet. Drop a batch above or choose files to add them." }));
+      var grid = el("div", { className: "member-photos-grid" });
+      assets.forEach(function (asset) { grid.appendChild(buildAssetCard(album, asset)); });
+      workspace.appendChild(grid);
     }
-
-    mainCol.appendChild(el("h4", { text: "Album editor" }));
-    var selectedAlbum = albumsCache.find(function (a) { return String(a.id) === String(selectedAlbumId); }) || null;
-    var formBundle = buildAlbumForm(selectedAlbum);
-    mainCol.appendChild(formBundle.form);
-    if (selectedAlbum) {
-      var cancelBtn = formBundle.form.querySelector("#" + formBundle.cancelBtnId);
-      if (cancelBtn) {
-        cancelBtn.addEventListener("click", function () {
-          selectedAlbumId = null;
-          void renderApp();
-        });
-      }
-      var deleteAlbumBtn = formBundle.form.querySelector("#" + formBundle.deleteBtnId);
-      if (deleteAlbumBtn) {
-        deleteAlbumBtn.addEventListener("click", function () {
-          void deleteAlbum(selectedAlbum.id);
-        });
-      }
-    }
-
-    if (!selectedAlbum) {
-      mainCol.appendChild(el("p", {
-        className: "member-form-hint member-photos-pick-album-hint",
-        text: "Select an album above, or create one in the form, to upload photos."
-      }));
-    } else {
-      var assetsSection = el("div", { className: "member-photos-album-assets" });
-      assetsSection.appendChild(el("h4", { text: "Photos in: " + (selectedAlbum.title || selectedAlbum.slug) }));
-      assetsSection.appendChild(el("p", {
-        className: "member-form-hint",
-        text: "Last updated " + fmtDate(selectedAlbum.updatedAt) + " · Slug: " + (selectedAlbum.slug || "(none)") + (selectedAlbum.eventId ? " · Linked event: " + (selectedAlbum.eventTitle || selectedAlbum.eventId) : "")
-      }));
-
-      var uploadBlock = el("div", { className: "member-photos-upload-block" });
-      var uploadRow = el("div", { className: "member-photos-upload-row" });
-      var fileWrap = el("div", { className: "member-photos-upload-file-wrap" });
-      fileWrap.appendChild(el("label", { for: "member-photos-upload-input", text: "Add photos (JPEG, PNG or WebP, up to 50 MB):" }));
-      var fileInput = el("input", {
-        type: "file",
-        id: "member-photos-upload-input",
-        accept: "image/jpeg,image/png,image/webp",
-        multiple: "multiple"
-      });
-      fileInput.addEventListener("change", function () {
-        var files = fileInput.files ? Array.prototype.slice.call(fileInput.files) : [];
-        if (files.length === 0) return;
-        void uploadFiles(selectedAlbum.id, files).then(function () {
-          fileInput.value = "";
-        });
-      });
-      fileWrap.appendChild(fileInput);
-      uploadRow.appendChild(fileWrap);
-      uploadRow.appendChild(el("p", {
-        id: "member-photos-upload-inline-status",
-        className: "member-photos-upload-inline-status",
-        "aria-live": "polite"
-      }));
-      uploadBlock.appendChild(uploadRow);
-      uploadBlock.appendChild(el("ul", {id:"member-photos-upload-jobs", "aria-live":"polite"}));
-      assetsSection.appendChild(uploadBlock);
-
-      var assets = assetsByAlbum[selectedAlbum.id] || [];
-      if (!assets.length) {
-        assetsSection.appendChild(el("p", {
-          className: "member-form-hint",
-          text: "No photos in this album yet."
-        }));
-      } else {
-        var grid = el("div", { className: "member-photos-grid" });
-        for (var j = 0; j < assets.length; j += 1) {
-          grid.appendChild(buildAssetCard(selectedAlbum, assets[j]));
-        }
-        assetsSection.appendChild(grid);
-        var publishAll=el("button",{type:"button",className:"members-events-form-action",text:"Publish ready photos"});
-        publishAll.addEventListener("click",async function(){
-          publishAll.disabled=true;var failed=0;
-          for(var photo of assets.filter(function(a){return a.status==="uploaded" || a.status==="unpublished";})) {
-            try {if(photo.uploadMode==="legacy" && !pickVariant(photo,"web")) await window.SNHMemberPortal.photoConvertLegacy(selectedAlbum.id,photo.id);await window.SNHMemberPortal.photoPublishAsset(photo.id,{publish:true});}catch(err){failed++;setStatus(friendlyError(err),"error");}
-          }
-          await refreshAssets(selectedAlbum.id);await refreshAlbums();await renderApp();
-          setStatus(failed?failed+" photo(s) could not be published. Retry individually.":"Photos published. Publish the album above when it is ready.");
-        });assetsSection.appendChild(publishAll);
-      }
-      mainCol.appendChild(assetsSection);
-    }
-
-    layout.appendChild(mainCol);
+    layout.appendChild(workspace);
     appEl.appendChild(layout);
     renderUploadJobs();
+    updatePublicationControls();
   }
 
   async function init(userRoles) {

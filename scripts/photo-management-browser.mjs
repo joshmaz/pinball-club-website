@@ -63,33 +63,92 @@ try {
  assert.deepEqual(conversion.slice(0,2),[{variant:'web',width:1920,height:1280,type:'image/webp'},{variant:'thumb',width:640,height:427,type:'image/webp'}]);
  assert.ok(conversion.slice(2,4).every(v=>v.width===200 && v.height===100));
  assert.ok(conversion.slice(4).every(v=>v.width===100 && v.height===200),'EXIF rotation is applied');
- // Volunteer editor with real DOM, multiple files, a failed file followed by success, and retry.
- await page.setContent('<div id="member-photos-status"></div><div id="member-photos-app"></div>');
+ // Phase 2 volunteer workspace: drag/drop, weighted progress, retry, covers and one-action publication.
+ await page.setContent('<main><div id="member-photos-status" role="status"></div><div id="member-photos-app"></div></main>');
  for(const stylesheet of ['styles.css','clubhouse.css','club-account.css']) await page.addStyleTag({url:base+'/assets/css/'+stylesheet});
- await page.evaluate(()=>document.documentElement.classList.add('clubhouse'));
+ await page.evaluate(()=>document.documentElement.classList.add('clubhouse','club-account'));
  await page.addScriptTag({url:base+'/assets/js/photo-conversion.js'});
  await page.evaluate(({albumId,assetId})=>{
-  window.testUploads=[];window.failOnce=true;
+  window.testUploads=[]; window.failOnce=true; window.failPublishOnce=true; window.publishCalls=[]; window.albumSaves=[]; window.purgeCalls=[];
+  window.editorAlbum={id:albumId,title:'Club night',slug:'club-night',published:false,coverAssetId:null,assetCounts:{total:0}};
+  window.editorAssets=[];
+  const copy=value=>JSON.parse(JSON.stringify(value));
   window.SNHMemberPortal={
-   photoAlbumsListEditor:async()=>[{id:albumId,title:'Club night',slug:'club-night',published:false,assetCounts:{}}],
-   photoAssetsListEditor:async()=>[],photoEventsListForPhotoLink:async()=>[],
+   photoAlbumsListEditor:async()=>[copy({...editorAlbum,assetCounts:{total:editorAssets.length,published:editorAssets.filter(a=>a.status==='published').length}})],
+   photoAssetsListEditor:async()=>copy(editorAssets),photoEventsListForPhotoLink:async()=>[],
    photoUploadAndRegister:async(album,file,job)=>{
-    testUploads.push(file.name);job.onProgress('Converting');
+    testUploads.push(file.name); job.onProgress('Converting',10);
+    await new Promise(resolve=>setTimeout(resolve,250));
     if(file.name==='first.png' && failOnce){failOnce=false;throw new Error('Network interrupted');}
-    job.onProgress('Uploading thumb');return {assetId};
-   },buildPublicPhotoUrl:()=>'',photoCleanup:async()=>({cleanup:{removed:0,failed:0,pending:0}})
+    job.onProgress('Uploading photo',50); await new Promise(resolve=>setTimeout(resolve,100));
+    const id=assetId+'-'+file.name;
+    editorAssets.push({id,albumId,status:'uploaded',uploadMode:'browser',originalFilename:file.name,
+      variants:[{variant:'thumb',bucket:'photos-public',objectKey:'thumb.webp'},{variant:'web',bucket:'photos-public',objectKey:'web.webp'}]});
+    job.onProgress('Ready to publish',100);return {assetId:id};
+   },
+   photoAlbumUpsert:async(id,fields)=>{albumSaves.push(copy(fields));Object.assign(editorAlbum,fields);return id;},
+   photoPublishAsset:async(id)=>{
+    publishCalls.push(id);await new Promise(resolve=>setTimeout(resolve,100));
+    if(id.endsWith('first.png') && failPublishOnce){failPublishOnce=false;throw new Error('Publication interrupted');}
+    editorAssets.find(asset=>asset.id===id).status='published';return {ok:true};
+   },
+   photoPurgeAsset:async(id,action)=>{purgeCalls.push({id,action});},
+   buildPublicPhotoUrl:key=>'https://test.supabase.co/storage/v1/object/public/photos-public/'+key,
+   photoCleanup:async()=>({cleanup:{removed:0,failed:0,pending:0}})
   };
  },{albumId,assetId});
  await page.addScriptTag({url:base+'/assets/js/member-photos-panel.js'});
  await page.evaluate(()=>window.SNHMemberPhotosPanel.init(['photos_admin']));
  await page.getByRole('button',{name:/Club night/}).click();
- await page.locator('#member-photos-upload-input').setInputFiles([{name:'first.png',mimeType:'image/png',buffer:Buffer.from('test')},{name:'second.png',mimeType:'image/png',buffer:Buffer.from('test')}]);
- await page.getByRole('button',{name:'Retry',exact:true}).waitFor();
+ await page.getByText('Edit album details',{exact:true}).click();
+ await page.locator('#member-photos-album-title').fill('Updated club night');
+ const transfer=await page.evaluateHandle(()=>{
+  const data=new DataTransfer();
+  for(const name of ['first.png','second.png']) data.items.add(new File(['synthetic'],name,{type:'image/png'}));
+  return data;
+ });
+ const zone=page.locator('#member-photos-drop-zone');
+ await zone.dispatchEvent('dragenter',{dataTransfer:transfer});
+ assert.ok(await zone.evaluate(e=>e.classList.contains('is-dragging')));
+ await zone.dispatchEvent('drop',{dataTransfer:transfer});
+ await page.waitForFunction(()=>document.querySelector('.photo-upload-job progress')?.value===10);
+ assert.equal(await page.locator('#member-photos-publish-album').isDisabled(),true,'publication waits for active upload');
+ assert.ok(await page.locator('#member-photos-batch-progress').evaluate(e=>e.value>0));
+ await page.waitForFunction(()=>document.querySelector('#member-photos-batch-summary').textContent==='1 of 2 photos ready · 1 need attention');
  assert.deepEqual(await page.evaluate(()=>testUploads),['first.png','second.png']);
- await page.getByRole('button',{name:'Retry',exact:true}).click();
- await page.waitForFunction(()=>document.querySelector('#member-photos-upload-jobs').textContent.includes('first.png: Ready to publish'));
+ assert.match(await page.locator('#member-photos-batch-summary').textContent(),/1 of 2.*1 need attention/);
+ await page.setViewportSize({width:1280,height:1000});
+ await page.screenshot({path:'/tmp/photo-editor-phase2-retry-desktop.png',fullPage:true});
+ await page.getByRole('button',{name:'Retry failed files',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('#member-photos-batch-summary').textContent==='2 of 2 photos ready');
  assert.deepEqual(await page.evaluate(()=>testUploads),['first.png','second.png','first.png']);
- await page.screenshot({path:'/tmp/photo-editor-mobile.png',fullPage:true});
+ assert.equal(await page.locator('#member-photos-batch-progress').evaluate(e=>e.value),100);
+ assert.equal(await page.locator('#member-photos-album-title').inputValue(),'Updated club night','unsaved details survive batch refresh');
+ await page.locator('.member-photos-asset').filter({hasText:'second.png'}).getByRole('button',{name:'Use as cover',exact:true}).click();
+ await page.getByRole('button',{name:'Selected cover',exact:true}).waitFor();
+ assert.equal(await page.evaluate(()=>editorAlbum.coverAssetId),assetId+'-second.png');
+ assert.equal(await page.evaluate(()=>editorAlbum.published),false,'cover selection does not publish');
+ assert.equal(await page.locator('.member-photos-asset.is-cover').count(),1);
+ await page.evaluate(()=>editorAssets.push({...editorAssets[0],id:'hidden-photo',status:'unpublished',originalFilename:'Intentionally hidden.png'}));
+ await page.getByRole('button',{name:'Publish album',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('#member-photos-status').textContent.includes('Album publication did not finish'));
+ assert.equal(await page.evaluate(()=>editorAlbum.published),false,'failed photo publication leaves the album draft');
+ await page.getByRole('button',{name:'Publish album',exact:true}).click();
+ await page.getByRole('button',{name:'Hide from gallery',exact:true}).waitFor();
+ assert.equal(await page.evaluate(()=>editorAlbum.published),true);
+ assert.equal(await page.evaluate(()=>editorAssets.filter(a=>a.id!=='hidden-photo').every(a=>a.status==='published')),true);
+ assert.deepEqual(await page.evaluate(()=>publishCalls),[assetId+'-second.png',assetId+'-first.png',assetId+'-first.png'],'retry publishes only remaining photos');
+ assert.equal(await page.evaluate(()=>editorAssets.find(a=>a.id==='hidden-photo').status),'unpublished','album publication preserves intentionally hidden photos');
+ assert.equal(await page.evaluate(()=>editorAlbum.title),'Updated club night');
+ await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:'/tmp/photo-editor-phase2-mobile.png',fullPage:true});
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile editor does not overflow');
+ await page.getByRole('button',{name:'Hide from gallery',exact:true}).click();
+ await page.getByRole('button',{name:'Publish album',exact:true}).waitFor();
+ assert.equal(await page.evaluate(()=>editorAlbum.published),false);
+ assert.deepEqual(await page.evaluate(()=>purgeCalls),[],'hiding album retains all photos');
+ await page.getByRole('button',{name:'Clear completed files',exact:true}).click();
+ assert.equal(await page.locator('#member-photos-batch').isVisible(),false);
  assert.deepEqual(errors,[]);
- console.log('Browser QA passed: real WebP conversion, gallery/filtering, keyboard lightbox/focus, mobile layout, multi-upload continuation and retry.');
+ console.log('Browser QA passed: WebP/EXIF conversion, gallery/lightbox, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

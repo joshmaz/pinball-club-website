@@ -1228,7 +1228,29 @@
     });
   }
 
-  async function uploadDerivativeToSignedUrl(intent, fileBlob, contentType) {
+  async function uploadDerivativeToSignedUrl(intent, fileBlob, contentType, onProgress) {
+    onProgress = onProgress || function () {};
+    if (typeof XMLHttpRequest === "function" && intent.signedUrl) {
+      await new Promise(function (resolve, reject) {
+        var request = new XMLHttpRequest();
+        request.open("PUT", intent.signedUrl);
+        request.setRequestHeader("Content-Type", contentType || "application/octet-stream");
+        request.timeout = 120000;
+        request.upload.onprogress = function (event) {
+          if (event.lengthComputable && event.total) onProgress(event.loaded / event.total);
+        };
+        request.onload = function () {
+          if (request.status >= 200 && request.status < 300) { onProgress(1); resolve(); return; }
+          var message = "Upload failed (HTTP " + request.status + ")";
+          try { var body = JSON.parse(request.responseText); message = body.message || body.error || message; } catch (_) {}
+          reject(new Error(message));
+        };
+        request.onerror = function () { reject(new Error("Connection interrupted. Retry this photo.")); };
+        request.ontimeout = function () { reject(new Error("Upload timed out. Retry this photo.")); };
+        request.send(fileBlob);
+      });
+      return;
+    }
     var client = getClient();
     if (client && intent && intent.objectKey && intent.token && intent.bucket) {
       var bucketRef = client.storage.from(intent.bucket);
@@ -1256,8 +1278,10 @@
   async function photoUploadAndRegister(albumId, file, job) {
     job = job || {};
     var progress = job.onProgress || function () {};
+    // Percentages combine conversion stages with actual derivative upload bytes.
     // Keep the reservation in the queue item so retry never duplicates a completed photo.
     if (!job.variants) job.variants = await window.SNHPhotoConversion.convert(file, progress);
+    progress("Preparing upload", 20);
     if (!job.intent) job.intent = await photoUploadIntent(albumId, "image/webp", job.variants[0].blob.size, file.name, job.existingAssetId);
     if (Date.parse(job.intent.expiresAt) < Date.now()) {
       job.intent = null; job.sent = {};
@@ -1267,17 +1291,21 @@
     for (var i = 0; i < job.intent.uploads.length; i += 1) {
       var target = job.intent.uploads[i];
       if (job.sent[target.variant]) continue;
-      progress("Uploading " + target.variant);
+      var start = target.variant === "web" ? 20 : 75;
+      var weight = target.variant === "web" ? 55 : 20;
+      var label = target.variant === "web" ? "Uploading photo" : "Uploading preview";
+      progress(label, start);
       var variant = job.variants.find(function (item) { return item.variant === target.variant; });
-      try { await uploadDerivativeToSignedUrl(target, variant.blob, "image/webp"); }
+      try { await uploadDerivativeToSignedUrl(target, variant.blob, "image/webp", function (fraction) { progress(label, start + fraction * weight); }); }
       catch (error) {
         // Signed URLs use insert-only semantics. A lost upload response may report an existing object.
         if (!/already exists|duplicate|resource already/i.test(error.message || "")) throw error;
       }
       job.sent[target.variant] = true;
     }
-    progress("Checking upload");
+    progress("Checking upload", 95);
     await callPhotoFunction("photo-finalize", { assetId: job.intent.assetId, uploadToken: job.intent.uploadToken });
+    progress("Ready to publish", 100);
     job.variants = null;
     return { assetId: job.intent.assetId };
   }

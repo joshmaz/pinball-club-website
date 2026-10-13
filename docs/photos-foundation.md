@@ -167,3 +167,11 @@ rejection, signed URLs, queued upload failure and storage deletion failure.
 
 References: [signed upload URL lifetime](https://supabase.com/docs/reference/javascript/file-buckets-createsigneduploadurl),
 [hosted Edge runtime limits](https://supabase.com/docs/guides/functions/limits).
+
+## Phase 2 editor update
+
+The volunteer editor now provides an album workspace with drag-and-drop uploads,
+per-file and batch progress, individual/batch retry, prominent cover selection,
+and a single album publishing action. See [implementation status](photo-management-2-status.md)
+for implemented features, hosted verification still needed, and retry/publication
+limitations. This frontend update adds no migration or Edge Function changes.

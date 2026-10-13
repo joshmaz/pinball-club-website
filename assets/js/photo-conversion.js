@@ -10,13 +10,14 @@
     if (!file || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('Choose a JPEG, PNG, or WebP photo.');
     if (!file.size || file.size > MAX_INPUT) throw new Error('Photos must be under 50 MB.');
     progress = progress || function () {};
-    progress('Converting');
+    progress('Reading photo', 1);
     var image;
     try {
       // Browser decoding applies EXIF orientation. Canvas output discards source metadata.
       image = await createImageBitmap(file, { imageOrientation: 'from-image' });
       if (image.width * image.height > 80000000) throw new Error('Photo is too large to process. Resize it and retry.');
       var output = [];
+      progress("Resizing photo", 5);
       for (var spec of [['web', 1920], ['thumb', 640]]) {
         var size = dimensions(image.width, image.height, spec[1]);
         var canvas = document.createElement('canvas');
@@ -28,6 +29,7 @@
         canvas.width = canvas.height = 1;
         if (!blob || blob.type !== 'image/webp') throw new Error('This browser cannot make WebP photos. Try a current browser.');
         if (blob.size > 8 * 1024 * 1024) throw new Error('Converted photo exceeds 8 MB. Resize it and retry.');
+        progress(spec[0] === "web" ? "Creating preview" : "Conversion complete", spec[0] === "web" ? 12 : 20);
         output.push({ variant: spec[0], blob: blob, width: size.width, height: size.height });
       }
       return output;
