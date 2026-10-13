@@ -2,6 +2,8 @@
 
 ## Foundation already implemented
 
+- Browser WebP encoding fallback for iOS: a bundled, lazy-loaded WebAssembly
+  worker handles browsers whose canvas returns PNG for a WebP request.
 - Browser JPEG/PNG/WebP conversion into WebP main (maximum 1920px) and thumbnail
   (maximum 640px), quality 0.82, without retaining new originals.
 - Authenticated upload reservation/finalization, public publication, private previews,
@@ -50,9 +52,18 @@
   Draft albums remain draft when a photo fails; already-public albums can show
   successfully published new photos while remaining failures await retry.
 - No server codec fallback is enabled: runtime viability has not been verified.
-  Unsupported input must be converted by the user before uploading.
+  Unsupported input formats must be converted by the user before uploading. Native
+  encoder limitations now use the browser WebAssembly fallback.
 - Cleanup retries are durable, but execution requires another cleanup/admin action;
   an unattended cleanup scheduler has not been configured.
 
 See [photos-foundation.md](photos-foundation.md) for the backend contract, release
 commands and verification procedure.
+
+## Follow-up testing
+
+The operator confirmed desktop uploads worked, then tested deletion of a newly
+uploaded photo. iOS Chrome reported native WebP encoding unavailable; the bundled
+worker addresses that path. Chromium and WebKit checks passed for actual WASM
+encoding, resize/orientation, backend acceptance and encoder download failure/retry.
+All 308 regression tests passed. A physical iOS retest remains necessary.

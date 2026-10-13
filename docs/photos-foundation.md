@@ -13,7 +13,11 @@ image; this is a product choice, not a DRM promise.
   80 million decoded pixels; each output is capped at 8 MB.
 - There is **no enabled server image-conversion fallback**. The retired
   ImageScript JPEG converter was not a verified hosted WebP fallback. Unsupported
-  browsers/formats receive an actionable error and a retry control.
+  formats receive an actionable error and a retry control. Browsers without native
+  canvas WebP encoding use a lazy-loaded local WebAssembly worker (@jsquash/webp
+  1.5.0 baseline libwebp, quality 82). Both derivatives remain on-device until
+  encoded; the worker terminates after each photo. No remote CDN or server codec
+  is used. Encoder load failures are retryable.
 - `photo-upload-intent` checks the caller's identity and Photos capability,
   allocates a pending row, and signs **insert-only private derivative** paths.
   Supabase signed upload URLs last two hours, not the old implementation's
@@ -156,7 +160,8 @@ node scripts/photo-management-browser.mjs
 
 Browser QA needs Playwright and Chromium. Set `PLAYWRIGHT_MODULE` and
 `PLAYWRIGHT_CHROMIUM` when using a separately installed runtime. It uses only a
-local server and synthetic/mocked data, including real canvas WebP conversion,
+local server and synthetic/mocked data, including native and bundled WASM WebP
+conversion, encoder download failure/retry, backend acceptance of fallback bytes,
 EXIF orientation, no enlargement, gallery filtering, keyboard/focus behavior,
 mobile layout, and multi-upload failure/continuation/retry. Database tests apply
 the actual photo migrations and exercise permissions, publication, cross-album
@@ -175,3 +180,6 @@ per-file and batch progress, individual/batch retry, prominent cover selection,
 and a single album publishing action. See [implementation status](photo-management-2-status.md)
 for implemented features, hosted verification still needed, and retry/publication
 limitations. This frontend update adds no migration or Edge Function changes.
+
+Run the same browser checks with `PLAYWRIGHT_BROWSER=webkit` for WebKit.
+`PLAYWRIGHT_WEBKIT` can point to a custom WebKit executable when needed.

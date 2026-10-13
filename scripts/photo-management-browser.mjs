@@ -5,7 +5,9 @@ import { createServer } from 'node:http';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const playwright = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const engineName = process.env.PLAYWRIGHT_BROWSER || 'chromium';
+const engine = playwright[engineName];
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const mime = {'.js':'text/javascript','.html':'text/html','.css':'text/css','.png':'image/png'};
 const server = createServer(async(req,res)=>{
@@ -19,7 +21,7 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const base=`http://127.0.0.1:${server.address().port}`;
 let browser;
 try {
- browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM || chromium.executablePath(),args:['--no-sandbox']});
+ browser=await engine.launch({headless:true,...(engineName==='chromium'?{executablePath:process.env.PLAYWRIGHT_CHROMIUM || engine.executablePath(),args:['--no-sandbox']}:(process.env.PLAYWRIGHT_WEBKIT?{executablePath:process.env.PLAYWRIGHT_WEBKIT}:{}))});
  const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const albumId='00000000-0000-0000-0000-000000000200';
  const assetId='00000000-0000-0000-0000-000000000100';
@@ -45,11 +47,14 @@ try {
  await page.goto(base+'/photos.html?album='+albumId);await page.getByRole('link',{name:'All albums',exact:true}).waitFor();
  // Real canvas/WebP encoding, resize limits, no enlargement, and metadata rejection behavior.
  await page.addScriptTag({url:base+'/assets/js/photo-conversion.js'});
- const conversion=await page.evaluate(async()=>{
+ let fallbackRequests=0;
+ page.on('request',request=>{if(request.url().includes('/assets/vendor/jsquash-webp/'))fallbackRequests++;});
+ const convertSamples=async()=>{
   const c=document.createElement('canvas');c.width=4200;c.height=2800;const ctx=c.getContext('2d');
   ctx.fillStyle='#153c42';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#ffa020';ctx.fillRect(0,0,1200,1800);
   const input=new File([await new Promise(r=>c.toBlob(r,'image/jpeg',0.9))],'large.jpg',{type:'image/jpeg'});
   const output=await SNHPhotoConversion.convert(input);
+  window.photoConvertedBytes=await Promise.all(output.map(async v=>Array.from(new Uint8Array(await v.blob.arrayBuffer()))));
   const result=[];
   for(const v of output){const decoded=await createImageBitmap(v.blob);result.push({variant:v.variant,width:decoded.width,height:decoded.height,type:v.blob.type});decoded.close();}
   c.width=200;c.height=100;const small=new File([await new Promise(r=>c.toBlob(r,'image/png'))],'small.png',{type:'image/png'});
@@ -59,10 +64,40 @@ try {
   const rotated=new File([jpg.slice(0,2),exif,jpg.slice(2)],'rotated.jpg',{type:'image/jpeg'});
   result.push(...(await SNHPhotoConversion.convert(rotated)).map(v=>({variant:v.variant,width:v.width,height:v.height})));
   return result;
- });
+ };
+ const conversion=await page.evaluate(convertSamples);
  assert.deepEqual(conversion.slice(0,2),[{variant:'web',width:1920,height:1280,type:'image/webp'},{variant:'thumb',width:640,height:427,type:'image/webp'}]);
  assert.ok(conversion.slice(2,4).every(v=>v.width===200 && v.height===100));
  assert.ok(conversion.slice(4).every(v=>v.width===100 && v.height===200),'EXIF rotation is applied');
+ // Safari/iOS behavior: requesting WebP from canvas yields PNG. Exercise the
+ // actual bundled WASM worker, with the same real resize/orientation samples.
+ if(engineName==='chromium') assert.equal(fallbackRequests,0,'native browsers do not download the fallback');
+ await page.evaluate(()=>{
+  const original=HTMLCanvasElement.prototype.toBlob;
+  window.restorePhotoToBlob=()=>{HTMLCanvasElement.prototype.toBlob=original;};
+  HTMLCanvasElement.prototype.toBlob=function(callback,type,quality){return original.call(this,callback,type==='image/webp'?'image/png':type,quality);};
+ });
+ await page.addScriptTag({url:base+'/assets/js/photo-conversion.js'});
+ const fallbackConversion=await page.evaluate(convertSamples);
+ assert.deepEqual(fallbackConversion,conversion,'WASM fallback preserves dimensions, WebP output and EXIF orientation');
+ assert.ok(fallbackRequests>=3,'fallback loads local codec JS, defaults and WASM');
+ const ts=require('typescript');
+ const shared=await readFile(path.join(root,'supabase/functions/_shared/photo-v2.ts'),'utf8');
+ const parserSource=ts.transpileModule(shared.replace(/^import .*?;\s*$/gm,'').replace(/^export /gm,''),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText;
+ const parseWebp=new Function(parserSource+';return webpDimensions;')();
+ const fallbackBytes=await page.evaluate(()=>photoConvertedBytes);
+ assert.deepEqual(fallbackBytes.map(bytes=>parseWebp(new Uint8Array(bytes))),[{width:1920,height:1280},{width:640,height:427}],'fallback bytes pass actual backend WebP validation');
+ // A load failure must produce a retryable error; conversion succeeds after retry.
+ await page.route('**/assets/vendor/jsquash-webp/webp_enc.wasm',route=>route.abort());
+ const failure=await page.evaluate(async()=>{
+  const c=document.createElement('canvas');c.width=c.height=10;
+  const file=new File([await new Promise(r=>c.toBlob(r,'image/png'))],'test.png',{type:'image/png'});
+  try {await SNHPhotoConversion.convert(file);return null;}catch(error){return error.message;}
+ });
+ assert.ok(failure,'failed WASM download is surfaced');
+ await page.unroute('**/assets/vendor/jsquash-webp/webp_enc.wasm');
+ assert.deepEqual(await page.evaluate(convertSamples),conversion,'retry after encoder load failure succeeds');
+ await page.evaluate(()=>restorePhotoToBlob());
  // Phase 2 volunteer workspace: drag/drop, weighted progress, retry, covers and one-action publication.
  await page.setContent('<main><div id="member-photos-status" role="status"></div><div id="member-photos-app"></div></main>');
  for(const stylesheet of ['styles.css','clubhouse.css','club-account.css']) await page.addStyleTag({url:base+'/assets/css/'+stylesheet});
@@ -150,5 +185,5 @@ try {
  await page.getByRole('button',{name:'Clear completed files',exact:true}).click();
  assert.equal(await page.locator('#member-photos-batch').isVisible(),false);
  assert.deepEqual(errors,[]);
- console.log('Browser QA passed: WebP/EXIF conversion, gallery/lightbox, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

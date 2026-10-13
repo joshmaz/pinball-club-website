@@ -1,5 +1,7 @@
 (function () {
   'use strict';
+  var workerUrl = new URL('photo-webp-worker.js', document.currentScript.src).href;
+  var nativeWebp;
   var MAX_INPUT = 50 * 1024 * 1024;
   function dimensions(width, height, max) {
     if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) throw new Error('Invalid photo dimensions.');
@@ -12,6 +14,26 @@
     progress = progress || function () {};
     progress('Reading photo', 1);
     var image;
+    var worker;
+    async function encodeFallback(context, size, stage) {
+      progress("Converting with compatible WebP encoder", stage);
+      worker = worker || new Worker(workerUrl, { type: "module" });
+      var pixels = context.getImageData(0, 0, size.width, size.height).data.buffer;
+      var buffer = await new Promise(function (resolve, reject) {
+        var timeout = setTimeout(function () { reject(new Error("Photo conversion timed out. Retry this photo.")); }, 120000);
+        worker.onmessage = function (event) {
+          clearTimeout(timeout);
+          if (event.data.error) reject(new Error(event.data.error));
+          else resolve(event.data.buffer);
+        };
+        worker.onerror = function () {
+          clearTimeout(timeout);
+          reject(new Error("Could not load the photo converter. Check your connection and retry."));
+        };
+        worker.postMessage({ pixels: pixels, width: size.width, height: size.height }, [pixels]);
+      });
+      return new Blob([buffer], { type: "image/webp" });
+    }
     try {
       // Browser decoding applies EXIF orientation. Canvas output discards source metadata.
       image = await createImageBitmap(file, { imageOrientation: 'from-image' });
@@ -25,9 +47,14 @@
         var context = canvas.getContext('2d');
         if (!context) throw new Error('Image conversion is unavailable.');
         context.drawImage(image, 0, 0, size.width, size.height);
-        var blob = await new Promise(function (resolve) { canvas.toBlob(resolve, 'image/webp', 0.82); });
-        canvas.width = canvas.height = 1;
-        if (!blob || blob.type !== 'image/webp') throw new Error('This browser cannot make WebP photos. Try a current browser.');
+        var blob;
+        try {
+          if (nativeWebp !== false) {
+            blob = await new Promise(function (resolve) { canvas.toBlob(resolve, 'image/webp', 0.82); });
+            nativeWebp = !!blob && blob.type === 'image/webp';
+          }
+          if (!nativeWebp) blob = await encodeFallback(context, size, spec[0] === "web" ? 5 : 12);
+        } finally { canvas.width = canvas.height = 1; }
         if (blob.size > 8 * 1024 * 1024) throw new Error('Converted photo exceeds 8 MB. Resize it and retry.');
         progress(spec[0] === "web" ? "Creating preview" : "Conversion complete", spec[0] === "web" ? 12 : 20);
         output.push({ variant: spec[0], blob: blob, width: size.width, height: size.height });
@@ -35,7 +62,7 @@
       return output;
     } catch (error) {
       throw new Error(error.message || 'Photo could not be converted. Try a JPEG, PNG, or WebP image.');
-    } finally { if (image && image.close) image.close(); }
+    } finally { if (worker) worker.terminate(); if (image && image.close) image.close(); }
   }
   window.SNHPhotoConversion = { convert: convert, dimensions: dimensions };
 })();
