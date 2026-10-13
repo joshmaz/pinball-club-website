@@ -137,10 +137,12 @@ try {
  await page.evaluate(({albumId,assetId})=>{
   window.testUploads=[]; window.failOnce=true; window.failPublishOnce=true; window.publishCalls=[]; window.albumSaves=[]; window.purgeCalls=[];
   window.editorAlbum={id:albumId,title:'Club night',slug:'club-night',published:false,coverAssetId:null,assetCounts:{total:0}};
-  window.editorAssets=[];
+  window.editorAssets=[]; window.extraAlbums=[]; window.galleryOrder={mode:'custom',revision:1}; window.orderSaves=[]; window.failOrder=false;
   const copy=value=>JSON.parse(JSON.stringify(value));
   window.SNHMemberPortal={
-   photoAlbumsListEditor:async()=>[copy({...editorAlbum,assetCounts:{total:editorAssets.length,published:editorAssets.filter(a=>a.status==='published').length}})],
+   photoAlbumsListEditor:async()=>[copy({...editorAlbum,sortPosition:editorAlbum.sortPosition || 0,assetCounts:{total:editorAssets.length,published:editorAssets.filter(a=>a.status==='published').length}}),...copy(extraAlbums)],
+   photoAlbumOrderSettings:async()=>copy(galleryOrder),
+   photoAlbumOrderSave:async(mode,ids,revision)=>{if(failOrder){failOrder=false;throw new Error('Album order changed. Cancel and reopen the sorter.');}orderSaves.push({mode,ids:ids.slice(),revision});if(mode==='custom')ids.forEach((id,i)=>{const a=id===editorAlbum.id?editorAlbum:extraAlbums.find(a=>a.id===id);a.sortPosition=i+1;});galleryOrder={mode,revision:revision+1};return copy(galleryOrder);},
    photoAssetsListEditor:async()=>copy(editorAssets),photoEventsListForPhotoLink:async()=>[],
    photoUploadAndRegister:async(album,file,job)=>{
     testUploads.push(file.name); job.onProgress('Converting',10);
@@ -167,10 +169,8 @@ try {
  await page.evaluate(()=>window.SNHMemberPhotosPanel.init(['photos_admin']));
  await page.getByRole('button',{name:/Club night/}).click();
  await page.getByText('Edit album details',{exact:true}).click();
- assert.equal(await page.locator('#member-photos-album-sort').inputValue(),'0');
- assert.match(await page.locator('#member-photos-order-hint').textContent(),/Lower numbers appear first.*10, 20, 30.*alphabetically/);
+ assert.equal(await page.locator('#member-photos-album-sort').count(),0,'album position numbers are not shown');
  await page.locator('#member-photos-album-title').fill('Updated club night');
- await page.locator('#member-photos-album-sort').fill('15');
  const transfer=await page.evaluateHandle(()=>{
   const data=new DataTransfer();
   for(const name of ['first.png','second.png']) data.items.add(new File(['synthetic'],name,{type:'image/png'}));
@@ -197,7 +197,6 @@ try {
  await page.getByRole('button',{name:'Selected cover',exact:true}).waitFor();
  assert.equal(await page.evaluate(()=>editorAlbum.coverAssetId),assetId+'-second.png');
  assert.equal(await page.evaluate(()=>editorAlbum.published),false,'cover selection does not publish');
- assert.equal(await page.evaluate(()=>editorAlbum.sortPosition),15,'album order is saved with details');
  assert.equal(await page.locator('.member-photos-asset.is-cover').count(),1);
  await page.evaluate(()=>editorAssets.push({...editorAssets[0],id:'hidden-photo',status:'unpublished',originalFilename:'Intentionally hidden.png'}));
  await page.getByRole('button',{name:'Publish album',exact:true}).click();
@@ -220,7 +219,51 @@ try {
  await page.getByRole('button',{name:'Clear completed files',exact:true}).click();
  assert.equal(await page.locator('#member-photos-batch').isVisible(),false);
  await page.getByRole('button',{name:'New album',exact:true}).click();
- assert.equal(await page.locator('#member-photos-album-sort').inputValue(),'25','new albums follow the current last position with a gap of ten');
+ assert.equal(await page.locator('#member-photos-album-sort').count(),0);
+ await page.evaluate(()=>extraAlbums=[{id:'album-two',title:'Second album',published:false,sortPosition:1,displayAt:'2025-01-01'}, {id:'album-three',title:'Third album',published:true,sortPosition:2,displayAt:'2026-01-01'}]);
+ await page.getByRole('button',{name:'Refresh albums',exact:true}).click();
+ await page.getByRole('button',{name:'Arrange albums',exact:true}).click();
+ await page.locator('#photo-album-order-mode').waitFor();
+ assert.equal(await page.locator('#member-photos-album-sort').count(),0);
+ await page.getByRole('button',{name:'Move to top: Third album',exact:true}).click();
+ assert.deepEqual(await page.locator('.photo-sort-row').evaluateAll(rows=>rows.map(r=>r.dataset.albumId)),['album-three',albumId,'album-two']);
+ assert.ok(await page.locator('#photo-sort-album-three').evaluate(e=>e.contains(document.activeElement)),'move actions retain keyboard focus');
+ await page.screenshot({path:'/tmp/photo-album-sorter-mobile.png',fullPage:true});
+ await page.getByRole('button',{name:'Cancel',exact:true}).click();
+ assert.deepEqual(await page.evaluate(()=>orderSaves),[],'cancel does not persist ordering');
+ await page.getByRole('button',{name:'Arrange albums',exact:true}).click();
+ await page.locator('#photo-album-order-mode').waitFor();
+ const reorderTransfer=await page.evaluateHandle(()=>new DataTransfer());
+ await page.locator('#photo-sort-album-three .photo-sort-handle').dispatchEvent('dragstart',{dataTransfer:reorderTransfer});
+ await page.locator('#photo-sort-'+albumId).dispatchEvent('drop',{dataTransfer:reorderTransfer});
+ assert.equal(await page.locator('.photo-sort-row').first().getAttribute('data-album-id'),'album-three','drag reorders albums');
+ await page.getByRole('button',{name:'Save order',exact:true}).click();
+ await page.getByRole('button',{name:'Arrange albums',exact:true}).waitFor();
+ assert.deepEqual(await page.evaluate(()=>orderSaves[0].ids),['album-three',albumId,'album-two']);
+ await page.getByRole('button',{name:'Arrange albums',exact:true}).click();
+ await page.locator('#photo-album-order-mode').selectOption('newest');
+ assert.equal(await page.locator('.photo-sort-row').first().getAttribute('data-album-id'),'album-three');
+ assert.equal(await page.getByRole('button',{name:/Move up:/}).count(),0,'automatic mode has no manual moves');
+ await page.evaluate(()=>failOrder=true);
+ await page.getByRole('button',{name:'Save order',exact:true}).click();
+ await page.getByText('Album order changed. Cancel and reopen the sorter.',{exact:true}).waitFor();
+ assert.equal(await page.locator('#photo-album-order-mode').count(),1,'save errors keep the draft available');
+ await page.getByRole('button',{name:'Save order',exact:true}).click();
+ await page.getByText('Newest albums first',{exact:true}).waitFor();
+ assert.equal(await page.evaluate(()=>orderSaves.at(-1).mode),'newest');
+ await page.getByRole('button',{name:'Arrange albums',exact:true}).click();
+ await page.locator('#photo-album-order-mode').selectOption('custom');
+ assert.deepEqual(await page.locator('.photo-sort-row').evaluateAll(rows=>rows.map(r=>r.dataset.albumId)),['album-three',albumId,'album-two'],'automatic mode preserves saved custom sequence');
+ await page.getByRole('button',{name:'Cancel',exact:true}).click();
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile sorter does not overflow');
+ await page.evaluate(()=>SNHMemberPortal.photoAlbumOrderSettings=async()=>{throw new Error('missing migration');});
+ await page.getByRole('button',{name:'Refresh albums',exact:true}).click();
+ assert.equal(await page.getByRole('button',{name:'Arrange albums',exact:true}).isDisabled(),true,'missing migration disables sorter safely');
+ await page.getByRole('button',{name:/Updated club night/}).click();
+ await page.getByText('Edit album details',{exact:true}).click();
+ await page.getByRole('button',{name:'Save details',exact:true}).click();
+ await page.getByText('Album details saved.',{exact:true}).waitFor();
+ assert.equal(await page.evaluate(()=>albumSaves.at(-1).sortPosition),2,'old-backend metadata saves preserve album position');
  assert.deepEqual(errors,[]);
- console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, ordering convention, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

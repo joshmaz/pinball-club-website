@@ -1094,6 +1094,17 @@
     return parseRpcJson(result.data) || [];
   }
 
+  async function photoAlbumOrderSettings() {
+    var result = await getClient().rpc("snh_photo_album_order_settings");
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+  async function photoAlbumOrderSave(mode, ids, revision) {
+    var result = await getClient().rpc("snh_photo_album_order_save", { p_mode: mode, p_album_ids: ids, p_revision: revision });
+    if (result.error) throw result.error;
+    return parseRpcJson(result.data);
+  }
+
   async function photoAlbumUpsert(albumId, fields) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1432,6 +1443,8 @@
     publicGameMoreInfo: publicGameMoreInfo,
     photoAlbumsListEditor: photoAlbumsListEditor,
     photoAlbumUpsert: photoAlbumUpsert,
+    photoAlbumOrderSettings: photoAlbumOrderSettings,
+    photoAlbumOrderSave: photoAlbumOrderSave,
     photoAlbumDelete: photoAlbumDelete,
     photoAssetsListEditor: photoAssetsListEditor,
     photoAssetSetMetadata: photoAssetSetMetadata,

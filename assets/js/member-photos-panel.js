@@ -19,6 +19,9 @@
   var publishing = false;
   var albumDrafts = {};
   var publicationStatus = "";
+  var orderSettings = null;
+  var orderDraft = null;
+  var orderSaving = false;
   var selectedAlbumId = null;
   var assetsByAlbum = {};
   var eventsForLink = [];
@@ -107,7 +110,7 @@
     var form = document.getElementById("member-photos-album-form");
     return form && form.photoFields ? form.photoFields() : {
       slug: album.slug, title: album.title, description: album.description,
-      sortPosition: album.sortPosition, published: album.published,
+      published: album.published,
       includeInHighlights: album.includeInHighlights, eventId: album.eventId, displayAt: album.displayAt
     };
   }
@@ -138,12 +141,6 @@
     event.value = values.eventId || "";
     form.appendChild(event);
 
-    var defaultOrder = album ? 0 : Math.max.apply(null, [0].concat(albumsCache.map(function (item) { return Number(item.sortPosition) || 0; }))) + 10;
-    var order = field("Album order", "member-photos-album-sort", "number", values.sortPosition != null ? String(values.sortPosition) : String(defaultOrder));
-    order.step = "1";
-    var orderHint = el("p", { id: "member-photos-order-hint", className: "member-form-hint", text: "Lower numbers appear first. Use 10, 20, 30 to leave room for albums in between. Albums with the same number sort alphabetically by title." });
-    order.setAttribute("aria-describedby", orderHint.id);
-    form.appendChild(orderHint);
     var optional = el("details", { className: "photo-optional-settings" });
     optional.appendChild(el("summary", { text: "More album options" }));
     var slug = field("Album URL", "member-photos-album-slug", "text", values.slug, 80);
@@ -164,9 +161,12 @@
       if (!album) slug.value = title.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "album";
     });
     form.photoFields = function () {
-      return { title: title.value.trim(), description: description.value.trim(), slug: slug.value.trim().toLowerCase(),
-        sortPosition: Number(order.value || 0) || 0, displayAt: date.value ? new Date(date.value).toISOString() : null,
+      var fields = { title: title.value.trim(), description: description.value.trim(), slug: slug.value.trim().toLowerCase(),
+        displayAt: date.value ? new Date(date.value).toISOString() : null,
         eventId: event.value || null, includeInHighlights: highlights.checked, published: !!(album && album.published) };
+      // Keep old-backend metadata edits safe until the ordering migration is applied.
+      if (!orderSettings && album) fields.sortPosition = album.sortPosition || 0;
+      return fields;
     };
     function remember() { albumDrafts[key] = form.photoFields(); }
     form.addEventListener("input", remember);
@@ -650,6 +650,8 @@
   async function refreshAlbums() {
     try {
       albumsCache = await window.SNHMemberPortal.photoAlbumsListEditor();
+      try { orderSettings = await window.SNHMemberPortal.photoAlbumOrderSettings(); }
+      catch (_) { orderSettings = null; }
     } catch (err) {
       albumsCache = [];
       throw err;
@@ -669,9 +671,76 @@
     }
   }
 
+  function buildAlbumSorter() {
+    var panel = el("section", { className: "photo-album-sorter", "aria-label": "Arrange albums" });
+    panel.appendChild(el("h3", { text: "Arrange albums" }));
+    var label = el("label", { for: "photo-album-order-mode", text: "Gallery order" }); panel.appendChild(label);
+    var mode = el("select", { id: "photo-album-order-mode" });
+    mode.appendChild(el("option", { value: "newest", text: "Newest first" }));
+    mode.appendChild(el("option", { value: "custom", text: "Custom order" }));
+    mode.value = orderDraft.mode; mode.disabled = orderSaving;
+    mode.onchange = function () { orderDraft.mode = mode.value; void renderApp(); };
+    panel.appendChild(mode);
+    panel.appendChild(el("p", { className: "member-form-hint", text: orderDraft.mode === "newest" ? "Automatic order uses the album date, then its event date, then the date it was created." : "Drag albums into order, or use the move buttons. New albums go to the top. Changes appear in the gallery only after saving." }));
+    var ids = orderDraft.ids.slice();
+    if (orderDraft.mode === "newest") ids.sort(function (a, b) {
+      function date(id) { var album = albumsCache.find(function (item) { return item.id === id; }); return Date.parse(album.displayAt || album.eventStartsAt || album.createdAt) || 0; }
+      return date(b) - date(a) || albumsCache.find(function (item) { return item.id === a; }).title.toLowerCase().localeCompare(albumsCache.find(function (item) { return item.id === b; }).title.toLowerCase());
+    });
+    var list = el("ul", { className: "photo-sort-list" }); var dragged;
+    function move(id, target) {
+      var from = orderDraft.ids.indexOf(id);
+      orderDraft.ids.splice(from, 1); orderDraft.ids.splice(target, 0, id);
+      void renderApp().then(function () { var row = document.getElementById("photo-sort-" + id); if (row) row.querySelector("button:not(:disabled)").focus(); });
+    }
+    ids.forEach(function (id, index) {
+      var album = albumsCache.find(function (item) { return item.id === id; });
+      var row = el("li", { id: "photo-sort-" + id, className: "photo-sort-row", "data-album-id": id });
+      var custom = orderDraft.mode === "custom" && !orderSaving;
+      var handle = el("span", { className: "photo-sort-handle", text: custom ? "↕" : "", "aria-hidden": "true" });
+      // Drag begins on the handle; move buttons provide touch and keyboard alternatives.
+      handle.draggable = custom;
+      handle.ondragstart = function (event) { dragged = id; event.dataTransfer.setData("text/plain", id); event.dataTransfer.effectAllowed = "move"; };
+      row.ondragover = function (event) { if (custom && dragged) { event.preventDefault(); event.dataTransfer.dropEffect = "move"; } };
+      row.ondrop = function (event) { if (custom && dragged) { event.preventDefault(); move(dragged, orderDraft.ids.indexOf(id)); dragged = null; } };
+      handle.ondragend = function () { dragged = null; };
+      row.appendChild(handle);
+      var assets = assetsByAlbum[id] || [];
+      var cover = assets.find(function (asset) { return asset.id === album.coverAssetId; }) || assets.find(function (asset) { return pickVariant(asset, "thumb") || pickVariant(asset, "web"); });
+      if (cover) { var image = el("img", { className: "photo-sort-cover", alt: "" }); setPhotoPreview(image, cover); row.appendChild(image); }
+      var title = el("div", { className: "photo-sort-title" });
+      title.appendChild(el("strong", { text: album.title })); title.appendChild(el("span", { text: album.published ? "Published" : "Draft" })); row.appendChild(title);
+      if (orderDraft.mode === "custom") {
+        var actions = el("div", { className: "photo-action-row" });
+        [["Move to top",0,index===0],["Move up",index-1,index===0],["Move down",index+1,index===ids.length-1]].forEach(function (action) {
+          var button = el("button", { type: "button", text: action[0], "aria-label": action[0] + ": " + album.title });
+          button.disabled = orderSaving || action[2]; button.onclick = function () { move(id,action[1]); }; actions.appendChild(button);
+        }); row.appendChild(actions);
+      }
+      list.appendChild(row);
+    });
+    panel.appendChild(list);
+    var actions = el("div", { className: "photo-action-row" });
+    var save = el("button", { type: "button", className: "photo-primary-action", text: orderSaving ? "Saving order…" : "Save order" });
+    save.disabled = orderSaving;
+    save.onclick = async function () {
+      orderSaving = true; await renderApp();
+      try {
+        await window.SNHMemberPortal.photoAlbumOrderSave(orderDraft.mode,orderDraft.ids,orderDraft.revision);
+        orderDraft = null; await refreshAlbums(); setStatus("Album order saved.");
+      } catch (error) { setStatus(friendlyError(error),"error"); }
+      finally { orderSaving = false; await renderApp(); }
+    };
+    var cancel = el("button", { type: "button", text: "Cancel" }); cancel.disabled = orderSaving;
+    cancel.onclick = async function () { orderDraft = null; try { await refreshAlbums(); } catch (error) { setStatus(friendlyError(error), "error"); } await renderApp(); };
+    actions.appendChild(save); actions.appendChild(cancel); panel.appendChild(actions);
+    return panel;
+  }
+
   async function renderApp() {
     if (!appEl) return;
     appEl.replaceChildren();
+    if (orderDraft) { appEl.appendChild(buildAlbumSorter()); return; }
     var layout = el("div", { className: "member-photos-layout photo-workspace" });
     var library = el("aside", { className: "photo-album-library", "aria-label": "Your photo albums" });
     library.appendChild(el("h3", { text: "Albums" }));
@@ -679,6 +748,21 @@
     newAlbum.disabled = publishing;
     newAlbum.onclick = function () { selectedAlbumId = null; void renderApp(); };
     library.appendChild(newAlbum);
+    var arrange = el("button", { type: "button", text: "Arrange albums" });
+    arrange.disabled = publishing || uploading || !orderSettings;
+    arrange.onclick = async function () {
+      arrange.disabled = true;
+      try {
+      await refreshAlbums();
+      if (!orderSettings) throw new Error("Album ordering needs the database update.");
+      orderDraft = { mode: orderSettings.mode, revision: orderSettings.revision, ids: albumsCache.slice().sort(function (a,b) { return a.sortPosition-b.sortPosition || a.title.toLowerCase().localeCompare(b.title.toLowerCase()); }).map(function (album) { return album.id; }) };
+      // A small collection permits cover previews without a new listing API.
+      await Promise.all(albumsCache.map(function (album) { return refreshAssets(album.id).catch(function () {}); }));
+      await renderApp();
+      } catch (error) { setStatus(friendlyError(error), "error"); arrange.disabled = false; }
+    };
+    library.appendChild(arrange);
+    library.appendChild(el("p", { className: "member-form-hint", text: orderSettings ? (orderSettings.mode === "newest" ? "Newest albums first" : "Custom album order") : "Album ordering is unavailable until the database update is applied." }));
     if (!albumsCache.length) library.appendChild(el("p", { text: "Create an album to get started." }));
     var list = el("ul", { className: "member-photos-album-list" });
     albumsCache.forEach(function (album) {
@@ -687,7 +771,7 @@
       button.disabled = publishing;
       button.appendChild(el("strong", { text: album.title || "Untitled album" }));
       var counts = album.assetCounts || {};
-      button.appendChild(el("span", { text: (album.published ? "Published" : "Draft") + " · " + (counts.total || 0) + " photos · Order " + (album.sortPosition || 0) }));
+      button.appendChild(el("span", { text: (album.published ? "Published" : "Draft") + " · " + (counts.total || 0) + " photos" }));
       button.onclick = function () {
         selectedAlbumId = String(album.id);
         void refreshAssets(selectedAlbumId).then(renderApp).catch(function (error) { setStatus(friendlyError(error), "error"); });

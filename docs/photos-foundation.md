@@ -192,10 +192,32 @@ Closing an album removes its grid. Direct album links open the requested album;
 event links show matching album summaries. Lightbox navigation spans the full
 album and loads the main variant only when viewed.
 
-Album order uses the existing database sort: smaller `sortPosition` first, then
-case-insensitive title for ties. Use 10, 20, 30, leaving space to insert an album
-at 15. The editor shows this convention and defaults new albums to the current
-maximum order plus 10. Existing orders are preserved. No migration is required.
+Album ordering is controlled by **Arrange albums** in the member editor:
+- **Newest first** uses album display date, then linked event date, then creation
+  date. The public gallery and editor library use the same database ordering.
+- **Custom order** uses cover/title/status rows with drag handles, Move to top,
+  Move up/down, Save order and Cancel. No album position numbers are shown.
+  New albums go to the top and keep the relative order of existing albums.
+- Switching to newest-first preserves the stored custom sequence. Switching back
+  to custom starts from that sequence. Existing order remains custom on migration.
+- Saves are atomic, Photos-role restricted and reject stale revisions, added or
+  deleted albums, duplicates, missing albums and unknown album IDs. A stale-save
+  error leaves the draft available; Cancel and reopen to load the latest state.
+
+## Ordering migration — operator action after review
+
+This follow-up requires `20261013140000_photo_album_ordering.sql`, applied after
+`20261013120000_photo_management_v2.sql`. From the linked repository:
+
+```sh
+npx supabase db push --linked --dry-run
+npx supabase db push --linked
+```
+
+The dry run should list only the expected outstanding migration(s). No additional
+Edge Function deployment or secret is required. Apply the migration before the
+reviewed website release. Without it, Arrange albums is disabled and existing
+metadata saves retain their positions. No hosted migration was run by the agent.
 
 These changes bound initial image/DOM work. The current public RPC still returns
 all published metadata; server-side pagination remains a future scaling step.

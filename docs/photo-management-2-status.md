@@ -12,8 +12,10 @@
 - Public albums, filtering, keyboard lightbox and no download button. Album summaries
   start collapsed, with 12 albums per reveal and 24 thumbnails per reveal. Closing
   an album removes its grid; direct album links open the requested album.
-- Album ordering: smaller numbers first, alphabetical title for ties. The editor
-  recommends 10, 20, 30 and defaults new albums to the current maximum plus 10.
+- Visual album ordering: Newest first or Custom order, with drag handles, move
+  buttons, Save/Cancel and no visible album position numbers. Existing order is
+  preserved on migration; new albums go to the top in custom mode. Saves are atomic
+  and reject stale edits. Newest first uses album date, event date, then creation.
 - Event album links and reusable event promotional photos.
 - Photos navigation after Merch and before Resources.
 - Effective roles and existing Games/Merch image systems preserved.
@@ -51,7 +53,9 @@
   use synthetic files and mocked services; they do not prove hosted Storage behavior.
 - The operator reported applying migration 20261013120000 and deploying finalize,
   publish and purge. Deployment of photo-upload-intent has not been confirmed.
-- Phase 2 itself needs no additional migration or function deployment; it needs the
+- The visual sorter requires migration 20261013140000_photo_album_ordering.sql;
+  no additional Edge Function deployment is needed. The earlier Phase 2 editor
+  layout needed no additional migration or function deployment; it needs the
   updated website assets after review. The PR stays open; no production deployment
   or merge was performed by the agent.
 - Retry state is page-local; it does not resume after reload or browser closure.

@@ -211,3 +211,13 @@
 
 .club-account .photo-workspace button { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; font-size: .85rem; cursor: pointer; }
 .club-account .photo-workspace .photo-primary-action { background: var(--club-teal); color: var(--club-surface); font-weight: 700; }
+
+.club-account .photo-album-sorter { max-width: 60rem; padding: 1.5rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.club-account .photo-sort-list { list-style: none; padding: 0; }
+.club-account .photo-sort-row { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; border: 1px solid var(--club-line); border-radius: .5rem; padding: .8rem; margin-block: .6rem; }
+.club-account .photo-sort-handle { cursor: grab; padding: .7rem; font-size: 1.4rem; }
+.club-account .photo-sort-cover { width: 72px; height: 54px; object-fit: cover; border-radius: .3rem; }
+.club-account .photo-sort-title { flex: 1 1 10rem; min-width: 0; display: grid; gap: .3rem; overflow-wrap: anywhere; }
+.club-account .photo-sort-title span { font-size: .85rem; }
+.club-account .photo-album-sorter :is(button,select) { min-height: 44px; padding: .6rem .8rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); background: var(--club-surface); color: var(--club-ink); font: inherit; cursor: pointer; }
+.club-account .photo-album-sorter .photo-primary-action { background: var(--club-teal); color: var(--club-surface); }

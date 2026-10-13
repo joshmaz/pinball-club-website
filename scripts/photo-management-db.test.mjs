@@ -22,7 +22,7 @@ export async function photoDb() {
   `);
   for (const name of ['20260512100000_photos_foundation.sql','20260512120000_photos_rpcs.sql',
     '20260519090000_photo_albums_events_schema.sql','20260519091000_photo_albums_events_rpcs.sql',
-    '20260522140000_photo_album_include_in_highlights.sql','20261013120000_photo_management_v2.sql']) {
+    '20260522140000_photo_album_include_in_highlights.sql','20261013120000_photo_management_v2.sql','20261013140000_photo_album_ordering.sql']) {
     try { await db.exec((await read(name)).replace('create extension if not exists pgcrypto;', '')); } catch(e) { console.error(name,e.position,e.internalPosition,e.internalQuery);throw e; }
   }
   await db.exec('grant select on photo_albums,photo_assets,photo_asset_variants to anon,authenticated;grant usage on schema auth to anon,authenticated;');
