@@ -49,3 +49,5 @@
 .clubhouse .events-empty-upcoming h2 { margin: 0 0 .75rem; font-size: 1.6rem; letter-spacing: -.03em; }
 .clubhouse .events-empty-upcoming p { max-width: 60ch; margin: 0 0 .75rem; color: var(--club-muted); }
 .clubhouse .events-empty-upcoming .events-add-link { margin-top: .25rem; }
+
+.clubhouse #events-container .event-card--linked { border-color: var(--club-teal); scroll-margin-top: 1rem; }

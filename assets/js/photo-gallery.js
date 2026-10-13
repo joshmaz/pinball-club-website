@@ -86,7 +86,15 @@
         actions.appendChild(editActions); body.appendChild(actions);
         updateEditActions();
         if (album.description) body.appendChild(node('p', album.description));
-        if (album.eventTitle) body.appendChild(node('p', 'From ' + album.eventTitle));
+        if (album.eventTitle) {
+          var eventLine = node('p', 'From ');
+          if (album.eventId) {
+            var eventLink = node('a', album.eventTitle);
+            eventLink.href = 'events.html?event=' + encodeURIComponent(album.eventId);
+            eventLine.appendChild(eventLink);
+          } else eventLine.appendChild(document.createTextNode(album.eventTitle));
+          body.appendChild(eventLine);
+        }
         var date = album.displayAt || album.eventStartsAt;
         if (date && !isNaN(Date.parse(date))) body.appendChild(node('p', new Date(date).toLocaleDateString('en-US', { timeZone: 'America/New_York', dateStyle: 'long' })));
         var grid = node('div'); grid.className = 'photos-grid'; body.appendChild(grid);

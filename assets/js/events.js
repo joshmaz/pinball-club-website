@@ -3,6 +3,18 @@
 // If loading fails, an on-page error message is shown with debug details.
 let eventsCanManage = false;
 let eventsPhotoAlbums = [];
+let linkedEventFocused = false;
+function linkedEventId() {
+  return typeof window !== 'undefined' && window.location?.search ? new URLSearchParams(window.location.search).get('event') || '' : '';
+}
+function revealLinkedEvent(refocus = false) {
+  if ((linkedEventFocused && !refocus) || !linkedEventId()) return;
+  const card = document.getElementById('event-' + linkedEventId());
+  if (!card) return;
+  if (!linkedEventFocused) card.scrollIntoView({ block: 'start' });
+  linkedEventFocused = true;
+  card.focus({ preventScroll: true });
+}
 
 async function currentUserCanManageEvents() {
   if (!window.SNHSiteAuth) return false;
@@ -159,6 +171,8 @@ function createEventCard(event, options = {}) {
   const { isUpcoming = false } = options;
   const div = document.createElement('div');
   div.className = 'event-card';
+  if (event.id) div.id = 'event-' + event.id;
+  if (event.id && String(event.id) === linkedEventId()) { div.classList.add('event-card--linked'); div.tabIndex = -1; }
   div.classList.add(isUpcoming ? 'event-card--upcoming' : 'event-card--past');
 
   const date = eventCalendarDate(event);
@@ -368,7 +382,8 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
     return;
   }
 
-  let selectedIndex = null;
+  const targetIndex = linkedEventId() ? pastByYearList.findIndex(group => group.events.some(event => String(event.id || '') === linkedEventId())) : -1;
+  let selectedIndex = targetIndex >= 0 ? targetIndex : null;
 
   const hint = document.createElement('p');
   hint.id = 'events-past-year-hint';
@@ -494,6 +509,7 @@ function createAddEventLink() {
 }
 
 function renderEventsList(container, events) {
+  const refocusLinked = !!linkedEventId() && document.activeElement?.id === 'event-' + linkedEventId();
   container.innerHTML = '';
   const { upcoming, past } = splitUpcomingAndPast(events);
 
@@ -545,9 +561,7 @@ function renderEventsList(container, events) {
     }
   }
 
-  if (past.length === 0) {
-    return;
-  }
+  if (past.length === 0) { revealLinkedEvent(refocusLinked); return; }
 
   const region = document.createElement('div');
   region.id = 'events-past-region';
@@ -563,6 +577,7 @@ function renderEventsList(container, events) {
   renderPastEventsYearNavigator(region, pastByYearList);
 
   container.appendChild(region);
+  revealLinkedEvent(refocusLinked);
 }
 
 async function loadEvents() {

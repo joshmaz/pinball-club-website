@@ -317,6 +317,24 @@ try {
  await page.getByRole('link',{name:'Back to public album'}).click();
  await page.waitForFunction(()=>document.querySelector('.photos-album')?.open);
  assert.equal(new URL(page.url()).searchParams.get('album'),albumId,'return navigation opens the same public album');
+ // Follow the album's linked event using the actual public Events page/script.
+ const eventFixture={id:'event-one',title:'Pinball night',date:'2020-04-11T12:00:00Z',starts_at:'2020-04-11T12:00:00Z',location:'Club',description:'Past event',published:true};
+ await page.route('**/assets/js/public-data.js',route=>route.fulfill({contentType:'text/javascript',body:'window.SNHPublicData={loadEvents:async()=>({data:['+JSON.stringify(eventFixture)+','+JSON.stringify({...eventFixture,id:'future-event',title:'Future event',date:'2030-04-11T12:00:00Z',starts_at:'2030-04-11T12:00:00Z'})+'],source:"database"}),sourceLabel:()=>"Test data"};'}));
+ const eventLink=page.getByRole('link',{name:'Pinball night',exact:true});
+ assert.equal(await eventLink.getAttribute('href'),'events.html?event=event-one');
+ await eventLink.click();
+ await page.locator('#event-event-one').waitFor();
+ assert.equal(new URL(page.url()).searchParams.get('event'),'event-one');
+ assert.equal(await page.locator('.events-past-current-year').textContent(),'2020','past event links open the matching archive year');
+ assert.equal(await page.locator('#event-event-one').isVisible(),true);
+ await page.waitForFunction(()=>document.activeElement?.id==='event-event-one');
+ await page.goto(base+'/events.html?event=future-event');
+ await page.locator('#event-future-event.event-card--linked').waitFor();
+ assert.equal(await page.locator('.events-past-year-panel').isVisible(),false,'upcoming event links preserve collapsed archive');
+ await page.goto(base+'/events.html?event=missing-event');
+ await page.getByRole('heading',{name:'Future event',exact:true}).waitFor();
+ assert.equal(await page.locator('.event-card--linked').count(),0,'unknown event links do not select a different event');
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'linked event fits mobile layout');
  assert.deepEqual(errors,[]);
- console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, individual album view links, event digest links, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, individual album view links, album-to-event links (past/upcoming/missing), event digest links, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
