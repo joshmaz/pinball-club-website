@@ -227,3 +227,14 @@
 .club-account .photo-album-sorter .photo-primary-action { background: var(--club-teal); color: var(--club-surface); }
 
 .club-account .photo-album-sorter button:disabled { opacity: .5; cursor: not-allowed; }
+
+.club-account .photo-photo-sorter { max-width: none; }
+.club-account .photo-sort-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(15rem,100%),1fr)); gap: .8rem; padding: 0; list-style: none; }
+.club-account .photo-sort-card { display: flex; flex-direction: column; gap: .6rem; min-width: 0; padding: .8rem; border: 1px solid var(--club-line); border-radius: .5rem; overflow-wrap: anywhere; }
+.club-account .photo-sort-image { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: .3rem; }
+.club-account .photo-sort-card > .photo-action-row { margin-top: auto; }
+@media (max-width: 500px) {
+  .club-account .photo-photo-sorter { padding: 1rem; }
+  .club-account .photo-sort-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .club-account .photo-sort-card { padding: .6rem; }
+}

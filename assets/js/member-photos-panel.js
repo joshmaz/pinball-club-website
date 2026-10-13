@@ -21,6 +21,7 @@
   var publicationStatus = "";
   var orderSettings = null;
   var orderDraft = null;
+  var photoOrderDraft = null;
   var orderSaving = false;
   var selectedAlbumId = null;
   var contextAlbumId = null;
@@ -341,13 +342,6 @@
     meta.appendChild(altLabel);
     meta.appendChild(altInput);
 
-    var sortLabel = el("label", { text: "Sort position" });
-    var sortInput = el("input", { type: "number", step: "1" });
-    sortInput.value = asset.sortPosition != null ? String(asset.sortPosition) : "0";
-    sortInput.setAttribute("data-asset-field", "sortPosition");
-    meta.appendChild(sortLabel);
-    meta.appendChild(sortInput);
-
     var excludeWrap = el("label", { className: "members-checkbox-label" });
     var excludeInput = el("input", { type: "checkbox", checked: !!asset.excludeFromSlideshow });
     excludeWrap.appendChild(excludeInput);
@@ -374,7 +368,7 @@
 
     var actions = el("p", { className: "member-photos-asset-actions" });
     var saveBtn = el("button", { type: "button", className: "members-events-form-action", text: "Save text" });
-    saveBtn.addEventListener("click", function () { void saveAssetMeta(asset.id, captionInput, altInput, sortInput, excludeInput, promoSelect); });
+    saveBtn.addEventListener("click", function () { void saveAssetMeta(asset.id, captionInput, altInput, excludeInput, promoSelect); });
     actions.appendChild(saveBtn);
 
     if (asset.status === "uploaded" || asset.status === "unpublished" || (asset.status === "pending" && asset.hasOriginal)) {
@@ -440,13 +434,12 @@
     return null;
   }
 
-  async function saveAssetMeta(assetId, captionInput, altInput, sortInput, excludeInput, promoSelect) {
+  async function saveAssetMeta(assetId, captionInput, altInput, excludeInput, promoSelect) {
     try {
       setStatus("Saving asset...");
       await window.SNHMemberPortal.photoAssetSetMetadata(assetId, {
         caption: captionInput.value || "",
         altText: altInput.value || "",
-        sortPosition: Number(sortInput.value || 0) || 0,
         excludeFromSlideshow: !!(excludeInput && excludeInput.checked),
         promoRole: promoSelect && promoSelect.value ? promoSelect.value : null
       });
@@ -740,10 +733,53 @@
     return panel;
   }
 
+  function buildPhotoSorter() {
+    var draft = photoOrderDraft;
+    var panel = el("section", { className: "photo-album-sorter photo-photo-sorter", "aria-label": "Arrange photos" });
+    panel.appendChild(el("h3", { text: "Arrange photos" }));
+    panel.appendChild(el("p", { text: "Drag photos into order, or use Move Left and Move Right. Changes appear in the gallery only after saving." }));
+    var grid = el("ul", { className: "photo-sort-grid" }), dragged;
+    function move(id, target) {
+      var from = draft.ids.indexOf(id); draft.ids.splice(from, 1); draft.ids.splice(target, 0, id);
+      void renderApp().then(function () { var row = document.getElementById("photo-order-" + id); if (row) row.querySelector("button:not(:disabled)").focus(); });
+    }
+    draft.ids.forEach(function (id,index) {
+      var asset = draft.assets.find(function (photo) { return photo.id === id; });
+      var title = asset.caption || asset.originalFilename || "Photo";
+      var row = el("li", { id: "photo-order-" + id, className: "photo-sort-card", "data-photo-id": id });
+      var handle = el("span", { className: "photo-sort-handle", text: "↔", "aria-hidden": "true" }); handle.draggable = !orderSaving;
+      handle.ondragstart = function (event) { dragged=id;event.dataTransfer.setData("text/plain",id);event.dataTransfer.effectAllowed="move"; };
+      row.ondragover = function (event) { if (dragged && !orderSaving) {event.preventDefault();event.dataTransfer.dropEffect="move";} };
+      row.ondrop = function (event) { if (dragged && !orderSaving) {event.preventDefault();move(dragged,draft.ids.indexOf(id));dragged=null;} };
+      handle.ondragend = function () {dragged=null;}; row.appendChild(handle);
+      if (pickVariant(asset,"thumb") || pickVariant(asset,"web")) { var image = el("img", { alt: title, className: "photo-sort-image" }); setPhotoPreview(image,asset); row.appendChild(image); }
+      else row.appendChild(el("p", { text: "Preview not available" }));
+      row.appendChild(el("strong", { text: title }));
+      if (draft.coverId === id) row.appendChild(el("span", { className: "photo-album-state", text: "Album cover" }));
+      var actions=el("div", {className:"photo-action-row"});
+      [["Move Left",index-1,index===0],["Move Right",index+1,index===draft.ids.length-1]].forEach(function (action) {
+        var button=el("button",{type:"button",text:action[0],"aria-label":action[0]+": "+title}); button.disabled=orderSaving || action[2];
+        button.onclick=function(){move(id,action[1]);};actions.appendChild(button);
+      }); row.appendChild(actions);grid.appendChild(row);
+    }); panel.appendChild(grid);
+    var actions=el("div",{className:"photo-action-row"});
+    var save=el("button",{type:"button",className:"photo-primary-action",text:orderSaving?"Saving order…":"Save order"});save.disabled=orderSaving;
+    save.onclick=async function(){
+      orderSaving=true;await renderApp();
+      try {await window.SNHMemberPortal.photoAssetOrderSave(draft.albumId,draft.ids,draft.expected);photoOrderDraft=null;await refreshAssets(draft.albumId);await refreshAlbums();setStatus("Photo order saved.");}
+      catch(error){setStatus(friendlyError(error),"error");}
+      finally{orderSaving=false;await renderApp();}
+    };
+    var cancel=el("button",{type:"button",text:"Cancel"});cancel.disabled=orderSaving;
+    cancel.onclick=async function(){photoOrderDraft=null;try{await refreshAssets(draft.albumId);await refreshAlbums();}catch(error){setStatus(friendlyError(error),"error");}await renderApp();};
+    actions.appendChild(save);actions.appendChild(cancel);panel.appendChild(actions);return panel;
+  }
+
   async function renderApp() {
     if (!appEl) return;
     appEl.replaceChildren();
     if (orderDraft) { appEl.appendChild(buildAlbumSorter()); return; }
+    if (photoOrderDraft) { appEl.appendChild(buildPhotoSorter()); return; }
     var layout = el("div", { className: "member-photos-layout photo-workspace" });
     var library = el("aside", { className: "photo-album-library", "aria-label": "Your photo albums" });
     var toolbar = el("div", { className: "photo-album-toolbar" });
@@ -853,6 +889,19 @@
       workspace.appendChild(buildBatchPanel());
       var galleryHeading = el("div", { className: "photo-action-row photo-gallery-heading" });
       galleryHeading.appendChild(el("h4", { text: "Photos and cover" }));
+      var arrangePhotos = el("button", { type: "button", text: "Arrange photos" });
+      arrangePhotos.disabled = uploading || publishing || assets.length < 2 || !(orderSettings && orderSettings.photoOrderAvailable);
+      if (!(orderSettings && orderSettings.photoOrderAvailable)) arrangePhotos.title = "Apply the photo ordering database update to enable this.";
+      arrangePhotos.onclick = async function () {
+        arrangePhotos.disabled = true;
+        try {
+          await refreshAssets(album.id);
+          var photos = assetsByAlbum[album.id] || [];
+          photoOrderDraft = { albumId: album.id, coverId: album.coverAssetId, assets: photos.slice(), ids: photos.map(function (photo) { return photo.id; }), expected: photos.map(function (photo) { return { id: photo.id, sortPosition: photo.sortPosition || 0 }; }) };
+          await renderApp();
+        } catch (error) { setStatus(friendlyError(error),"error"); arrangePhotos.disabled = false; }
+      };
+      galleryHeading.appendChild(arrangePhotos);
       if (album.coverAssetId) {
         var reset = el("button", { type: "button", className: "members-events-form-action", text: "Use automatic cover" });
         reset.disabled = uploading || publishing;

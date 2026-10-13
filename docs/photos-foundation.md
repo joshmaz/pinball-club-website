@@ -241,3 +241,16 @@ digest function, ordering by the subquery column rather than an unavailable
 `npx supabase db push --linked` from the updated branch. No new Edge Function
 deployment is needed. Album view/copy controls and clickable event-editor album
 links are website changes delivered through the existing reviewed release.
+
+## Visual photo order deployment
+
+Apply `20261013220000_photo_asset_ordering.sql` after the earlier photo migrations.
+From the updated linked checkout, run `npx supabase db push --linked --dry-run`,
+then `npx supabase db push --linked`. No Edge Function deployment is needed.
+The existing per-photo metadata API cannot save a batch atomically and default
+sort position zero cannot append reliably across clients; the migration adds a
+role-gated atomic save and insert trigger using existing `sort_position` only.
+It creates no new ordering columns or roles. Save locks briefly serialize photo
+CRUD, validates the original ID/position snapshot, and changes only sort positions.
+No hosted migration was performed by the agent. Apply it before the reviewed
+website release; without it, Arrange photos stays disabled.

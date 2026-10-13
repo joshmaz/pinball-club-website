@@ -59,15 +59,13 @@
     var visible = albums.filter(function (a) { return (!eventId || a.eventId === eventId) && (!albumId || a.id === albumId || a.slug === albumId); })
       .map(function (album) {
         var assets = (album.assets || []).filter(function (a) { return variant(a, 'web'); });
-        // Cover first without changing the stored order of the remaining photos.
-        assets.sort(function (a, b) { return Number(b.id === album.coverAssetId) - Number(a.id === album.coverAssetId); });
         return { album: album, assets: assets };
       }).filter(function (item) { return item.assets.length; });
     if (eventId || albumId) { var all = node('a', 'All albums'); all.href = 'photos.html'; navigation.appendChild(all); }
     function createAlbum(item) {
       var album = item.album, assets = item.assets;
       var section = node('details'); section.className = 'photos-album'; section.id = 'album-' + album.id;
-      var summary = node('summary'), cover = node('img'), coverVariant = variant(assets[0], 'thumb') || variant(assets[0], 'web');
+      var summary = node('summary'), cover = node('img'), coverVariant = variant(assets.find(function (asset) { return asset.id === album.coverAssetId; }) || assets[0], 'thumb') || variant(assets.find(function (asset) { return asset.id === album.coverAssetId; }) || assets[0], 'web');
       cover.src = url(coverVariant); cover.alt = ''; cover.loading = 'lazy'; cover.decoding = 'async'; cover.width = 96; cover.height = 72;
       summary.appendChild(cover);
       var label = node('div'); label.appendChild(node('h2', album.title));
@@ -80,7 +78,7 @@
         var actions = node("p"); actions.className = "event-card-actions photos-album-actions";
         var albumHref = "photos.html?album=" + encodeURIComponent(album.id);
         var view = node("a", "View album"); view.href = albumHref; view.className = "event-edit-link";
-        view.setAttribute("aria-label", "View " + album.title + " album"); actions.appendChild(view);
+        view.setAttribute("aria-label", "View " + album.title + " album"); if (!albumId) actions.appendChild(view);
         var editActions = node("span"); editActions.className = "photos-edit-actions";
         editActions.dataset.albumId = album.id; editActions.dataset.albumTitle = album.title;
         actions.appendChild(editActions); body.appendChild(actions);

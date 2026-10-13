@@ -27,6 +27,7 @@ try {
  const assetId='00000000-0000-0000-0000-000000000100';
  const albums=[{id:albumId,title:'Club night',eventId:'event-one',eventTitle:'Pinball night',description:'Our community',coverAssetId:assetId,
  assets:[0,1].map(n=>({id:n?assetId+'1':assetId,caption:n?'Second photo':'Cover photo',altText:'Pinball machines',variants:['web','thumb'].map(variant=>({variant,bucket:'photos-public',objectKey:variant+'.webp',width:640,height:427}))}))}];
+ albums[0].coverAssetId=albums[0].assets[1].id;
  albums.push({...albums[0],id:'large-album',slug:'large-album',title:'Tournament weekend',eventId:'event-two',coverAssetId:null,
   assets:Array.from({length:50},(_,i)=>({...albums[0].assets[0],id:'large-'+i,caption:'Photo '+(i+1)}))});
  for(let i=0;i<12;i++)albums.push({...albums[0],id:'extra-'+i,title:'Archive '+i,eventId:null});
@@ -46,11 +47,13 @@ try {
  await page.locator('#album-'+albumId+' > summary').click();
  await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===2);
  assert.equal(await page.locator('.photos-grid button').count(),2);
+ assert.match(await page.locator('.photos-grid button').first().getAttribute('aria-label'),/Cover photo/,'cover selection does not override public photo order');
  assert.equal(await page.locator('.photos-edit-actions a').count(),0,'anonymous visitors have no edit controls');
  assert.equal(await page.getByRole('link',{name:'View Club night album'}).getAttribute('href'),'photos.html?album='+albumId);
  await page.getByRole('link',{name:'View Club night album'}).click();
  await page.waitForFunction(()=>document.querySelector('.photos-album')?.open);
  assert.equal(new URL(page.url()).searchParams.get('album'),albumId,'individual album link opens directly');
+ assert.equal(await page.getByRole('link',{name:'View Club night album'}).count(),0,'single-album view has no redundant View album link');
  await page.goto(base+'/photos.html');
  await page.locator('#album-'+albumId+' > summary').click();
  await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===2);
@@ -181,20 +184,21 @@ try {
  await page.evaluate(({albumId,assetId})=>{
   window.testUploads=[]; window.failOnce=true; window.failPublishOnce=true; window.publishCalls=[]; window.albumSaves=[]; window.purgeCalls=[];
   window.editorAlbum={id:albumId,title:'Club night',slug:'club-night',published:false,coverAssetId:null,assetCounts:{total:0}};
-  window.editorAssets=[]; window.extraAlbums=[]; window.galleryOrder={mode:'custom',revision:1}; window.orderSaves=[]; window.failOrder=false;
+  window.editorAssets=[]; window.extraAlbums=[]; window.galleryOrder={mode:'custom',revision:1,photoOrderAvailable:true}; window.photoOrderSaves=[]; window.failPhotoOrder=false; window.orderSaves=[]; window.failOrder=false;
   const copy=value=>JSON.parse(JSON.stringify(value));
   window.SNHMemberPortal={
    photoAlbumsListEditor:async()=>{if(window.albumListRace){galleryOrder.revision++;window.albumListRace=false;}return [copy({...editorAlbum,sortPosition:editorAlbum.sortPosition || 0,assetCounts:{total:editorAssets.length,published:editorAssets.filter(a=>a.status==='published').length}}),...copy(extraAlbums)];},
    photoAlbumOrderSettings:async()=>copy(galleryOrder),
-   photoAlbumOrderSave:async(mode,ids,revision)=>{if(failOrder){failOrder=false;throw new Error('Album order changed. Cancel and reopen the sorter.');}orderSaves.push({mode,ids:ids.slice(),revision});if(mode==='custom')ids.forEach((id,i)=>{const a=id===editorAlbum.id?editorAlbum:extraAlbums.find(a=>a.id===id);a.sortPosition=i+1;});galleryOrder={mode,revision:revision+1};return copy(galleryOrder);},
-   photoAssetsListEditor:async()=>copy(editorAssets),photoEventsListForPhotoLink:async()=>[],
+   photoAlbumOrderSave:async(mode,ids,revision)=>{if(failOrder){failOrder=false;throw new Error('Album order changed. Cancel and reopen the sorter.');}orderSaves.push({mode,ids:ids.slice(),revision});if(mode==='custom')ids.forEach((id,i)=>{const a=id===editorAlbum.id?editorAlbum:extraAlbums.find(a=>a.id===id);a.sortPosition=i+1;});galleryOrder={mode,revision:revision+1,photoOrderAvailable:true};return copy(galleryOrder);},
+   photoAssetsListEditor:async()=>copy(editorAssets.slice().sort((a,b)=>(a.sortPosition||0)-(b.sortPosition||0))),
+   photoAssetOrderSave:async(album,ids,expected)=>{if(failPhotoOrder){failPhotoOrder=false;throw new Error('Photos changed. Cancel and reopen Arrange photos.');}photoOrderSaves.push(ids.slice());ids.forEach((id,i)=>editorAssets.find(a=>a.id===id).sortPosition=i);},photoEventsListForPhotoLink:async()=>[],
    photoUploadAndRegister:async(album,file,job)=>{
     testUploads.push(file.name); job.onProgress('Converting',10);
     await new Promise(resolve=>setTimeout(resolve,250));
     if(file.name==='first.png' && failOnce){failOnce=false;throw new Error('Network interrupted');}
     job.onProgress('Uploading photo',50); await new Promise(resolve=>setTimeout(resolve,100));
     const id=assetId+'-'+file.name;
-    editorAssets.push({id,albumId,status:'uploaded',uploadMode:'browser',originalFilename:file.name,
+    editorAssets.push({id,albumId,sortPosition:editorAssets.length,status:'uploaded',uploadMode:'browser',originalFilename:file.name,
       variants:[{variant:'thumb',bucket:'photos-public',objectKey:'thumb.webp'},{variant:'web',bucket:'photos-public',objectKey:'web.webp'}]});
     job.onProgress('Ready to publish',100);return {assetId:id};
    },
@@ -251,7 +255,7 @@ try {
  assert.equal(await page.evaluate(()=>editorAlbum.coverAssetId),assetId+'-second.png');
  assert.equal(await page.evaluate(()=>editorAlbum.published),false,'cover selection does not publish');
  assert.equal(await page.locator('.member-photos-asset.is-cover').count(),1);
- await page.evaluate(()=>editorAssets.push({...editorAssets[0],id:'hidden-photo',status:'unpublished',originalFilename:'Intentionally hidden.png'}));
+ await page.evaluate(()=>editorAssets.push({...editorAssets[0],id:'hidden-photo',sortPosition:2,status:'unpublished',originalFilename:'Intentionally hidden.png'}));
  await page.getByRole('button',{name:'Publish album',exact:true}).click();
  await page.waitForFunction(()=>document.querySelector('#member-photos-status').textContent.includes('Album publication did not finish'));
  assert.equal(await page.evaluate(()=>editorAlbum.published),false,'failed photo publication leaves the album draft');
@@ -271,6 +275,44 @@ try {
  assert.deepEqual(await page.evaluate(()=>purgeCalls),[],'hiding album retains all photos');
  await page.getByRole('button',{name:'Clear completed files',exact:true}).click();
  assert.equal(await page.locator('#member-photos-batch').isVisible(),false);
+ assert.equal(await page.locator('[data-asset-field="sortPosition"]').count(),0,'numeric photo order fields are removed');
+ await page.getByRole('button',{name:'Arrange photos',exact:true}).click();
+ const originalPhotoIds=await page.locator('.photo-sort-card').evaluateAll(rows=>rows.map(r=>r.dataset.photoId));
+ await page.getByRole('button',{name:'Move Right: second.png',exact:true}).click();
+ assert.equal(await page.locator('.photo-sort-card').nth(1).getAttribute('data-photo-id'),assetId+'-second.png');
+ await page.getByRole('button',{name:'Cancel',exact:true}).click();
+ assert.deepEqual(await page.evaluate(()=>photoOrderSaves),[],'Cancel never writes photo order');
+ await page.getByRole('button',{name:'Arrange photos',exact:true}).click();
+ assert.deepEqual(await page.locator('.photo-sort-card').evaluateAll(rows=>rows.map(r=>r.dataset.photoId)),originalPhotoIds);
+ const photoTransfer=await page.evaluateHandle(()=>new DataTransfer());
+ await page.locator('[data-photo-id="'+assetId+'-second.png"] .photo-sort-handle').dispatchEvent('dragstart',{dataTransfer:photoTransfer});
+ await page.locator('[data-photo-id="hidden-photo"]').dispatchEvent('drop',{dataTransfer:photoTransfer});
+ const orderedPhotoIds=[assetId+'-first.png','hidden-photo',assetId+'-second.png'];
+ assert.deepEqual(await page.locator('.photo-sort-card').evaluateAll(rows=>rows.map(r=>r.dataset.photoId)),orderedPhotoIds);
+ await page.getByRole('button',{name:'Move Left: second.png',exact:true}).click();
+ await page.getByRole('button',{name:'Move Right: second.png',exact:true}).click();
+ assert.ok(await page.locator('[data-photo-id="'+assetId+'-second.png"]').evaluate(e=>e.contains(document.activeElement)),'mobile/keyboard moves retain focus');
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile photo sorter fits');
+ await page.screenshot({path:'/tmp/photo-arrange-mobile.png',fullPage:true});
+ await page.evaluate(()=>failPhotoOrder=true);
+ await page.getByRole('button',{name:'Save order',exact:true}).click();
+ await page.getByText('Photos changed. Cancel and reopen Arrange photos.',{exact:true}).waitFor();
+ assert.equal(await page.locator('.photo-sort-card').count(),3,'failed save keeps the draft');
+ await page.getByRole('button',{name:'Save order',exact:true}).click();
+ await page.getByRole('button',{name:'Arrange photos',exact:true}).waitFor();
+ assert.deepEqual(await page.evaluate(()=>photoOrderSaves[0]),orderedPhotoIds);
+ assert.equal(await page.evaluate(()=>editorAlbum.coverAssetId),assetId+'-second.png');
+ assert.deepEqual(await page.locator('.member-photos-asset').evaluateAll(rows=>rows.map(r=>r.dataset.assetId)),orderedPhotoIds,'editor reloads saved order');
+ // Fresh editor instances and a real document reload reuse the mock server's stored order.
+ await page.route('**/photo-reload-test.html?**',route=>route.fulfill({contentType:'text/html',body:'<html class="clubhouse club-account"><body><div id="member-photos-status"></div><div id="member-photos-app"></div><script src="/assets/js/member-routes.js"></script><script>window.SNHMemberPortal=parent.SNHMemberPortal;</script><script src="/assets/js/member-photos-panel.js"></script><script>SNHMemberPhotosPanel.init(["photos_admin"]);</script></body></html>'}));
+ await page.evaluate(url=>{const frame=document.createElement('iframe');frame.id='photo-reload-check';frame.src=url;document.body.appendChild(frame);},base+'/photo-reload-test.html?panel=photos&album='+albumId);
+ const reload=page.frameLocator('#photo-reload-check');
+ await reload.getByRole('button',{name:'Arrange photos',exact:true}).waitFor();
+ assert.deepEqual(await reload.locator('.member-photos-asset').evaluateAll(rows=>rows.map(r=>r.dataset.assetId)),orderedPhotoIds);
+ await reload.locator('body').evaluate(()=>location.reload());
+ await reload.getByRole('button',{name:'Arrange photos',exact:true}).waitFor();
+ assert.deepEqual(await reload.locator('.member-photos-asset').evaluateAll(rows=>rows.map(r=>r.dataset.assetId)),orderedPhotoIds,'order persists after document reload');
+ await page.evaluate(()=>document.getElementById('photo-reload-check').remove());
  await page.getByRole('button',{name:'New album',exact:true}).click();
  assert.equal(await page.locator('#member-photos-album-sort').count(),0);
  await page.evaluate(()=>extraAlbums=[{id:'album-two',title:'Second album',published:false,sortPosition:1,displayAt:'2025-01-01'}, {id:'album-three',title:'Third album',published:true,sortPosition:2,displayAt:'2026-01-01'}]);
@@ -342,5 +384,5 @@ try {
  assert.equal(await page.locator('.event-card--linked').count(),0,'unknown event links do not select a different event');
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'linked event fits mobile layout');
  assert.deepEqual(errors,[]);
- console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, individual album view links, album-to-event links (past/upcoming/missing), event digest links, visual sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, contextual role visibility/sign-out, album editor routing/return, individual album view links, album-to-event links (past/upcoming/missing), event digest links, photo order drag/move/save/cancel/reload, visual album sorter drag/move/save/cancel, automatic order, stale-save recovery, migration compatibility, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -1132,6 +1132,11 @@
     return parseRpcJson(result.data) || [];
   }
 
+  async function photoAssetOrderSave(albumId, ids, expected) {
+    var result = await getClient().rpc("snh_photo_asset_order_save", { p_album_id: albumId, p_asset_ids: ids, p_expected: expected });
+    if (result.error) throw result.error;
+  }
+
   async function photoAssetSetMetadata(assetId, fields) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1448,6 +1453,7 @@
     photoAlbumDelete: photoAlbumDelete,
     photoAssetsListEditor: photoAssetsListEditor,
     photoAssetSetMetadata: photoAssetSetMetadata,
+    photoAssetOrderSave: photoAssetOrderSave,
     photoEventsListForPhotoLink: photoEventsListForPhotoLink,
     publicEventPromoAsset: publicEventPromoAsset,
     eventPhotoDigestForEditor: eventPhotoDigestForEditor,

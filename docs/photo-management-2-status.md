@@ -114,3 +114,16 @@ The album picker sits above the full-width editor on desktop and mobile. Desktop
 album cards wrap in a height-bounded picker; mobile keeps a horizontal scroll row.
 New/Arrange/Refresh and storage maintenance use a compact wrapping toolbar, with
 no page-width action buttons. No backend deployment is needed.
+
+## Visual photo ordering
+
+Arrange photos uses current-order thumbnails, drag handles, Move Left/Right and
+Save/Cancel. Numeric photo position fields are removed. Atomic saves update only
+existing sort positions, reject stale snapshots and invalid/cross-album IDs, and
+leave captions, covers, publication and visibility unchanged. Public gallery and
+lightbox follow stored order; the cover only determines the album preview.
+New inserts append to the album, including across clients. One narrow migration,
+`20261013220000_photo_asset_ordering.sql`, supplies append-on-insert and atomic
+order save. It reuses the existing settings read for feature availability; before
+it is applied, Arrange photos is disabled. No new Edge Function is needed.
+The single-album public view omits its redundant View album link.
