@@ -107,3 +107,10 @@ the preceding migrations; no Edge Function deployment is needed.
 An album’s linked event title opens `events.html?event=<event-id>`. The Events page
 reveals the matching past year when needed, highlights and focuses that event.
 Titles without an event ID remain plain text. No backend deployment is needed.
+
+## Editor layout refinement
+
+The album picker sits above the full-width editor on desktop and mobile. Desktop
+album cards wrap in a height-bounded picker; mobile keeps a horizontal scroll row.
+New/Arrange/Refresh and storage maintenance use a compact wrapping toolbar, with
+no page-width action buttons. No backend deployment is needed.

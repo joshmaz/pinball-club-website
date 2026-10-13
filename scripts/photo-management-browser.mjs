@@ -213,6 +213,12 @@ try {
  await page.addScriptTag({url:base+'/assets/js/member-routes.js'});
  await page.addScriptTag({url:base+'/assets/js/member-photos-panel.js'});
  await page.evaluate(()=>window.SNHMemberPhotosPanel.init(['photos_admin']));
+ await page.setViewportSize({width:1440,height:1000});
+ const layout=await page.locator('.photo-workspace').boundingBox(), library=await page.locator('.photo-album-library').boundingBox(), editor=await page.locator('.photo-album-workspace').boundingBox();
+ assert.ok(editor.y>=library.y+library.height,'desktop album picker is above the editor');
+ assert.ok(Math.abs(editor.width-layout.width)<2,'desktop editor uses full workspace width');
+ assert.ok((await page.getByRole('button',{name:'New album',exact:true}).boundingBox()).width<layout.width/2,'toolbar buttons stay compact');
+ await page.screenshot({path:'/tmp/photo-editor-top-picker-desktop.png',fullPage:true});
  assert.equal(await page.locator('#member-photos-album-title').inputValue(),'Club night','deep link selects the requested album');
  assert.ok(await page.locator('.photo-album-details').evaluate(e=>e.open),'contextual edit opens album details');
  assert.equal(await page.getByRole('link',{name:'Back to public album'}).getAttribute('href'),'photos.html?album='+albumId);

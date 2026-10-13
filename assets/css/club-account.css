@@ -142,10 +142,16 @@
 .member-role-icon:hover .member-role-tooltip, .member-role-icon:focus .member-role-tooltip { visibility: visible; }
 
 /* Photo Management 2.0: album workspace and visible batch processing. */
-.club-account .photo-workspace { max-width: none; display: grid; grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
-.club-account .photo-album-library { position: sticky; top: 1rem; min-width: 0; }
-.club-account .photo-album-library h3 { margin-top: 0; }
-.club-account .photo-album-library > button { width: 100%; margin-block: .3rem; }
+.club-account .photo-workspace { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
+.club-account .photo-album-library { min-width: 0; padding-bottom: .5rem; }
+.club-account .photo-album-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.club-account .photo-album-toolbar h3 { margin: 0; margin-right: auto; }
+.club-account .photo-album-toolbar button { width: auto; }
+.club-account .photo-album-toolbar .photo-maintenance { margin-top: 0; }
+.club-account .photo-album-library > .member-form-hint { margin-block: .5rem; }
+.club-account .photo-album-library .member-photos-album-list { display: flex; flex-direction: row; flex-wrap: wrap; gap: .5rem; margin: .6rem 0 0; max-height: 12rem; overflow: auto; padding: .2rem; }
+.club-account .photo-album-library .member-photos-album-list-item { flex: 0 1 18rem; min-width: min(100%, 12rem); }
+.club-account .photo-album-link strong { overflow-wrap: anywhere; }
 .club-account .photo-album-link { display: grid; gap: .35rem; width: 100%; text-align: left; padding: .8rem; border: 1px solid var(--club-line); border-radius: .6rem; background: var(--club-surface); color: var(--club-ink); cursor: pointer; }
 .club-account .photo-album-link span { font-size: .85rem; color: var(--club-muted); }
 .club-account .photo-album-workspace { padding: 1.5rem; min-width: 0; }
@@ -196,10 +202,8 @@
 .club-account .photo-maintenance summary { cursor: pointer; }
 .club-account .photo-workspace button:disabled { opacity: .6; cursor: default; }
 @media (max-width: 900px) {
-  .club-account .photo-workspace { grid-template-columns: minmax(0, 1fr); }
-  .club-account .photo-album-library { position: static; }
-  .club-account .photo-album-library .member-photos-album-list { display: flex; flex-direction: row; overflow-x: auto; padding-bottom: .4rem; }
-  .club-account .photo-album-library .member-photos-album-list-item { flex: 0 0 12rem; }
+  .club-account .photo-album-library .member-photos-album-list { flex-wrap: nowrap; max-height: none; overflow-x: auto; padding-bottom: .4rem; }
+  .club-account .photo-album-library .member-photos-album-list-item { flex: 0 0 15rem; }
 }
 @media (max-width: 500px) {
   .club-account .photo-album-workspace { padding: 1rem; }

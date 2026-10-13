@@ -746,11 +746,13 @@
     if (orderDraft) { appEl.appendChild(buildAlbumSorter()); return; }
     var layout = el("div", { className: "member-photos-layout photo-workspace" });
     var library = el("aside", { className: "photo-album-library", "aria-label": "Your photo albums" });
-    library.appendChild(el("h3", { text: "Albums" }));
+    var toolbar = el("div", { className: "photo-album-toolbar" });
+    toolbar.appendChild(el("h3", { text: "Albums" }));
+    library.appendChild(toolbar);
     var newAlbum = el("button", { type: "button", className: "members-events-form-action", text: "New album" });
     newAlbum.disabled = publishing;
     newAlbum.onclick = function () { selectedAlbumId = null; if (window.SNHMemberRoutes) window.SNHMemberRoutes.setAlbum(null); void renderApp(); };
-    library.appendChild(newAlbum);
+    toolbar.appendChild(newAlbum);
     var arrange = el("button", { type: "button", text: "Arrange albums" });
     arrange.disabled = publishing || uploading || !orderSettings;
     arrange.onclick = async function () {
@@ -766,7 +768,7 @@
       await renderApp();
       } catch (error) { setStatus(friendlyError(error), "error"); arrange.disabled = false; }
     };
-    library.appendChild(arrange);
+    toolbar.appendChild(arrange);
     library.appendChild(el("p", { className: "member-form-hint", text: orderSettings ? (orderSettings.mode === "newest" ? "Newest albums first" : "Custom album order") : "Album ordering is unavailable until the database update is applied." }));
     if (!albumsCache.length) library.appendChild(el("p", { text: "Create an album to get started." }));
     var list = el("ul", { className: "member-photos-album-list" });
@@ -791,7 +793,7 @@
       try { await refreshAlbums(); await loadEventsForLink(); if (selectedAlbumId) await refreshAssets(selectedAlbumId); await renderApp(); }
       catch (error) { setStatus(friendlyError(error), "error"); }
     };
-    library.appendChild(refresh);
+    toolbar.appendChild(refresh);
     if (isAdmin(lastUserRoles)) {
       var maintenance = el("details", { className: "photo-maintenance" });
       maintenance.appendChild(el("summary", { text: "Storage maintenance" }));
@@ -802,7 +804,7 @@
         catch (error) { setStatus(friendlyError(error), "error"); }
         finally { cleanup.disabled = false; }
       };
-      maintenance.appendChild(cleanup); library.appendChild(maintenance);
+      maintenance.appendChild(cleanup); toolbar.appendChild(maintenance);
     }
     layout.appendChild(library);
     var workspace = el("section", { className: "member-photos-main-col photo-album-workspace" });
