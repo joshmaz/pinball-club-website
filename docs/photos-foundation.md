@@ -221,3 +221,14 @@ metadata saves retain their positions. No hosted migration was run by the agent.
 
 These changes bound initial image/DOM work. The current public RPC still returns
 all published metadata; server-side pagination remains a future scaling step.
+
+## Hosted UPDATE safety correction
+
+Migration `20261013150000_photo_album_ordering_safe_updates.sql` replaces the
+ordering revision trigger and save RPC with explicit `where singleton=true`
+predicates. Hosted safety checks rejected the prior unqualified settings update
+when creating an album or saving order. Apply this forward migration after the
+ordering migration, using `npx supabase db push --linked --dry-run`, then
+`npx supabase db push --linked`. No Edge Function or frontend redeployment is
+required for this database correction. The failed album transaction rolls back;
+retry creation after applying the migration.

@@ -6,6 +6,12 @@ const role=(db,name,user)=>db.exec(`reset role;set role ${name};set request.jwt.
 test('album ordering: atomic custom save, roles, revisions, date modes and new album placement',async()=>{
  const db=await photoDb();
  try {
+  // Check the installed definitions, since the embedded database lacks the hosted
+  // safety check that rejects UPDATE statements without a WHERE clause.
+  for(const name of ['private.snh_photo_order_revision()','public.snh_photo_album_order_save(text,uuid[],bigint)']) {
+   const definition=(await db.query('select pg_get_functiondef($1::regprocedure) body',[name])).rows[0].body;
+   assert.match(definition,/update private\.photo_gallery_order set [^;]+ where singleton=true;/i);
+  }
   await role(db,'authenticated',id(101));
   const make=(slug,date)=>call(db,'snh_photo_album_upsert',[null,{slug,title:slug,published:true,displayAt:date}]);
   const a=await make('older','2020-01-01T00:00:00Z'),b=await make('newer','2025-01-01T00:00:00Z');

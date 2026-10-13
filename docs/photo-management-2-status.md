@@ -53,7 +53,8 @@
   use synthetic files and mocked services; they do not prove hosted Storage behavior.
 - The operator reported applying migration 20261013120000 and deploying finalize,
   publish and purge. Deployment of photo-upload-intent has not been confirmed.
-- The visual sorter requires migration 20261013140000_photo_album_ordering.sql;
+- The visual sorter requires migrations 20261013140000_photo_album_ordering.sql
+  and 20261013150000_photo_album_ordering_safe_updates.sql;
   no additional Edge Function deployment is needed. The earlier Phase 2 editor
   layout needed no additional migration or function deployment; it needs the
   updated website assets after review. The PR stays open; no production deployment
