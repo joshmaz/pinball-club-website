@@ -197,6 +197,9 @@
 .club-account .member-photos-asset-status { margin: 0; overflow-wrap: anywhere; }
 .club-account .photo-cover-action { width: 100%; }
 .club-account .member-photos-asset-meta > summary { cursor: pointer; font-size: .9rem; }
+.club-account .member-photos-asset-meta > label { display: block; margin-top: .5rem; }
+.club-account .member-photos-asset-meta > .members-checkbox-label { display: flex; align-items: flex-start; gap: .5rem; margin-block: .8rem; }
+.club-account .member-photos-asset-meta input[type="checkbox"] { flex: 0 0 auto; width: 1rem; height: 1rem; min-height: 0; padding: 0; margin: .2rem 0 0; }
 .club-account .member-photos-asset-meta[open] { display: flex; flex-direction: column; gap: .5rem; }
 .club-account .photo-maintenance { margin-top: 1rem; font-size: .85rem; }
 .club-account .photo-maintenance summary { cursor: pointer; }
