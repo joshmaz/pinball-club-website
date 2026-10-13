@@ -27,6 +27,9 @@ try {
  const assetId='00000000-0000-0000-0000-000000000100';
  const albums=[{id:albumId,title:'Club night',eventId:'event-one',eventTitle:'Pinball night',description:'Our community',coverAssetId:assetId,
  assets:[0,1].map(n=>({id:n?assetId+'1':assetId,caption:n?'Second photo':'Cover photo',altText:'Pinball machines',variants:['web','thumb'].map(variant=>({variant,bucket:'photos-public',objectKey:variant+'.webp',width:640,height:427}))}))}];
+ albums.push({...albums[0],id:'large-album',slug:'large-album',title:'Tournament weekend',eventId:'event-two',coverAssetId:null,
+  assets:Array.from({length:50},(_,i)=>({...albums[0].assets[0],id:'large-'+i,caption:'Photo '+(i+1)}))});
+ for(let i=0;i<12;i++)albums.push({...albums[0],id:'extra-'+i,title:'Archive '+i,eventId:null});
  await page.route('https://**/*',route=>route.fulfill({contentType:'text/javascript',body:''}));
  await page.route('**/assets/js/config.js',route=>route.fulfill({contentType:'text/javascript',body:'window.SNH_CONFIG={supabaseUrl:"https://test.supabase.co",supabaseAnonKey:"test"};'}));
  await page.addInitScript(albums=>{
@@ -35,6 +38,10 @@ try {
  await page.route('**/storage/v1/object/public/photos-public/**',route=>route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="427"><rect width="640" height="427" fill="#153c42"/><rect x="80" y="60" width="170" height="300" fill="#ffa020"/><text x="285" y="220" fill="white" font-size="30">Pinball night</text></svg>'}));
  await page.goto(base+'/photos.html');
  await page.getByRole('heading',{name:'Club night'}).waitFor();
+ assert.equal(await page.locator('.photos-album').count(),12,'initial album rendering is bounded');
+ assert.equal(await page.locator('.photos-grid button').count(),0,'collapsed albums create no photo grids');
+ await page.locator('#album-'+albumId+' > summary').click();
+ await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===2);
  assert.equal(await page.locator('.photos-grid button').count(),2);
  assert.equal(await page.locator('[download]').count(),0);
  await page.locator('.photos-grid button').first().click();assert.ok(await page.locator('#photos-lightbox').evaluate(e=>e.open));
@@ -43,6 +50,30 @@ try {
  assert.equal(await page.locator('.photos-grid button').first().evaluate(e=>e===document.activeElement),true);
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/photo-gallery-mobile.png',fullPage:true});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile gallery does not overflow');
+ await page.locator('#album-'+albumId+' > summary').click();
+ await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===0);
+ await page.getByRole('button',{name:/Show more albums/}).click();
+ assert.equal(await page.locator('.photos-album').count(),14);
+ assert.equal(await page.locator('.photos-grid button').count(),0);
+ await page.goto(base+'/photos.html?album=large-album');
+ await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===24);
+ assert.equal(await page.locator('.photos-album[open]').count(),1,'direct album links open the album');
+ await page.locator('.photos-grid button').nth(23).click();
+ await page.keyboard.press('ArrowRight');
+ assert.match(await page.locator('#photos-caption').textContent(),/Photo 25.*25 of 50/,'lightbox can reach photos beyond rendered grid');
+ await page.keyboard.press('Escape');
+ await page.getByRole('button',{name:'Show more photos in Tournament weekend'}).click();
+ assert.equal(await page.locator('.photos-grid button').count(),48);
+ await page.getByRole('button',{name:'Show more photos in Tournament weekend'}).click();
+ assert.equal(await page.locator('.photos-grid button').count(),50);
+ await page.locator('#album-large-album > summary').click();
+ await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===0);
+ await page.locator('#album-large-album > summary').click();
+ await page.waitForFunction(()=>document.querySelectorAll('.photos-grid button').length===24);
+ await page.goto(base+'/photos.html?event=event-one');
+ await page.getByRole('heading',{name:'Club night'}).waitFor();
+ assert.equal(await page.locator('.photos-album').count(),1);
+ assert.equal(await page.locator('.photos-grid button').count(),0);
  await page.goto(base+'/photos.html?event=missing');await page.getByText('No published photos are available yet.').waitFor();
  await page.goto(base+'/photos.html?album='+albumId);await page.getByRole('link',{name:'All albums',exact:true}).waitFor();
  // Real canvas/WebP encoding, resize limits, no enlargement, and metadata rejection behavior.
@@ -136,7 +167,10 @@ try {
  await page.evaluate(()=>window.SNHMemberPhotosPanel.init(['photos_admin']));
  await page.getByRole('button',{name:/Club night/}).click();
  await page.getByText('Edit album details',{exact:true}).click();
+ assert.equal(await page.locator('#member-photos-album-sort').inputValue(),'0');
+ assert.match(await page.locator('#member-photos-order-hint').textContent(),/Lower numbers appear first.*10, 20, 30.*alphabetically/);
  await page.locator('#member-photos-album-title').fill('Updated club night');
+ await page.locator('#member-photos-album-sort').fill('15');
  const transfer=await page.evaluateHandle(()=>{
   const data=new DataTransfer();
   for(const name of ['first.png','second.png']) data.items.add(new File(['synthetic'],name,{type:'image/png'}));
@@ -163,6 +197,7 @@ try {
  await page.getByRole('button',{name:'Selected cover',exact:true}).waitFor();
  assert.equal(await page.evaluate(()=>editorAlbum.coverAssetId),assetId+'-second.png');
  assert.equal(await page.evaluate(()=>editorAlbum.published),false,'cover selection does not publish');
+ assert.equal(await page.evaluate(()=>editorAlbum.sortPosition),15,'album order is saved with details');
  assert.equal(await page.locator('.member-photos-asset.is-cover').count(),1);
  await page.evaluate(()=>editorAssets.push({...editorAssets[0],id:'hidden-photo',status:'unpublished',originalFilename:'Intentionally hidden.png'}));
  await page.getByRole('button',{name:'Publish album',exact:true}).click();
@@ -184,6 +219,8 @@ try {
  assert.deepEqual(await page.evaluate(()=>purgeCalls),[],'hiding album retains all photos');
  await page.getByRole('button',{name:'Clear completed files',exact:true}).click();
  assert.equal(await page.locator('#member-photos-batch').isVisible(),false);
+ await page.getByRole('button',{name:'New album',exact:true}).click();
+ assert.equal(await page.locator('#member-photos-album-sort').inputValue(),'25','new albums follow the current last position with a gap of ten');
  assert.deepEqual(errors,[]);
- console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
+ console.log(engineName + ' browser QA passed: native/fallback WebP encoding and encoder download failure/retry, WebP/EXIF conversion, gallery/lightbox, collapsed albums, bounded album/photo rendering, direct links, ordering convention, drag/drop, visible batch progress, retry without duplicate success, draft preservation, cover selection, publication failure/retry, one-action publication and mobile layout.');
 } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

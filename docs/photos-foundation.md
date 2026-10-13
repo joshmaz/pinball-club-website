@@ -183,3 +183,19 @@ limitations. This frontend update adds no migration or Edge Function changes.
 
 Run the same browser checks with `PLAYWRIGHT_BROWSER=webkit` for WebKit.
 `PLAYWRIGHT_WEBKIT` can point to a custom WebKit executable when needed.
+
+## Gallery browsing and album order
+
+The gallery starts with collapsed summaries (12 albums per reveal). Opening an
+album creates up to 24 lazy thumbnail images, with a Show more photos control.
+Closing an album removes its grid. Direct album links open the requested album;
+event links show matching album summaries. Lightbox navigation spans the full
+album and loads the main variant only when viewed.
+
+Album order uses the existing database sort: smaller `sortPosition` first, then
+case-insensitive title for ties. Use 10, 20, 30, leaving space to insert an album
+at 15. The editor shows this convention and defaults new albums to the current
+maximum order plus 10. Existing orders are preserved. No migration is required.
+
+These changes bound initial image/DOM work. The current public RPC still returns
+all published metadata; server-side pagination remains a future scaling step.

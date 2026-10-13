@@ -9,7 +9,11 @@
 - Authenticated upload reservation/finalization, public publication, private previews,
   revision checks, durable cleanup records and abandoned-upload collection.
 - Existing originals retained; explicit legacy conversion reads them in the browser.
-- Public albums, filtering, keyboard lightbox and no download button.
+- Public albums, filtering, keyboard lightbox and no download button. Album summaries
+  start collapsed, with 12 albums per reveal and 24 thumbnails per reveal. Closing
+  an album removes its grid; direct album links open the requested album.
+- Album ordering: smaller numbers first, alphabetical title for ties. The editor
+  recommends 10, 20, 30 and defaults new albums to the current maximum plus 10.
 - Event album links and reusable event promotional photos.
 - Photos navigation after Merch and before Resources.
 - Effective roles and existing Games/Merch image systems preserved.
@@ -37,6 +41,10 @@
   before publishing the album.
 
 ## Outstanding verification and limits
+
+- The gallery limits rendered albums and thumbnails, but the existing public RPC
+  still returns all published album/photo metadata. Server-side pagination and
+  per-album metadata requests remain future work for a very large archive.
 
 - Hosted smoke testing with a disposable album: signed uploads, JWT/role enforcement,
   previews, publication, legacy conversion and cleanup. Local browser/backend tests

@@ -10,3 +10,20 @@
 #photos-full { display:block; max-width:90vw; max-height:75vh; object-fit:contain; margin:auto; }
 .photos-lightbox-controls { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
 .photos-grid button:focus-visible { outline:3px solid currentColor; outline-offset:4px; }
+
+.photos-album { margin-block: 1rem; border: 1px solid var(--club-line); border-radius: .6rem; background: var(--club-surface); }
+.photos-album > summary { display: flex; align-items: center; gap: 1rem; padding: 1rem; cursor: pointer; list-style: none; }
+.photos-album > summary::-webkit-details-marker { display: none; }
+.photos-album > summary::after { content: "+"; margin-left: auto; font-size: 1.5rem; }
+.photos-album[open] > summary::after { content: "−"; }
+.photos-album > summary img { width: 96px; height: 72px; object-fit: cover; border-radius: .35rem; flex-shrink: 0; }
+.photos-album > summary h2 { margin: 0 0 .25rem; font-size: 1.2rem; overflow-wrap: anywhere; }
+.photos-album > summary > div { min-width: 0; }
+.photos-album-body { padding: 0 1rem 1rem; }
+.photos-more { margin-block: 1rem; padding: .7rem 1rem; min-height: 44px; border: 1px solid var(--club-teal); border-radius: .4rem; background: var(--club-surface); color: var(--club-teal); font: inherit; cursor: pointer; }
+.photos-more[hidden] { display: none; }
+@media (max-width: 500px) {
+  #photos-main { padding: 1rem; }
+  .photos-album > summary { gap: .7rem; padding: .8rem; }
+  .photos-album > summary img { width: 72px; height: 54px; }
+}

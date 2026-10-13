@@ -138,14 +138,19 @@
     event.value = values.eventId || "";
     form.appendChild(event);
 
+    var defaultOrder = album ? 0 : Math.max.apply(null, [0].concat(albumsCache.map(function (item) { return Number(item.sortPosition) || 0; }))) + 10;
+    var order = field("Album order", "member-photos-album-sort", "number", values.sortPosition != null ? String(values.sortPosition) : String(defaultOrder));
+    order.step = "1";
+    var orderHint = el("p", { id: "member-photos-order-hint", className: "member-form-hint", text: "Lower numbers appear first. Use 10, 20, 30 to leave room for albums in between. Albums with the same number sort alphabetically by title." });
+    order.setAttribute("aria-describedby", orderHint.id);
+    form.appendChild(orderHint);
     var optional = el("details", { className: "photo-optional-settings" });
     optional.appendChild(el("summary", { text: "More album options" }));
     var slug = field("Album URL", "member-photos-album-slug", "text", values.slug, 80);
     slug.required = true;
     slug.pattern = "[a-z0-9][a-z0-9_-]{0,80}";
-    var order = field("Display order", "member-photos-album-sort", "number", values.sortPosition || "0");
     var date = field("Display date (optional)", "member-photos-album-display-at", "datetime-local", toDatetimeLocalValue(values.displayAt));
-    [slug, order, date].forEach(function (input) {
+    [slug, date].forEach(function (input) {
       optional.appendChild(form.querySelector('label[for="' + input.id + '"]'));
       optional.appendChild(input);
     });
@@ -682,7 +687,7 @@
       button.disabled = publishing;
       button.appendChild(el("strong", { text: album.title || "Untitled album" }));
       var counts = album.assetCounts || {};
-      button.appendChild(el("span", { text: (album.published ? "Published" : "Draft") + " · " + (counts.total || 0) + " photos" }));
+      button.appendChild(el("span", { text: (album.published ? "Published" : "Draft") + " · " + (counts.total || 0) + " photos · Order " + (album.sortPosition || 0) }));
       button.onclick = function () {
         selectedAlbumId = String(album.id);
         void refreshAssets(selectedAlbumId).then(renderApp).catch(function (error) { setStatus(friendlyError(error), "error"); });
