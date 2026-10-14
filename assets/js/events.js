@@ -2,6 +2,19 @@
 // Upcoming (today onward) events are shown first; past events open when a year is selected.
 // If loading fails, an on-page error message is shown with debug details.
 let eventsCanManage = false;
+let eventsPhotoAlbums = [];
+let linkedEventFocused = false;
+function linkedEventId() {
+  return typeof window !== 'undefined' && window.location?.search ? new URLSearchParams(window.location.search).get('event') || '' : '';
+}
+function revealLinkedEvent(refocus = false) {
+  if ((linkedEventFocused && !refocus) || !linkedEventId()) return;
+  const card = document.getElementById('event-' + linkedEventId());
+  if (!card) return;
+  if (!linkedEventFocused) card.scrollIntoView({ block: 'start' });
+  linkedEventFocused = true;
+  card.focus({ preventScroll: true });
+}
 
 async function currentUserCanManageEvents() {
   if (!window.SNHSiteAuth) return false;
@@ -158,6 +171,8 @@ function createEventCard(event, options = {}) {
   const { isUpcoming = false } = options;
   const div = document.createElement('div');
   div.className = 'event-card';
+  if (event.id) div.id = 'event-' + event.id;
+  if (event.id && String(event.id) === linkedEventId()) { div.classList.add('event-card--linked'); div.tabIndex = -1; }
   div.classList.add(isUpcoming ? 'event-card--upcoming' : 'event-card--past');
 
   const date = eventCalendarDate(event);
@@ -224,6 +239,15 @@ function createEventCard(event, options = {}) {
     body.appendChild(descP);
   }
 
+  const linkedAlbums = eventsPhotoAlbums.filter(album => String(album.eventId || '') === String(event.id || ''));
+  if (linkedAlbums.length) {
+    const photos = document.createElement('p');
+    for (const album of linkedAlbums) {
+      const link = document.createElement('a'); link.href = 'photos.html?album=' + encodeURIComponent(album.id);
+      link.textContent = 'Photos: ' + album.title; photos.appendChild(link); photos.appendChild(document.createTextNode(' '));
+    }
+    body.appendChild(photos);
+  }
   const links = eventPresentationLinks(event);
   if (links.length) {
     const linkP = document.createElement('p');
@@ -358,7 +382,8 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
     return;
   }
 
-  let selectedIndex = null;
+  const targetIndex = linkedEventId() ? pastByYearList.findIndex(group => group.events.some(event => String(event.id || '') === linkedEventId())) : -1;
+  let selectedIndex = targetIndex >= 0 ? targetIndex : null;
 
   const hint = document.createElement('p');
   hint.id = 'events-past-year-hint';
@@ -484,6 +509,7 @@ function createAddEventLink() {
 }
 
 function renderEventsList(container, events) {
+  const refocusLinked = !!linkedEventId() && document.activeElement?.id === 'event-' + linkedEventId();
   container.innerHTML = '';
   const { upcoming, past } = splitUpcomingAndPast(events);
 
@@ -535,9 +561,7 @@ function renderEventsList(container, events) {
     }
   }
 
-  if (past.length === 0) {
-    return;
-  }
+  if (past.length === 0) { revealLinkedEvent(refocusLinked); return; }
 
   const region = document.createElement('div');
   region.id = 'events-past-region';
@@ -553,6 +577,7 @@ function renderEventsList(container, events) {
   renderPastEventsYearNavigator(region, pastByYearList);
 
   container.appendChild(region);
+  revealLinkedEvent(refocusLinked);
 }
 
 async function loadEvents() {
@@ -569,6 +594,15 @@ async function loadEvents() {
     setDataSourceNote(container, result, false);
 
     renderEventsList(container, events);
+    // Album loading is independent so the calendar remains available during a photo outage.
+    if (window.snhSupabase) {
+      void window.snhSupabase.rpc('snh_public_photo_albums').then(photoResult => {
+        if (photoResult.error) return;
+        const payload = eventsSpotlightParseRpcJson(photoResult.data);
+        eventsPhotoAlbums = Array.isArray(payload) ? payload : [];
+        renderEventsList(container, events);
+      }).catch(() => {});
+    }
     void currentUserCanManageEvents().then((allowed) => {
       setDataSourceNote(container, result, allowed);
       if (allowed === eventsCanManage) return;
@@ -727,7 +761,9 @@ async function loadEventsPhotoSpotlight() {
       logoEl.hidden = true;
     }
 
-    titleEl.textContent = album.title || 'Photo album';
+    titleEl.replaceChildren();
+    const albumLink = document.createElement('a');albumLink.href = 'photos.html?album=' + encodeURIComponent(album.id);
+    albumLink.textContent = album.title || 'Photo album';titleEl.appendChild(albumLink);
     const descText = album.description != null ? String(album.description).trim() : '';
     if (descText) {
       descEl.textContent = descText;

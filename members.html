@@ -36,6 +36,7 @@
   <script src="assets/js/member-routes.js"></script>
   <script src="assets/js/event-links.js"></script>
   <script src="assets/js/game-image-delivery.js"></script>
+<script src="assets/js/photo-conversion.js"></script>
 <script src="assets/js/member-portal.js"></script>
   <script src="assets/js/member-role-presentation.js"></script>
   <script src="assets/js/member-operations-panel.js"></script>
@@ -55,6 +56,7 @@
     <a href="events.html">Events</a>
     <a href="games.html">Games</a>
     <a href="merch.html">Merch</a>
+            <a href="photos.html">Photos</a>
     <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
     <a href="signin.html" data-site-account-link>Members</a>
@@ -504,7 +506,7 @@
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
           <h2>Photos</h2>
-          <p id="member-photos-intro" class="member-panel-intro">Curate the club photo gallery: organize albums, upload originals, write captions and alt text, and publish what should appear on the public site. Originals stay private; only published derivatives are publicly visible.</p>
+          <p id="member-photos-intro" class="member-panel-intro">Organize albums, add photos, choose covers, and publish to the public gallery. New photos are resized in your browser; existing originals are retained.</p>
           <p id="member-photos-access" class="member-panel-access-note" hidden></p>
           <p id="member-photos-status" class="members-page-status" aria-live="polite"></p>
           <div id="member-photos-app" class="member-photos-app" aria-live="polite"></div>
@@ -1062,8 +1064,14 @@
             var counts = alb.assetCounts || {};
             var pub = counts.published != null ? counts.published : 0;
             var tot = counts.total != null ? counts.total : 0;
-            li.textContent =
-              (alb.title || "(untitled)") +
+            var albumTitle = alb.title || "(untitled)";
+            if (alb.published && pub > 0) {
+              var albumLink = document.createElement("a");
+              albumLink.href = "photos.html?album=" + encodeURIComponent(alb.id);
+              albumLink.textContent = albumTitle;
+              li.appendChild(albumLink);
+            } else li.appendChild(document.createTextNode(albumTitle));
+            li.appendChild(document.createTextNode(
               " · slug " +
               (alb.slug || "") +
               (alb.published ? " · published album" : " · draft album") +
@@ -1071,7 +1079,7 @@
               pub +
               "/" +
               tot +
-              " published assets";
+              " published assets"));
             ul.appendChild(li);
           }
           memberEventsPhotoDigestBody.appendChild(ul);

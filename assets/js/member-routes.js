@@ -29,6 +29,7 @@
       gameId: panel === "games" ? validUuid(params.get("game")) : "",
       eventId: panel === "events" ? validUuid(params.get("event")) : ""
     };
+    if (panel === "photos") route.albumId = validUuid(params.get("album"));
     if (route.panel === "operations") {
       route.operationsSection = panel === "audit-log" ? "audit" : operationsSection(params.get("section"));
     }
@@ -68,6 +69,12 @@
       params.delete("event");
     }
 
+    if (panel !== "photos") params.delete("album");
+    else if (Object.prototype.hasOwnProperty.call(options, "albumId")) {
+      var albumId = validUuid(options.albumId);
+      if (albumId) params.set("album", albumId); else params.delete("album");
+    } else if (!validUuid(params.get("album"))) params.delete("album");
+
     var query = params.toString();
     return (loc.pathname || "members.html") + (query ? "?" + query : "");
   }
@@ -94,6 +101,7 @@
     build: build,
     replacePanel: replacePanel,
     setGame: setGame,
-    setEvent: setEvent
+    setEvent: setEvent,
+    setAlbum: function (albumId) { return replacePanel("photos", { albumId: albumId }); }
   };
 })();
