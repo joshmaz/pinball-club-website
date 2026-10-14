@@ -1223,11 +1223,11 @@
         var toggle = document.createElement("button");
         toggle.type = "button";
         toggle.className = "members-sidebar-link";
-        toggle.textContent = adminMemberName(row);
+        toggle.textContent = (adminExpandedId === row.member_id ? "▾ " : "▸ ") + adminMemberName(row);
         toggle.setAttribute("data-member-focus", row.member_id);
         toggle.setAttribute("aria-controls", "member-detail-" + row.member_id);
         toggle.setAttribute("aria-expanded", String(adminExpandedId === row.member_id));
-        toggle.setAttribute("aria-label", (adminExpandedId === row.member_id ? "Close editor for " : "Open editor for ") + adminMemberName(row));
+        toggle.setAttribute("aria-label", (adminExpandedId === row.member_id ? "Hide details for " : "Show details for ") + adminMemberName(row));
         toggle.addEventListener("click", function () {
           if (!adminConfirmDiscard()) return;
           adminExpandedId = adminExpandedId === row.member_id ? null : row.member_id;
@@ -1268,12 +1268,15 @@
       var box = document.createElement("div");
       box.className = "members-admin-editor";
       box.id = "member-detail-" + row.member_id;
+      var accountTitle = document.createElement("h4"); accountTitle.textContent = "Account information"; box.appendChild(accountTitle);
       var info = document.createElement("p");
-      info.textContent = "Email: " + (row.email || "—") + " · Last updated: " +
-        (row.membership_last_updated_at ? window.SNHMemberPortal.formatDate(row.membership_last_updated_at) : "—");
+      info.textContent = "Email: " + (row.email || "—") + " · Email verified: " + (row.email_verified ? "Yes" : "No");
       box.appendChild(info);
+      // Authentication timestamps are not returned by the current authorized directory RPC.
+      // Do not mislabel membership record creation as account creation or last sign-in.
+      var membershipTitle = document.createElement("h4"); membershipTitle.textContent = "Club membership"; box.appendChild(membershipTitle);
       var details = document.createElement("p");
-      details.textContent = "Membership: " + (row.membership_status === "active" ? "Full Access Member" : "Basic Member");
+      details.textContent = "Membership type: " + (row.membership_status === "active" ? "Full-Access Member" : "Basic Member");
       box.appendChild(details);
       if (!adminDraft || adminDraft.memberId !== row.member_id) {
         adminDraft = {memberId: row.member_id, fullAccess: row.membership_status === "active",
@@ -1286,7 +1289,7 @@
         var opt = document.createElement("option"); opt.value = pair[0]; opt.textContent = pair[1]; choice.appendChild(opt);
       });
       choice.value = adminDraft.fullAccess ? "full" : "member";
-      var label = document.createElement("label"); label.textContent = "Membership "; label.appendChild(choice); form.appendChild(label);
+      var label = document.createElement("label"); label.textContent = "Membership type "; label.appendChild(choice); form.appendChild(label);
       var save = document.createElement("button"); save.type = "submit"; form.appendChild(save);
       var feedback = document.createElement("span"); feedback.setAttribute("role", "status"); form.appendChild(feedback);
       function updateDraft() {
@@ -1313,7 +1316,7 @@
         finally { adminSaving = false; adminRender(); }
       });
       box.appendChild(form);
-      var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Assigned roles"; box.appendChild(rolesTitle);
+      var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Website permissions · assigned roles"; box.appendChild(rolesTitle);
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       rolePresentation.assignments(row.role_slugs || []).forEach(function (slug) {
         var roleName = rolePresentation.name(slug);
@@ -1332,11 +1335,11 @@
       });
       if (!rolePresentation.assignments(row.role_slugs || []).length) { var empty = document.createElement("li"); empty.textContent = "None"; roleList.appendChild(empty); }
       box.appendChild(roleList);
-      var accessTitle = document.createElement("h4"); accessTitle.textContent = "Effective access"; box.appendChild(accessTitle);
+      var accessTitle = document.createElement("h4"); accessTitle.textContent = "Permissions included with these roles"; box.appendChild(accessTitle);
       var accessSummary = document.createElement("div");
       rolePresentation.renderAccess(accessSummary, row.role_slugs || []); box.appendChild(accessSummary);
       var grant = document.createElement("form"); grant.className = "members-admin-editor-form";
-      var grantLabel = document.createElement("label"); grantLabel.textContent = "Assign a role";
+      var grantLabel = document.createElement("label"); grantLabel.textContent = "Assign a website role";
       var select = document.createElement("select"); select.required = true;
       var placeholder = document.createElement("option"); placeholder.value = ""; placeholder.textContent = "Select a role"; select.appendChild(placeholder);
       (window.SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES || []).filter(function (slug) { return adminMayManageRole(slug) && !(row.role_slugs || []).includes(slug); }).forEach(function (slug) {
