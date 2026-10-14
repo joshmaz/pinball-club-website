@@ -888,7 +888,9 @@
       workspace.appendChild(buildUploadZone(album));
       workspace.appendChild(buildBatchPanel());
       var galleryHeading = el("div", { className: "photo-action-row photo-gallery-heading" });
-      galleryHeading.appendChild(el("h4", { text: "Photos and cover" }));
+      var coverHeading = el("div", { className: "photo-gallery-cover-controls" });
+      coverHeading.appendChild(el("h4", { text: "Photos and cover" }));
+      galleryHeading.appendChild(coverHeading);
       var arrangePhotos = el("button", { type: "button", text: "Arrange photos" });
       arrangePhotos.disabled = uploading || publishing || assets.length < 2 || !(orderSettings && orderSettings.photoOrderAvailable);
       if (!(orderSettings && orderSettings.photoOrderAvailable)) arrangePhotos.title = "Apply the photo ordering database update to enable this.";
@@ -905,7 +907,7 @@
       if (album.coverAssetId) {
         var reset = el("button", { type: "button", className: "members-events-form-action", text: "Use automatic cover" });
         reset.disabled = uploading || publishing;
-        reset.onclick = function () { void selectCover(album, null); }; galleryHeading.appendChild(reset);
+        reset.onclick = function () { void selectCover(album, null); }; coverHeading.appendChild(reset);
       }
       workspace.appendChild(galleryHeading);
       if (!assets.length) workspace.appendChild(el("p", { className: "photo-empty-state", text: "No photos yet. Drop a batch above or choose files to add them." }));

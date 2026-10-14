@@ -186,7 +186,8 @@
 .club-account .photo-upload-job progress { width: 100%; align-self: center; }
 .club-account .photo-upload-job.is-error .photo-job-status { color: var(--club-danger, #a13225); }
 .club-account .photo-job-percent { font-size: .85rem; }
-.club-account .photo-gallery-heading { justify-content: space-between; margin-block: 1.4rem 1rem; }
+.club-account .photo-gallery-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; margin-block: 1.4rem 1rem; }
+.club-account .photo-gallery-cover-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; min-width: 0; }
 .club-account .photo-gallery-heading h4 { margin: 0; }
 .club-account .photo-empty-state { padding: 2rem 1rem; text-align: center; border: 1px solid var(--club-line); border-radius: .8rem; }
 .club-account .photo-album-workspace .member-photos-asset { display: flex; flex-direction: column; padding: .7rem; gap: .7rem; }
