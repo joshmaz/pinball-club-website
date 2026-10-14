@@ -82,11 +82,12 @@ test('symlinks cannot publish files from outside public directories', async (t) 
   await assert.rejects(buildPreview(root, env), /Refusing to publish symlink/);
 });
 
-test('homepage hero is a packaged JPEG, independent of mutable gallery storage', async () => {
+test('homepage hero is a packaged WebP, independent of mutable gallery storage', async () => {
   const root = new URL('../', import.meta.url);
   const html = await readFile(new URL('index.html', root), 'utf8');
   const hero = html.match(/<figure class="home-concept-photo">\s*<img src="([^"]+)"/)[1];
-  assert.equal(hero, 'assets/images/home-league-night.jpg');
+  assert.equal(hero, 'assets/images/home-club-pinball.webp');
   const bytes = await readFile(new URL(hero, root));
-  assert.equal(bytes.subarray(0, 3).toString('hex'), 'ffd8ff');
+  assert.equal(bytes.subarray(0, 4).toString(), 'RIFF');
+  assert.equal(bytes.subarray(8, 12).toString(), 'WEBP');
 });
