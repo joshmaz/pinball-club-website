@@ -159,7 +159,7 @@ test('directory wiring retains search, pagination, expansion, focus and unsaved 
   assert.match(html, /rolePresentation\.renderAssignments\(adminCell\(tr, ""\), row\.role_slugs/);
   assert.match(html, /<th scope="col">Assigned roles<\/th>/);
   assert.match(html, /\["Website Volunteers", stats.volunteer_count\]/);
-  for (const text of ['memberMatchesDirectoryFilter(row, mode, query)', 'filtered.slice((adminPage - 1) * 25, adminPage * 25)',
+  for (const text of ['memberMatchesDirectoryFilter(row, mode, query)', 'filtered.slice((adminPage - 1) * adminPageSize, adminPage * adminPageSize)',
     'aria-expanded', 'aria-controls', 'restore.focus()', 'if (!adminConfirmDiscard()) return;', 'beforeunload']) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /slug\.replace\(/);
   assert.match(html, /rolePresentation\.name\(granted\) \+ " assigned to "/);
