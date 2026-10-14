@@ -1272,8 +1272,10 @@
       var info = document.createElement("p");
       info.textContent = "Email: " + (row.email || "—") + " · Email verified: " + (row.email_verified ? "Yes" : "No");
       box.appendChild(info);
-      // Authentication timestamps are not returned by the current authorized directory RPC.
-      // Do not mislabel membership record creation as account creation or last sign-in.
+      var dates = document.createElement("p");
+      dates.textContent = "Account created: " + (row.account_created_at ? window.SNHMemberPortal.formatDate(row.account_created_at) : "—") +
+        " · Last sign-in: " + (row.last_sign_in_at ? window.SNHMemberPortal.formatDate(row.last_sign_in_at) : "Never");
+      box.appendChild(dates);
       var membershipTitle = document.createElement("h4"); membershipTitle.textContent = "Club membership"; box.appendChild(membershipTitle);
       var details = document.createElement("p");
       details.textContent = "Membership type: " + (row.membership_status === "active" ? "Full-Access Member" : "Basic Member");
