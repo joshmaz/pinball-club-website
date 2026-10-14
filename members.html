@@ -574,6 +574,7 @@
     var memberAdminPagination = document.getElementById("member-admin-pagination");
     var adminRows = [];
     var adminPage = 1;
+    var adminPageSize = 20;
     var adminExpandedId = null;
     var adminDraft = null;
     var adminSaving = false;
@@ -1212,18 +1213,22 @@
       var query = (memberAdminSearch.value || "").trim().toLowerCase();
       var mode = memberAdminDirectoryFilter.value;
       var filtered = adminRows.filter(function (row) { return memberMatchesDirectoryFilter(row, mode, query); });
-      var pages = Math.max(1, Math.ceil(filtered.length / 25));
-      adminPage = Math.min(adminPage, pages);
+      var pages = Math.max(1, Math.ceil(filtered.length / adminPageSize));
+      adminPage = Math.max(1, Math.min(adminPage, pages));
       var focused = document.activeElement;
       var focusKey = focused && memberAdminTableBody.contains(focused) ? focused.getAttribute("data-member-focus") : null;
       memberAdminTableBody.replaceChildren();
-      filtered.slice((adminPage - 1) * 25, adminPage * 25).forEach(function (row) {
+      filtered.slice((adminPage - 1) * adminPageSize, adminPage * adminPageSize).forEach(function (row) {
         var tr = document.createElement("tr");
         var nameCell = adminCell(tr, "");
         var toggle = document.createElement("button");
         toggle.type = "button";
-        toggle.className = "members-sidebar-link";
-        toggle.textContent = (adminExpandedId === row.member_id ? "▾ " : "▸ ") + adminMemberName(row);
+        toggle.className = "members-sidebar-link members-admin-member-toggle";
+        var chevron = document.createElement("span");
+        chevron.setAttribute("aria-hidden", "true");
+        chevron.textContent = adminExpandedId === row.member_id ? "▾" : "▸";
+        var memberName = document.createElement("span"); memberName.textContent = adminMemberName(row);
+        toggle.append(chevron, memberName);
         toggle.setAttribute("data-member-focus", row.member_id);
         toggle.setAttribute("aria-controls", "member-detail-" + row.member_id);
         toggle.setAttribute("aria-expanded", String(adminExpandedId === row.member_id));
@@ -1248,16 +1253,35 @@
         });
         if (restore) restore.focus();
       }
+      var paginationFocus = memberAdminPagination.contains(document.activeElement) ? document.activeElement.id : null;
       memberAdminPagination.replaceChildren();
+      var sizeLabel = document.createElement("label"); sizeLabel.textContent = "Members per page ";
+      var sizeSelect = document.createElement("select"); sizeSelect.id = "member-admin-page-size";
+      [10, 20, 50].forEach(function (size) {
+        var option = document.createElement("option"); option.value = String(size); option.textContent = String(size); sizeSelect.appendChild(option);
+      });
+      sizeSelect.value = String(adminPageSize);
+      sizeSelect.addEventListener("change", function () {
+        if (!adminConfirmDiscard()) { sizeSelect.value = String(adminPageSize); return; }
+        adminPageSize = Number(sizeSelect.value); adminPage = 1; adminExpandedId = null; adminDraft = null; adminRender();
+      });
+      sizeLabel.appendChild(sizeSelect);
       var prev = document.createElement("button");
-      prev.type = "button"; prev.textContent = "Previous"; prev.disabled = adminPage === 1;
+      prev.id = "member-admin-prev-page"; prev.type = "button"; prev.textContent = "Previous"; prev.disabled = adminPage === 1;
       prev.addEventListener("click", function () { if (adminConfirmDiscard()) { adminPage--; adminExpandedId = null; adminDraft = null; adminRender(); } });
       var pageLabel = document.createElement("span");
-      pageLabel.textContent = "Page " + adminPage + " of " + pages + " · " + filtered.length + " members";
+      pageLabel.textContent = "Page " + adminPage + " of " + pages + " · " + (filtered.length ? ((adminPage - 1) * adminPageSize + 1) + "–" + Math.min(adminPage * adminPageSize, filtered.length) : "0") + " of " + filtered.length + " members";
       var next = document.createElement("button");
-      next.type = "button"; next.textContent = "Next"; next.disabled = adminPage === pages;
+      next.id = "member-admin-next-page"; next.type = "button"; next.textContent = "Next"; next.disabled = adminPage === pages;
       next.addEventListener("click", function () { if (adminConfirmDiscard()) { adminPage++; adminExpandedId = null; adminDraft = null; adminRender(); } });
-      memberAdminPagination.append(prev, pageLabel, next);
+      pageLabel.setAttribute("role", "status");
+      memberAdminPagination.append(sizeLabel, prev, pageLabel, next);
+      if (paginationFocus) {
+        var control = document.getElementById(paginationFocus);
+        if (control && control.disabled) control = paginationFocus === prev.id ? next : prev;
+        if (control && control.disabled) control = sizeSelect;
+        if (control) control.focus();
+      }
     }
 
     function adminRenderEditor(row) {
@@ -1337,7 +1361,7 @@
       });
       if (!rolePresentation.assignments(row.role_slugs || []).length) { var empty = document.createElement("li"); empty.textContent = "None"; roleList.appendChild(empty); }
       box.appendChild(roleList);
-      var accessTitle = document.createElement("h4"); accessTitle.textContent = "Permissions included with these roles"; box.appendChild(accessTitle);
+      var accessTitle = document.createElement("h5"); accessTitle.className = "members-admin-access-title"; accessTitle.textContent = "Permissions included with these roles"; box.appendChild(accessTitle);
       var accessSummary = document.createElement("div");
       rolePresentation.renderAccess(accessSummary, row.role_slugs || []); box.appendChild(accessSummary);
       var grant = document.createElement("form"); grant.className = "members-admin-editor-form";
@@ -1382,7 +1406,7 @@
         setMemberAdminPanelIntro(userRoles);
       }
       memberAdminStats.replaceChildren();
-      [["Accounts", stats.account_count], ["Full-Access Members", stats.full_access_count], ["Basic Members", stats.basic_count], ["Website Volunteers", stats.volunteer_count]].forEach(function (pair) {
+      [["Accounts", stats.account_count], ["Basic Members", stats.basic_count], ["Full-Access Members", stats.full_access_count], ["Website Volunteers", stats.volunteer_count]].forEach(function (pair) {
         var p = document.createElement("p"); p.className = "members-admin-stat";
         var strong = document.createElement("strong"); strong.textContent = pair[1] == null ? "—" : String(pair[1]);
         var span = document.createElement("span"); span.textContent = pair[0]; p.append(strong, span); memberAdminStats.appendChild(p);

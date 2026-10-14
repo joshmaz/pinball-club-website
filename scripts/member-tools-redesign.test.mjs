@@ -26,7 +26,7 @@ test("directory has inline editing, paging, search, and discard protection", () 
   assert.match(html, /memberAdminSearch\.dispatchEvent\(new Event\("input"/);
   for (const filter of ["all", "with-roles", "active", "inactive"]) assert.match(html, new RegExp(`value="${filter}"`));
   assert.doesNotMatch(html, /id="member-admin-grant-form"|id="member-admin-membership-form"/);
-  assert.match(html, /filtered\.slice\(\(adminPage - 1\) \* 25, adminPage \* 25\)/);
+  assert.match(html, /filtered\.slice\(\(adminPage - 1\) \* adminPageSize, adminPage \* adminPageSize\)/);
   assert.match(html, /Discard unsaved membership changes\?/);
   assert.match(html, /beforeunload/);
   assert.match(html, /rolePresentation\.removalMessage\(row\.role_slugs/);
