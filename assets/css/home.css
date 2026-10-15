@@ -59,9 +59,13 @@
 #gallery-next { right: 0; }
 .gallery-footer { display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 52px; padding: .35rem .75rem; border-top: 1px solid var(--club-line); background: var(--club-surface); }
 #gallery-caption { margin: 0; text-align: center; font: .8rem/1.4 var(--club-display); }
+.gallery-footer { flex-wrap: wrap; }
+.gallery-footer > a { font-size: .75rem; }
+.gallery-slide:focus-visible { outline: 3px solid var(--club-teal); outline-offset: -4px; }
 @media(max-width:600px) { .home-floor { grid-template-columns: 1fr; } }
 
 /* Keep eight desktop snapshots in balanced rows, with four on mobile. */
 .club-home .home-highlights-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 1000px) { .club-home .home-highlights-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 400px) { .club-home .home-highlights-grid { grid-template-columns: 1fr; } }
+

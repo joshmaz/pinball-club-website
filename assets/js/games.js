@@ -499,6 +499,7 @@ const gameMoreInfoUi = {
   titleEl: /** @type {HTMLElement | null} */ (null),
   bodyEl: /** @type {HTMLElement | null} */ (null),
   lastFocus: /** @type {HTMLElement | null} */ (null),
+  gameId: "",
   onKeyDown: /** @type {((e: KeyboardEvent) => void) | null} */ (null),
   requestId: 0,
 };
@@ -706,8 +707,10 @@ function closeGameMoreInfoModal() {
   if (gameMoreInfoUi.root) {
     gameMoreInfoUi.root.hidden = true;
   }
-  if (gameMoreInfoUi.lastFocus && typeof gameMoreInfoUi.lastFocus.focus === "function") {
-    gameMoreInfoUi.lastFocus.focus();
+  const returnFocus = gameMoreInfoUi.lastFocus?.isConnected
+    ? gameMoreInfoUi.lastFocus : gameCardForId(gameMoreInfoUi.gameId)?.querySelector(".games-more-info-btn");
+  if (returnFocus && typeof returnFocus.focus === "function") {
+    returnFocus.focus();
   }
   gameMoreInfoUi.lastFocus = null;
 }
@@ -881,6 +884,7 @@ async function openGameMoreInfoModal(game) {
   const dialog = gameMoreInfoUi.dialog;
   if (!root || !titleEl || !dialog) return;
   const requestId = ++gameMoreInfoUi.requestId;
+  gameMoreInfoUi.gameId = String(game.id || "");
   gameMoreInfoUi.lastFocus = /** @type {HTMLElement} */ (document.activeElement);
   root.hidden = false;
   titleEl.textContent = game.title ? `More about ${game.title}` : "Game details";
@@ -919,6 +923,7 @@ function createGamesList(games) {
   for (const game of games) {
     const item = document.createElement("li");
     item.className = "games-list-item";
+    if (game.id) item.dataset.gameId = String(game.id);
     const isAtClub = game && typeof game === "object" && game.atClub === true;
     if (isAtClub) {
       item.classList.add("games-list-item--at-club");
@@ -1144,6 +1149,11 @@ function renderGamesList(games) {
   container.replaceChildren(createGamesList(filtered));
 }
 
+function gameCardForId(id) {
+  return Array.from(document.querySelectorAll("#games-list [data-game-id]"))
+    .find(card => card.dataset.gameId === String(id));
+}
+
 async function loadGames() {
   const container = document.getElementById("games-list");
   const transitionBanner = document.getElementById("games-transition-banner");
@@ -1169,15 +1179,19 @@ async function loadGames() {
     const hasAnyAtClub = sorted.some((game) => game && typeof game === "object" && game.atClub === true);
     const timelineDates = buildTimelineDates(sorted);
     const todayIso = todayIsoDate();
+    const linkedId = new URLSearchParams(window.location.search).get("game");
+    const linkedGame = linkedId ? sorted.find(game => String(game.id) === linkedId) : null;
     let priorGames = [];
     let hasRenderedSnapshot = false;
     let showAllMode = new URLSearchParams(window.location.search).get("view") === "all";
+    if (linkedGame && !isGameActiveOnDate(linkedGame, todayIso)) showAllMode = true;
     let currentLineup = [];
     function renderLineup(games) {
       currentLineup = games;
       renderGamesList(games);
     }
     const search = document.getElementById("games-search");
+    if (linkedGame && search) search.value = "";
     if (search) search.addEventListener("input", () => renderGamesList(currentLineup));
 
     if (transitionBanner) {
@@ -1288,6 +1302,19 @@ async function loadGames() {
     setTimelineControlsEnabled(!showAllMode);
     renderSnapshot(todayIso, false);
 
+    if (linkedGame) {
+      const card = gameCardForId(linkedId);
+      card?.scrollIntoView({ block: "center" });
+      const trigger = card?.querySelector(".games-more-info-btn");
+      trigger?.focus({ preventScroll: true });
+      void openGameMoreInfoModal(linkedGame);
+    } else if (linkedId !== null) {
+      const note = document.createElement("p");
+      note.setAttribute("role", "status");
+      note.textContent = "That game is unavailable. You can still browse the Games library below.";
+      container.before(note);
+    }
+
     void currentUserCanManageGames().then((allowed) => {
       if (allowed === gamesCanManage) return;
       gamesCanManage = allowed;
@@ -1305,3 +1332,4 @@ async function loadGames() {
 }
 
 loadGames();
+

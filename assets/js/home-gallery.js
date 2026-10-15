@@ -5,12 +5,17 @@
     if (!gallery) return;
     const track = document.getElementById('gallery-track');
     const caption = document.getElementById('gallery-caption');
+    const libraryLink = document.createElement('a');
+    libraryLink.textContent = 'View in Games Library';
+    libraryLink.hidden = true;
+    caption.after(libraryLink);
     const status = document.getElementById('gallery-status');
     const previous = document.getElementById('gallery-previous');
     const next = document.getElementById('gallery-next');
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false, hovered = false, focused = false, browsing = false;
-    let current = 0, games = [], slides = [], pointerStart, animations = [], generation = 0, resumeTimer;
+    let current = 0, games = [], slides = [], pointerStart, animations = [], generation = 0, resumeTimer, suppressClickUntil = 0;
+    const gameHref = game => game.id ? `games.html?game=${encodeURIComponent(String(game.id))}` : '';
     const active = () => visible && !document.hidden;
     const wrap = index => (index + games.length) % games.length;
     function stopAnimations() {
@@ -50,7 +55,11 @@
     }
     function makeSlide(index) {
       const game = games[index];
-      const element = document.createElement('div');
+      const element = document.createElement(gameHref(game) ? 'a' : 'div');
+      if (gameHref(game)) {
+        element.href = gameHref(game);
+        element.setAttribute('aria-label', `View ${game.title} in Games Library`);
+      }
       element.className = 'gallery-slide';
       const img = document.createElement('img');
       img.decoding = 'async';
@@ -70,6 +79,8 @@
       slide.element.style.transform = `translateX(${slot * 110 + (motion.matches || games.length < 2 ? 0 : 8)}%)`;
       slide.element.classList.toggle('is-current', slot === 0);
       slide.element.setAttribute('aria-hidden', String(slot !== 0));
+      slide.element.inert = slot !== 0;
+      if (slide.element.tagName === 'A') slide.element.tabIndex = slot === 0 ? 0 : -1;
     }
     function render() {
       if (!active() || !games.length) return;
@@ -90,6 +101,9 @@
       });
       old.forEach(slide => slide.element.remove());
       caption.textContent = games[current].title;
+      libraryLink.hidden = !gameHref(games[current]);
+      libraryLink.href = gameHref(games[current]);
+      libraryLink.setAttribute('aria-label', `View ${games[current].title} in Games Library`);
       sizeImages();
       animateCycle();
     }
@@ -118,14 +132,21 @@
       }
     });
     track.addEventListener('pointerdown', event => {
+      suppressClickUntil = 0;
       if (event.pointerType === 'touch') pointerStart = { x: event.clientX, y: event.clientY };
     });
     track.addEventListener('pointerup', event => {
       if (!pointerStart) return;
       const dx = event.clientX - pointerStart.x, dy = event.clientY - pointerStart.y;
       pointerStart = null;
+      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) suppressClickUntil = Date.now() + 750;
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) advance(dx < 0 ? 1 : -1);
     });
+    track.addEventListener('click', event => {
+      if (Date.now() < suppressClickUntil && event.target.closest('.gallery-slide')) {
+        event.preventDefault();
+      }
+    }, true);
     track.addEventListener('pointercancel', () => { pointerStart = null; });
     document.addEventListener('visibilitychange', () => {
       clearTimeout(resumeTimer);
@@ -158,3 +179,4 @@
   }
   init();
 })();
+
