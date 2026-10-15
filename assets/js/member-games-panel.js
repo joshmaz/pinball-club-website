@@ -190,11 +190,10 @@
     topSaveBtn.textContent = "Save changes";
     var topActions = el("div", { className: "member-games-sticky-actions" }, [topSaveBtn]);
     formEl.appendChild(topActions);
-    var libraryLink = el("a", { id: "mg-library-link", href: "games.html", hidden: "hidden", text: "View in Games Library" });
+    var libraryLink = el("a", { id: "mg-library-link", className: "member-games-help", href: "games.html", hidden: "hidden", text: "View in Games Library" });
     libraryLink.addEventListener("click", function (event) {
       if (!confirmDiscardIfDirty()) event.preventDefault();
     });
-    formEl.appendChild(libraryLink);
     topSaveBtn.addEventListener("click", onSaveGame);
     deleteStatusEl = el("p", { className: "member-games-delete-status", id: "mg-delete-status", hidden: "hidden" });
     deleteNoteInputEl = textareaInput("mg-delete-note", "");
@@ -406,6 +405,7 @@
     var actions = el("div", { className: "member-games-form-actions" }, [saveBtn, cancelBtn]);
     formEl.appendChild(actions);
     formEl.appendChild(deleteStatusEl);
+    formEl.appendChild(libraryLink);
     formEl.appendChild(deleteNoteRow);
     formEl.appendChild(deleteActions);
 
