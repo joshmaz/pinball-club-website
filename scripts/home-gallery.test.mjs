@@ -7,19 +7,20 @@ async function setup({reduced = false, count = 5} = {}) {
   let loaded = 0, observer, clock = 0; const animations = [];
   const timers = new Map();
   class Element {
-    constructor() { this.children=[]; this.listeners={}; this.style={}; this.attributes={}; this.clientWidth=500; this.hidden=true; this.textContent=''; const classes=new Set(); this.classList={add:x=>classes.add(x),remove:x=>classes.delete(x),toggle:(x,v)=>v?classes.add(x):classes.delete(x),contains:x=>classes.has(x)}; }
+    constructor(tag = 'div') { this.tagName=tag.toUpperCase(); this.children=[]; this.listeners={}; this.style={}; this.attributes={}; this.clientWidth=500; this.hidden=true; this.textContent=''; const classes=new Set(); this.classList={add:x=>classes.add(x),remove:x=>classes.delete(x),toggle:(x,v)=>v?classes.add(x):classes.delete(x),contains:x=>classes.has(x)}; }
     animate(frames, options) { const animation={frames,options,playState:'running',play(){this.playState='running';},pause(){this.playState='paused';},cancel(){this.playState='idle';}};animations.push(animation);return animation; }
     contains(element) { return Object.values(ids).includes(element); }
     addEventListener(name, fn) { this.listeners[name]=fn; }
     setAttribute(k,v) { this.attributes[k]=v; }
     append(child) { child.remove(); this.children.push(child); child.parent=this; }
+    after(child) { this.nextSibling=child; }
     remove() { if(this.parent) this.parent.children=this.parent.children.filter(c=>c!==this); }
     set src(value) { this.url=value; loaded++; }
   }
   const ids=Object.fromEntries(['gallery','gallery-track','gallery-caption','gallery-status','gallery-pause','gallery-previous','gallery-next'].map(id=>[id,new Element()]));
-  const document={hidden:false,listeners:{},getElementById:id=>ids[id],createElement:()=>new Element(),addEventListener(name,fn){this.listeners[name]=fn;}};
+  const document={hidden:false,listeners:{},getElementById:id=>ids[id],createElement:tag=>new Element(tag),addEventListener(name,fn){this.listeners[name]=fn;}};
   const motion={matches:reduced,addEventListener(){}};
-  const games=Array.from({length:count},(_,i)=>({title:`Game ${i}`,primaryImage:{url:`https://example.test/${i}-large`,variants:[{url:`https://example.test/${i}-small`,width:320},{url:`https://example.test/${i}-medium`,width:640}]}}));
+  const games=Array.from({length:count},(_,i)=>({id:`game-${i}`,title:`Game ${i}`,primaryImage:{url:`https://example.test/${i}-large`,variants:[{url:`https://example.test/${i}-small`,width:320},{url:`https://example.test/${i}-medium`,width:640}]}}));
   const math=Object.create(Math);math.random=()=>.37;
   vm.runInNewContext(source,{document,Math:math,window:{matchMedia:()=>motion,SNHPublicData:{loadGames:async()=>({data:games})},SNHGameImages:{variants:i=>i.variants}},console,
     IntersectionObserver:class {constructor(fn){observer=fn;} observe(){}},ResizeObserver:class {observe(){}},
@@ -50,3 +51,4 @@ test('reduced motion is stationary but manually navigable; single image loads on
   const h=await setup({reduced:true});h.view(true);assert.equal(h.animations.length,0);const before=h.ids['gallery-caption'].textContent;h.click('gallery-next');assert.notEqual(h.ids['gallery-caption'].textContent,before);assert.equal(h.animations.length,0);
   const one=await setup({count:1});one.view(true);assert.equal(one.loaded(),1);assert.equal(one.animations.length,0);assert.equal(one.ids['gallery-next'].hidden,true);
 });
+
