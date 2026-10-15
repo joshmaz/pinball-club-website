@@ -190,6 +190,11 @@
     topSaveBtn.textContent = "Save changes";
     var topActions = el("div", { className: "member-games-sticky-actions" }, [topSaveBtn]);
     formEl.appendChild(topActions);
+    var libraryLink = el("a", { id: "mg-library-link", href: "games.html", hidden: "hidden", text: "View in Games Library" });
+    libraryLink.addEventListener("click", function (event) {
+      if (!confirmDiscardIfDirty()) event.preventDefault();
+    });
+    formEl.appendChild(libraryLink);
     topSaveBtn.addEventListener("click", onSaveGame);
     deleteStatusEl = el("p", { className: "member-games-delete-status", id: "mg-delete-status", hidden: "hidden" });
     deleteNoteInputEl = textareaInput("mg-delete-note", "");
@@ -796,6 +801,15 @@
     );
   }
 
+  function syncGameLibraryLink(game) {
+    var link = document.getElementById("mg-library-link");
+    if (!link) return;
+    var available = !!(game && game.id && !isGameDeleted(game));
+    link.hidden = !available;
+    if (available) link.href = "games.html?game=" + encodeURIComponent(String(game.id));
+    else link.removeAttribute("href");
+  }
+
   function isGameDeleted(game) {
     if (!game) return false;
     var v = game.deletedAt;
@@ -1105,6 +1119,7 @@
   }
 
   function clearFormForNewGame() {
+    syncGameLibraryLink(null);
     suppressDirtyTracking = true;
     [
       "mg-title",
@@ -2567,6 +2582,7 @@
   }
 
   async function populateForm(gameId) {
+    syncGameLibraryLink(null);
     currentGameId = gameId;
     pingolfLoaded = false;
     pingolfTargetCount = 0;
@@ -2577,6 +2593,7 @@
     if (pingolfHelp) pingolfHelp.textContent = "Loading targets…";
     var g = currentGame();
     if (!g) return;
+    syncGameLibraryLink(g);
     if (window.SNHMemberRoutes) window.SNHMemberRoutes.setGame(g.id || gameId);
     if (comboboxInputEl) {
       comboboxInputEl.value = g.__label || g.title || g.slug || "";
@@ -2919,3 +2936,4 @@
     openGameForEdit: openGameForEdit
   };
 })();
+
