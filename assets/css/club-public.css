@@ -13,6 +13,10 @@
 .club-public :is(.resource-card-title, .merch-item h3, .donate-impact-item h3) { color: var(--club-ink); font-size: 1.25rem; line-height: 1.35; letter-spacing: -.025em; }
 .club-public :is(.resource-card-summary, .resource-card-description, .merch-item p, .donate-impact-item p) { font-size: .85rem; line-height: 1.65; }
 .club-public .resources-intro { max-width: 75ch; color: var(--club-muted); }
+/* Keep the Resources introduction close to its filter divider. */
+.club-resources .club-page-heading { padding-bottom: .75rem; }
+.club-resources .club-page-heading .resources-intro { margin-bottom: 0; }
+.club-public.club-resources .resources-toolbar { margin-top: 0; }
 .club-public .resources-toolbar { border-top: 1px solid var(--club-line); padding: 1.25rem 0; margin-top: 1.5rem; }
 .club-public .resources-filter-btn { min-height: 44px; border-color: var(--club-control-line); border-radius: var(--club-radius); font-size: .85rem; }
 .club-public .resources-filter-btn--active { border-color: var(--club-teal); font-weight: 700; }

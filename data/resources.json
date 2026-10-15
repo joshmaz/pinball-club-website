@@ -31,13 +31,14 @@
       "categoryId": "leagues",
       "title": "New England Pinball League",
       "shortLabel": "NEPL",
-      "summary": "One of the region's most active leagues, with weekly competitive pinball nights across New England, including SNHPC.",
-      "description": "A great mix of welcoming community and serious play: check season schedules, track weekly results, and follow standings as players compete throughout the region.",
+      "summary": "Weekly league play across New England, including Monday nights at SNHPC.",
+      "description": "Check our club standings and weekly schedule, or explore league play at other locations.",
       "links": [
-        { "label": "NEPL home", "url": "https://nepl.org/" },
-        { "label": "Schedule", "url": "https://nepl.org/schedule" },
-        { "label": "Locations", "url": "https://nepl.org/locations" },
-        { "label": "Results (our location)", "url": "https://nepl.org/results?location=4" }
+        { "label": "SNHPC location & standings", "url": "https://nepl.org/locations/6bnrqlmjyp2lbp3" },
+        { "label": "Weekly league schedule", "url": "https://nepl.org/schedule" },
+        { "label": "Overall league standings", "url": "https://nepl.org/standings" },
+        { "label": "All NEPL locations", "url": "https://nepl.org/locations" },
+        { "label": "NEPL home", "url": "https://nepl.org/" }
       ],
       "sortOrder": 10
     },
@@ -47,7 +48,7 @@
       "title": "Northeast Pinball Challenge",
       "shortLabel": "NPC",
       "summary": "Federation of pinball leagues across New England with local seasons and Grand Finals for top finishers.",
-      "description": "Play at participating locations, compete for league prizes, and qualify for the NPC team and individual finals (IFPA-submitted). Seasons and finals venues are announced on the site.",
+      "description": "Find participating locations, season announcements, and information about the Grand Finals.",
       "links": [
         { "label": "NPC home", "url": "https://npcpinball.org/" },
         { "label": "League info", "url": "https://npcpinball.org/about/" },
@@ -93,8 +94,8 @@
       "categoryId": "websites",
       "title": "Open Pinball Database",
       "shortLabel": "OPDB",
-      "summary": "Open machine database with standardized metadata for pinball games and manufacturers.",
-      "description": "Useful for developers, operators, and collectors who need consistent game identifiers and structured machine details across apps and tools.",
+      "summary": "A searchable pinball database with game details and consistent machine identifiers.",
+      "description": "Useful for looking up games and connecting machine information across pinball apps.",
       "links": [
         { "label": "Open Pinball Database", "url": "https://opdb.org/" }
       ],
@@ -125,8 +126,8 @@
       "id": "pixels-and-pinball",
       "categoryId": "websites",
       "title": "Pixels & Pinball",
-      "summary": "New England pinball retailer: new games, preorders, and arcade gear; official partner of the New England Pinball League.",
-      "description": "Shop for in-stock and preorder titles, accessories, and arcade products. Handy for buyers in the region and for following local retail and league news.",
+      "summary": "New England retailer offering pinball machines, accessories, and arcade gear.",
+      "description": "Browse available games, preorders, and accessories.",
       "links": [
         { "label": "Pixels & Pinball", "url": "https://pixelsandpinball.com/" }
       ],
@@ -137,8 +138,8 @@
       "categoryId": "websites",
       "title": "Match Play Events",
       "shortLabel": "Match Play",
-      "summary": "Tournament web app: discover events, register, and follow live brackets and results. Common for IFPA tournaments and league play.",
-      "description": "Players use it to find competitions and track pairings; organizers use it to run draws, scoring, and standings in the browser.",
+      "summary": "Find tournaments and follow pairings, standings, and results.",
+      "description": "Organizers also use Match Play to run competitions and manage scoring.",
       "links": [
         { "label": "Match Play Events", "url": "https://app.matchplay.events/" }
       ],
@@ -159,7 +160,7 @@
       "categoryId": "websites",
       "title": "Pinball Primer",
       "summary": "Beginner-friendly guide to pinball basics, common terms, and how to improve your play.",
-      "description": "Great onboarding resource for new players who want a clear introduction to rules, strategy, and pinball culture.",
+      "description": "Learn the language of pinball and pick up tips for your next game.",
       "links": [
         { "label": "Pinball Primer", "url": "https://pinballprimer.github.io/" }
       ],
@@ -169,8 +170,8 @@
       "id": "pinventory",
       "categoryId": "websites",
       "title": "Pinventory",
-      "summary": "Fleet and collection management: machine status, maintenance history, spare parts, revenue, and QR codes so players can report issues without installing an app.",
-      "description": "Aimed at operators and serious collectors; can link machines to the Kineticist database for manufacturer info and images.",
+      "summary": "Tools for tracking a pinball collection, maintenance, spare parts, and game issues.",
+      "description": "Useful for collectors and operators keeping machines in playing shape.",
       "links": [
         { "label": "Pinventory", "url": "https://pinventory.app/" },
         { "label": "Get started", "url": "https://pinventory.app/auth" }
@@ -181,8 +182,8 @@
       "id": "em-pinball-sounds",
       "categoryId": "websites",
       "title": "EM Pinball Sounds",
-      "summary": "Community-focused site for upgrading electro-mechanical pinball machines with modern audio and customization ideas.",
-      "description": "Shares practical guidance for adding music and sound effects to EM games using low-cost controllers (like Arduino or Raspberry Pi), plus hardware/theme notes and a forum-style community for project progress and troubleshooting.",
+      "summary": "Ideas and guidance for adding music and sound effects to electromechanical pinball machines.",
+      "description": "Explore audio projects, hardware options, and tips from other EM owners.",
       "links": [
         { "label": "EM Pinball Sounds", "url": "https://empinballsounds.com/" }
       ],
@@ -202,8 +203,8 @@
       "id": "punk-rock-pinball",
       "categoryId": "websites",
       "title": "Punk Rock Pinball",
-      "summary": "Pinball podcast, community coverage, event content, and blog posts from an indie scene perspective.",
-      "description": "Includes the Punk Rock Pinball Podcast, PRPA content, and location/event writeups.",
+      "summary": "Pinball podcasts, event coverage, and stories from the community.",
+      "description": "Listen to the podcast or browse articles about players, places, and events.",
       "links": [
         { "label": "Punk Rock Pinball", "url": "https://punkrockpinball.com/" }
       ],
@@ -223,8 +224,8 @@
       "id": "mitchell-lighting",
       "categoryId": "parts",
       "title": "Mitchell Lighting",
-      "summary": "Pinball LED bulbs and kits tuned for a warm, vintage arcade look, with modern efficiency and without losing that classic glow.",
-      "description": "Popular for restorations and upgrades when you want incandescent-style color and diffusion with less heat and maintenance than old bulbs.",
+      "summary": "LED bulbs and lighting kits for pinball machines.",
+      "description": "Browse lighting options for a restoration or an upgrade.",
       "links": [
         { "label": "Mitchell Lighting", "url": "https://mitchelllighting.com/" },
         { "label": "Pinside shop listing", "url": "https://pinside.com/pinball/shops/shop/1445-mitchell-lighting" }
@@ -275,6 +276,17 @@
         { "label": "PinFest", "url": "https://www.pinfestival.com/" }
       ],
       "sortOrder": 20
+    },
+    {
+      "id": "chicago-pinball-expo",
+      "categoryId": "major-events",
+      "title": "Chicago Pinball Expo",
+      "summary": "Chicago-area pinball show with free-play games, tournaments, vendors, and seminars.",
+      "description": "Visit the official site for dates, tickets, and the event schedule.",
+      "links": [
+        { "label": "Pinball Expo", "url": "https://pinballexpo.com/" }
+      ],
+      "sortOrder": 30
     }
   ]
 }
