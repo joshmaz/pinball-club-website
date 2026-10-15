@@ -135,11 +135,6 @@
           <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. Anything you save here stays with the club and isn't shared with other members yet.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
 
-          <section class="member-role-profile" aria-labelledby="member-role-profile-title">
-            <h3 id="member-role-profile-title">Roles &amp; Permissions</h3>
-            <div id="member-role-profile-content" aria-live="polite"><p>Loading website roles…</p></div>
-          </section>
-
           <form id="profile-form" class="members-profile-form">
             <fieldset class="club-form-section"><legend>Account basics</legend>
             <p class="member-panel-helper">Basic info the club uses to recognize you.</p>
@@ -197,6 +192,11 @@
 
               </div>
             </fieldset>
+          <section class="member-role-profile" aria-labelledby="member-role-profile-title">
+            <h3 id="member-role-profile-title">Roles &amp; Permissions</h3>
+            <div id="member-role-profile-content" aria-live="polite"><p>Loading website roles…</p></div>
+          </section>
+
             <section class="account-privacy" aria-labelledby="account-privacy-title"><h3 id="account-privacy-title">Privacy</h3>
             <p class="member-panel-helper">Storing the details above is separate from showing them to other members. The club doesn't have a member-facing profile view yet, so nothing in your profile is shared. Sharing controls will live in this section once that view exists.</p>
 
@@ -574,6 +574,7 @@
     var memberAdminPagination = document.getElementById("member-admin-pagination");
     var adminRows = [];
     var adminPage = 1;
+    var adminPageSize = 20;
     var adminExpandedId = null;
     var adminDraft = null;
     var adminSaving = false;
@@ -1212,22 +1213,26 @@
       var query = (memberAdminSearch.value || "").trim().toLowerCase();
       var mode = memberAdminDirectoryFilter.value;
       var filtered = adminRows.filter(function (row) { return memberMatchesDirectoryFilter(row, mode, query); });
-      var pages = Math.max(1, Math.ceil(filtered.length / 25));
-      adminPage = Math.min(adminPage, pages);
+      var pages = Math.max(1, Math.ceil(filtered.length / adminPageSize));
+      adminPage = Math.max(1, Math.min(adminPage, pages));
       var focused = document.activeElement;
       var focusKey = focused && memberAdminTableBody.contains(focused) ? focused.getAttribute("data-member-focus") : null;
       memberAdminTableBody.replaceChildren();
-      filtered.slice((adminPage - 1) * 25, adminPage * 25).forEach(function (row) {
+      filtered.slice((adminPage - 1) * adminPageSize, adminPage * adminPageSize).forEach(function (row) {
         var tr = document.createElement("tr");
         var nameCell = adminCell(tr, "");
         var toggle = document.createElement("button");
         toggle.type = "button";
-        toggle.className = "members-sidebar-link";
-        toggle.textContent = adminMemberName(row);
+        toggle.className = "members-sidebar-link members-admin-member-toggle";
+        var chevron = document.createElement("span");
+        chevron.setAttribute("aria-hidden", "true");
+        chevron.textContent = adminExpandedId === row.member_id ? "▾" : "▸";
+        var memberName = document.createElement("span"); memberName.textContent = adminMemberName(row);
+        toggle.append(chevron, memberName);
         toggle.setAttribute("data-member-focus", row.member_id);
         toggle.setAttribute("aria-controls", "member-detail-" + row.member_id);
         toggle.setAttribute("aria-expanded", String(adminExpandedId === row.member_id));
-        toggle.setAttribute("aria-label", (adminExpandedId === row.member_id ? "Close editor for " : "Open editor for ") + adminMemberName(row));
+        toggle.setAttribute("aria-label", (adminExpandedId === row.member_id ? "Hide details for " : "Show details for ") + adminMemberName(row));
         toggle.addEventListener("click", function () {
           if (!adminConfirmDiscard()) return;
           adminExpandedId = adminExpandedId === row.member_id ? null : row.member_id;
@@ -1248,16 +1253,35 @@
         });
         if (restore) restore.focus();
       }
+      var paginationFocus = memberAdminPagination.contains(document.activeElement) ? document.activeElement.id : null;
       memberAdminPagination.replaceChildren();
+      var sizeLabel = document.createElement("label"); sizeLabel.textContent = "Members per page ";
+      var sizeSelect = document.createElement("select"); sizeSelect.id = "member-admin-page-size";
+      [10, 20, 50].forEach(function (size) {
+        var option = document.createElement("option"); option.value = String(size); option.textContent = String(size); sizeSelect.appendChild(option);
+      });
+      sizeSelect.value = String(adminPageSize);
+      sizeSelect.addEventListener("change", function () {
+        if (!adminConfirmDiscard()) { sizeSelect.value = String(adminPageSize); return; }
+        adminPageSize = Number(sizeSelect.value); adminPage = 1; adminExpandedId = null; adminDraft = null; adminRender();
+      });
+      sizeLabel.appendChild(sizeSelect);
       var prev = document.createElement("button");
-      prev.type = "button"; prev.textContent = "Previous"; prev.disabled = adminPage === 1;
+      prev.id = "member-admin-prev-page"; prev.type = "button"; prev.textContent = "Previous"; prev.disabled = adminPage === 1;
       prev.addEventListener("click", function () { if (adminConfirmDiscard()) { adminPage--; adminExpandedId = null; adminDraft = null; adminRender(); } });
       var pageLabel = document.createElement("span");
-      pageLabel.textContent = "Page " + adminPage + " of " + pages + " · " + filtered.length + " members";
+      pageLabel.textContent = "Page " + adminPage + " of " + pages + " · " + (filtered.length ? ((adminPage - 1) * adminPageSize + 1) + "–" + Math.min(adminPage * adminPageSize, filtered.length) : "0") + " of " + filtered.length + " members";
       var next = document.createElement("button");
-      next.type = "button"; next.textContent = "Next"; next.disabled = adminPage === pages;
+      next.id = "member-admin-next-page"; next.type = "button"; next.textContent = "Next"; next.disabled = adminPage === pages;
       next.addEventListener("click", function () { if (adminConfirmDiscard()) { adminPage++; adminExpandedId = null; adminDraft = null; adminRender(); } });
-      memberAdminPagination.append(prev, pageLabel, next);
+      pageLabel.setAttribute("role", "status");
+      memberAdminPagination.append(sizeLabel, prev, pageLabel, next);
+      if (paginationFocus) {
+        var control = document.getElementById(paginationFocus);
+        if (control && control.disabled) control = paginationFocus === prev.id ? next : prev;
+        if (control && control.disabled) control = sizeSelect;
+        if (control) control.focus();
+      }
     }
 
     function adminRenderEditor(row) {
@@ -1268,12 +1292,17 @@
       var box = document.createElement("div");
       box.className = "members-admin-editor";
       box.id = "member-detail-" + row.member_id;
+      var accountTitle = document.createElement("h4"); accountTitle.textContent = "Account information"; box.appendChild(accountTitle);
       var info = document.createElement("p");
-      info.textContent = "Email: " + (row.email || "—") + " · Last updated: " +
-        (row.membership_last_updated_at ? window.SNHMemberPortal.formatDate(row.membership_last_updated_at) : "—");
+      info.textContent = "Email: " + (row.email || "—") + " · Email verified: " + (row.email_verified ? "Yes" : "No");
       box.appendChild(info);
+      var dates = document.createElement("p");
+      dates.textContent = "Account created: " + (row.account_created_at ? window.SNHMemberPortal.formatDate(row.account_created_at) : "—") +
+        " · Last sign-in: " + (row.last_sign_in_at ? window.SNHMemberPortal.formatDate(row.last_sign_in_at) : Object.prototype.hasOwnProperty.call(row, "last_sign_in_at") ? "Never" : "—");
+      box.appendChild(dates);
+      var membershipTitle = document.createElement("h4"); membershipTitle.textContent = "Club membership"; box.appendChild(membershipTitle);
       var details = document.createElement("p");
-      details.textContent = "Membership: " + (row.membership_status === "active" ? "Full Access Member" : "Basic Member");
+      details.textContent = "Membership type: " + (row.membership_status === "active" ? "Full-Access Member" : "Basic Member");
       box.appendChild(details);
       if (!adminDraft || adminDraft.memberId !== row.member_id) {
         adminDraft = {memberId: row.member_id, fullAccess: row.membership_status === "active",
@@ -1286,7 +1315,7 @@
         var opt = document.createElement("option"); opt.value = pair[0]; opt.textContent = pair[1]; choice.appendChild(opt);
       });
       choice.value = adminDraft.fullAccess ? "full" : "member";
-      var label = document.createElement("label"); label.textContent = "Membership "; label.appendChild(choice); form.appendChild(label);
+      var label = document.createElement("label"); label.textContent = "Membership type "; label.appendChild(choice); form.appendChild(label);
       var save = document.createElement("button"); save.type = "submit"; form.appendChild(save);
       var feedback = document.createElement("span"); feedback.setAttribute("role", "status"); form.appendChild(feedback);
       function updateDraft() {
@@ -1313,7 +1342,7 @@
         finally { adminSaving = false; adminRender(); }
       });
       box.appendChild(form);
-      var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Assigned roles"; box.appendChild(rolesTitle);
+      var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Website permissions · assigned roles"; box.appendChild(rolesTitle);
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       rolePresentation.assignments(row.role_slugs || []).forEach(function (slug) {
         var roleName = rolePresentation.name(slug);
@@ -1332,11 +1361,11 @@
       });
       if (!rolePresentation.assignments(row.role_slugs || []).length) { var empty = document.createElement("li"); empty.textContent = "None"; roleList.appendChild(empty); }
       box.appendChild(roleList);
-      var accessTitle = document.createElement("h4"); accessTitle.textContent = "Effective access"; box.appendChild(accessTitle);
+      var accessTitle = document.createElement("h5"); accessTitle.className = "members-admin-access-title"; accessTitle.textContent = "Permissions included with these roles"; box.appendChild(accessTitle);
       var accessSummary = document.createElement("div");
       rolePresentation.renderAccess(accessSummary, row.role_slugs || []); box.appendChild(accessSummary);
       var grant = document.createElement("form"); grant.className = "members-admin-editor-form";
-      var grantLabel = document.createElement("label"); grantLabel.textContent = "Assign a role";
+      var grantLabel = document.createElement("label"); grantLabel.textContent = "Assign a website role";
       var select = document.createElement("select"); select.required = true;
       var placeholder = document.createElement("option"); placeholder.value = ""; placeholder.textContent = "Select a role"; select.appendChild(placeholder);
       (window.SNHMemberPortal.ASSIGNABLE_MEMBER_ROLES || []).filter(function (slug) { return adminMayManageRole(slug) && !(row.role_slugs || []).includes(slug); }).forEach(function (slug) {
@@ -1377,7 +1406,7 @@
         setMemberAdminPanelIntro(userRoles);
       }
       memberAdminStats.replaceChildren();
-      [["Accounts", stats.account_count], ["Full-Access Members", stats.full_access_count], ["Basic Members", stats.basic_count], ["Website Volunteers", stats.volunteer_count]].forEach(function (pair) {
+      [["Accounts", stats.account_count], ["Basic Members", stats.basic_count], ["Full-Access Members", stats.full_access_count], ["Website Volunteers", stats.volunteer_count]].forEach(function (pair) {
         var p = document.createElement("p"); p.className = "members-admin-stat";
         var strong = document.createElement("strong"); strong.textContent = pair[1] == null ? "—" : String(pair[1]);
         var span = document.createElement("span"); span.textContent = pair[0]; p.append(strong, span); memberAdminStats.appendChild(p);

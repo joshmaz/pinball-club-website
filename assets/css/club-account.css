@@ -242,3 +242,6 @@
   .club-account .photo-sort-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .club-account .photo-sort-card { padding: .6rem; }
 }
+
+.club-account .members-admin-member-toggle { display: inline-flex; align-items: center; gap: .45rem; text-align: left; }
+.club-account .members-admin-access-title { font-size: .85rem; font-weight: 500; color: var(--club-muted); margin: .8rem 0 .35rem; }
