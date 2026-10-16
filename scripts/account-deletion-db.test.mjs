@@ -43,6 +43,7 @@ async function fixture() {
   await db.exec(await read('20261014180000_account_deletion.sql'));
   await db.exec(await read('20261014190000_membership_trends.sql'));
   await db.exec(await read('20261014200000_weekly_membership_trend_points.sql'));
+  await db.exec(await read('20261016120000_require_verified_access_grants.sql'));
   for(let n=1;n<=8;n++) {
     await db.query('insert into auth.users values($1,$2)',[id(n),n===8?null:'2026-01-01']);
     await db.query('insert into members values($1,$1)',[id(n)]);
@@ -57,6 +58,14 @@ async function activate(db,receipt,actor) {
   return db.query('select snh_activate_account_deletion($1,$2)',[receipt,id(actor)]);
 }
 async function remove(db,n) { return db.query('delete from auth.users where id=$1',[id(n)]); }
+
+test('the verified-grant prerequisite preserves administrative deletion of unverified accounts',async()=>{
+  const db=await fixture();try {
+    const receipt=await prepare(db,3,8);await activate(db,receipt,3);await remove(db,8);
+    assert.equal((await db.query('select count(*)::int n from auth.users where id=$1',[id(8)])).rows[0].n,0);
+    assert.equal((await db.query('select snh_account_deletion_request($1) r',[receipt])).rows[0].r.completed,true);
+  }finally{await db.close();}
+});
 
 test('deletion cascades account records, clears attribution, redacts signup copies and records operator',async()=>{
   const db=await fixture();try {

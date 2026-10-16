@@ -1299,6 +1299,7 @@
     }
 
     function adminRenderEditor(row) {
+      var emailVerified = row.email_verified === true;
       var tr = document.createElement("tr");
       tr.className = "members-admin-editor-row";
       var td = document.createElement("td");
@@ -1315,6 +1316,11 @@
         " · Last sign-in: " + (row.last_sign_in_at ? window.SNHMemberPortal.formatDate(row.last_sign_in_at) : Object.prototype.hasOwnProperty.call(row, "last_sign_in_at") ? "Never" : "—");
       box.appendChild(dates);
       var membershipTitle = document.createElement("h4"); membershipTitle.textContent = "Club membership"; box.appendChild(membershipTitle);
+      if (!emailVerified) {
+        var verificationNote = document.createElement("p");
+        verificationNote.textContent = "This account must verify its email before receiving website roles or Full Access.";
+        box.appendChild(verificationNote);
+      }
       var details = document.createElement("p");
       details.textContent = "Membership type: " + (row.membership_status === "active" ? "Full-Access Member" : "Basic Member");
       box.appendChild(details);
@@ -1326,7 +1332,8 @@
       form.className = "members-admin-editor-form";
       var choice = document.createElement("select");
       [["member", "Basic Member"], ["full", "Full Access Member"]].forEach(function (pair) {
-        var opt = document.createElement("option"); opt.value = pair[0]; opt.textContent = pair[1]; choice.appendChild(opt);
+        var opt = document.createElement("option"); opt.value = pair[0]; opt.textContent = pair[1];
+        opt.disabled = pair[0] === "full" && !emailVerified; choice.appendChild(opt);
       });
       choice.value = adminDraft.fullAccess ? "full" : "member";
       var label = document.createElement("label"); label.textContent = "Membership type "; label.appendChild(choice); form.appendChild(label);
@@ -1334,7 +1341,7 @@
       var feedback = document.createElement("span"); feedback.setAttribute("role", "status"); form.appendChild(feedback);
       function updateDraft() {
         adminDraft.fullAccess = choice.value === "full";
-        save.disabled = adminSaving || !adminHasUnsaved();
+        save.disabled = adminSaving || !adminHasUnsaved() || (adminDraft.fullAccess && !emailVerified);
         save.textContent = adminSaving ? "Saving…" : adminHasUnsaved() ? "Save membership (unsaved changes)" : "Save membership";
         if (adminHasUnsaved()) feedback.textContent = "Unsaved membership changes";
       }
@@ -1342,6 +1349,9 @@
       updateDraft();
       form.addEventListener("submit", async function (ev) {
         ev.preventDefault(); if (adminSaving || !adminHasUnsaved()) return;
+        if (adminDraft.fullAccess && !emailVerified) {
+          feedback.textContent = "This account must verify its email before receiving Full Access."; return;
+        }
         adminSaving = true; updateDraft(); feedback.textContent = "";
         try {
           await window.SNHMemberPortal.setMemberMembership(row.member_id, {fullAccess: adminDraft.fullAccess});
@@ -1388,9 +1398,10 @@
       grantLabel.appendChild(select); grant.appendChild(grantLabel);
       select.setAttribute("data-member-focus", row.member_id);
       var grantButton = document.createElement("button"); grantButton.setAttribute("data-member-focus", row.member_id); grantButton.type = "submit"; grantButton.textContent = "Assign role"; grant.appendChild(grantButton);
+      select.disabled = !emailVerified; grantButton.disabled = !emailVerified;
       if (select.options.length === 1) grant.hidden = true;
       grant.addEventListener("submit", async function (ev) {
-        ev.preventDefault(); if (!select.value || !adminMayManageRole(select.value)) return;
+        ev.preventDefault(); if (!emailVerified || !select.value || !adminMayManageRole(select.value)) return;
         grantButton.disabled = true; grantButton.textContent = "Saving…";
         try { await window.SNHMemberPortal.grantMemberRole(row.member_id, select.value); var granted = select.value; await onMemberAdminPanelShown(true); memberAdminStatus.textContent = rolePresentation.name(granted) + " assigned to " + adminMemberName(row) + "."; }
         catch (err) { memberAdminStatus.textContent = "Role assignment failed: " + rolePresentation.errorMessage(err); grantButton.disabled = false; grantButton.textContent = "Assign role"; }

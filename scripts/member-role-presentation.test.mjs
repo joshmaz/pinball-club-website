@@ -133,7 +133,7 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
       adminMayRemoveRole: (_, slug) => auth.canAssignMemberRole([actor], slug), userRoles: [actor]
     });
     vm.runInContext(html.slice(html.indexOf('    function adminRenderEditor(row)'), html.indexOf('    onMemberAdminPanelShown = async')), context);
-    context.adminRenderEditor({ member_id: 'target', role_slugs: ['games_admin'], membership_status: 'active' });
+    context.adminRenderEditor({ member_id: 'target', role_slugs: ['games_admin'], membership_status: 'active', email_verified: true });
     assert.equal(deletionControls.length, actor === 'membership_editor' ? 0 : 1);
     if (deletionControls.length) {
       assert.equal(deletionControls[0].memberId, 'target');
@@ -149,6 +149,57 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
     for (const option of options) {
       assert.equal(option.textContent, auth.ROLE_CATALOG[option.value].displayName);
       assert.equal(auth.canAssignMemberRole([actor], option.value), true);
+    }
+  }
+});
+
+test('expanded row blocks unverified grants, permits deactivation and removal, and enables grants after verification', async () => {
+  for (const emailVerified of [false, undefined, true]) {
+    for (const active of [false, true]) {
+      const { context, ui, auth } = setup();
+      const root = new Element('tbody'), calls = [];
+      context.window.SNHAccountDeletion = { mount() {} };
+      Object.assign(context.window.SNHMemberPortal, {
+        grantMemberRole: async (...args) => calls.push(['role', ...args]),
+        setMemberMembership: async (...args) => calls.push(['membership', ...args])
+      });
+      Object.assign(context, {
+        rolePresentation: ui, memberAdminTableBody: root, adminDraft: null, adminSaving: false,
+        adminMemberName: () => 'Alex', currentAdminMemberId: 'actor', session: { user: { id: 'actor' } },
+        adminHasUnsaved: () => context.adminDraft.fullAccess !== context.adminDraft.originalFullAccess,
+        adminMayManageRole: slug => auth.canAssignMemberRole(['club_admin'], slug),
+        adminMayRemoveRole: () => true, userRoles: ['club_admin'],
+        memberAdminStatus: new Element('p'), onMemberAdminPanelShown: async () => {}, adminRender() {}
+      });
+      vm.runInContext(html.slice(html.indexOf('    function adminRenderEditor(row)'), html.indexOf('    onMemberAdminPanelShown = async')), context);
+      context.adminRenderEditor({ member_id: 'target', role_slugs: ['games_editor'],
+        membership_status: active ? 'active' : 'inactive', email_verified: emailVerified });
+      const forms = all(root, el => el.tag === 'form');
+      const membership = forms[0], grant = forms[1];
+      const choice = all(membership, el => el.tag === 'select')[0];
+      const fullOption = all(choice, el => el.tag === 'option' && el.value === 'full')[0];
+      const roleSelect = all(grant, el => el.tag === 'select')[0];
+      const roleButton = all(grant, el => el.tag === 'button')[0];
+      assert.equal(fullOption.disabled, emailVerified !== true);
+      assert.equal(roleSelect.disabled, emailVerified !== true);
+      assert.equal(roleButton.disabled, emailVerified !== true);
+      assert.ok(all(root, el => el.tag === 'button').some(el => el.textContent === 'Remove Games Editor'));
+      if (emailVerified !== true) assert.match(root.textContent, /must verify its email before receiving website roles or Full Access/);
+      roleSelect.value = 'photos_editor';
+      await grant.listeners.submit({ preventDefault() {} });
+      assert.equal(calls.filter(call => call[0] === 'role').length, emailVerified === true ? 1 : 0);
+      // Even a programmatic selection cannot bypass the verification guard.
+      context.adminDraft.originalFullAccess = false;
+      choice.value = 'full'; choice.listeners.change();
+      assert.equal(all(membership, el => el.tag === 'button')[0].disabled, emailVerified !== true);
+      await membership.listeners.submit({ preventDefault() {} });
+      assert.equal(calls.filter(call => call[0] === 'membership').length, emailVerified === true ? 1 : 0);
+      context.adminDraft.originalFullAccess = true;
+      choice.value = 'member'; choice.listeners.change();
+      assert.equal(all(membership, el => el.tag === 'button')[0].disabled, false);
+      await membership.listeners.submit({ preventDefault() {} });
+      assert.equal(calls.at(-1)[0], 'membership');
+      assert.equal(calls.at(-1)[2].fullAccess, false);
     }
   }
 });

@@ -215,3 +215,5 @@ Game cards include a read-only Tips tab backed by the official daily PinTips exp
 ## Account deletion and membership trends
 
 The reviewed account deletion policy, billing boundary, daily 4 a.m. Eastern snapshots, weekly Member Tools graph with monthly divisions, and deployment checks are documented in [account deletion and membership trends](docs/account-deletion-and-membership-trends.md). The new migrations and `account-delete` Edge Function must be deployed before using the deletion controls.
+
+New website roles and Full Access grants require a verified Auth email after applying `20261016120000_require_verified_access_grants.sql`. Verified Basic Members can volunteer. Authorized removal and deactivation remain available for unverified accounts. See the [read-only verification inventory and deployment order](docs/account-deletion-and-membership-trends.md#verification-prerequisite-for-access-grants).

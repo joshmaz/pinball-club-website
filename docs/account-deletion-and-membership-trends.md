@@ -47,9 +47,34 @@ The private tables are explicitly scoped to this single-club installation. Futur
 ## Deployment after PR review
 
 1. Back up and verify migration parity against the deployed schema. The base members/memberships tables predate the repository migration history; do not assume a blank database can replay every migration.
-2. Apply the four new forward migrations through the normal reviewed deployment process. The account-existence changes and database deletion guard should precede enabling the UI.
+2. Run the read-only verification inventory below, then apply the five new forward migrations through the normal reviewed deployment process, including `20261016120000_require_verified_access_grants.sql`. The account-existence changes, database deletion guard and verified-access prerequisite should precede enabling the UI. If the first four migrations are already applied, only the new verification migration remains.
 3. Deploy the `account-delete` Edge Function with the existing Supabase URL and service credentials. It validates Auth itself; gateway `verify_jwt=false` permits post-deletion receipt checks. Do not log request bodies or receipts. Keep billing mode manual until a cancellation adapter is ready.
 4. Deploy the static site. Test deletion only with disposable accounts in a non-production environment, including a contribution owner, role changes during confirmation, last-admin/self-admin denial, wrong password, invalid/expired receipts, rollback on an unexpected FK blocker, and a lost success response.
 5. Verify `snh-membership-snapshot-daily` and `snh-account-deletion-receipts-cleanup` in `cron.job`, and inspect `cron.job_run_details` after execution. The first real trend point appears after the next 04:00 capture. No historical backfill is claimed.
 
 Local checks: `node --test --test-concurrency=1 scripts/account-deletion-db.test.mjs scripts/account-deletion-edge.test.mjs scripts/account-deletion-ui.test.mjs`. Database tests use disposable PGlite with the production migrations; cron registration is stubbed, so hosted Auth API and the scheduler still need non-production end-to-end validation before rollout.
+
+## Verification prerequisite for access grants
+
+`20261016120000_require_verified_access_grants.sql` requires the target's Auth email to be verified before an authorized operator can assign a website role or grant Full Access. Verified Basic Members remain eligible for volunteer roles. The page disables unavailable grants and explains the requirement; the server independently checks Auth's current verification state at each grant. Authorized role removals, membership deactivation and deletion still work for unverified accounts. Existing access records are not changed automatically, and snapshot definitions and historical values remain unchanged.
+
+Before deployment, run this read-only inventory in the linked database. Any returned account is an existing exception for review, not a request to revoke or delete it. An empty result means there are no unverified accounts with website roles or Full Access.
+
+```sql
+select m.id as member_id, m.email,
+       coalesce(ms.status = 'active', false) as full_access,
+       array(select r.role_slug from public.member_roles r
+             where r.member_id = m.id order by r.role_slug) as assigned_roles
+from public.members m
+join auth.users u on u.id = m.user_id
+left join lateral (
+  select s.status from public.memberships s where s.member_id = m.id
+  order by s.created_at desc, s.id desc limit 1
+) ms on true
+where u.email_confirmed_at is null
+  and (coalesce(ms.status = 'active', false)
+       or exists (select 1 from public.member_roles r where r.member_id = m.id))
+order by m.id;
+```
+
+Deploy this migration before the static page update. This prerequisite adds no Edge Function change. Run `node --test scripts/member-role-delegation-db.test.mjs scripts/member-role-presentation.test.mjs` to check server rejection of unverified grants, success after verification, Basic Member volunteer eligibility, permitted removals/deactivation, preserved audit and delegation rules, and page controls.

@@ -6,10 +6,15 @@ const db = new PGlite();
 const uid = n => `00000000-0000-0000-0000-${String(n).padStart(12, '0')}`;
 const migration = async name => db.exec(await readFile(new URL(`../supabase/migrations/${name}`, import.meta.url), 'utf8'));
 const query = async sql => (await db.query(sql)).rows;
+const deploymentNotes = await readFile(new URL('../docs/account-deletion-and-membership-trends.md', import.meta.url), 'utf8');
+const inventorySql = deploymentNotes.match(/```sql\n([\s\S]*?)\n```/)[1];
 try {
   await db.exec(`
     create role anon; create role authenticated;
     create schema auth;
+    create schema private;
+    create table auth.users(id uuid primary key, email_confirmed_at timestamptz);
+    create function auth.role() returns text language sql as $$ select current_user::text $$;
     create function auth.uid() returns uuid language sql as $$
       select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
     $$;
@@ -18,6 +23,8 @@ try {
     create table memberships(id uuid primary key default gen_random_uuid(), member_id uuid,
       status text, tier text, end_date date, created_at timestamptz default now());
     create table external_accounts(member_id uuid, provider_slug text, account_handle text);
+    create table audit_log(id uuid primary key default gen_random_uuid(), module text, action text,
+      actor_user_id uuid, entity_type text, entity_id text, old_data jsonb, new_data jsonb, metadata jsonb);
     grant usage on schema auth to authenticated;
     grant select on members to authenticated;
   `);
@@ -32,9 +39,12 @@ try {
     '20260928200000_membership_role_delegation.sql',
     '20260928220000_canonical_persisted_member_roles.sql',
     '20260928230000_canonical_effective_role_core.sql',
-    '20260928235000_domain_helpers_use_effective_roles.sql'
+    '20260928235000_domain_helpers_use_effective_roles.sql',
+    '20260921121000_audit_member_admin_changes.sql',
+    '20261016120000_require_verified_access_grants.sql'
   ]) await migration(name);
   for (let n = 1; n <= 4; n++) {
+    await db.query('insert into auth.users values ($1, now())', [uid(n)]);
     await db.query('insert into members(id,user_id) values ($1,$1)', [uid(n)]);
   }
   await db.exec(await readFile(new URL('./member-role-rpc-boundaries.sql', import.meta.url), 'utf8'));
@@ -59,11 +69,76 @@ try {
   await query(`select snh_revoke_member_role('${uid(4)}','events_editor')`);
   await db.exec(`set request.jwt.claim.sub='${uid(4)}'`);
   await assert.rejects(query(`select snh_grant_member_role('${uid(4)}','events_editor')`), /not authorized/);
+
+  // Only Auth's verified flag is authoritative, even when member contact data exists.
+  await db.exec(`reset role;
+    insert into auth.users values ('${uid(5)}', null);
+    insert into members(id,user_id,email) values ('${uid(5)}','${uid(5)}','known@example.test'),
+      ('${uid(6)}',null,'missing-auth@example.test');
+    set role authenticated; set request.jwt.claim.sub='${uid(3)}';`);
+  const auditCount = async () => {
+    await db.exec('reset role');
+    const count = (await query('select count(*)::int n from audit_log'))[0].n;
+    await db.exec('set role authenticated');
+    return count;
+  };
+  const beforeDenied = await auditCount();
+  for (const slug of ['membership_editor','membership_admin','club_admin','events_editor','events_admin',
+    'photos_editor','photos_admin','games_editor','games_admin']) {
+    await assert.rejects(query(`select snh_grant_member_role('${uid(5)}','${slug}')`),
+      error => error.code === '42501' && /must verify its email/.test(error.message));
+  }
+  await assert.rejects(query(`select snh_grant_member_role('${uid(6)}','events_editor')`), /must verify its email/);
+  await assert.rejects(query(`select snh_set_member_membership('${uid(6)}','active','standard',null)`), /must verify its email/);
+  await db.exec(`set request.jwt.claim.sub='${uid(1)}'`);
+  await assert.rejects(query(`select snh_set_member_membership('${uid(5)}','active','standard',null)`), /must verify its email/);
+  assert.equal(await auditCount(), beforeDenied, 'rejected grants leave no business-change audit entries');
+  await query(`select snh_set_member_membership('${uid(5)}','inactive','standard',null)`);
+  await db.exec(`reset role`);
+  assert.equal((await query(`select status from memberships where member_id='${uid(5)}'`))[0].status, 'inactive');
+  assert.equal((await query(`select count(*)::int n from member_roles where member_id='${uid(5)}'`))[0].n, 0);
+  assert.deepEqual(await query(inventorySql), []);
+
+  // Existing unverified exceptions survive the migration, but can be revoked/deactivated.
+  await db.exec(`insert into member_roles(member_id,role_slug) values ('${uid(5)}','events_editor');
+    update memberships set status='active' where member_id='${uid(5)}';`);
+  await migration('20261016120000_require_verified_access_grants.sql');
+  assert.deepEqual((await query(inventorySql)).map(row => ({id: row.member_id, full: row.full_access, roles: row.assigned_roles})),
+    [{id: uid(5), full: true, roles: ['events_editor']}]);
+  assert.equal((await query(`select status from memberships where member_id='${uid(5)}'`))[0].status, 'active');
+  assert.equal((await query(`select count(*)::int n from member_roles where member_id='${uid(5)}'`))[0].n, 1);
+  await db.exec(`set role authenticated; set request.jwt.claim.sub='${uid(2)}'`);
+  await query(`select snh_revoke_member_role('${uid(5)}','events_editor')`);
+  await db.exec(`set request.jwt.claim.sub='${uid(1)}'`);
+  await query(`select snh_set_member_membership('${uid(5)}','inactive','standard',null)`);
+  await db.exec('reset role');
+  assert.equal((await query(`select status from memberships where member_id='${uid(5)}'`))[0].status, 'inactive');
+  assert.equal((await query(`select count(*)::int n from member_roles where member_id='${uid(5)}'`))[0].n, 0);
+  assert.equal((await query(`select count(*)::int n from audit_log where action='revoke' and metadata->>'member_id'='${uid(5)}'`))[0].n, 1);
+
+  // Verification permits a Basic Member to volunteer and later receive Full Access.
+  await db.exec(`update auth.users set email_confirmed_at=now() where id='${uid(5)}';
+    set role authenticated; set request.jwt.claim.sub='${uid(2)}'`);
+  await query(`select snh_grant_member_role('${uid(5)}',' EVENTS_EDITOR ')`);
+  await query(`select snh_grant_member_role('${uid(5)}','events_editor')`);
+  await assert.rejects(query(`select snh_grant_member_role('${uid(5)}','club_admin')`), /not authorized/);
+  await assert.rejects(query('select * from auth.users'), /permission denied/);
+  await db.exec('reset role');
+  assert.equal((await query(`select status from memberships where member_id='${uid(5)}'`))[0].status, 'inactive');
+  assert.equal((await query(`select count(*)::int n from member_roles where member_id='${uid(5)}'`))[0].n, 1);
+  await db.exec(`set role authenticated; set request.jwt.claim.sub='${uid(1)}'`);
+  await query(`select snh_set_member_membership('${uid(5)}','active','standard',null)`);
+  await db.exec('reset role');
+  assert.equal((await query(`select status from memberships where member_id='${uid(5)}'`))[0].status, 'active');
+  assert.deepEqual(await query(inventorySql), []);
+  await db.exec('set role anon');
+  await assert.rejects(query(`select snh_grant_member_role('${uid(5)}','events_editor')`), /permission denied/);
+  await assert.rejects(query(`select snh_set_member_membership('${uid(5)}','active','standard',null)`), /permission denied/);
   await db.exec(`reset role; set request.jwt.claim.sub=''`);
   // No actor: isolate the last-administrator trigger from its self-removal check.
   await assert.rejects(query(`delete from member_roles where role_slug='club_admin'`), /last Club Admin/);
   assert.equal((await query("select count(*)::int n from member_roles where role_slug='club_admin'"))[0].n, 1);
-  console.log('PASS: delegation matrix, invalid targets, membership upkeep, client RLS, and administrator guards.');
+  console.log('PASS: verified access grants, permitted removals, audit preservation, delegation matrix, client RLS, and administrator guards.');
 } finally {
   await db.close();
 }
