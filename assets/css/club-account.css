@@ -245,3 +245,11 @@
 
 .club-account .members-admin-member-toggle { display: inline-flex; align-items: center; gap: .45rem; text-align: left; }
 .club-account .members-admin-access-title { font-size: .85rem; font-weight: 500; color: var(--club-muted); margin: .8rem 0 .35rem; }
+
+.account-deletion { margin-block: 1.5rem; padding-block: 1rem; border-top: 1px solid var(--club-line); }
+.account-deletion summary, #membership-trends summary { cursor: pointer; font-weight: 600; }
+.account-deletion label { display: block; margin-block: .75rem; }
+.account-deletion input[type="checkbox"] { width: auto; margin-inline: .5rem; }
+.membership-trends-content { overflow-x: auto; margin-block: 1rem; }
+.membership-trends-content svg { min-width: 360px; max-width: 800px; }
+.membership-trends-content table { font-size: .875rem; }

@@ -211,3 +211,7 @@ See `docs/email.md` for SMTP field values and the branded auth-template checklis
 ### Imported PinTips
 
 Game cards include a read-only Tips tab backed by the official daily PinTips export. Games Admins can refresh it in Member Tools; Operations shows refresh health and matching counts. See [PinTips imports and deployment](docs/pintips.md) for matching limitations, migrations, secrets, scheduling, and validation.
+
+## Account deletion and membership trends
+
+The reviewed account deletion policy, billing boundary, daily 4 a.m. Eastern snapshots, monthly Member Tools graph, and deployment checks are documented in [account deletion and membership trends](docs/account-deletion-and-membership-trends.md). The new migrations and `account-delete` Edge Function must be deployed before using the deletion controls.

@@ -233,3 +233,7 @@ The core principles are:
 Implementation details may evolve, but changes should preserve these principles unless this policy is deliberately revised.
 
 
+
+## Permanent account deletion
+
+Self-deletion requires fresh password verification and explicit confirmation, including the separate PayPal cancellation warning. Membership Admins may delete ordinary member and domain-volunteer accounts; Membership Admin or Website Administrator targets require a Website Administrator. Membership Editors cannot delete other accounts. Website Administrator self-deletion and deletion of the final Website Administrator are blocked. These checks apply server-side at execution, independently of role delegation. See [account deletion and membership trends](account-deletion-and-membership-trends.md).
