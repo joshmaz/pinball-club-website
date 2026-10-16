@@ -118,3 +118,9 @@ legacy `panel=audit-log` redirected to `panel=operations&section=audit`, Match P
 Test Connection succeeded, and the failed-message filter survived reload. A 390px
 viewport showed no page-level horizontal overflow. No messages were dispatched.
 The cleanup-failure migration and updated Operations function have been deployed.
+
+## Membership snapshots
+
+The compact Membership snapshots entry under Jobs shows the daily 04:00 Eastern cadence, last recorded outcome/time, and registered account, Full Access and volunteer counts. There is no manual run control. It uses the existing Operations job ledger and snapshot RPC. Apply `20261014210000_membership_snapshot_operations.sql` after the membership trend migrations, then deploy the frontend; no Operations Edge Function change is needed. Before its first capture it says Awaiting first run. Failures report no new captured counts. Snapshot retries preserve the first saved daily count.
+
+Each attempt writes an audit entry tagged `metadata.automated=true`, which the existing Show automated activity checkbox reveals. The filter preserves its existing empty Pinball Map import behavior and filters before pagination. No personal member information is logged.

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 const source=await readFile(new URL('../assets/js/member-operations-panel.js',import.meta.url),'utf8');
-function fixture(pinballmap=null) {
+function fixture(pinballmap=null, jobs=[]) {
  function el(tag='div') {return {tag,children:[],dataset:{},attrs:{},listeners:{},textContent:'',
  appendChild(n){this.children.push(n);},replaceChildren(){this.children=[];},setAttribute(k,v){this.attrs[k]=v;},
  addEventListener(k,v){this.listeners[k]=v;},reportValidity(){return true;},checkValidity(){return true;},
@@ -11,7 +11,7 @@ function fixture(pinballmap=null) {
  const nodes=new Map(['member-panel-operations','operations-content','operations-status','operations-sections','operations-refresh','operations-audit'].map(id=>[id,el()]));
  const root=nodes.get('member-panel-operations'); for(const [id,n] of nodes) if(id!=='member-panel-operations') root.appendChild(n);
  const calls=[]; let confirmation=true;
- const data={integrations:[],messages:{failed:2},cache:{total:3,expired:1,cleanup_eligible:0},jobs:[],policies:[
+ const data={integrations:[],messages:{failed:2},cache:{total:3,expired:1,cleanup_eligible:0},jobs:jobs,policies:[
  {provider:'matchplay',policy:'event',default_seconds:7200,seconds:7200,overridden:true}]};
  const window={SNHMemberAuditPanel:{load:async()=>{calls.push({name:'audit'});}},confirm:()=>confirmation,snhSupabase:{rpc:async(name,args)=>{
  calls.push({name,args}); return {data:name==='snh_operations_snapshot'?data:name==='snh_operations_pinballmap'?pinballmap:name==='snh_operations_messages'?[
@@ -62,4 +62,21 @@ test('overview failure link filters messages and Audit loads existing history',a
  await f.click('Audit');assert.equal(f.nodes.get('operations-audit').hidden,false);
  assert.ok(f.calls.some(c=>c.name==='audit'));
  await f.click('Overview');assert.equal(f.nodes.get('operations-audit').hidden,true);
+});
+
+
+test('membership snapshot job stays compact and shows first run, success counts, retry and failure honestly',async()=>{
+ const text=node=>[node.textContent,...node.children.flatMap(text)].join(' ');
+ for (const run of [null,
+   {job:'membership_snapshot',status:'succeeded',started_at:'2026-10-16T08:00:00Z',finished_at:'2026-10-16T08:00:01Z',result:{account_count:47,full_access_count:15,volunteer_count:9}},
+   {job:'membership_snapshot',status:'succeeded',started_at:'2026-10-16T08:00:00Z',result:{account_count:0,full_access_count:0,volunteer_count:0,already_captured:true}},
+   {job:'membership_snapshot',status:'failed',started_at:'2026-10-16T08:00:00Z',result:{},error:'Membership snapshot failed. No new snapshot was retained.'}]) {
+   const f=fixture(null,run?[run]:[]);f.panel.init(['club_admin']);await f.panel.load();await f.click('Jobs');
+   const card=f.nodes.get('operations-content').children.find(n=>n.className==='operations-provider operations-snapshot');
+   assert.ok(card);assert.equal(card.querySelectorAll('button').length,0);assert.match(text(card),/Daily at 4 a.m. Eastern/);
+   assert.ok(card.children.length<=4,'one heading, schedule and at most two summary lines');
+   if(!run)assert.match(text(card),/Awaiting first run/);
+   else if(run.status==='failed'){assert.match(text(card),/Failed.*Last run:/);assert.match(text(card),/No new snapshot was retained/);assert.doesNotMatch(text(card),/registered accounts/);}
+   else {assert.match(text(card),new RegExp(run.result.account_count+' registered accounts'));assert.match(text(card),/Succeeded.*Last run:/);if(run.result.already_captured)assert.match(text(card),/existing daily snapshot/);}
+ }
 });

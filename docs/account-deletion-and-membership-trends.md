@@ -38,12 +38,16 @@ Snapshots retain only aggregate counts, capture timestamp and definition version
 
 The existing Member Tools page has an expandable 12-month graph and accessible table. It shows weekly data points using the last observed daily snapshot in each Monday–Sunday week, with monthly divisions on a fixed twelve-calendar-month axis. The current week and month are partial; the table exposes actual snapshot dates and the line breaks across missing weeks. There is no reconstructed pre-launch history. History requires the same server-side membership permission as current overview counts. Historical snapshots do not change when accounts are deleted.
 
+Operations → Jobs shows a compact Membership snapshots panel: the last recorded run/outcome and registered, Full Access and volunteer counts from that capture. The existing Operations ledger records each actual capture attempt; the UTC tick that falls outside 04:00 Eastern creates no run. Retried captures keep the original daily counts and report an existing snapshot. Normal capture/audit failures roll back new points while recording a failed outcome with a fixed safe error summary. Transaction cancellation or database unavailability remains visible through cron run details.
+
+Successful and failed capture attempts write `members` audit entries with `metadata.automated=true`, the run ID, and aggregate-only data. They are hidden by default and shown through the existing Show automated activity checkbox. Filtering happens before pagination; the prior empty Pinball Map import rule is preserved. No new Edge Function is required for this job reporting. Apply `20261014210000_membership_snapshot_operations.sql` and deploy the frontend; existing runs are not reconstructed.
+
 The private tables are explicitly scoped to this single-club installation. Future multi-tenant deployment must add club/tenant scope to their keys, authorization and scheduler before sharing a database.
 
 ## Deployment after PR review
 
 1. Back up and verify migration parity against the deployed schema. The base members/memberships tables predate the repository migration history; do not assume a blank database can replay every migration.
-2. Apply the three new forward migrations through the normal reviewed deployment process. The account-existence changes and database deletion guard should precede enabling the UI.
+2. Apply the four new forward migrations through the normal reviewed deployment process. The account-existence changes and database deletion guard should precede enabling the UI.
 3. Deploy the `account-delete` Edge Function with the existing Supabase URL and service credentials. It validates Auth itself; gateway `verify_jwt=false` permits post-deletion receipt checks. Do not log request bodies or receipts. Keep billing mode manual until a cancellation adapter is ready.
 4. Deploy the static site. Test deletion only with disposable accounts in a non-production environment, including a contribution owner, role changes during confirmation, last-admin/self-admin denial, wrong password, invalid/expired receipts, rollback on an unexpected FK blocker, and a lost success response.
 5. Verify `snh-membership-snapshot-daily` and `snh-account-deletion-receipts-cleanup` in `cron.job`, and inspect `cron.job_run_details` after execution. The first real trend point appears after the next 04:00 capture. No historical backfill is claimed.
