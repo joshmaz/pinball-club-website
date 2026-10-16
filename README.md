@@ -214,4 +214,4 @@ Game cards include a read-only Tips tab backed by the official daily PinTips exp
 
 ## Account deletion and membership trends
 
-The reviewed account deletion policy, billing boundary, daily 4 a.m. Eastern snapshots, monthly Member Tools graph, and deployment checks are documented in [account deletion and membership trends](docs/account-deletion-and-membership-trends.md). The new migrations and `account-delete` Edge Function must be deployed before using the deletion controls.
+The reviewed account deletion policy, billing boundary, daily 4 a.m. Eastern snapshots, weekly Member Tools graph with monthly divisions, and deployment checks are documented in [account deletion and membership trends](docs/account-deletion-and-membership-trends.md). The new migrations and `account-delete` Edge Function must be deployed before using the deletion controls.

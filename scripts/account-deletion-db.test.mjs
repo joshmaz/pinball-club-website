@@ -42,6 +42,7 @@ async function fixture() {
   await db.exec(guard.slice(guard.indexOf('create or replace function public.snh_protect_club_admin'),guard.indexOf('-- Only SECURITY DEFINER')));
   await db.exec(await read('20261014180000_account_deletion.sql'));
   await db.exec(await read('20261014190000_membership_trends.sql'));
+  await db.exec(await read('20261014200000_weekly_membership_trend_points.sql'));
   for(let n=1;n<=8;n++) {
     await db.query('insert into auth.users values($1,$2)',[id(n),n===8?null:'2026-01-01']);
     await db.query('insert into members values($1,$1)',[id(n)]);
@@ -137,15 +138,18 @@ test('snapshots count accounts once, ignore legacy end dates, persist after dele
    assert.equal((await db.query('select snh_get_membership_trends() r')).rows[0].r.length,1);
    await db.query("select set_config('test.user',$1,false)",[id(7)]);await assert.rejects(db.query('select snh_get_membership_trends()'),e=>e.code==='42501');
    await db.query("select set_config('test.user',$1,false)",[id(4)]);
-   // Multiple captures in a previous month become one last-observed monthly point;
-   // old history stays stored even when excluded from the twelve-month response.
-   await db.exec(`insert into private.membership_daily_snapshots
-     select (date_trunc('month',now() at time zone 'America/New_York')-interval '1 month')::date,now(),1,20,15,4,1,2
-     union all select (date_trunc('month',now() at time zone 'America/New_York')-interval '1 day')::date,now(),1,22,16,5,1,3
-     union all select (date_trunc('month',now() at time zone 'America/New_York')-interval '12 months')::date,now(),1,10,8,1,1,1`);
-   const monthly=(await db.query('select snh_get_membership_trends() r')).rows[0].r;
-   assert.equal(monthly.length,2);assert.equal(monthly[0].account_count,22);
-   assert.equal((await db.query('select count(*)::int n from private.membership_daily_snapshots')).rows[0].n,4);
+   // Last observed day per Monday-Sunday week, with an unfilled week gap.
+   // Old daily history remains stored outside the twelve-month display window.
+   await db.exec(`delete from private.membership_daily_snapshots;
+     insert into private.membership_daily_snapshots
+     select (date_trunc('week',now() at time zone 'America/New_York')-interval '3 weeks')::date,now(),1,10,8,1,1,1
+     union all select (date_trunc('week',now() at time zone 'America/New_York')-interval '1 week')::date,now(),1,20,15,4,1,2
+     union all select (date_trunc('week',now() at time zone 'America/New_York')-interval '1 day')::date,now(),1,22,16,5,1,3
+     union all select (now() at time zone 'America/New_York')::date,now(),1,23,17,5,1,3
+     union all select (date_trunc('month',now() at time zone 'America/New_York')-interval '12 months')::date,now(),1,5,3,1,1,1`);
+   const weekly=(await db.query('select snh_get_membership_trends() r')).rows[0].r;
+   assert.deepEqual(weekly.map(r=>r.account_count),[10,22,23]);
+   assert.equal((await db.query('select count(*)::int n from private.membership_daily_snapshots')).rows[0].n,5);
    const hours=(await db.query(`select extract(hour from timestamptz '2026-07-01 08:00:00+00' at time zone 'America/New_York')::int summer,
      extract(hour from timestamptz '2026-12-01 09:00:00+00' at time zone 'America/New_York')::int winter`)).rows[0];
    assert.deepEqual(hours,{summer:4,winter:4});
