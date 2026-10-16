@@ -27,7 +27,13 @@
     var key = "snh-account-deletion:" + (options.memberId || options.actorId);
     var details = element("details", "", parent); details.className = "account-deletion";
     element("summary", self ? "Delete my account" : "Delete account", details);
-    element("p", self ? "Permanently delete your website account?" : "Permanently delete the website account for " + options.name + " (" + options.email + ")?", details);
+    var target = element("p", self ? "Permanently delete your website account?" : "Permanently delete the website account for ", details);
+    if (!self) {
+      element("strong", options.name, target);
+      element("span", " (", target);
+      element("strong", options.email, target);
+      element("span", ")?", target);
+    }
     element("p", "The profile, membership record, website roles, linked accounts, and attendance records will be removed. Website access and door-code retrieval end immediately. The shared door code itself does not change. This cannot be undone.", details);
     element("p", "Club photos, events, scores, and notes remain, with account attribution removed. Limited audit history remains. For help removing personal information within club content, email support@snhpinballclub.com.", details);
     element("p", "Deleting a website account does not cancel PayPal payments. If leaving the club, cancel the recurring subscription separately in PayPal. A recorded Basic or inactive membership does not prove payments have stopped.", details);

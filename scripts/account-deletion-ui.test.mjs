@@ -43,9 +43,11 @@ test('Website Administrator self deletion is explained; pending status can be ch
  const pending=setup(deletion,{noSession:true,saved:[['snh-account-deletion:self','receipt']]});pending.window.SNHAccountDeletion.recoverPending(pending.root);
  await pending.root.all('button')[0].listeners.click();assert.match(pending.root.text(),/deletion completed/);assert.equal(pending.calls[0].action,'status');
 });
-test('admin deletion names the exact account, requires reason, and refreshes only after confirmed success',async()=>{
+test('admin deletion emphasizes the exact account, requires reason, and refreshes only after confirmed success',async()=>{
  let refreshed=0;const f=setup(deletion);f.window.SNHAccountDeletion.mount(f.root,{memberId:'target',actorId:'actor',name:'Member Name',email:'member@example.test',onDeleted:async()=>refreshed++});
- assert.match(f.root.text(),/Member Name \(member@example.test\)/);const inputs=f.root.all('input');inputs[0].value='Requested';inputs.find(i=>i.type==='password').value='secret';inputs.find(i=>i.type==='checkbox').checked=true;inputs.find(i=>i.pattern==='DELETE').value='DELETE';
+ const target=f.root.all('p')[0];assert.deepEqual(target.all('strong').map(el=>el.textContent),['Member Name','member@example.test']);
+ assert.equal(target.textContent+target.children.map(el=>el.textContent).join(''),'Permanently delete the website account for Member Name (member@example.test)?');
+ const inputs=f.root.all('input');inputs[0].value='Requested';inputs.find(i=>i.type==='password').value='secret';inputs.find(i=>i.type==='checkbox').checked=true;inputs.find(i=>i.pattern==='DELETE').value='DELETE';
  await f.root.all('form')[0].listeners.submit({preventDefault(){}});assert.equal(f.calls[0].reason,'Requested');assert.equal(f.calls[0].memberId,'target');assert.equal(refreshed,1);assert.ok(!f.calls.includes('signOut'));
 });
 test('weekly graph uses a fixed year with monthly divisions, a counts table and gaps for missing weeks',async()=>{
