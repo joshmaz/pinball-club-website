@@ -1175,6 +1175,10 @@
     setPhotosPanelIntro(userRoles);
     setGamesPanelIntro(userRoles);
 
+    if (!rolesLoadFailed) window.SNHAccountDeletion.mount(document.getElementById("account-deletion-controls"), {
+      actorId: session.user.id, websiteAdmin: userRoles.includes("club_admin")
+    });
+
     window.snhNavigateToMemberGameEditor = function (gameId) {
       if (!gameId) return;
       showMemberPanel("games", {});
@@ -1403,10 +1407,6 @@
       }
       if (rolePresentation.assignable(userRoles).length) box.appendChild(grant); td.appendChild(box); tr.appendChild(td); memberAdminTableBody.appendChild(tr);
     }
-
-    if (!rolesLoadFailed) window.SNHAccountDeletion.mount(document.getElementById("account-deletion-controls"), {
-      actorId: session.user.id, websiteAdmin: userRoles.includes("club_admin")
-    });
 
     onMemberAdminPanelShown = async function (quiet) {
       if (!quiet) memberAdminStatus.textContent = "Loading…";

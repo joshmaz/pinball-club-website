@@ -120,14 +120,22 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
   for (const actor of ['membership_editor', 'membership_admin', 'club_admin']) {
     const { context, ui, auth } = setup();
     const root = new Element('tbody');
+    const deletionControls = [];
+    context.window.SNHAccountDeletion = { mount: (_, options) => deletionControls.push(options) };
     Object.assign(context, {
       rolePresentation: ui, memberAdminTableBody: root, adminDraft: null, adminSaving: false,
       adminMemberName: () => 'Alex', adminHasUnsaved: () => false,
+      currentAdminMemberId: 'actor', session: { user: { id: 'actor-user' } },
       adminMayManageRole: slug => auth.canAssignMemberRole([actor], slug),
       adminMayRemoveRole: (_, slug) => auth.canAssignMemberRole([actor], slug), userRoles: [actor]
     });
     vm.runInContext(html.slice(html.indexOf('    function adminRenderEditor(row)'), html.indexOf('    onMemberAdminPanelShown = async')), context);
     context.adminRenderEditor({ member_id: 'target', role_slugs: ['games_admin'], membership_status: 'active' });
+    assert.equal(deletionControls.length, actor === 'membership_editor' ? 0 : 1);
+    if (deletionControls.length) {
+      assert.equal(deletionControls[0].memberId, 'target');
+      assert.equal(deletionControls[0].actorId, 'actor-user');
+    }
     assert.match(root.textContent, /Games Admin/);
     assert.doesNotMatch(root.textContent, /games_admin/);
     const buttons = all(root, el => el.tag === 'button');
