@@ -240,3 +240,7 @@ This keeps the audit system extensible without repeated schema redesign.
 - [x] Define 12-month retention and a bounded daily cleanup job.
 - [ ] Establish routine storage monitoring and exceptional maintenance procedures.
 - [ ] (Optional) Add an integrity checkpoint process.
+
+## Automated membership snapshots
+
+Membership snapshot capture attempts use module `members`, entity type `membership_snapshot`, and actions `snapshot` / `snapshot_failed`. `metadata.automated=true` marks them for the existing Show automated activity filter. Each entry links to its Operations run ID and contains aggregate counts or a safe failure status, without member identities. Explicitly flagged entries are filtered before pagination; this does not classify every System/former-account event as automated. The previous empty Pinball Map import filter remains supported.

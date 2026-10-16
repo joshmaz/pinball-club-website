@@ -233,3 +233,15 @@ The core principles are:
 Implementation details may evolve, but changes should preserve these principles unless this policy is deliberately revised.
 
 
+
+## Permanent account deletion
+
+Self-deletion requires fresh password verification and explicit confirmation, including the separate PayPal cancellation warning. Membership Admins may delete ordinary member and domain-volunteer accounts; Membership Admin or Website Administrator targets require a Website Administrator. Membership Editors cannot delete other accounts. Website Administrator self-deletion and deletion of the final Website Administrator are blocked. These checks apply server-side at execution, independently of role delegation. See [account deletion and membership trends](account-deletion-and-membership-trends.md).
+
+## Email verification before access grants
+
+After applying `20261016120000_require_verified_access_grants.sql`, the target account must have a confirmed email in Supabase Auth before receiving any new website role or Full Access membership. Verification does not confer delegation authority; the existing actor permissions and administrator safeguards still apply. Verified Basic Members can hold website roles without Full Access membership.
+
+`snh_grant_member_role` and `snh_set_member_membership` enforce this prerequisite server-side using `auth.users.email_confirmed_at`. Member Tools disables role assignment and the Full Access option when verification is false or unavailable, and explains how to proceed. Auth verification is checked again by the server when saving, so stale page data cannot authorize a grant.
+
+Authorized role removal, membership deactivation and account deletion remain available for unverified targets, subject to the existing permissions and administrator safeguards. The migration does not change existing access records or historical snapshots. Review any existing unverified access assignments before deployment using the read-only inventory in [the deployment notes](account-deletion-and-membership-trends.md#verification-prerequisite-for-access-grants). Privileged bootstrap or maintenance SQL must also use verified accounts; it is not a normal role-assignment workflow.

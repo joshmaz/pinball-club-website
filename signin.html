@@ -35,6 +35,7 @@
   <script src="assets/js/site-auth.js"></script>
   <script src="assets/js/game-image-delivery.js"></script>
 <script src="assets/js/member-portal.js"></script>
+<script src="assets/js/member-account-deletion.js"></script>
 </head>
 <body>
 <a class="club-skip" href="#signin-main">Skip to sign-in</a>
@@ -112,6 +113,7 @@
     <button id="reset-password-btn" type="submit">Set New Password</button>
   </form>
   <p class="club-signin-status" id="status" aria-live="polite"></p>
+  <div id="account-deletion-recovery"></div>
 </section>
 <section class="content signin-prose">
   <h2>Welcome to the club</h2>
@@ -388,6 +390,10 @@
       window.SNHMemberPortal.capturePasswordRecoveryIntentFromLocation();
     }
     setRecoveryMode(false);
+    if (new URLSearchParams(window.location.search).get("account") === "deleted") {
+      setStatusMessage("Your website account was deleted. Recurring PayPal payments were not canceled. If leaving the club, cancel your subscription separately in PayPal.");
+    }
+    window.SNHAccountDeletion.recoverPending(document.getElementById("account-deletion-recovery"));
     window.SNHMemberPortal.applyAuthChrome({
       membersLinkSelector: "[data-members-link]"
     }).then(function (session) {

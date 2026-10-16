@@ -47,3 +47,8 @@ verify_jwt = false
 
 [functions.photo-finalize]
 verify_jwt = true
+
+[functions.account-delete]
+# Handler validates a live Auth user for prepare/delete. Status accepts only a
+# random, short-lived receipt and returns a boolean after self-deletion.
+verify_jwt = false

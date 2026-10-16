@@ -149,6 +149,18 @@
     });
     if (!pinballmap.runs.length) el('p','No recorded import runs.',parent);
   }
+  function membershipSnapshotJob(section) {
+    section.className += ' operations-snapshot';
+    el('small', 'Daily at 4 a.m. Eastern', section);
+    var run = snapshot.jobs.find(function (j) { return j.job === 'membership_snapshot'; });
+    el('p', run ? runOutcome(run) + ' | Last run: ' + date(run.finished_at || run.started_at) : 'Awaiting first run', section);
+    if (!run) return;
+    if (run.status === 'succeeded' && typeof run.result.account_count === 'number') {
+      el('p', run.result.account_count + ' registered accounts · ' + run.result.full_access_count +
+        ' Full Access · ' + run.result.volunteer_count + ' volunteers' +
+        (run.result.already_captured ? ' (existing daily snapshot)' : ''), section);
+    } else if (run.error) el('p', run.error, section);
+  }
   function render() {
     content.replaceChildren();
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.section === current ? 'true' : 'false'); });
@@ -167,7 +179,7 @@
       el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
       el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
       card = el('section', null, cards); el('h4', 'Jobs', card);
-      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import'].forEach(function (key) {
+      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
         el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
       });
@@ -256,11 +268,12 @@
     }
     if (current === 'jobs') {
       el('p','Schedules are managed by the existing scheduler. Import history starts when tracking was enabled.',content);
-      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'pinballmap_ingest',name:'Pinball Map ingest'}];
+      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
       snapshot.jobs.forEach(function (r) { if (!jobs.some(function (j) { return j.key === r.job; })) jobs.push({key:r.job,name:r.job}); });
       jobs.forEach(function (job) {
         var section = el('section',null,content); section.className='operations-provider'; el('h4',job.name,section);
         if (job.key==='pinballmap_ingest') { pinballmapJobs(section); return; }
+        if (job.key==='membership_snapshot') { membershipSnapshotJob(section); return; }
         var run = snapshot.jobs.find(function (j) { return j.job === job.key; });
         el('p',run ? run.status + ' | Started ' + date(run.started_at) + ' | Finished ' + date(run.finished_at) : 'No recorded run',section);
         if (run) {
