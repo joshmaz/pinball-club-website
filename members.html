@@ -1395,6 +1395,7 @@
         try { await window.SNHMemberPortal.grantMemberRole(row.member_id, select.value); var granted = select.value; await onMemberAdminPanelShown(true); memberAdminStatus.textContent = rolePresentation.name(granted) + " assigned to " + adminMemberName(row) + "."; }
         catch (err) { memberAdminStatus.textContent = "Role assignment failed: " + rolePresentation.errorMessage(err); grantButton.disabled = false; grantButton.textContent = "Assign role"; }
       });
+      if (rolePresentation.assignable(userRoles).length) box.appendChild(grant);
       var targetProtected = (row.role_slugs || []).some(function (slug) { return slug === "membership_admin" || slug === "club_admin"; });
       var mayDelete = userRoles.includes("club_admin") || (userRoles.includes("membership_admin") && !targetProtected);
       if (mayDelete && currentAdminMemberId && row.member_id !== currentAdminMemberId) {
@@ -1405,7 +1406,7 @@
             memberAdminStatus.textContent = "Account deleted. Remember to handle recurring PayPal payments separately.";
           } });
       }
-      if (rolePresentation.assignable(userRoles).length) box.appendChild(grant); td.appendChild(box); tr.appendChild(td); memberAdminTableBody.appendChild(tr);
+      td.appendChild(box); tr.appendChild(td); memberAdminTableBody.appendChild(tr);
     }
 
     onMemberAdminPanelShown = async function (quiet) {

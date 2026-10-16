@@ -121,7 +121,10 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
     const { context, ui, auth } = setup();
     const root = new Element('tbody');
     const deletionControls = [];
-    context.window.SNHAccountDeletion = { mount: (_, options) => deletionControls.push(options) };
+    context.window.SNHAccountDeletion = { mount: (parent, options) => {
+      assert.match(parent.children.at(-1).textContent, /Assign a website role/);
+      deletionControls.push(options);
+    } };
     Object.assign(context, {
       rolePresentation: ui, memberAdminTableBody: root, adminDraft: null, adminSaving: false,
       adminMemberName: () => 'Alex', adminHasUnsaved: () => false,
