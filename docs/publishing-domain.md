@@ -1,9 +1,8 @@
 # Publishing authorization foundation
 
 This change adds an independent Publishing domain for homepage announcements
-(What's New) and featured activities (What's Happening). It establishes the
-permission model; content tables, publication RPCs, the editor, and homepage
-rendering follow in a separate change. No empty Publishing panel is added.
+(What's New) and featured activities (What's Happening). The authorization foundation is followed by the announcements workflow
+documented below. Featured activities remain a separate phase.
 
 ## Roles and boundaries
 
@@ -74,3 +73,45 @@ anonymous denial, and restricted function properties.
 Browser helper and existing presentation tests cover both role names, inherited
 access, assignable role selectors, Publishing badges, and removal messages.
 The full preview build runs the repository tests and public-data checks.
+
+## Announcements workflow
+
+The forward migration `20261017200000_publishing_announcements.sql` introduces
+`publishing_entries`, a shared private store with independent draft and
+published snapshots. This phase exposes announcements only; the activity kind
+is reserved for the next phase. No existing homepage text is seeded as news.
+
+Publishing Editors and Admins open **My Account → Publishing**. They can save a
+plain-text title (120 characters), body (2,000 characters), optional HTTP(S)
+link, and local publication/expiry dates. Preview uses the same renderer as the
+homepage. Saving does not affect a published snapshot. Publish copies the
+saved draft, defaulting its start to the server's current time. The homepage
+shows the newest eligible announcement by publication start and ID. Scheduled
+announcements remain private until their start; expiry is evaluated by the
+database without a cron job. An already-open page updates on reload.
+
+Expired announcements remain available in paginated public history. Archive
+removes an announcement from the homepage while retaining its published
+snapshot in history. Restore reverses archive. Withdraw removes the snapshot
+from all public views while preserving the private draft. Publishing Admin may
+permanently delete only after withdrawal and archive. No content is deleted
+automatically; the existing 12-month audit cleanup remains separate.
+
+All writes lock the record and compare an expected version, preventing silent
+concurrent overwrites. Direct table access is revoked and RLS enabled; manager
+RPCs enforce Publishing access. The public RPC projects published text and
+dates only, with bounded cursor pagination and no drafts or actor identity.
+Every successful content mutation is logged atomically under `publishing` in
+the existing shared audit log. Denied, stale, and unchanged draft writes do not
+create change entries. Audit remains Website Administrator-only under
+Operations → Audit Log, with a Publishing filter.
+
+Frontend rendering uses text nodes and checks link protocols. If the feed is
+empty or unavailable, the homepage directs visitors to Events without reviving
+old announcements. The public history is `announcements.html`.
+
+Apply the new migration explicitly to staging before publishing its matching
+frontend on the staging branch. No production rollout or PR is part of this
+phase. Tests cover authorization across existing roles, draft isolation,
+scheduling/expiry, public projections, pagination, optimistic concurrency,
+withdrawal/archive/delete boundaries, audit attribution, and safe rendering.
