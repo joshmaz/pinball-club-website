@@ -1,6 +1,6 @@
 # SNHPC Website Roles and Authorization Policy
 
-**Status:** Canonical deployed RBAC/security model (status updated 2026-10-07)
+**Status:** Canonical RBAC/security model. Publishing is an additive extension requiring `20261017180000_publishing_role_domain.sql`; see [rollout notes](publishing-domain.md).
 
 **Purpose:** Describe the deployed role hierarchy, role semantics, delegation model, and effective authorization principles for the Southern New Hampshire Pinball Club website.
 
@@ -28,8 +28,10 @@ Website Administrator
 ├── Photos Admin
 │   └── Photos Editor
 │
-└── Games Admin
-    └── Games Editor
+├── Games Admin
+│   └── Games Editor
+└── Publishing Admin
+    └── Publishing Editor
 ```
 
 This hierarchy represents **effective authorization**, not merely naming convention.
@@ -48,7 +50,7 @@ Editors should not normally perform destructive or elevated administrative actio
 
 Permanent deletion is reserved for Admin roles unless a specific capability is intentionally classified otherwise.
 
-Role delegation is an administrative capability reserved to Membership Admin and Website Administrator within the scope below. Events, Photos, and Games Admins do not gain delegation authority from their domain role.
+Role delegation is an administrative capability reserved to Membership Admin and Website Administrator within the scope below. Events, Photos, Games, and Publishing Admins do not gain delegation authority from their domain role.
 
 ## 4. Universal Admin policy
 
@@ -77,6 +79,7 @@ Membership Admin
 Events Admin
 Photos Admin
 Games Admin
+Publishing Admin
 ```
 
 It also includes website-wide administrative capabilities that do not naturally belong to a single domain, including audit access and administrative website configuration.
@@ -95,9 +98,9 @@ Role assignment and revocation are Membership Admin capabilities.
 
 Membership Editor cannot grant or revoke website roles.
 
-Membership Admin may assign and revoke Membership Editor and the Editor and Admin roles for Events, Photos, and Games, but cannot manage `membership_admin` or `club_admin`.
+Membership Admin may assign and revoke Membership Editor and the Editor and Admin roles for Events, Photos, Games, and Publishing, but cannot manage `membership_admin` or `club_admin`.
 
-Website Administrator may assign and revoke all nine assignable roles, including Membership Admin and Website Administrator, subject to self-removal and last-administrator safeguards.
+Website Administrator may assign and revoke all eleven assignable roles, including Membership Admin and Website Administrator, subject to self-removal and last-administrator safeguards.
 
 Membership Editor retains ordinary membership upkeep but cannot grant or revoke any role. The general membership-access helper name `snh_member_can_manage_roles()` does not confer delegation; grant/revoke RPCs additionally enforce target-specific assignment authority.
 
@@ -116,6 +119,8 @@ Membership Editor retains ordinary membership upkeep but cannot grant or revoke 
 **Games Admin** includes all Games Editor capabilities plus reserved administrative operations such as game deletion/restoration, destructive game-record maintenance, permanent uploaded game-image deletion, and permanent Pingolf target deletion.
 
 Destructive deletion is Admin-only where implemented; ordinary upkeep remains Editor-level. Events RLS and the event photo digest use canonical effective-role helpers, retaining the digest’s Photos-access alternative.
+
+**Publishing Editor** is responsible for announcements and featured activities, including drafting, previewing, publishing, scheduling, withdrawing, archiving, and ordering when the publishing editor ships. **Publishing Admin** includes those capabilities plus reserved administrative actions such as permanent deletion. Neither role confers other domain access or delegation authority. Publishing volunteers retain the general Website Volunteer helper access described below. This foundation adds authorization and role presentation; it does not yet add content tables or an editor. See [Publishing domain](publishing-domain.md).
 
 ## 8. Pingolf policy
 
@@ -161,6 +166,7 @@ Effective access:
   Events Admin + Editor
   Photos Admin + Editor
   Games Admin + Editor
+  Publishing Admin + Editor
   Website-wide administrative capabilities
 ```
 
@@ -178,7 +184,7 @@ The existing application already follows this pattern for most high-impact opera
 
 ## 12. Canonical role catalog
 
-Exactly nine persisted roles are assignable: `club_admin`, `membership_editor`, `membership_admin`, `events_editor`, `events_admin`, `photos_editor`, `photos_admin`, `games_editor`, and `games_admin`. The database CHECK constraint rejects other identifiers, including `website_volunteer`, even on privileged writes.
+Exactly eleven persisted roles are assignable after the Publishing migration: `club_admin`, `membership_editor`, `membership_admin`, `events_editor`, `events_admin`, `photos_editor`, `photos_admin`, `games_editor`, `games_admin`, `publishing_editor`, and `publishing_admin`. The database CHECK constraint rejects other identifiers, including `website_volunteer`, even on privileged writes.
 
 The browser role catalog describes each role with:
 

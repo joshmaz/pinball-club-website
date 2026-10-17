@@ -56,12 +56,12 @@ Keep auth and billing concerns separated:
   - `stern_insider` for a Stern Insider username
   - `matchplay_events` for a MatchPlay player ID
   - The portal reads these via the `snh_get_my_external_accounts` RPC and writes them with `upsert`/`delete` on the table; clearing a field deletes the matching row.
-- Ordinary member upkeep uses security-definer RPCs gated by effective Membership Editor access. Role grant/revoke RPCs additionally enforce delegation: Membership Editor cannot delegate; Membership Admin can manage Membership Editor and Events/Photos/Games roles; Website Administrator can manage all nine assignable roles subject to self/last-admin safeguards.
+- Ordinary member upkeep uses security-definer RPCs gated by effective Membership Editor access. Role grant/revoke RPCs additionally enforce delegation: Membership Editor cannot delegate; Membership Admin can manage Membership Editor and Events/Photos/Games/Publishing roles; Website Administrator can manage all eleven assignable roles after the Publishing migration subject to self/last-admin safeguards.
 - Manual membership updates in Member Tools use `snh_set_member_membership` with allowlisted status values (`active`, `past_due`, `expired`, `canceled`, `inactive`) and a latest-record update pattern in `public.memberships` (fallback insert when no membership row exists yet).
 
 ## Role-gated UI sections
 
-The member dashboard sidebar uses effective capabilities; the table lists assignments that confer access. `club_admin` displays as **Website Administrator**. Admin inherits its corresponding Editor, and Website Administrator inherits all domain Admin/Editor capabilities. Exactly nine roles are persisted and assignable; `website_volunteer` is derived from any recognized assignment. See the [canonical authorization policy](docs/website-roles-and-authorization-policy.md). UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
+The member dashboard sidebar uses effective capabilities; the table lists assignments that confer access. `club_admin` displays as **Website Administrator**. Admin inherits its corresponding Editor, and Website Administrator inherits all domain Admin/Editor capabilities. Exactly eleven roles are persisted and assignable after the Publishing migration; `website_volunteer` is derived from any recognized assignment. See the [canonical authorization policy](docs/website-roles-and-authorization-policy.md). UI gating is **not** a security boundary; the same role checks must exist in RLS policies and `SECURITY DEFINER` RPCs.
 
 | Sidebar label  | Panel heading            | Roles that grant access                                       | Notes                                                                                  |
 |----------------|--------------------------|---------------------------------------------------------------|----------------------------------------------------------------------------------------|
@@ -72,6 +72,8 @@ The member dashboard sidebar uses effective capabilities; the table lists assign
 | Events         | Events                   | `events_editor`, `events_admin`, `club_admin`                 | `ROLE_GROUPS.EVENTS_MANAGE_ACCESS`. Delete also requires `events_admin` or `club_admin` (`ROLE_GROUPS.EVENTS_DELETE_ACCESS`). |
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
 | Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`; permanent uploaded-image and Pingolf target deletion require effective Games Admin. |
+
+Publishing Editor/Admin form a separate homepage-content domain. This foundation makes their role names, assignment controls, and inherited access available; the content editor follows separately. Apply its [database migration before deploying the frontend catalog](docs/publishing-domain.md).
 
 Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. The browser catalog and canonical SQL effective-role helpers define inheritance. Keep browser capabilities in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
 

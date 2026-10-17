@@ -105,6 +105,8 @@ test("effective roles inherit domain editors and Website Administrator domain ad
     "photos_editor",
     "games_admin",
     "games_editor",
+    "publishing_admin",
+    "publishing_editor",
     "website_volunteer"
   ]) {
     assert.equal(websiteAdminRoles.includes(role), true);
@@ -163,7 +165,7 @@ test("requireAuth preserves the member route when redirecting to sign in", async
 test("delegation requires an assignable catalog target and the correct administrator", () => {
   const { auth } = loadSiteAuth();
   const targets = Object.keys(auth.ROLE_CATALOG).filter(slug => auth.ROLE_CATALOG[slug].assignable);
-  assert.equal(targets.length, 9);
+  assert.equal(targets.length, 11);
   for (const actor of [[], ["membership_editor"], ["membership_admin"], ["club_admin"],
     ["events_admin"], ["website_volunteer"], ["unknown_role"], ["membership_editor", "membership_admin"]]) {
     for (const target of targets) {
