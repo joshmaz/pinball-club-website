@@ -115,3 +115,70 @@ frontend on the staging branch. No production rollout or PR is part of this
 phase. Tests cover authorization across existing roles, draft isolation,
 scheduling/expiry, public projections, pagination, optimistic concurrency,
 withdrawal/archive/delete boundaries, audit attribution, and safe rendering.
+
+## Bulletin board and Discord delivery
+
+The next forward migration is `20261018120000_publishing_discord.sql`.
+The public bulletin board uses ten-entry keyset pages with ordinary Newer/Older
+links, so browser Back restores the previous URL. Permanent links use
+`announcements.html?id=<announcement UUID>` and resolve through the public
+published-only detail RPC. Withdrawn and future announcements are unavailable.
+The presentation uses the existing clubhouse colors, date badges, readable
+cards, keyboard focus and optional Discord discussion links. Copy link copies
+that announcement's permanent URL. Discussion stays on Discord.
+
+**Also share to Discord when published** is a draft setting, separate from the
+currently published preference. Saving it sends nothing. Explicit publication
+copies the preference and queues the published snapshot transactionally. Existing
+announcements default to off. A dedicated queue follows the existing notification
+worker pattern but does not reuse email recipients or email delivery semantics.
+
+Delivery is server-side. Immediate publish/withdraw tries the authenticated
+worker; a minute scheduler handles future publication and queued work. The
+website save succeeds independently of delivery. The worker verifies an actual
+Publishing user or dedicated scheduler secret before any protected work, then
+checks the webhook's server and channel against its configured destination.
+Mentions are disabled. Secrets never enter browser assets, queue rows or audit
+payloads. Successful creation stores Discord's message ID; future edits PATCH
+that message. Withdrawal replaces its embed with a withdrawal notice, including
+removal of the announcement text/link. Homepage expiry leaves past Discord posts.
+
+Claims serialize work and have a five-minute lease. Content revisions arriving
+during a send remain queued after its confirmed result. Failed requests can be
+retried by Publishing Editors. An uncertain first POST or expired worker lease
+requires Publishing Admin reconciliation: find and attach the existing message
+link, or explicitly confirm no message was created before retrying. This avoids
+promising exactly-once creation across an external network. Delivery attempts,
+results, retries and reconciliation enter the existing shared audit log; system
+attempts have no human actor. Content and audit retention remain independent.
+
+### Staging destination and setup
+
+Approved staging server: `1473002560511021298`.
+Approved staging channel: `1561436946780135464`.
+The earlier proposed channel `1561436651136483338` was superseded and must not be
+used. No test post has been sent during local validation.
+
+Deploy `publishing-discord-dispatch` to **SNHPC Staging** with JWT gateway
+verification disabled; the handler performs its own user/scheduler checks.
+Configure these Edge Function environment values in that project:
+
+- `PUBLISHING_SITE_URL=https://snhpinballclub-staging.netlify.app`
+- `PUBLISHING_DISCORD_GUILD_ID=1473002560511021298`
+- `PUBLISHING_DISCORD_CHANNEL_ID=1561436946780135464`
+- `PUBLISHING_DISCORD_MODE=preview` initially; `live` only for approved test delivery.
+- `PUBLISHING_DISCORD_WEBHOOK`: the staging channel's dedicated incoming webhook.
+- `PUBLISHING_DISPATCH_SECRET`: a strong random scheduler credential.
+
+Credential creation and entry must be completed by the human in the service UI.
+Store that same scheduler credential in Supabase Vault as
+`publishing_dispatch_secret`, then apply the separate guarded staging scheduler
+script in `../staging-bootstrap/07-enable-publishing-discord-schedule.sql`.
+No webhook or credential belongs in Git, public config, chat, or Netlify variables.
+The handler validates the webhook metadata against both configured IDs before
+posting. Preview mode never claims or sends queue items.
+
+Staging acceptance: create an opted-in test announcement, confirm both links,
+edit/re-publish and confirm one Discord message, schedule a future announcement,
+withdraw and check the replacement notice, and exercise failed-delivery recovery.
+Use a dedicated staging webhook; production configuration is a separate release.
