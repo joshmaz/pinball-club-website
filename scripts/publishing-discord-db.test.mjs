@@ -100,7 +100,7 @@ try {
   await actor(10);let crashed=await write('save',null,{share:true});crashed=await write('publish',crashed);job=await claim();
   await db.exec("reset role;update public.publishing_discord set leased_at=now()-interval '6 minutes' where status='sending'");
   assert.equal(await claim(),null);assert.equal(await finish(job),false,'late result cannot bypass expired lease reconciliation');
-  await db.exec('reset role');assert.equal((await query('select status from public.publishing_discord where entry_id=$1',[crashed.id]))[0].status,'uncertain');
+  await db.exec('reset role');assert.equal((await query("select count(*)::int n from public.audit_log where action='discord_uncertain' and new_data->>'reason'='worker lease expired'"))[0].n,1);assert.equal((await query('select status from public.publishing_discord where entry_id=$1',[crashed.id]))[0].status,'uncertain');
   await actor(10);
   for(let i=0;i<22;i++){let x=await write('save',null,{title:'History '+i,start:'2024-01-01T00:00:00Z'});await write('publish',x);}
   await db.exec('reset role;set role anon');

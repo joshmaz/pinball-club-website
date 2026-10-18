@@ -7,7 +7,7 @@
   function dateValue(id) {var value=document.getElementById(id).value; return value ? new Date(value).toISOString() : null;}
   function input(label,id,type,max) {
     var wrap=node('label',label,root), field=node(type==='textarea'?'textarea':'input','',wrap);
-    field.id=id; if(type!=='textarea')field.type=type; if(max)field.maxLength=max;
+    field.id=id; if(type==='checkbox')field.setAttribute('style','width:auto;justify-self:start'); if(type!=='textarea')field.type=type; if(max)field.maxLength=max;
     field.addEventListener('input',function(){dirty=true;}); return field;
   }
   function button(text,handler,parent) {var b=node('button',text,parent||root);b.type='button';b.addEventListener('click',handler);return b;}

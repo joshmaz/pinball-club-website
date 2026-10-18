@@ -106,8 +106,11 @@ create function public.snh_claim_publishing_discord() returns jsonb language plp
 declare v public.publishing_discord;
 begin
  -- A crashed worker may have posted. Require reconciliation after its lease ends.
- update public.publishing_discord set status='uncertain',last_error='Delivery interrupted. Check Discord before reconciling.'
- where status='sending' and leased_at<now()-interval '5 minutes';
+ with expired as (
+  update public.publishing_discord set status='uncertain',last_error='Delivery interrupted. Check Discord before reconciling.'
+  where status='sending' and leased_at<now()-interval '5 minutes' returning entry_id
+ ) insert into public.audit_log(module,action,entity_type,entity_id,new_data)
+ select 'publishing','discord_uncertain','announcement',entry_id::text,jsonb_build_object('reason','worker lease expired') from expired;
  select * into v from public.publishing_discord where status='pending'
  and (snapshot is null or (snapshot->>'starts_at')::timestamptz<=now())
  order by updated_at,entry_id for update skip locked limit 1;
