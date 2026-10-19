@@ -532,7 +532,10 @@
           <h2>Publishing</h2>
           <p>Manage What's New announcements and What's Happening featured activities. Drafts stay private until published.</p>
           <p id="publishing-status" role="status"></p>
-          <nav aria-label="Publishing sections"><button type="button" id="publishing-announcements-tab">Announcements</button><button type="button" id="publishing-activities-tab">Featured activities</button></nav>
+          <nav class="publishing-sections" aria-label="Publishing sections">
+            <button type="button" id="publishing-announcements-tab" aria-pressed="true" aria-controls="member-publishing-app">Announcements <span>What's New</span></button>
+            <button type="button" id="publishing-activities-tab" aria-pressed="false" aria-controls="member-activities-app">Featured activities <span>What's Happening</span></button>
+          </nav>
           <div id="member-activities-app" class="publishing-editor" hidden></div>
           <div id="member-publishing-app" class="publishing-editor"></div>
         </div>
