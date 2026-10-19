@@ -116,5 +116,5 @@
     }catch(e){status(e.message||'Could not reconcile delivery.');}
   }
   window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue='';}});
-  window.SNHMemberPublishingPanel={load:load,canLeave:canLeave};
+  window.SNHMemberPublishingPanel={load:load,canLeave:canLeave,reset:function(){selected=null;dirty=false;if(root)renderList();}};
 })();

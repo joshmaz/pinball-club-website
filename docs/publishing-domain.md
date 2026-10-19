@@ -185,3 +185,48 @@ withdraw and check the replacement notice, and exercise failed-delivery recovery
 Use a dedicated staging webhook; production configuration is a separate release.
 
 Permanent deletion is blocked while Discord delivery is pending, sending, failed, or uncertain unless the post was canceled before any attempt. Resolve the withdrawal first so its recovery controls remain accessible. A settled withdrawal is not requeued by local deletion.
+
+## Featured activities and publishing images
+
+The forward migrations are `20261019200000_publishing_activities.sql` and
+`20261019210000_activity_audit_records.sql`; apply both in order. The second
+matches the deployed audit table’s required empty before/after records.
+Activities use the existing private `publishing_entries` table with `kind=activity`.
+Separate versioned RPCs preserve announcement behavior and do not enqueue Discord
+messages. Editors save private drafts, publish, withdraw, archive and restore;
+permanent deletion requires Publishing Admin and a withdrawn, archived record.
+The homepage shows up to six current activities, ordered by the published display
+order then ID. Future and ended publications stay in the editor but are not shown.
+An archived activity is hidden from the homepage; restore makes its retained
+publication eligible again. Audit retains all content and image actions.
+
+Images have independent `publishing_images` records and dedicated
+`publishing-private` / `publishing-public` Storage buckets. They do not create
+photo albums or require Photos roles. Reuse selects an immutable image ID; an
+activity's description, fit and focal point are part of its draft/public snapshot.
+Image library titles and default descriptions are immutable in this first version;
+activity image descriptions remain editable independently. Photos can be uploaded
+as independent files; selecting directly from the Photos gallery is not included.
+
+The existing browser WebP converter downsizes and strips original metadata. Only
+normalized web/thumbnail derivatives are uploaded; the untouched camera original
+stays on the editor's device. The worker validates still WebP containers, metadata
+absence, size and dimensions before upload. The web derivative is at most 1920px,
+thumbnail 640px, each at most 8 MB. Private thumbnails use ten-minute signed URLs.
+Uploads are private until explicit activity publication prepares the immutable
+public web derivative. Once published, that image is reusable and its public URL
+remains available after an activity is withdrawn, until the unused image is
+removed. Publication of an image is not a revocable private-share mechanism.
+
+Only Publishing Admin can remove an image, and every draft and published activity
+reference protects it, including archived entries. A ten-minute upload grace, a temporary publication hold, and
+a transactional shared lock protect cleanup/selection. Removal keeps a tombstone;
+partial cleanup remains retryable in the image library. Failed initial uploads
+also remain visible for later cleanup. No automatic image deletion job is added.
+
+Deploy `publishing-media` with its explicit live user and Publishing authorization
+checks (`verify_jwt=false` is paired with handler authentication). No scheduler,
+Discord credential or new role assignment is needed for activities. Apply the
+migration and deploy the worker to staging before editor acceptance. Netlify
+builds deploy frontend files only. Do not apply this migration to production as
+part of staging setup.

@@ -56,3 +56,7 @@ verify_jwt = false
 [functions.publishing-discord-dispatch]
 # Handler verifies a dedicated scheduler secret or a live Publishing user JWT.
 verify_jwt = false
+
+[functions.publishing-media]
+# The handler verifies the live user and Publishing access before every operation.
+verify_jwt = false
