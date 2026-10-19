@@ -1,4 +1,4 @@
-.club-announcements .content { max-width: 980px; margin-inline: auto; }
+.club-announcements .content { width: calc(100% - 2 * var(--club-space, 1rem)); max-width: 980px; margin-inline: auto; box-sizing: border-box; }
 .bulletin-heading { position: relative; border-bottom: 3px solid var(--club-teal); }
 .bulletin-heading::after { content: ''; position: absolute; right: .5rem; bottom: -8px; width: 13px; height: 13px; border-radius: 50%; background: var(--club-teal); box-shadow: -24px 0 0 var(--club-soft); }
 .bulletin-heading h1 { max-width: 18ch; }
