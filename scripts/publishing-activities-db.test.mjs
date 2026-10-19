@@ -66,6 +66,7 @@ try {
   await migration('20261018120000_publishing_discord.sql');
   await migration('20261019200000_publishing_activities.sql');
   await migration('20261019210000_activity_audit_records.sql');
+  await migration('20261019220000_publishing_nonretryable_conflicts.sql');
   await db.exec("update public.audit_log set old_data=coalesce(old_data,'{}'),new_data=coalesce(new_data,'{}');alter table public.audit_log alter column old_data set default '{}',alter column new_data set default '{}',alter column old_data set not null,alter column new_data set not null;");
   const activity=async(action,row=null,values=null)=>(await query('select public.snh_publishing_activity_write($1,$2,$3,$4) result',[action,row?.id||null,row?.version||null,values]))[0].result;
   const image=async(action,id=null,title=null,alt=null)=>(await query('select public.snh_publishing_image_write($1,$2,$3,$4) result',[action,id,title,alt]))[0].result;
@@ -73,6 +74,8 @@ try {
   const values={title:'League night',body:'Play together',url:'https://example.com/league',position:2,fit:'cover'};
   for(const n of [2,3,4,5,6,7,8,9,12,14,999]){await actor(n);await assert.rejects(activity('save',null,values),denied);await assert.rejects(image('reserve',null,'Art','Club artwork'),denied);}
   await actor(10);
+  const announcement=(await query("select public.snh_publishing_write(p_action:='save',p_title:='Conflict regression',p_body:='Private test') result"))[0].result;
+  await assert.rejects(query("select public.snh_publishing_write(p_action:='withdraw',p_id:=$1,p_version:=0)",[announcement.id]),e=>e.code==='PT409','announcement conflict must not trigger PostgREST retry');
   let row=await activity('save',null,values);
   assert.equal((await feed()).length,0,'draft private');
   await assert.rejects(query('select * from public.publishing_entries'),denied);
@@ -88,7 +91,7 @@ try {
   await db.exec('reset role');await query("insert into storage.objects values('publishing-public',$1)",[asset.id+'/web.webp']);
   await actor(10);let published=await activity('publish',row);
   assert.equal((await feed())[0].image_id,asset.id);assert.equal((await feed())[0].fit,'contain');
-  await assert.rejects(activity('save',row,values),e=>e.code==='40001');
+  await assert.rejects(activity('save',row,values),e=>e.code==='PT409');
   row=await activity('save',published,{...values,title:'Private replacement',image_id:asset.id,image_alt:asset.alt});
   assert.equal((await feed())[0].title,'League night','draft changes preserve live snapshot');
   let other=await activity('save',null,{...values,title:'Another activity',image_id:asset.id,image_alt:asset.alt});
