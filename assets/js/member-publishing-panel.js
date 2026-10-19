@@ -12,8 +12,10 @@
   }
   function button(text,handler,parent) {var b=node('button',text,parent||root);b.type='button';b.addEventListener('click',handler);return b;}
   function canLeave(){return !dirty || window.confirm('Discard unsaved announcement changes?');}
+  function closeEditor(){if(busy||!canLeave())return;selected=null;dirty=false;renderList();status('');}
   function edit(entry) {
     selected=entry; dirty=false; root.replaceChildren();
+    button('← Back to announcements',closeEditor);
     var heading=node('h3',entry?'Edit announcement':'New announcement',root); heading.tabIndex=-1;
     node('p','Plain text only. Saving a draft leaves the published version unchanged. Dates use your local timezone.',root);
     input('Title','publishing-title','text',120).value=entry?entry.draft.title:'';
@@ -34,7 +36,7 @@
       button(entry.archived?'Restore':'Archive',function(){void write(entry.archived?'restore':'archive');});
       if(admin&&entry.archived&&!entry.published)button('Permanently delete',function(){if(window.confirm('Permanently delete this announcement? Its audit history will be retained.'))void write('delete');});
     }
-    button('Back to announcements',function(){if(canLeave()){selected=null;dirty=false;void load();}});
+    button('Cancel / back to announcements',closeEditor);
   }
   function renderList() {
     root.replaceChildren();button('Refresh announcements',function(){void load();});button('New announcement',function(){edit(null);});
@@ -67,7 +69,7 @@
       }
       busy=true;root.querySelectorAll('button,input,textarea').forEach(function(b){b.disabled=true;});
       var result=await window.snhSupabase.rpc('snh_publishing_write',args);if(result.error)throw result.error;
-      dirty=false; if(action==='delete'){busy=false;await load();} else edit(result.data);
+      dirty=false; if(action!=='delete'){var index=rows.findIndex(function(row){return row.id===result.data.id;});if(index===-1)rows.unshift(result.data);else rows[index]=result.data;} if(action==='delete'){busy=false;await load();} else edit(result.data);
       if(['publish','withdraw','delete'].indexOf(action)!==-1&&(result.data.discord_requested||deliveries[args.p_id]))void dispatch();
       status(action==='save'?'Draft saved. The public version is unchanged.':'Announcement updated.');
     } catch(e){status(e.message||'Could not save. Reload before trying again.');}

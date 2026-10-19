@@ -23,3 +23,7 @@
 .club-announcements .bulletin-heading h1 { max-width: none; margin: .5rem 0; font-size: clamp(2.1rem, 5vw, 3.4rem); }
 .club-announcements .bulletin-heading p { max-width: 68ch; }
 .club-announcements .bulletin-heading .club-lead { margin: .65rem 0; }
+
+.announcement-actions .announcement-copy-link { padding: .4rem; width: 44px; height: 44px; justify-content: center; border: 0; background: transparent; color: var(--club-muted, #667); opacity: .7; }
+.announcement-actions .announcement-copy-link:hover, .announcement-actions .announcement-copy-link:focus-visible { opacity: 1; color: var(--club-teal); }
+.announcement-copy-feedback { font-size: .8rem; color: var(--club-muted, #667); }

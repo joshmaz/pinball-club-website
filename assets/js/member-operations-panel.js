@@ -1,6 +1,6 @@
 (function () {
   var allowed = false, initialized = false, busy = false, snapshot, configuration, current = 'overview';
-  var pinballmap = null, pinballmapError = '';
+  var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
   var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips' };
   function el(tag, text, parent) {
@@ -187,6 +187,11 @@
       button((snapshot.messages.failed || 0) + ' failed messages', cards.children[1], function () { selectSection('messaging', 'failed'); });
       button('View cache', cards.children[2], function () { selectSection('cache'); });
       button('View jobs', cards.children[3], function () { selectSection('jobs'); });
+      var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
+      if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
+      else el('p','Discord queue unavailable. Check publishing access and deployment, then refresh.',publishingCard);
+      el('p','Queue state only. Timer, delivery mode and webhook configuration are managed separately. Delivery attempts and results appear in Audit with automated activity enabled.',publishingCard);
+      var publishingLink=el('a','Open Publishing',publishingCard);publishingLink.href='members.html?panel=publishing';
       el('p', 'Health reflects the latest recorded requests, not continuous monitoring.', content);
     }
     if (current === 'integrations') {
@@ -314,6 +319,7 @@
   async function refresh() {
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); return; }
     snapshot = await rpc('snh_operations_snapshot');
+    try {var deliveries=await rpc('snh_publishing_discord_status');publishingDeliveries=Array.isArray(deliveries)?deliveries:null;} catch {publishingDeliveries=null;}
     try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
     catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }
     try { configuration = await edge('configuration'); } catch { configuration=null; }
