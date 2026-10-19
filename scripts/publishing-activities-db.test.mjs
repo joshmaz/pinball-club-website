@@ -65,6 +65,8 @@ try {
   await db.exec('reset role;create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(bucket_id text,name text);');
   await migration('20261018120000_publishing_discord.sql');
   await migration('20261019200000_publishing_activities.sql');
+  await migration('20261019210000_activity_audit_records.sql');
+  await db.exec("update public.audit_log set old_data=coalesce(old_data,'{}'),new_data=coalesce(new_data,'{}');alter table public.audit_log alter column old_data set default '{}',alter column new_data set default '{}',alter column old_data set not null,alter column new_data set not null;");
   const activity=async(action,row=null,values=null)=>(await query('select public.snh_publishing_activity_write($1,$2,$3,$4) result',[action,row?.id||null,row?.version||null,values]))[0].result;
   const image=async(action,id=null,title=null,alt=null)=>(await query('select public.snh_publishing_image_write($1,$2,$3,$4) result',[action,id,title,alt]))[0].result;
   const feed=async()=>(await query('select public.snh_public_activities() result'))[0].result;
