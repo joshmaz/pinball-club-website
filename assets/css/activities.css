@@ -21,3 +21,6 @@
 .publishing-upload-status:not(:empty) { padding:.75rem; border-left:3px solid var(--club-teal); background:var(--club-surface); font-weight:600; }
 .publishing-upload-status.is-error { border-left-color:#b42318; }
 .publishing-upload [aria-invalid="true"] { outline:2px solid #b42318; outline-offset:2px; }
+
+.activity-editor-status:not(:empty) { padding:.85rem; border:1px solid var(--club-line); border-left:3px solid var(--club-teal); border-radius:var(--club-radius); background:var(--club-soft); font-weight:600; }
+.publishing-editor [aria-invalid="true"] { outline:2px solid #b42318; outline-offset:2px; }
