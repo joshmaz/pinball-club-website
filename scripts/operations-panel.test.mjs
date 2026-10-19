@@ -14,7 +14,7 @@ function fixture(pinballmap=null, jobs=[]) {
  const data={integrations:[],messages:{failed:2},cache:{total:3,expired:1,cleanup_eligible:0},jobs:jobs,policies:[
  {provider:'matchplay',policy:'event',default_seconds:7200,seconds:7200,overridden:true}]};
  const window={SNHMemberAuditPanel:{load:async()=>{calls.push({name:'audit'});}},confirm:()=>confirmation,snhSupabase:{rpc:async(name,args)=>{
- calls.push({name,args}); return {data:name==='snh_operations_snapshot'?data:name==='snh_operations_pinballmap'?pinballmap:name==='snh_operations_messages'?[
+ calls.push({name,args}); return {data:name==='snh_publishing_discord_status'?[{status:'pending'},{status:'uncertain'},{status:'failed'}]:name==='snh_operations_snapshot'?data:name==='snh_operations_pinballmap'?pinballmap:name==='snh_operations_messages'?[
  {id:'id',kind:'signup',recipient_email:'<img src=x onerror=evil()>',subject:'Subject',status:'failed',attempts:3,can_retry:true}]:null};
  },functions:{invoke:async(name)=>{calls.push({name});return {data:name==='pinballmap-ingest'?{ok:true}:{providers:[],dispatcher:{configured:true,mode:'preview'}}};}}}};
  vm.runInNewContext(source,{window,document:{createElement:el,getElementById:id=>nodes.get(id)}});
@@ -25,6 +25,8 @@ test('non-admin never loads Operations data',async()=>{const f=fixture();f.panel
 test('sections render, policy save/reset and retry require correct actions and confirmations',async()=>{
  const f=fixture();f.panel.init(['club_admin']);await f.panel.load();
  assert.equal(f.buttons().length,11);
+ const text=node=>[node.textContent,...node.children.flatMap(text)].join(' ');
+ assert.match(text(f.nodes.get('operations-content')),/1 queued \(includes scheduled\) \| 0 sending \| 1 failed \| 1 need a channel check/);
  await f.click('Cache');
  assert.equal(f.buttons().find(b=>b.textContent==='Save').disabled,true);
  const input=f.nodes.get('operations-content').querySelectorAll('input')[0]; input.value='3600'; input.listeners.input();

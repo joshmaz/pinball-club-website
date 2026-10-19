@@ -3310,3 +3310,12 @@ footer {
 .games-tips-list h4 { text-transform: capitalize; margin: 0 0 0.35rem; }
 .games-tip-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; margin: 0; }
 .games-tip-credit { font-size: 0.875rem; margin: 0.4rem 0 0; }
+
+/* Lightweight homepage publishing and member editor. */
+.publishing-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.publishing-editor label { display: grid; gap: .3rem; margin: 1rem 0; max-width: 48rem; }
+.publishing-editor input, .publishing-editor textarea { width: 100%; box-sizing: border-box; padding: .65rem; font: inherit; }
+.publishing-editor textarea { min-height: 9rem; }
+.publishing-editor button { margin: .35rem .5rem .35rem 0; }
+.publishing-preview { padding: 1rem; border: 1px solid currentColor; margin: 1rem 0; }
+#public-announcements article { margin-bottom: 2rem; }

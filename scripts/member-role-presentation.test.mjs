@@ -41,6 +41,8 @@ test('assignment badges retain actual assignments, never expand inheritance or d
   for (const [roles, names, kinds] of [
     [['games_editor'], ['Games Editor'], ['editor']],
     [['photos_admin'], ['Photos Admin'], ['admin']],
+    [['publishing_editor'], ['Publishing Editor'], ['editor']],
+    [['publishing_admin'], ['Publishing Admin'], ['admin']],
     [['club_admin'], ['Website Administrator'], ['website']],
     [['events_editor', 'games_admin'], ['Events Editor', 'Games Admin'], ['editor', 'admin']],
     [['games_admin', 'games_editor'], ['Games Admin', 'Games Editor'], ['admin', 'editor']],
@@ -59,7 +61,7 @@ test('effective access is explanatory text with canonical inherited names', () =
   const { ui } = setup();
   const root = new Element('div');
   ui.renderAccess(root, ['club_admin']);
-  for (const text of ['Included through Website Administrator', 'Membership Admin', 'Events Admin', 'Photos Admin', 'Games Admin', 'Editor access', 'Website Volunteer']) assert.ok(root.textContent.includes(text));
+  for (const text of ['Included through Website Administrator', 'Membership Admin', 'Events Admin', 'Photos Admin', 'Games Admin', 'Publishing Admin', 'Editor access', 'Website Volunteer']) assert.ok(root.textContent.includes(text));
   assert.equal(all(root, el => (el.className || '').includes('member-role-badge')).length, 0);
   assert.doesNotMatch(root.textContent, /club_admin|membership_admin/);
   ui.renderAccess(root, ['games_admin']);
@@ -81,6 +83,7 @@ test('removal explains access that remains through another assignment', () => {
   const { ui } = setup();
   assert.match(ui.removalMessage(['games_editor', 'games_admin'], 'games_editor', 'Alex'), /Games Editor access will remain through Games Admin/);
   assert.match(ui.removalMessage(['club_admin', 'photos_admin'], 'photos_admin', 'Alex'), /Photos Admin access will remain through Website Administrator/);
+  assert.match(ui.removalMessage(['publishing_editor', 'publishing_admin'], 'publishing_editor', 'Alex'), /Publishing Editor access will remain through Publishing Admin/);
   assert.doesNotMatch(ui.removalMessage(['games_admin'], 'games_admin', 'Alex'), /will remain|games_admin/);
   assert.equal(ui.errorMessage(new Error('Cannot remove the last Club Admin')), 'Cannot remove the last Website Administrator');
   assert.equal(ui.errorMessage(new Error('games_admin required')), 'Games Admin required');

@@ -58,6 +58,7 @@
       events: "M4 5h16v16H4Z M4 9h16 M8 3v4 M16 3v4 M8 13h2 M14 13h2 M8 17h2",
       photos: "M3 7h5l2-3h4l2 3h5v13H3Z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
       membership: "M3 4h18v16H3Z M11 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0 M5 17v-2c0-3 8-3 8 0v2 M16 9h3 M16 13h3",
+      publishing: "M5 3h10l4 4v14H5Z M15 3v5h4 M8 11h8 M8 15h8 M8 18h5",
       website: "M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z"
     };
     path.setAttribute("d", role && paths[role.domain] || "M12 4v10m0 4v2");

@@ -69,3 +69,11 @@
 @media (max-width: 1000px) { .club-home .home-highlights-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 400px) { .club-home .home-highlights-grid { grid-template-columns: 1fr; } }
 
+
+.home-concept-status.publishing-status-card { display: block; }
+.publishing-status-card h2 { margin-bottom: .65rem; }
+.publishing-status-card #announcements-status:not(:empty) { margin-bottom: .65rem; }
+.publishing-status-card #public-announcements article { margin: 0; }
+.publishing-status-card h3 { margin: 0 0 .3rem; }
+.publishing-status-card time { color: var(--club-muted); font-size: .8rem; }
+.publishing-status-card .publishing-text { margin: .6rem 0; }
