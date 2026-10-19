@@ -16,3 +16,8 @@
 .club-account .publishing-sections button[aria-pressed="true"] { border-color:var(--club-teal); box-shadow:inset 0 -4px 0 var(--club-teal); color:var(--club-teal); }
 .club-account .publishing-sections button:hover { border-color:var(--club-teal); }
 .club-account .publishing-sections button:focus-visible { outline:3px solid var(--club-teal); outline-offset:3px; }
+
+.publishing-upload { margin-block:1.25rem; padding:1rem; border:1px solid var(--club-line); border-radius:var(--club-radius); background:var(--club-soft); }
+.publishing-upload-status:not(:empty) { padding:.75rem; border-left:3px solid var(--club-teal); background:var(--club-surface); font-weight:600; }
+.publishing-upload-status.is-error { border-left-color:#b42318; }
+.publishing-upload [aria-invalid="true"] { outline:2px solid #b42318; outline-offset:2px; }
