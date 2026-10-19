@@ -1,0 +1,11 @@
+.activity-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:1.5rem; }
+.activity-card { overflow:hidden; border:1px solid var(--club-line); border-radius:var(--club-radius); background:var(--club-surface); }
+.activity-image { width:100%; height:auto; aspect-ratio:16/9; display:block; background:var(--club-soft); }
+.activity-copy { padding:1.25rem; }
+.activity-copy h3 { margin:0 0 .65rem; }
+.activity-copy p { white-space:pre-line; overflow-wrap:anywhere; }
+.activity-fallback { display:flex;align-items:center;justify-content:center;color:var(--club-teal);font-family:var(--club-display);font-size:1.5rem; }
+.publishing-image-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-block:1rem; }
+.publishing-image-grid img { display:block;width:100%;height:100px;object-fit:contain;background:var(--club-soft); }
+.publishing-image-grid figure { margin:0;border:1px solid var(--club-line);padding:.6rem;border-radius:var(--club-radius); }
+.activity-editor-preview { max-width:36rem; margin-block:1rem; }

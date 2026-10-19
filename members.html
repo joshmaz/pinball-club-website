@@ -47,6 +47,10 @@
   <script src="assets/js/member-photos-panel.js"></script>
   <script src="assets/js/publishing.js"></script>
   <script src="assets/js/member-publishing-panel.js"></script>
+  <script src="assets/js/photo-conversion.js"></script>
+  <script src="assets/js/activities.js"></script>
+  <script src="assets/js/member-activities-panel.js"></script>
+  <link rel="stylesheet" href="assets/css/activities.css">
   <script src="assets/js/member-club-issues-panel.js"></script>
 </head>
 <body>
@@ -526,8 +530,10 @@
 
         <div id="member-panel-publishing" class="member-panel" role="region" aria-labelledby="member-nav-publishing" tabindex="-1" aria-hidden="true">
           <h2>Publishing</h2>
-          <p>What's New announcements appear on the homepage and in the announcement history. Drafts stay private until published.</p>
+          <p>Manage What's New announcements and What's Happening featured activities. Drafts stay private until published.</p>
           <p id="publishing-status" role="status"></p>
+          <nav aria-label="Publishing sections"><button type="button" id="publishing-announcements-tab">Announcements</button><button type="button" id="publishing-activities-tab">Featured activities</button></nav>
+          <div id="member-activities-app" class="publishing-editor" hidden></div>
           <div id="member-publishing-app" class="publishing-editor"></div>
         </div>
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
