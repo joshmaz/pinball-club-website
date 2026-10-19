@@ -1,5 +1,14 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 
+// Browser origins are explicit and independent of canonical Discord links.
+export function allowedPublishingOrigin(origin: string, site: string, configured: string): boolean {
+  try {
+    const parsed = new URL(origin);
+    if (parsed.protocol !== "https:" || parsed.origin !== origin || parsed.username || parsed.password) return false;
+    return [site, ...configured.split(",").map(value => value.trim())].includes(origin);
+  } catch { return false; }
+}
+
 export function discordPayload(job: any, site: string) {
   const published = job.snapshot;
   return { allowed_mentions: { parse: [] }, embeds: [{
@@ -34,7 +43,7 @@ Deno.serve(async (req) => {
   const origin = req.headers.get("origin") || "";
   const site = (Deno.env.get("PUBLISHING_SITE_URL") || "").replace(/\/$/, "");
   const headers = { "Content-Type": "application/json", "Cache-Control": "no-store",
-    ...(origin === site ? { "Access-Control-Allow-Origin": origin,
+    ...(allowedPublishingOrigin(origin, site, Deno.env.get("PUBLISHING_ALLOWED_ORIGINS") || "") ? { "Access-Control-Allow-Origin": origin,
       "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
       "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin" } : {}) };
   const reply = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers });

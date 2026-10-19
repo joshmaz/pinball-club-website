@@ -15,11 +15,21 @@ revoke all on public.publishing_discord from public,anon,authenticated;
 
 create function private.snh_queue_publishing_discord() returns trigger
 language plpgsql security definer set search_path='' as $$
-declare v_id uuid; v_snapshot jsonb; v_requested boolean;
+declare v_id uuid; v_snapshot jsonb; v_requested boolean; v_delivery public.publishing_discord;
 begin
- if tg_op='DELETE' then v_id:=old.id; v_requested:=false;
- else v_id:=new.id; v_requested:=new.discord_requested; v_snapshot:=new.published;
+ if tg_op='DELETE' then
+  -- Keep the announcement's recovery screen until every possible external post
+  -- is resolved. Lock against concurrent claims and do not requeue a settled
+  -- withdrawal merely because the local announcement is being deleted.
+  select * into v_delivery from public.publishing_discord where entry_id=old.id for update;
+  if found and v_delivery.status not in ('shared','not_shared','skipped')
+   and not (v_delivery.status='pending' and v_delivery.snapshot is null
+    and v_delivery.message_id is null and v_delivery.attempts=0) then
+   raise exception 'Resolve Discord delivery before permanently deleting this announcement. Withdrawal must be confirmed.' using errcode='22023';
+  end if;
+  return null;
  end if;
+ v_id:=new.id; v_requested:=new.discord_requested; v_snapshot:=new.published;
  if tg_op='UPDATE' and old.published is not distinct from new.published
   and old.discord_requested=new.discord_requested then return null; end if;
  if not v_requested then v_snapshot:=null; end if;

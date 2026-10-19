@@ -166,6 +166,7 @@ Configure these Edge Function environment values in that project:
 - `PUBLISHING_SITE_URL=https://snhpinballclub-staging.netlify.app`
 - `PUBLISHING_DISCORD_GUILD_ID=1473002560511021298`
 - `PUBLISHING_DISCORD_CHANNEL_ID=1561436946780135464`
+- `PUBLISHING_ALLOWED_ORIGINS=https://deploy-preview-132--snhpinballclub-staging.netlify.app` (comma-separated exact trusted HTTPS origins; no wildcards). This allows preview browser calls without changing canonical links.
 - `PUBLISHING_DISCORD_MODE=preview` initially; `live` only for approved test delivery.
 - `PUBLISHING_DISCORD_WEBHOOK`: the staging channel's dedicated incoming webhook.
 - `PUBLISHING_DISPATCH_SECRET`: a strong random scheduler credential.
@@ -182,3 +183,5 @@ Staging acceptance: create an opted-in test announcement, confirm both links,
 edit/re-publish and confirm one Discord message, schedule a future announcement,
 withdraw and check the replacement notice, and exercise failed-delivery recovery.
 Use a dedicated staging webhook; production configuration is a separate release.
+
+Permanent deletion is blocked while Discord delivery is pending, sending, failed, or uncertain unless the post was canceled before any attempt. Resolve the withdrawal first so its recovery controls remain accessible. A settled withdrawal is not requeued by local deletion.

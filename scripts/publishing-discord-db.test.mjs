@@ -95,6 +95,22 @@ try {
   await actor(11);assert.equal((await query('select public.snh_reconcile_publishing_discord($1,$2,$3) ok',[uncertain.id,'1561436651136483002','1561436946780135464']))[0].ok,true);
   job=await claim();assert.equal(job.message_id,'1561436651136483002');await finish(job,'failed','1561436651136483002');
   await actor(10);assert.equal((await query('select public.snh_retry_publishing_discord($1) ok',[uncertain.id]))[0].ok,true);job=await claim();await finish(job,'shared','1561436651136483002');
+  // Permanent deletion must not orphan a possibly posted Discord message.
+  await actor(11);let retiring=await write('save',null,{share:true});retiring=await write('publish',retiring);
+  job=await claim();
+  await actor(11);retiring=await write('withdraw',retiring);retiring=await write('archive',retiring);
+  await assert.rejects(write('delete',retiring),e=>e.code==='22023'&&/Resolve Discord/.test(e.message));
+  assert.ok((await query('select public.snh_publishing_list() result'))[0].result.some(x=>x.id===retiring.id));
+  await db.exec('reset role;set role service_role');await finish(job,'uncertain',null);
+  await actor(11);await assert.rejects(write('delete',retiring),e=>e.code==='22023');
+  await query('select public.snh_reconcile_publishing_discord($1,$2,$3)',[retiring.id,'1561436651136483003','1561436946780135464']);
+  job=await claim();assert.equal(job.snapshot,null);await finish(job,'failed','1561436651136483003');
+  await actor(11);await assert.rejects(write('delete',retiring),e=>e.code==='22023');
+  await query('select public.snh_retry_publishing_discord($1)',[retiring.id]);job=await claim();await finish(job,'shared','1561436651136483003');
+  await actor(11);await write('delete',retiring);
+  assert.equal(await claim(),null,'deleting a settled withdrawal must not queue another external write');
+  await actor(11);let canceled=await write('save',null,{share:true});canceled=await write('publish',canceled);canceled=await write('withdraw',canceled);canceled=await write('archive',canceled);
+  await write('delete',canceled);assert.equal((await claim()).skip,true,'an unattempted canceled post is safe to discard');
   await actor(10);let future=await write('save',null,{share:true,start:'2099-01-01'});future=await write('publish',future);assert.equal(await claim(),null);
   await actor(10);let expired=await write('save',null,{share:true,start:'2020-01-01',end:'2020-01-02'});expired=await write('publish',expired);assert.equal((await claim()).skip,true);
   await actor(10);let crashed=await write('save',null,{share:true});crashed=await write('publish',crashed);job=await claim();

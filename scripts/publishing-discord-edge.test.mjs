@@ -38,3 +38,16 @@ test('live worker validates the exact configured staging destination before clai
  const f=fixture({env,wrongChannel:true});const r=await f.handler(new Request('https://function.example',{method:'POST',headers:{'x-publishing-secret':'scheduler'}}));assert.equal(r.status,409);assert.equal(f.protectedCalls,0);
  const good=fixture({env});const response=await good.handler(new Request('https://function.example',{method:'POST',headers:{'x-publishing-secret':'scheduler'}}));assert.equal(response.status,200);assert.equal(good.protectedCalls,2);
 });
+
+test('explicit preview origins are allowed without changing canonical message links',async()=>{
+ const preview='https://deploy-preview-132--snhpinballclub-staging.netlify.app';
+ for(const origin of [preview,'https://evil.example','https://deploy-preview-132--snhpinballclub-staging.netlify.app.evil.example','null']){
+  const f=fixture({env:{PUBLISHING_ALLOWED_ORIGINS:preview}});
+  const response=await f.handler(new Request('https://function.example',{method:'OPTIONS',headers:{Origin:origin}}));
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'),origin===preview?preview:null);
+  assert.equal(f.protectedCalls,0);
+  assert.equal(f.helpers.discordPayload(job,'https://stage.example').embeds[0].url,'https://stage.example/announcements.html?id=abc');
+ }
+ const unconfigured=fixture();const response=await unconfigured.handler(new Request('https://function.example',{method:'OPTIONS',headers:{Origin:preview}}));
+ assert.equal(response.headers.get('Access-Control-Allow-Origin'),null,'previews are opt-in');
+});
