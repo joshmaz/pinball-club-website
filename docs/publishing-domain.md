@@ -188,7 +188,9 @@ Permanent deletion is blocked while Discord delivery is pending, sending, failed
 
 ## Featured activities and publishing images
 
-The next forward migration is `20261019200000_publishing_activities.sql`.
+The forward migrations are `20261019200000_publishing_activities.sql` and
+`20261019210000_activity_audit_records.sql`; apply both in order. The second
+matches the deployed audit table’s required empty before/after records.
 Activities use the existing private `publishing_entries` table with `kind=activity`.
 Separate versioned RPCs preserve announcement behavior and do not enqueue Discord
 messages. Editors save private drafts, publish, withdraw, archive and restore;
@@ -217,8 +219,8 @@ remains available after an activity is withdrawn, until the unused image is
 removed. Publication of an image is not a revocable private-share mechanism.
 
 Only Publishing Admin can remove an image, and every draft and published activity
-reference protects it, including archived entries. A ten-minute upload grace and
-transactional shared lock protect cleanup/selection. Removal keeps a tombstone;
+reference protects it, including archived entries. A ten-minute upload grace, a temporary publication hold, and
+a transactional shared lock protect cleanup/selection. Removal keeps a tombstone;
 partial cleanup remains retryable in the image library. Failed initial uploads
 also remain visible for later cleanup. No automatic image deletion job is added.
 
