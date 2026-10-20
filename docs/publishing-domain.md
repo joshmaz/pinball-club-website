@@ -230,3 +230,10 @@ Discord credential or new role assignment is needed for activities. Apply the
 migration and deploy the worker to staging before editor acceptance. Netlify
 builds deploy frontend files only. Do not apply this migration to production as
 part of staging setup.
+
+Homepage activities remain capped at six eligible publications. Lower display-order
+numbers appear first; equal numbers are shuffled on each feed request before the
+six-card cutoff. This keeps priority groups together and lets tied overflow cards
+rotate into view. The grid wraps to additional rows (normally three columns on
+desktop, two on narrower screens and one on phones). This is a curated homepage
+section, not a complete activities directory.
