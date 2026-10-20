@@ -24,3 +24,20 @@
 
 .activity-editor-status:not(:empty) { padding:.85rem; border:1px solid var(--club-line); border-left:3px solid var(--club-teal); border-radius:var(--club-radius); background:var(--club-soft); font-weight:600; }
 .publishing-editor [aria-invalid="true"] { outline:2px solid #b42318; outline-offset:2px; }
+
+.activity-actions, .activity-trail { display:flex; flex-wrap:wrap; gap:1rem; align-items:center; }
+.activity-trail { margin-block:1.5rem; }
+.activity-copy a, .activity-detail a, .activity-trail a { overflow-wrap:anywhere; }
+.activity-copy h3 a { color:inherit; }
+.activity-detail { max-width:52rem; margin:0 auto 3rem; }
+.activity-detail h1 { overflow-wrap:anywhere; }
+.activity-flyer { display:block; max-width:100%; max-height:80vh; width:auto; height:auto; margin-block:1.5rem .5rem; object-fit:contain; }
+.activity-paragraph { white-space:pre-line; overflow-wrap:anywhere; }
+.activity-ended { padding:1rem; border-left:4px solid var(--club-teal); background:var(--club-soft); }
+.activity-summary-count { display:block; font-size:.875rem; }
+.activity-detail button { margin-top:1rem; }
+.activity-card a:focus-visible, .activity-detail a:focus-visible, .activity-detail button:focus-visible { outline:3px solid var(--club-teal); outline-offset:3px; }
+
+.activity-detail button, .club-activities #activities-retry { padding:.5rem .9rem; min-height:44px; border:1px solid var(--club-control-line); border-radius:var(--club-radius); color:var(--club-ink); background:var(--club-soft); font:600 .9rem/1.5 var(--club-body,system-ui); cursor:pointer; }
+.publishing-editor select { box-sizing:border-box; max-width:100%; padding:.65rem; font:inherit; }
+.publishing-editor #activity-body { min-height:6rem; }
