@@ -67,6 +67,7 @@ try {
   await migration('20261019200000_publishing_activities.sql');
   await migration('20261019210000_activity_audit_records.sql');
   await migration('20261019220000_publishing_nonretryable_conflicts.sql');
+  await migration('20261019230000_activity_priority_shuffle.sql');
   await db.exec("update public.audit_log set old_data=coalesce(old_data,'{}'),new_data=coalesce(new_data,'{}');alter table public.audit_log alter column old_data set default '{}',alter column new_data set default '{}',alter column old_data set not null,alter column new_data set not null;");
   const activity=async(action,row=null,values=null)=>(await query('select public.snh_publishing_activity_write($1,$2,$3,$4) result',[action,row?.id||null,row?.version||null,values]))[0].result;
   const image=async(action,id=null,title=null,alt=null)=>(await query('select public.snh_publishing_image_write($1,$2,$3,$4) result',[action,id,title,alt]))[0].result;
@@ -109,5 +110,12 @@ try {
   assert.equal((await query('select public.snh_publishing_discord_status() as items'))[0].items.length,0,'activities do not enqueue Discord messages');
   const ended=await activity('save',null,{...values,starts_at:'2020-01-01T00:00:00Z',ends_at:'2020-02-01T00:00:00Z'});await activity('publish',ended);assert.equal((await feed()).length,0);
   await db.exec('reset role;set role anon');await assert.rejects(query('select public.snh_publishing_images()'),denied);assert.equal((await feed()).length,0);
+  await db.exec('reset role');
+  const insertCard=async(position,title)=>query("insert into public.publishing_entries(kind,draft,published) values('activity',$1,$1)",[JSON.stringify({...values,title,position,starts_at:'2020-01-01T00:00:00Z',ends_at:null})]);
+  for(const [i,position] of [0,1,1,1,1,2].entries())await insertCard(position,'Shuffle '+i);
+  const arrangements=new Set();for(let i=0;i<24;i++){const cards=await feed();assert.deepEqual(cards.map(c=>c.position),[0,1,1,1,1,2]);assert.equal(cards[0].title,'Shuffle 0');assert.equal(cards[5].title,'Shuffle 5');arrangements.add(cards.map(c=>c.id).join(','));}assert.ok(arrangements.size>1,'equal priority cards change order without moving bookends');
+  await query("delete from public.publishing_entries where kind='activity' and draft->>'title' like 'Shuffle %'");
+  for(let i=0;i<8;i++)await insertCard(0,'Shuffle '+i);
+  const seen=new Set();for(let i=0;i<24;i++){const cards=await feed();assert.equal(cards.length,6);assert.equal(new Set(cards.map(c=>c.id)).size,6);cards.forEach(c=>seen.add(c.id));}assert.equal(seen.size,8,'shuffle happens before the six-card cutoff');
   await db.exec('reset role');const audit=await query("select action from public.audit_log where entity_type in ('activity','publishing_image')");assert.ok(audit.some(e=>e.action==='image_removed'));assert.ok(audit.some(e=>e.action==='publish'));
 } finally {await db.close();}
