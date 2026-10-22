@@ -20,6 +20,8 @@
     <script src="assets/js/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="assets/js/supabase-init.js"></script>
+    <link rel="stylesheet" href="assets/css/activities.css">
+    <script src="assets/js/activities.js" defer></script>
 </head>
 <body>
 <a class="club-skip" href="#home-main">Skip to content</a>
@@ -60,10 +62,17 @@
       <figcaption><span>Pinball at the club</span><span class="home-photo-tag">Keep the silverball rolling</span></figcaption>
     </figure>
   </section>
-  <section class="home-concept-status" aria-labelledby="home-status-title">
-    <h2 id="home-status-title">Open &amp; playing</h2>
-    <p>We’re open and hosting events again! NPC Season 3 has wrapped up, and New England Pinball League Season 38 is underway. Come flip some games and meet some folks.</p>
-    <a href="events.html">See what’s coming up ↗</a>
+  <section class="home-concept-status publishing-status-card" aria-labelledby="home-status-title">
+    <h2 id="home-status-title">What's New</h2>
+    <div id="public-announcements"></div>
+    <p id="announcements-status" role="status">Loading club updates…</p>
+    <noscript><p>Enable JavaScript to read club updates.</p></noscript>
+    <a href="announcements.html">Announcement history ↗</a> · <a href="events.html">Upcoming events ↗</a>
+  </section>
+  <section id="home-activities" class="home-concept-section" aria-labelledby="home-activities-title" hidden>
+    <p class="club-eyebrow">Around the club</p><h2 id="home-activities-title">What's Happening</h2>
+    <p>Leagues, tournaments, and more reasons to play together.</p>
+    <div id="public-activities" class="activity-grid"></div>
   </section>
   <section class="home-concept-section" aria-labelledby="home-explore-title">
     <p class="club-eyebrow">Find your people. Find your game.</p>
@@ -107,6 +116,7 @@
 <script src="assets/js/game-image-delivery.js"></script>
 <script src="assets/js/home-gallery.js"></script>
 <script src="assets/js/home-highlights.js"></script>
+<script src="assets/js/publishing.js"></script>
 <script src="assets/js/site-auth.js"></script>
 <script src="assets/js/site-account.js"></script>
 </body>

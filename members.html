@@ -45,6 +45,12 @@
   <script src="assets/js/member-audit-panel.js"></script>
   <script src="assets/js/member-games-panel.js"></script>
   <script src="assets/js/member-photos-panel.js"></script>
+  <script src="assets/js/publishing.js"></script>
+  <script src="assets/js/member-publishing-panel.js"></script>
+  <script src="assets/js/photo-conversion.js"></script>
+  <script src="assets/js/activities.js"></script>
+  <script src="assets/js/member-activities-panel.js"></script>
+  <link rel="stylesheet" href="assets/css/activities.css">
   <script src="assets/js/member-club-issues-panel.js"></script>
 </head>
 <body>
@@ -121,6 +127,9 @@
             <button type="button" class="members-sidebar-link" data-member-panel="games" id="member-nav-games" aria-controls="member-panel-games">
               Games
             </button>
+          </li>
+          <li data-member-rbac-nav data-rbac-roles="publishing_editor,publishing_admin,club_admin">
+            <button type="button" class="members-sidebar-link" data-member-panel="publishing" id="member-nav-publishing" aria-controls="member-panel-publishing">Publishing</button>
           </li>
           <li class="members-sidebar-logout-wrap">
             <button type="button" class="members-sidebar-link members-sidebar-logout" id="logout-btn" hidden>
@@ -332,13 +341,14 @@
           <div id="operations-audit" hidden>
           <section id="member-audit-section" hidden aria-labelledby="member-audit-title">
             <h3 id="member-audit-title">Audit Log</h3>
-            <p class="member-form-hint">Club admins can review changes to Operations, events, members, games, and photos.</p>
+            <p class="member-form-hint">Club admins can review changes to Operations, publishing, events, members, games, and photos.</p>
             <p class="members-admin-toolbar">
               <label for="member-audit-module">Area</label>
               <select id="member-audit-module">
                 <option value="">All areas</option>
                 <option value="operations">Operations</option>
                 <option value="events">Events</option>
+                <option value="publishing">Publishing</option>
                 <option value="members">Members</option>
                 <option value="games">Games</option>
                 <option value="photos">Photos</option>
@@ -518,6 +528,17 @@
           <div id="member-photos-app" class="member-photos-app" aria-live="polite"></div>
         </div>
 
+        <div id="member-panel-publishing" class="member-panel" role="region" aria-labelledby="member-nav-publishing" tabindex="-1" aria-hidden="true">
+          <h2>Publishing</h2>
+          <p>Manage What's New announcements and What's Happening featured activities. Drafts stay private until published.</p>
+          <p id="publishing-status" role="status"></p>
+          <nav class="publishing-sections" aria-label="Publishing sections">
+            <button type="button" id="publishing-announcements-tab" aria-pressed="true" aria-controls="member-publishing-app">Announcements <span>What's New</span></button>
+            <button type="button" id="publishing-activities-tab" aria-pressed="false" aria-controls="member-activities-app">Featured Activities <span>What's Happening</span></button>
+          </nav>
+          <div id="member-activities-app" class="publishing-editor" hidden></div>
+          <div id="member-publishing-app" class="publishing-editor"></div>
+        </div>
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
           <h2>Games</h2>
           <p id="member-games-intro" class="member-panel-intro">Keep the club's game list current: add a machine when it lands on the floor, update floor and maintenance details, link owner parties, and make sure the catalog reflects what members will actually see at the club.</p>
@@ -775,6 +796,7 @@
       var id = String(panelId || "profile");
       if (!document.getElementById("member-panel-" + id)) id = "profile";
 
+      if (getActiveMemberPanelId() === "publishing" && id !== "publishing" && window.SNHMemberPublishingPanel && !window.SNHMemberPublishingPanel.canLeave()) return;
       if (id !== "member-admin" && adminExpandedId) {
         if (!adminConfirmDiscard()) return;
         adminDraft = null;
@@ -809,6 +831,7 @@
       if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
         onMemberAdminPanelShown();
       }
+      if (id === "publishing" && window.SNHMemberPublishingPanel) void window.SNHMemberPublishingPanel.load(userRoles);
       if (id === "operations" && window.SNHMemberOperationsPanel) void window.SNHMemberOperationsPanel.load();
       if (id === "events" && !options.skipPanelLoad && typeof onEventsPanelShown === "function") {
         onEventsPanelShown();
@@ -916,6 +939,7 @@
       var panelRoleMap = {
         "member-admin": groups.MEMBERSHIP_MANAGE_ACCESS || ["membership_editor", "membership_admin", "club_admin"],
         "operations": ["club_admin"],
+        publishing: groups.PUBLISHING_ACCESS || ["publishing_editor", "publishing_admin", "club_admin"],
         events: groups.EVENTS_MANAGE_ACCESS || ["events_editor", "events_admin", "club_admin"],
         photos: groups.PHOTOS_ACCESS || ["photos_editor", "photos_admin", "club_admin"],
         games: groups.GAMES_ACCESS || ["games_editor", "games_admin", "club_admin"]

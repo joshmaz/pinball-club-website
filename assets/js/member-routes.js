@@ -1,6 +1,6 @@
 (function () {
   var PANEL_IDS = Object.freeze([
-    "profile", "membership", "door", "club-issues", "member-admin", "operations", "audit-log", "events", "photos", "games"
+    "profile", "membership", "door", "club-issues", "member-admin", "operations", "audit-log", "publishing", "events", "photos", "games"
   ]);
   var OPERATIONS_SECTIONS = ["overview", "integrations", "cache", "messaging", "jobs", "audit"];
   function operationsSection(value) { return OPERATIONS_SECTIONS.indexOf(value) !== -1 ? value : "overview"; }

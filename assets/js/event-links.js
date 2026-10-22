@@ -32,7 +32,8 @@
     return [...(Array.isArray(event.externalLinks) ? event.externalLinks : []),
       ...((event.external_url || event.url) ? [{ url: event.external_url || event.url }] : [])];
   }
-  function normalize(items, strict = false) {
+  function normalize(items, strict = false, options = {}) {
+    const maxUrl = options.maxUrl || 1000;
     // Check before filtering blanks or duplicates so oversized saves never truncate.
     if (strict && items?.length > MAX_LINKS) throw new Error(limitMessage);
     const seen = new Set();
@@ -41,8 +42,8 @@
       const label = typeof item?.label === 'string' ? item.label.trim() : '';
       if (!raw && !label) return [];
       const url = safeUrl(raw);
-      if (!url || raw.length > 1000 || label.length > 200) {
-        if (strict) throw new Error('Each link needs an http:// or https:// URL (up to 1,000 characters) and an optional label (up to 200 characters).');
+      if (!url || raw.length > maxUrl || label.length > 200) {
+        if (strict) throw new Error(`Each link needs an http:// or https:// URL (up to ${maxUrl.toLocaleString()} characters) and an optional label (up to 200 characters).`);
         return [];
       }
       if (seen.has(url)) return [];
@@ -53,7 +54,7 @@
   function presentation(event) {
     return normalize(fromEvent(event)).map(item => ({ ...item, label: item.label || inferLabel(item.url) }));
   }
-  function createEditor(container, addButton) {
+  function createEditor(container, addButton, options = {}) {
     const doc = container.ownerDocument;
     let rows = [];
     let nextId = 0;
@@ -62,7 +63,7 @@
       // Loading preserves older oversized records so the user can remove links.
       if (!loading && rows.length >= MAX_LINKS) throw new Error(limitMessage);
       const row = doc.createElement('div'); row.className = 'event-link-row';
-      const url = doc.createElement('input'); url.type = 'url'; url.maxLength = 1000; url.placeholder = 'https://…';
+      const url = doc.createElement('input'); url.type = 'url'; url.maxLength = options.maxUrl || 1000; url.placeholder = 'https://…';
       const label = doc.createElement('input'); label.type = 'text'; label.maxLength = 200; label.placeholder = 'Optional';
       const id = 'event-link-' + (++nextId);
       url.id = id + '-url'; label.id = id + '-label';
@@ -95,7 +96,7 @@
       (items && items.length ? items : [{}]).forEach(item => add(item, false, true));
     }
     function get() {
-      return normalize(rows.map(({ url, label }) => ({ url: url.value, label: label.value })), true);
+      return normalize(rows.map(({ url, label }) => ({ url: url.value, label: label.value })), true, options);
     }
     function append(item) {
       const items = get();
@@ -110,7 +111,7 @@
       if (rows.length < MAX_LINKS) add({}, true);
     });
     set([]);
-    return { set, get, append };
+    return { set, get, append, refreshLimit: updateLimit };
   }
   const api = { MAX_LINKS, safeUrl, inferLabel, fromEvent, normalize, presentation, createEditor };
   root.SNHEventLinks = api;

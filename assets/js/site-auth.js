@@ -8,7 +8,7 @@
       domain: "website",
       level: "admin",
       assignable: true,
-      inherits: Object.freeze(["membership_admin", "events_admin", "photos_admin", "games_admin"])
+      inherits: Object.freeze(["membership_admin", "events_admin", "photos_admin", "games_admin", "publishing_admin"])
     }),
     membership_editor: Object.freeze({
       displayName: "Membership Editor",
@@ -66,6 +66,20 @@
       assignable: true,
       inherits: Object.freeze(["games_editor"])
     }),
+    publishing_editor: Object.freeze({
+      displayName: "Publishing Editor",
+      domain: "publishing",
+      level: "editor",
+      assignable: true,
+      inherits: Object.freeze([])
+    }),
+    publishing_admin: Object.freeze({
+      displayName: "Publishing Admin",
+      domain: "publishing",
+      level: "admin",
+      assignable: true,
+      inherits: Object.freeze(["publishing_editor"])
+    }),
     website_volunteer: Object.freeze({
       displayName: "Website Volunteer",
       domain: "website",
@@ -81,6 +95,8 @@
     EVENTS_DELETE_ACCESS: Object.freeze(["events_admin", "club_admin"]),
     PHOTOS_ACCESS: Object.freeze(["photos_editor", "photos_admin", "club_admin"]),
     GAMES_ACCESS: Object.freeze(["games_editor", "games_admin", "club_admin"]),
+    PUBLISHING_ACCESS: Object.freeze(["publishing_editor", "publishing_admin", "club_admin"]),
+    PUBLISHING_ADMIN_ACCESS: Object.freeze(["publishing_admin", "club_admin"]),
     WEBSITE_VOLUNTEER_ACCESS: Object.freeze(["website_volunteer"])
   });
 
@@ -90,6 +106,8 @@
     "events.delete": ROLE_GROUPS.EVENTS_DELETE_ACCESS,
     "photos.manage": ROLE_GROUPS.PHOTOS_ACCESS,
     "games.manage": ROLE_GROUPS.GAMES_ACCESS,
+    "publishing.manage": ROLE_GROUPS.PUBLISHING_ACCESS,
+    "publishing.delete": ROLE_GROUPS.PUBLISHING_ADMIN_ACCESS,
     "website.volunteer": ROLE_GROUPS.WEBSITE_VOLUNTEER_ACCESS
   });
 

@@ -1,0 +1,29 @@
+.club-announcements .content { width: calc(100% - 2 * var(--club-space, 1rem)); max-width: 980px; margin-inline: auto; box-sizing: border-box; }
+.bulletin-heading { position: relative; border-bottom: 3px solid var(--club-teal); }
+.bulletin-heading::after { content: ''; position: absolute; right: .5rem; bottom: -8px; width: 13px; height: 13px; border-radius: 50%; background: var(--club-teal); box-shadow: -24px 0 0 var(--club-soft); }
+.bulletin-heading h1 { max-width: 18ch; }
+.bulletin-trail { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; padding-block: 1.2rem; }
+.bulletin-trail a { font-size: .85rem; }
+.bulletin-board { padding-block: .5rem 2rem; }
+.announcement-card { position: relative; background: var(--club-surface); border: 1px solid var(--club-line); border-left: 4px solid var(--club-teal); border-radius: var(--club-radius); padding: clamp(1rem, 3vw, 2rem); margin-bottom: 1.5rem; }
+.announcement-card time { display: inline-block; padding: .25rem .6rem; background: var(--club-soft); color: var(--club-teal); font: 700 .78rem/1.5 var(--club-display); border-radius: 4px; }
+.announcement-card :is(h1,h2) { margin: .8rem 0; font-size: clamp(1.35rem, 3vw, 1.9rem); line-height: 1.25; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.announcement-card .publishing-text { max-width: 72ch; margin: .8rem 0 1.3rem; line-height: 1.75; }
+.announcement-actions { display: flex; gap: .65rem 1.25rem; align-items: center; flex-wrap: wrap; }
+.announcement-actions :is(a,button) { font: 650 .85rem/1.5 var(--club-body, system-ui); min-height: 44px; display: inline-flex; align-items: center; }
+.announcement-actions button { padding: .4rem .8rem; border: 1px solid var(--club-control-line); background: var(--club-soft); color: var(--club-ink); border-radius: var(--club-radius); cursor: pointer; }
+.announcement-pagination { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; }
+.announcement-pagination a { min-height: 44px; padding: .6rem 1rem; border: 1px solid var(--club-control-line); border-radius: var(--club-radius); }
+.club-announcements :is(a,button):focus-visible { outline: 3px solid var(--club-teal); outline-offset: 4px; }
+.club-announcements [hidden] { display: none !important; }
+#announcements-status:empty { display: none; }
+@media (max-width: 600px) { .bulletin-trail { gap: .65rem 1rem; } .announcement-card { border-left-width: 3px; } }
+/* This page uses a stacked editorial introduction rather than the shared split heading. */
+.club-announcements .bulletin-heading { display: block; padding-block: clamp(1.5rem, 4vw, 3rem); }
+.club-announcements .bulletin-heading h1 { max-width: none; margin: .5rem 0; font-size: clamp(2.1rem, 5vw, 3.4rem); }
+.club-announcements .bulletin-heading p { max-width: 68ch; }
+.club-announcements .bulletin-heading .club-lead { margin: .65rem 0; }
+
+.announcement-actions .announcement-copy-link { padding: .4rem; width: 44px; height: 44px; justify-content: center; border: 0; background: transparent; color: var(--club-muted, #667); opacity: .7; }
+.announcement-actions .announcement-copy-link:hover, .announcement-actions .announcement-copy-link:focus-visible { opacity: 1; color: var(--club-teal); }
+.announcement-copy-feedback { font-size: .8rem; color: var(--club-muted, #667); }
