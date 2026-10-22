@@ -23,7 +23,7 @@ test('album ordering: atomic custom save, roles, revisions, date modes and new a
   assert.equal((await call(db,'snh_photo_album_order_settings')).revision,settings.revision,'invalid saves do not change state');
   settings=await call(db,'snh_photo_album_order_save',['custom',[a,b],settings.revision]);
   assert.deepEqual((await call(db,'snh_public_photo_albums')).map(v=>v.id),[a,b]);
-  await assert.rejects(call(db,'snh_photo_album_order_save',['newest',null,settings.revision-1]),/Album order changed/);
+  await assert.rejects(call(db,'snh_photo_album_order_save',['newest',null,settings.revision-1]),error=>error.code==='PT409'&&/Album order changed/.test(error.message));
   const oldPosition=(await call(db,'snh_photo_albums_list_editor')).find(v=>v.id===b).sortPosition;
   await call(db,'snh_photo_album_upsert',[b,{slug:'newer',title:'New title',published:true,displayAt:'2025-01-01T00:00:00Z'}]);
   assert.equal((await call(db,'snh_photo_albums_list_editor')).find(v=>v.id===b).sortPosition,oldPosition,'metadata edits preserve position');
@@ -38,11 +38,11 @@ test('album ordering: atomic custom save, roles, revisions, date modes and new a
   settings=await call(db,'snh_photo_album_order_save',['custom',[a,b],settings.revision]);
   const c=await make('fresh','2010-01-01T00:00:00Z');
   assert.deepEqual((await call(db,'snh_public_photo_albums')).map(v=>v.id),[c,a,b]);
-  await assert.rejects(call(db,'snh_photo_album_order_save',['custom',[b,a],settings.revision]),/Album order changed/);
+  await assert.rejects(call(db,'snh_photo_album_order_save',['custom',[b,a],settings.revision]),error=>error.code==='PT409'&&/Album order changed/.test(error.message));
   await role(db,'authenticated',id(102));
   settings=await call(db,'snh_photo_album_order_settings');
   await call(db,'snh_photo_album_delete',[c]);
-  await assert.rejects(call(db,'snh_photo_album_order_save',['custom',[a,b],settings.revision]),/Album order changed/);
+  await assert.rejects(call(db,'snh_photo_album_order_save',['custom',[a,b],settings.revision]),error=>error.code==='PT409'&&/Album order changed/.test(error.message));
   await role(db,'postgres');assert.equal((await db.query("select count(*)::int n from audit_log where action='reorder'")).rows[0].n,3);
  } finally {await db.close();}
 });

@@ -36,9 +36,9 @@ test('photo ordering: atomic save, snapshots, append uploads, metadata and publi
   const gallery=await call(db,'snh_public_photo_albums');
   assert.deepEqual(gallery.find(v=>v.id===album).assets.map(v=>v.id),[b,a]);
   assert.equal(gallery.find(v=>v.id===album).coverAssetId,a,'cover remains selected independently');
-  await assert.rejects(call(db,'snh_photo_asset_order_save',[album,[a,b],snapshot(before)]),/Photos changed/);
+  await assert.rejects(call(db,'snh_photo_asset_order_save',[album,[a,b],snapshot(before)]),error=>error.code==='PT409'&&/Photos changed/.test(error.message));
   const c=await make(album,'c.jpg');assert.deepEqual((await list()).map(v=>v.id),[b,a,c],'new upload appends');
-  await assert.rejects(call(db,'snh_photo_asset_order_save',[album,[a,b],snapshot(after)]),/Photos changed/);
+  await assert.rejects(call(db,'snh_photo_asset_order_save',[album,[a,b],snapshot(after)]),error=>error.code==='PT409'&&/Photos changed/.test(error.message));
   await call(db,'snh_photo_asset_unpublish',[b]);
   await role(db,'postgres');await db.query("update photo_assets set visibility='private' where id=$1",[b]);
   await role(db,'authenticated',id(101));
