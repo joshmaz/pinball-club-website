@@ -195,8 +195,7 @@ Activities use the existing private `publishing_entries` table with `kind=activi
 Separate versioned RPCs preserve announcement behavior and do not enqueue Discord
 messages. Editors save private drafts, publish, withdraw, archive and restore;
 permanent deletion requires Publishing Admin and a withdrawn, archived record.
-The homepage shows up to six current activities, ordered by the published display
-order then ID. Future and ended publications stay in the editor but are not shown.
+The homepage shows up to six current activities, ordered by published display order with randomized ties before the cutoff. Future and ended publications stay in the editor but are not shown.
 An archived activity is hidden from the homepage; restore makes its retained
 publication eligible again. Audit retains all content and image actions.
 
@@ -237,3 +236,56 @@ six-card cutoff. This keeps priority groups together and lets tied overflow card
 rotate into view. The grid wraps to additional rows (normally three columns on
 desktop, two on narrower screens and one on phones). This is a curated homepage
 section, not a complete activities directory.
+
+
+## Expanded Activities and detail pages
+
+Migration `20261020140000_activity_details.sql` adds a required 240-character
+summary (`body`), optional 5,000-character plain-text `details`, up to five
+`links` (`url`, optional `label`), and an editor-selected `destination`
+(`internal` or `external`) with a matching `destination_url` for external cards.
+Titles remain limited to 120 characters. URLs may be up to 2,000 characters,
+preserving existing Activity URLs; labels may be up to 200. Events keep their
+existing 1,000-character URL limit. Activity editing reuses the Events link editor.
+
+The one-time migration converts each existing draft and published snapshot
+independently. Existing URLs become labeled links and retain their external
+card destination. Descriptions longer than 240 characters are preserved in full
+in Details, with a shortened summary flagged for review. Versions advance to
+invalidate pre-migration editing sessions. There is no ongoing compatibility
+support for older Activity editors or payloads; use the current PR preview.
+
+New Activities default to their internal page. The title and primary action use
+the selected destination; external-first cards add Details when longer copy or
+additional links are present. Removing/changing a selected link requires an
+explicit destination choice before saving. Draft preview shows both the card
+and the full page. The editor keeps validation and save results near the actions.
+
+`activities.html?id=<UUID>` is a stable shareable URL for every published
+Activity, including external-first cards. `snh_public_activity(uuid)` returns only
+the published snapshot after its start time, with an Ended flag after expiry.
+Expired and archived Activities remain accessible through their permalink;
+withdrawn, deleted, draft-only, future, and nonexistent entries are unavailable.
+Archiving still removes the homepage card. Withdrawal wording explicitly covers
+both the homepage and detail page. The homepage remains capped at six, with
+ascending priorities and randomized ties before the cutoff.
+
+The detail view displays the uncropped optimized flyer, a full-image link,
+plain-text paragraphs and simple lists (separate blocks with blank lines), all
+links, and Copy Activity link. It uses the existing Publishing library and
+public derivative lifecycle; withdrawal does not erase a previously public image.
+No per-Activity HTML files, modal, directory, Event-management duplication,
+Discord promotion, new roles, or media-worker changes are introduced.
+
+Rollout: apply only this reviewed forward migration to SNHPC Staging, then use
+the current frontend preview. Netlify builds do not apply SQL. Do not run a
+blanket historical `db push`; migration-history reconciliation remains separate.
+Production rollout, legacy Photos conflict guards, and production Discord
+configuration remain separate work.
+
+Validation: 361 repository tests passed; duplicate/snapshot checks passed with
+existing stale-snapshot warnings. Focused migration tests cover conversion,
+private/public separation, content/link limits, destination changes, scheduled,
+ended, archived and withdrawn access, roles, audit, image references and shuffle.
+Local browser verification covers saving, removed destinations, both previews,
+and desktop/390px layouts. Staging deployment/acceptance is recorded separately.

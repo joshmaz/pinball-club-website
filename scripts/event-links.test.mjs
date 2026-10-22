@@ -206,3 +206,8 @@ test('Match Play editor updates automatic labels and preserves edited, cleared, 
     assert.equal(links.presentation({ external_links: editor.get() })[0].label, 'Saved label');
   }
 });
+
+test('Activity editor supports legacy 2,000-character URLs without changing Events limits',()=>{
+ const url='https://example.com/'+ 'x'.repeat(1100);
+ assert.throws(()=>links.normalize([{url}],true));assert.equal(links.normalize([{url}],true,{maxUrl:2000})[0].url,url);
+});
