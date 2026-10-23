@@ -43,3 +43,8 @@
 .club-activities #activities-retry { padding:.5rem .9rem; min-height:44px; border:1px solid var(--club-control-line); border-radius:var(--club-radius); color:var(--club-ink); background:var(--club-soft); font:600 .9rem/1.5 var(--club-body,system-ui); cursor:pointer; }
 .publishing-editor select { box-sizing:border-box; max-width:100%; padding:.65rem; font:inherit; }
 .publishing-editor #activity-body { min-height:6rem; }
+
+/* Compact editor-only display-order indicators; wider values remain readable. */
+.activity-order-badge { display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; min-width:1.75rem; min-height:1.75rem; padding:.1rem .4rem; margin-inline-end:.5rem; border:1px solid var(--club-line); border-radius:.4rem; background:var(--club-surface); color:var(--club-ink); font:600 .875rem/1.4 var(--club-body,system-ui); font-variant-numeric:tabular-nums; vertical-align:middle; }
+.activity-order-badge.activity-order-zero { border-color:var(--club-teal); background:var(--club-soft); color:var(--club-teal); }
+.activity-order-hint { display:block; margin-top:.35rem; font-size:.875rem; font-weight:400; }

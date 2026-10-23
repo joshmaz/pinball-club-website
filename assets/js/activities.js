@@ -40,7 +40,9 @@
     var result=await window.snhSupabase.rpc('snh_public_activity',{p_id:id});if(result.error)throw result.error;
     if(!result.data){root.replaceChildren();status.textContent='This Activity is unavailable.';return;}
     renderDetail(root,result.data);status.textContent='';document.title=result.data.title+' | SNHPC Activities';
-   }else{var feed=await window.snhSupabase.rpc('snh_public_activities');if(feed.error)throw feed.error;root.replaceChildren();(feed.data||[]).forEach(function(entry){render(root,entry);});section.hidden=!feed.data?.length;}
+   }else{var feed=await window.snhSupabase.rpc('snh_public_activities');if(feed.error)throw feed.error;root.replaceChildren();(feed.data||[]).forEach(function(entry){render(root,entry);});section.hidden=!feed.data?.length;
+    // The initial fragment navigation happens while this section is still hidden.
+    if(!section.hidden&&window.location.hash==='#home-activities')section.scrollIntoView();}
   }catch(_){if(detail){status.textContent='Activities could not be loaded. Please try again.';if(retry)retry.hidden=false;}else section.hidden=true;}
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load);else void load();
