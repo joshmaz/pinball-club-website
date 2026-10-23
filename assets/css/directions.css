@@ -1,0 +1,27 @@
+/* Arrival guide, using the shared clubhouse colors and typography. */
+.directions-jump { display:flex; flex-wrap:wrap; gap:.5rem 1.5rem; padding:1rem 0; border-block:1px solid var(--club-line); }
+.directions-jump a { display:inline-flex; align-items:center; min-height:44px; font-weight:650; }
+.directions-section { padding:2.5rem 0; scroll-margin-top:1rem; }
+.directions-section + .directions-section { border-top:1px solid var(--club-line); }
+.directions-section h2 { font-size:clamp(1.6rem,3vw,2.1rem); line-height:1.2; letter-spacing:-.035em; }
+.directions-copy { max-width:68ch; }
+.directions-copy p, .directions-visit-note { color:var(--club-muted); }
+.directions-parking { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:2rem; align-items:start; }
+.directions-figure { margin:1.5rem 0 0; overflow:hidden; border:1px solid var(--club-line); border-radius:var(--club-radius); background:var(--club-surface); }
+.directions-parking .directions-figure { margin-top:0; }
+.directions-figure > a { display:block; background:var(--club-soft); }
+.directions-figure img { display:block; width:100%; height:auto; }
+.directions-figure figcaption { padding:.85rem 1rem; font-size:.85rem; color:var(--club-muted); line-height:1.6; }
+.directions-entrance { max-width:48rem; }
+.directions-entrance img { max-height:80vh; object-fit:contain; }
+.directions-key { list-style:none; padding:0; }
+.directions-key li { display:flex; align-items:center; flex-wrap:wrap; gap:.4rem; margin:.65rem 0; }
+.directions-swatch { display:inline-block; width:1rem; height:1rem; border:1px solid var(--club-control-line); border-radius:.2rem; }
+.directions-swatch-parking { background:#35daca; }
+.directions-arrow { color:#254dff; font-size:1.4rem; font-weight:700; line-height:1; }
+.directions-routes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin:1.5rem 0; }
+.directions-routes article { padding:1.25rem; border:1px solid var(--club-line); border-radius:var(--club-radius); background:var(--club-soft); }
+.directions-routes h3 { margin:0 0 .5rem; }
+.directions-routes p { margin:0; }
+.club-visit main a:focus-visible { outline:3px solid var(--club-teal); outline-offset:3px; }
+@media(max-width:700px) { .directions-parking, .directions-routes { grid-template-columns:1fr; } .directions-parking { gap:.5rem; } .directions-section { padding:2rem 0; } }
