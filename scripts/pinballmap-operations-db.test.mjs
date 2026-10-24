@@ -40,6 +40,8 @@ test('Pinball Map Operations: actual changes, rollback, partial failures, author
   await db.exec('create unique index game_images_source on game_images(game_id,source_type,source_key)');
   await db.exec(images.slice(images.indexOf('create or replace function public.snh_game_images_import_opdb')));
   await db.exec(await source('20261009010000_pinballmap_operations.sql'));
+  await db.exec(await source('20261023050000_pinballmap_new_game_opdb_images.sql'));
+  await db.exec('create unique index one_primary on game_images(game_id) where is_primary');
   for(const role of ['anon','authenticated']) {
    await db.exec(`set role ${role}; set request.jwt.claim.sub='${uid(2)}'`);
    for(const sql of ['select snh_operations_pinballmap()','select snh_pinballmap_begin()',`select snh_pinballmap_finish('${uid(9)}')`,
@@ -95,6 +97,47 @@ test('Pinball Map Operations: actual changes, rollback, partial failures, author
   assert.equal((await q('select status from operations_job_runs where id=$1',[uid(77)]))[0].status,'failed','stale running job closed before replacement');
   await db.exec(`insert into operations_job_runs(job,status,finished_at,result) select 'pinballmap_ingest','succeeded',now(),'{}' from generate_series(1,12)`);
   s=await snapshot();assert.equal(s.runs.length,10,'history response bounded to ten');assert.ok(s.last_manual,'last manual remains available outside recent history');
+  // New catalog rows receive approved images atomically; existing games stay curated.
+  await db.exec("reset role; insert into games(slug,title,opdb_id,image_filename) values('curated','Curated','G-auto','club.jpg')");
+  await db.exec("insert into game_images(game_id,source_type,source_key,location_type,location_value,source_url,attribution_text,usage_status,is_primary) select id,'opdb','old','remote_url','https://example.org/old','https://example.org/source','OPDB','approved',true from games where slug='curated'");
+  id=await begin();
+  const photos=[
+   {sourceKey:'backglass',imageUrl:'https://img.opdb.org/back.jpg',sourceUrl:'https://opdb.org/machines/1',imageType:'backglass',metadata:{opdbPrimary:true,rightsReviewed:false}},
+   {sourceKey:'playfield',imageUrl:'https://img.opdb.org/play.jpg',sourceUrl:'https://opdb.org/machines/1',imageType:'playfield',metadata:{opdbPrimary:false,rightsReviewed:false}}
+  ];
+  const autoPayload={run_id:id,location_id:8908,location_address:'Club',creates:[
+   {slug:'automatic',title:'Automatic',opdbId:'G-auto',opdbImages:photos},
+   {slug:'curated',title:'Curated',opdbId:'G-auto',opdbImages:photos},
+   {slug:'unmatched',title:'Unmatched',opdbImages:[]}
+  ]};
+  const autoResult=(await q('select snh_pinballmap_upsert_from_activity($1) r',[autoPayload]))[0].r;
+  assert.equal(autoResult.newGameImages,2,'only actual INSERTs receive automatic photos');
+  await finish(id);
+  await db.exec('reset role');
+  let autoRows=await q("select i.* from game_images i join games g on g.id=i.game_id where g.slug='automatic' order by source_key");
+  assert.equal(autoRows.length,2);assert.ok(autoRows.every(i=>i.usage_status==='approved'));
+  assert.equal(autoRows.find(i=>i.is_primary).image_type,'playfield','playfield beats OPDB primary backglass');
+  assert.ok(autoRows.every(i=>i.metadata.autoApprovedVia==='pinballmap_new_game' && i.metadata.rightsReviewed===false));
+  assert.equal((await q("select count(*)::int n from game_images i join games g on g.id=i.game_id where g.slug='curated'"))[0].n,1,'same OPDB ID and slug conflicts cannot import into existing games');
+  assert.equal((await q("select count(*)::int n from game_images i join games g on g.id=i.game_id where g.slug='unmatched'"))[0].n,0);
+  assert.equal((await result(id)).counts.images,2,'Operations records approved photos in catalog transaction');
+  id=await begin();await q('select snh_pinballmap_upsert_from_activity($1)',[{...autoPayload,run_id:id}]);await finish(id);
+  assert.equal((await result(id)).change_count,0,'repeat import does not replace defaults or duplicate approved images');
+  id=await begin();
+  await q('select snh_pinballmap_upsert_from_activity($1)',[{...autoPayload,run_id:id,creates:[
+   {slug:'fallback-photo',title:'Fallback',opdbId:'G-fallback',opdbImages:[photos[0]]},
+   {slug:'legacy-photo',title:'Legacy',opdbId:'G-legacy',imageFilename:'supplied.jpg',opdbImages:photos},
+   {slug:'no-photos',title:'No photos',opdbId:'G-empty',opdbImages:[]}
+  ]}]);await finish(id);await db.exec('reset role');
+  assert.equal((await q("select image_type from game_images i join games g on g.id=i.game_id where g.slug='fallback-photo' and i.is_primary"))[0].image_type,'backglass');
+  assert.equal((await q("select i.location_value from game_images i join games g on g.id=i.game_id where g.slug='legacy-photo' and i.is_primary and i.source_type='club'"))[0].location_value,'supplied.jpg','explicit legacy default is normalized so approved OPDB photos cannot outrank it');
+  id=await begin();
+  await assert.rejects(q('select snh_pinballmap_upsert_from_activity($1)',[{...autoPayload,run_id:id,creates:[
+   {slug:'rollback-photo',title:'Rollback',opdbId:'G-broken',opdbImages:[{...photos[0],licenseUrl:'http://invalid.example'}]}
+  ]}]),/constraint/);
+  await finish(id,'Image insertion failed');await db.exec('reset role');
+  assert.equal((await q("select count(*)::int n from games where slug='rollback-photo'"))[0].n,0,'photo failure rolls back new game so next run retries');
+  assert.equal((await result(id)).change_count,0);
   await db.exec('reset role; drop schema cron cascade');s=await snapshot();assert.equal(s.schedule,null);
  } finally {await db.close();}
 });
