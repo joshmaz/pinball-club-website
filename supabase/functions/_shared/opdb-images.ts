@@ -21,9 +21,12 @@ type OpdbExportImage = {
   sizes?: Record<string, { width?: unknown; height?: unknown }> | null;
 };
 
-type OpdbExportEntry = {
+export type OpdbExportEntry = {
   opdbId?: unknown;
   name?: unknown;
+  ipdbId?: unknown;
+  manufactureDate?: unknown;
+  manufacturer?: { name?: unknown; fullName?: unknown } | null;
   images?: OpdbExportImage[] | null;
 };
 
@@ -157,4 +160,70 @@ export async function importOpdbImages(
     imported += Number(result.data || 0);
   }
   return { requested: ids.length, matched, imported, missing };
+}
+
+/** Exact identifiers first; title fallback requires both manufacturer and year.
+ * Group IDs constrain candidates, but never select an arbitrary edition/alias.
+ */
+export function matchNewGameToOpdb(
+  game: Record<string, unknown>, entries: Map<string, OpdbExportEntry>,
+): { entry: OpdbExportEntry | null; via: string; status: "matched" | "unmatched" | "ambiguous" } {
+  const hint = nonemptyString(game.opdbId);
+  const normalized = (value: unknown) => String(value || "").normalize("NFKC").trim().toLowerCase().replace(/\s+/g, " ");
+  let ipdbId: string | null = null;
+  try {
+    const url = new URL(String(game.ipdbUrl || ""));
+    const id = url.searchParams.get("id");
+    if (["www.ipdb.org", "ipdb.org"].includes(url.hostname) && id && /^[1-9]\d*$/.test(id)) ipdbId = String(Number(id));
+  } catch { /* no IPDB identifier */ }
+  const scoped = [...entries.values()].filter(entry => !hint || entry.opdbId === hint || String(entry.opdbId).startsWith(`${hint}-`));
+  const select = (candidates: OpdbExportEntry[], via: string) => ({
+    entry: candidates.length === 1 ? candidates[0] : null,
+    via,
+    status: (candidates.length === 1 ? "matched" : candidates.length > 1 ? "ambiguous" : "unmatched") as "matched" | "ambiguous" | "unmatched",
+  });
+  const exact = hint ? entries.get(hint) : undefined;
+  if (exact && (!ipdbId || exact.ipdbId == null || String(exact.ipdbId) === ipdbId)) {
+    return select([exact], "pinballmap_opdb_id");
+  }
+  if (ipdbId) {
+    // Conflicting IDs or repeated IPDB IDs are not safe to auto-approve.
+    return select(scoped.filter(entry => String(entry.ipdbId) === ipdbId), "opdb_ipdb_id");
+  }
+  if (hint && scoped.length === 1) return select(scoped, "pinballmap_opdb_group_unique");
+  const title = normalized(game.title);
+  const manufacturer = normalized(game.manufacturer);
+  const year = String(game.releaseDate || "").slice(0, 4);
+  if (!title || !manufacturer || !/^\d{4}$/.test(year)) return select([], "opdb_exact_metadata");
+  return select(scoped.filter(entry => normalized(entry.name) === title
+    && [entry.manufacturer?.name, entry.manufacturer?.fullName].some(name => normalized(name) === manufacturer)
+    && String(entry.manufactureDate || "").slice(0, 4) === year), "opdb_exact_metadata");
+}
+
+/** Resolve before catalog writes: provider failures leave new games retryable. */
+export async function prepareNewGameOpdbImports(creates: Record<string, unknown>[]) {
+  const summary = { matched: 0, unmatched: [] as string[], ambiguous: [] as string[], withoutImages: [] as string[] };
+  if (!creates.length) return summary;
+  const entries = await fetchOpdbExport();
+  if (!entries.size) throw new Error("OPDB export did not contain any machines");
+  for (const game of creates) {
+    const match = matchNewGameToOpdb(game, entries);
+    const slug = String(game.slug || game.title || "");
+    // Do not persist a group/unknown ID as a verified machine match.
+    delete game.opdbId;
+    delete game.opdbMatchedVia;
+    delete game.opdbCanonicalName;
+    game.opdbImages = [];
+    if (!match.entry) {
+      summary[match.status === "ambiguous" ? "ambiguous" : "unmatched"].push(slug);
+      continue;
+    }
+    game.opdbId = match.entry.opdbId;
+    game.opdbMatchedVia = match.via;
+    game.opdbCanonicalName = nonemptyString(match.entry.name);
+    game.opdbImages = imageImportsForEntry(match.entry);
+    summary.matched += 1;
+    if (!(game.opdbImages as OpdbImageImport[]).length) summary.withoutImages.push(slug);
+  }
+  return summary;
 }
