@@ -378,15 +378,15 @@ function enforceDescriptionBrevity(suggested: string): { text: string; warnings:
 }
 
 async function buildDescriptionResearchContext(game: GameRow): Promise<string> {
-  const refs: Array<{ label: string; url: string | null }> = [
+  const refs: Array<{ label: ResearchProvider; url: string | null }> = [
     { label: "IPDB", url: game.ipdb_url },
     { label: "Pinside", url: game.pinside_url },
     { label: "Kineticist", url: game.kineticist_url },
   ];
   const snippets = await Promise.all(
     refs.map(async (r) => {
-      if (!r.url || !isLikelyHttpUrl(r.url)) return "";
-      const summary = await fetchReferenceSummary(r.url);
+      if (!r.url) return "";
+      const summary = await fetchReferenceSummary(r.label, r.url);
       if (!summary) return "";
       return `- ${r.label}: ${summary}`;
     }),
@@ -394,9 +394,55 @@ async function buildDescriptionResearchContext(game: GameRow): Promise<string> {
   return snippets.filter(Boolean).join("\n");
 }
 
-function isLikelyHttpUrl(value: string): boolean {
-  const v = value.trim();
-  return /^https?:\/\//i.test(v);
+// Match the canonical provider hosts used by the catalog and link generators.
+// This is an outbound request boundary, independent of frontend/save validation.
+const RESEARCH_HOSTS = { IPDB: "www.ipdb.org", Pinside: "pinside.com", Kineticist: "www.kineticist.com" } as const;
+type ResearchProvider = keyof typeof RESEARCH_HOSTS;
+const REFERENCE_MAX_BYTES = 1024 * 1024;
+
+function researchUrl(provider: ResearchProvider, value: string): URL | null {
+  try {
+    const raw = value.trim();
+    if (raw.length > 4096 || /[\u0000-\u0020\u007f\\]/.test(raw)) return null;
+    const url = new URL(raw);
+    const authority = /^https:\/\/([^/?#]+)/i.exec(raw)?.[1];
+    // Comparing the original authority also rejects explicit :443 (URL normalizes
+    // that port away), encoded hostnames, credentials, and parser ambiguities.
+    if (url.protocol !== "https:" || url.username || url.password || url.port
+      || url.hostname !== RESEARCH_HOSTS[provider]
+      || authority?.toLowerCase() !== url.hostname) return null;
+    url.hash = "";
+    return url;
+  } catch { return null; }
+}
+
+async function boundedReferenceHtml(res: Response): Promise<string> {
+  const type = (res.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
+  const length = res.headers.get("content-length");
+  if (!res.ok || res.redirected || !["text/html", "application/xhtml+xml"].includes(type)
+    || (length !== null && (!/^\d+$/.test(length) || Number(length) > REFERENCE_MAX_BYTES))) {
+    await res.body?.cancel();
+    return "";
+  }
+  if (!res.body) return "";
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let total = 0;
+  let html = "";
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) return html + decoder.decode();
+      total += value.byteLength;
+      // Count decoded transport bytes too: Content-Length may be absent, incorrect,
+      // or describe the compressed response rather than the bytes delivered here.
+      if (total > REFERENCE_MAX_BYTES) {
+        await reader.cancel();
+        return "";
+      }
+      html += decoder.decode(value, { stream: true });
+    }
+  } finally { reader.releaseLock(); }
 }
 
 function decodeHtmlEntities(text: string): string {
@@ -424,13 +470,19 @@ function firstMatch(input: string, regex: RegExp): string {
   return m && m[1] ? stripHtmlToText(m[1]).slice(0, 240) : "";
 }
 
-async function fetchReferenceSummary(url: string): Promise<string> {
+async function fetchReferenceSummary(provider: ResearchProvider, value: string): Promise<string> {
+  const url = researchUrl(provider, value);
+  if (!url) return "";
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), 4500);
   try {
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) return "";
-    const html = await res.text();
+    const res = await fetch(url.href, {
+      signal: controller.signal,
+      redirect: "error",
+      credentials: "omit",
+      headers: { Accept: "text/html, application/xhtml+xml" },
+    });
+    const html = await boundedReferenceHtml(res);
     if (!html) return "";
     const title = firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
     const metaDesc =

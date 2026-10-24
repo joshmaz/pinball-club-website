@@ -7,7 +7,7 @@ import {
   type DbStint,
   type MachineDetail,
 } from "./merge.ts";
-import { importOpdbImages } from "../_shared/opdb-images.ts";
+import { importOpdbImages, prepareNewGameOpdbImports } from "../_shared/opdb-images.ts";
 
 import { authorizeIngest, ingestMethodResponse } from "./auth.ts";
 
@@ -223,6 +223,14 @@ Deno.serve(async (req) => {
     const payload = buildPinballRpcPayload(activity, games, stintsByGameId);
     if (manualActorUserId) (payload as Record<string, unknown>).manual_actor_user_id = manualActorUserId;
 
+    // New games and their approved photos are committed together. A provider
+    // outage stops before writes so the next scheduled/manual run can retry.
+    stage = "OPDB matching for new games (no catalog changes saved; retry import)";
+    const newGameOpdb = payload.creates.length ? await prepareNewGameOpdbImports(payload.creates) : null;
+    if (newGameOpdb && (newGameOpdb.unmatched.length || newGameOpdb.ambiguous.length || newGameOpdb.withoutImages.length)) {
+      warning = `New-game OPDB: ${newGameOpdb.unmatched.length} unmatched, ${newGameOpdb.ambiguous.length} ambiguous, ${newGameOpdb.withoutImages.length} matched without images. Review these games in Games Editor.`;
+    }
+
     stage = "Catalog import";
     (payload as Record<string, unknown>).run_id = runId;
     const { data, error } = await supabase.rpc("snh_pinballmap_upsert_from_activity", {
@@ -242,10 +250,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Pinball Map supplies authoritative OPDB IDs. Resolve image metadata from
-    // OPDB's structured daily export after the game rows exist. This is
-    // best-effort so an OPDB/CDN outage never blocks floor-list ingestion.
-    const opdbIds = [...payload.updates, ...payload.creates]
+    // Existing games keep the reference-only refresh and curated defaults.
+    // New games already received their images in the catalog transaction.
+    const opdbIds = payload.updates
       .map((row) => String(row.opdbId || "").trim())
       .filter(Boolean);
     let imageSync: unknown = { requested: 0, matched: 0, imported: 0, missing: [] };
@@ -255,7 +262,7 @@ Deno.serve(async (req) => {
         imageSync = await importOpdbImages({ rpc: (_name, args) => supabase.rpc("snh_pinballmap_import_images", { ...args, p_run: runId }) }, opdbIds);
       } catch (syncError) {
         imageSyncWarning = "OPDB image refresh failed. Catalog changes were retained.";
-        warning = imageSyncWarning;
+        warning = [warning, imageSyncWarning].filter(Boolean).join(" ");
         try {
           const warningAudit = await supabase.from("audit_log").insert({
             module: "games",
@@ -299,6 +306,7 @@ Deno.serve(async (req) => {
     return await outcome({
       ok: true,
       result: data,
+      newGameOpdb,
       imageSync,
       imageSyncWarning,
       conditions: conditionResult,

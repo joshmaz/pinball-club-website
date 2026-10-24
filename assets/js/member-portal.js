@@ -293,7 +293,6 @@
 
     var row = {
       user_id: profile.user_id,
-      email: profile.email,
       first_name: profile.first_name,
       last_name: profile.last_name,
       display_name: profile.display_name
