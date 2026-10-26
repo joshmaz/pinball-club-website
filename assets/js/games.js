@@ -532,7 +532,7 @@ function formatLocationStints(stints, atClub = false) {
     const dates = current ? (from ? `${from} – Present` : 'Start unknown – Present')
       : from && through ? `${from} – ${through}`
       : from ? `${from} – End unknown` : through ? `Start unknown – ${through}` : 'Dates unknown';
-    return `${shortClubLocation(s.address)} · ${dates}${current ? ' · Current' : ''}`;
+    return `${shortClubLocation(s.address)} · ${dates}`;
   }).join('\n');
 }
 
@@ -765,8 +765,8 @@ function ensureGameMoreInfoModal() {
 
   const header = document.createElement('div');
   header.className = 'games-profile-header';
-  header.append(titleEl, closeBtn);
-  dialog.appendChild(header);
+  header.appendChild(titleEl);
+  dialog.append(closeBtn, header);
   dialog.appendChild(bodyEl);
   root.appendChild(backdrop);
   root.appendChild(dialog);
@@ -952,11 +952,11 @@ function addGameProfileLink(row, label, url) {
   link.href = String(url);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  const iconPath = ({ Kineticist: KINETICIST_ICON_PATH, Pinside: PINSIDE_ICON_PATH, IPDB: IPDB_ICON_PATH, PinTips: PINTIPS_ICON_PATH })[label];
+  const iconPath = ({ Kineticist: KINETICIST_ICON_PATH, Pinside: PINSIDE_ICON_PATH, IPDB: IPDB_ICON_PATH, OPDB: PINTIPS_ICON_PATH })[label];
   if (iconPath) {
     const icon = document.createElement('img'); icon.src = iconPath; icon.alt = ''; icon.className = 'games-provider-icon';
     link.append(icon, document.createTextNode(label));
-    if (label === 'PinTips') { link.title = 'Game info on OPDB'; link.setAttribute('aria-label', 'Game info on OPDB'); }
+    if (label === 'OPDB') { link.title = 'Game info on OPDB'; link.setAttribute('aria-label', 'Game info on OPDB'); }
   } else link.textContent = label;
   row.appendChild(link);
 }
@@ -1075,7 +1075,7 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
   addGameProfileLink(links, "Kineticist", game.kineticistUrl);
   addGameProfileLink(links, "Pinside", game.pinsideUrl);
   addGameProfileLink(links, "IPDB", game.ipdbUrl);
-  addGameProfileLink(links, "PinTips", getOpdbInfoUrl(game));
+  addGameProfileLink(links, "OPDB", getOpdbInfoUrl(game));
   if (links.childElementCount) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";

@@ -66,7 +66,7 @@ try {
  assert.equal(await page.locator('main').evaluate(n=>n.inert),true);
  await page.getByRole('button',{name:'Close',exact:true}).press('Shift+Tab');
  assert.equal(await page.evaluate(()=>document.activeElement.closest('.games-more-info-dialog')!==null),true,'focus stays inside modal');
- assert.ok((await page.getByRole('tabpanel',{name:'Overview',exact:true}).innerText()).includes('Bridge St · Apr 2026 – Present · Current'));
+ assert.ok((await page.getByRole('tabpanel',{name:'Overview',exact:true}).innerText()).includes('Bridge St · Apr 2026 – Present'));
  assert.equal(await page.evaluate(()=>window.__calls.some(c=>c.name==='snh_public_game_images')),false,'gallery loads on demand');
  await page.getByRole('tab',{name:'Photos',exact:true}).click();
  await page.getByText('Photo 1 of 2',{exact:true}).waitFor();
@@ -77,6 +77,11 @@ try {
  assert.equal(await page.getByRole('tab',{name:'Photos',exact:true}).getAttribute('aria-selected'),'true');
  assert.match(await page.evaluate(()=>document.activeElement.getAttribute('aria-label')),/Show photo 2/);
  await page.getByText('Club fixture credit',{exact:true}).waitFor();
+ const scrolledTitle=await page.locator('.games-more-info-title').boundingBox();
+ const scrolledDialog=await dialog.boundingBox();
+ const stickyClose=await page.getByRole('button',{name:'Close',exact:true}).boundingBox();
+ assert.ok(scrolledTitle.y+scrolledTitle.height<scrolledDialog.y,'title scrolls out rather than obscuring the photo');
+ assert.ok(stickyClose.y>=scrolledDialog.y && stickyClose.y<scrolledDialog.y+80,'only Close stays available');
  await page.screenshot({path:path.join(output,'gallery-desktop.png')});
  await page.getByRole('button',{name:'Enlarge photo',exact:true}).click();
  await page.locator('.games-photo-lightbox').waitFor({state:'visible'});

@@ -9,13 +9,13 @@ test('compact stints preserve dates, current first, unknowns and returning machi
   {address:'48 Bridge St, Unit 3A, Nashua',joinedClubDate:'2026-04-26'},
   {address:'Haines St',joinedClubDate:'2018-06-01'}];
  const before=JSON.stringify(stints);const value=ctx.formatLocationStints(stints,true);
- assert.equal(value.split('\n')[0],'Bridge St · Apr 2026 – Present · Current');
+ assert.equal(value.split('\n')[0],'Bridge St · Apr 2026 – Present');
  assert.match(value,/Haines St · Jan 2020 – Feb 2021/);
  assert.match(value,/Jun 2018 – End unknown/);
  assert.equal(value.match(/Present/g).length,1);
  assert.equal(JSON.stringify(stints),before);
  assert.doesNotMatch(ctx.formatLocationStints(stints,false),/Present|Current/);
- assert.equal(ctx.formatLocationStints([{address:'Bridge St'}],true),'Bridge St · Start unknown – Present · Current');
+ assert.equal(ctx.formatLocationStints([{address:'Bridge St'}],true),'Bridge St · Start unknown – Present');
  assert.equal(ctx.formatLocationStints([{address:'Bridge St'}],false),'Bridge St · Dates unknown');
  assert.equal(ctx.formatLocationStints(null),'');
  assert.equal(ctx.shortClubLocation('Other venue'),'Other venue');
