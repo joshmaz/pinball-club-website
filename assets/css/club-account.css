@@ -266,3 +266,7 @@
 .club-account .member-club-issues-filter-btn:hover { border-color: var(--club-teal); }
 .club-account .member-club-issues-filter-btn:focus-visible { outline: 2px solid var(--club-teal); outline-offset: 3px; }
 @media(max-width: 480px) { .club-account .member-club-issues-filter { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.club-account .member-club-issues-scope { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; padding: .8rem 1rem; border: 1px solid var(--club-control-line); border-radius: 4px; background: var(--club-soft); }
+.club-account .member-club-issues-scope[hidden] { display: none; }
+.club-account .member-club-issues-clear-scope { min-height: 44px; padding: .5rem .8rem; font: inherit; font-weight: 650; background: var(--club-surface); color: var(--club-teal); border: 1px solid var(--club-control-line); border-radius: 3px; cursor: pointer; }
+.club-account .member-club-issues-clear-scope:focus-visible { outline: 2px solid var(--club-teal); outline-offset: 3px; }

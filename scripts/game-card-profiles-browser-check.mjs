@@ -186,7 +186,7 @@ try {
    window.SNHMemberPortal={
     memberHasAnyRole:()=>false,
     clubIssuesGameOptions:async()=>[{id:'${game.id}',title:'Future Spa'}],
-    clubIssuesList:async()=>[{id:'report',gameId:'${game.id}',gameTitle:'Future Spa',title:'Private title',body:'Private details',status:'in_progress',publicSummary:'Weak flipper'}],
+    clubIssuesList:async()=>[{id:'report',gameId:'${game.id}',gameTitle:'Future Spa',title:'Private title',body:'Private details',status:'in_progress',publicSummary:'Weak flipper'},{id:'other-report',gameId:'other-game',gameTitle:'Other game',title:'Other game note',body:'Other details',status:'in_progress'}],
     clubIssuesUpsert:async(id,fields)=>{window.__saved.push({id,fields});},
     getFriendlyAuthErrorMessage:e=>e.message
    };
@@ -201,15 +201,18 @@ try {
  const filterHeight=await filters.getByRole('button',{name:'In progress',exact:true}).evaluate(n=>n.getBoundingClientRect().height);
  assert.ok(filterHeight>=48,'header filters have prominent touch targets');
  assert.equal(await filters.getByRole('button',{name:'In progress',exact:true}).getAttribute('aria-pressed'),'true');
+ assert.equal(await editor.locator('#ci-game-select').inputValue(),game.id);
  await filters.getByRole('button',{name:'All',exact:true}).click();
  assert.equal(await filters.getByRole('button',{name:'All',exact:true}).getAttribute('aria-pressed'),'true');
+ assert.equal(new URL(editor.url()).searchParams.has('issueGame'),false,'All clears the game filter from the URL');
+ await editor.getByText('Other game note',{exact:true}).waitFor();
  await filters.getByRole('button',{name:'In progress',exact:true}).click();
  await editor.screenshot({path:path.join(output,'notes-header-phone.png')});
  await editor.setViewportSize({width:1280,height:900});
  await editor.screenshot({path:path.join(output,'notes-header-desktop.png')});
- assert.equal(await editor.locator('#ci-game-select').inputValue(),game.id);
- assert.equal(await editor.getByRole('button',{name:'In progress',exact:true}).getAttribute('aria-current'),'true','default filter uses selected machine');
- await editor.getByRole('button',{name:'Edit',exact:true}).click();
+ assert.equal(await editor.locator('#ci-game-select').inputValue(),'');
+ assert.equal(await editor.getByRole('button',{name:'In progress',exact:true}).getAttribute('aria-current'),'true');
+ await editor.getByRole('button',{name:'Edit',exact:true}).first().click();
  await editor.getByLabel('Public machine summary (optional)',{exact:true}).fill('New public symptom');
  await editor.getByRole('button',{name:'Save changes',exact:true}).click();
  await editor.getByText('Saved.',{exact:true}).waitFor();
@@ -220,6 +223,31 @@ try {
  await editor.getByRole('button',{name:'Add note',exact:true}).click();
  await editor.getByText('Saved.',{exact:true}).waitFor();
  assert.equal(await editor.evaluate(()=>Object.hasOwn(window.__saved.at(-1).fields,'publicSummary')),false,'member never submits helper-only fields');
+ // Re-enter through a machine link: explicit scope and safe exit from an edit draft.
+ await editor.goto(`http://127.0.0.1:${server.address().port}/editor-fixture.html?panel=club-issues&issueGame=${game.id}`);
+ await editor.evaluate(()=>window.SNHMemberClubIssuesPanel.onPanelShown(['events_editor']));
+ await editor.getByText('Game filter: Future Spa',{exact:true}).waitFor();
+ await editor.setViewportSize({width:390,height:844});
+ await editor.screenshot({path:path.join(output,'notes-game-filter-phone.png')});
+ assert.equal(await editor.getByText('Other game note',{exact:true}).count(),0);
+ await editor.getByRole('button',{name:'Edit',exact:true}).click();
+ await editor.getByRole('button',{name:'Cancel editing',exact:true}).waitFor();
+ await editor.getByLabel('Title',{exact:true}).fill('Unsaved edit');
+ editor.once('dialog',dialog=>dialog.dismiss());
+ await editor.getByRole('button',{name:'All',exact:true}).click();
+ assert.equal(await editor.getByLabel('Title',{exact:true}).inputValue(),'Unsaved edit');
+ assert.equal(new URL(editor.url()).searchParams.get('issueGame'),game.id);
+ editor.once('dialog',dialog=>dialog.accept());
+ await editor.getByRole('button',{name:'Show all notes',exact:true}).click();
+ await editor.getByText('Other game note',{exact:true}).waitFor();
+ assert.equal(new URL(editor.url()).searchParams.has('issueGame'),false);
+ assert.equal(await editor.getByLabel('Title',{exact:true}).inputValue(),'');
+ assert.equal(await editor.getByRole('button',{name:'Save changes',exact:true}).count(),0);
+ await editor.getByRole('heading',{name:'Add a note',exact:true}).waitFor();
+ await editor.evaluate(()=>window.SNHMemberClubIssuesPanel.onPanelShown(['events_editor']));
+ assert.equal(new URL(editor.url()).searchParams.has('issueGame'),false,'cleared game filter stays cleared on panel re-entry');
+ await editor.getByText('Other game note',{exact:true}).waitFor();
+ await editor.screenshot({path:path.join(output,'notes-unfiltered-desktop.png')});
  await editor.close();
  assert.deepEqual(errors,[]);
  console.log('Passed original linked Notes, resolved history, sign-out/stale-read privacy, prominent header filters, helper publication and desktop/phone gallery, credits, lightbox, focus, PinTips, visitor/member reporting, drafts, retries and empty states.');

@@ -68,3 +68,5 @@ The game-card tab and Member Tools use the same Notes mechanism (`club_issues` i
 Visitors see only helper-authored public summaries, never the authenticated notes list. The four existing Member Tools status filters (All, Incoming, In progress, Resolved) are now prominent header buttons, with a clear selected state and two columns on phones. Status semantics and helper editing rights are unchanged. These are frontend-only changes; no additional database migration is required.
 
 Public summaries remain visible to signed-in users above the original machine notes. The two reads complete and retry independently, preserving the note draft if either request fails. Visitors still never request member-only notes.
+
+Game-linked Notes now displays a prominent game-filter banner with Show all notes. The All header button also clears the game filter from both the list and URL and exits editing. Unsaved text requires confirmation before discarding; cancelling leaves the draft and scope intact. Cancel editing is explicit in the edit form. Returning to Notes after clearing the scope stays unfiltered.

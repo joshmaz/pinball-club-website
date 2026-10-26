@@ -4,6 +4,8 @@
   var listEl = null;
   var formWrap = null;
   var filterEl = null;
+  var scopeEl = null;
+  var editingBaseline = null;
   var inited = false;
   var lastRoles = [];
   var editingId = null;
@@ -14,6 +16,41 @@
   var gameOptionsReady = false;
   var gameOptionsCacheKey = null;
   var contextGameId = '';
+  function formValues() {
+    return ['ci-title','ci-body','ci-game-select','ci-status','ci-public-summary'].map(function (id) {
+      var input = document.getElementById(id); return input ? input.value : '';
+    });
+  }
+
+  function showAllNotes() {
+    var values = formValues();
+    var dirty = editingId ? JSON.stringify(values) !== editingBaseline : !!(values[0].trim() || values[1].trim() || values[4].trim());
+    if (dirty && !window.confirm('Discard unsaved changes to this note and show all notes?')) return;
+    contextGameId = '';
+    var url = new URL(window.location.href);
+    url.searchParams.delete('issueGame');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    hasManualFilterChoice = true;
+    resetForm();
+    renderContextScope();
+    selectFilter('all');
+    setStatus('Showing all ' + lastRows.length + ' notes across all games and the club.');
+  }
+
+  function renderContextScope() {
+    if (!scopeEl) return;
+    scopeEl.replaceChildren(); scopeEl.hidden = !contextGameId;
+    if (!contextGameId) return;
+    var match = lastRows.find(function (row) { return (row.gameId || row.game_id) === contextGameId; });
+    var select = document.getElementById('ci-game-select');
+    var option = select && Array.from(select.options).find(function (option) { return option.value === contextGameId; });
+    var name = match && match.gameTitle || option && option.textContent || 'Selected game';
+    scopeEl.appendChild(el('strong', { text: 'Game filter: ' + name }));
+    var clear = el('button', { type: 'button', className: 'member-club-issues-clear-scope', text: 'Show all notes' });
+    clear.addEventListener('click', showAllNotes);
+    scopeEl.appendChild(clear);
+  }
+
   function readContextGame() {
     var raw = new URLSearchParams(window.location.search).get('issueGame') || '';
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw) ? raw : '';
@@ -89,6 +126,11 @@
 
   function resetForm() {
     editingId = null;
+    editingBaseline = null;
+    var heading = document.getElementById("ci-form-title");
+    if (heading) heading.textContent = "Add a note";
+    var cancel = document.getElementById("ci-clear");
+    if (cancel) cancel.textContent = "Clear form";
     var t = document.getElementById("ci-title");
     var b = document.getElementById("ci-body");
     var g = document.getElementById("ci-game-select");
@@ -133,9 +175,11 @@
         "data-ci-filter": opt.key
       });
       btn.textContent = opt.text;
+      if (opt.key === 'all') btn.title = 'Show all notes across all games and the club';
       btn.setAttribute("aria-pressed", String(opt.key === currentFilter));
       if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
       btn.addEventListener("click", function () {
+        if (opt.key === 'all') { showAllNotes(); return; }
         hasManualFilterChoice = true;
         selectFilter(opt.key);
       });
@@ -169,7 +213,7 @@
     filterEl = buildFilterBar();
     listEl = el("div", { className: "member-club-issues-list" });
     formWrap = el("div", { className: "member-club-issues-form member-games-form" });
-    formWrap.appendChild(el("h4", { text: "Add or edit a note" }));
+    formWrap.appendChild(el("h4", { id: "ci-form-title", text: "Add a note" }));
     formWrap.appendChild(
       el("p", {
         className: "member-games-help",
@@ -214,11 +258,9 @@
     formWrap.appendChild(el("div", { className: "member-games-form-actions" }, [sub, clr]));
 
     appEl.appendChild(statusEl);
-    if (contextGameId) {
-      var contextNote = el('p', { className: 'member-games-help', text: 'Showing notes for the selected machine. ' });
-      contextNote.appendChild(el('a', { href: 'members.html?panel=club-issues', text: 'View all notes' }));
-      appEl.appendChild(contextNote);
-    }
+    scopeEl = el('div', { className: 'member-club-issues-scope', role: 'group', 'aria-label': 'Game filter' });
+    appEl.appendChild(scopeEl);
+    renderContextScope();
     appEl.appendChild(filterEl);
     appEl.appendChild(listEl);
     appEl.appendChild(formWrap);
@@ -440,6 +482,11 @@
     if (pub) pub.value = row.publicSummary || '';
     var sub = document.getElementById("ci-submit");
     if (sub) sub.textContent = "Save changes";
+    var heading = document.getElementById('ci-form-title');
+    if (heading) heading.textContent = 'Edit note';
+    var cancel = document.getElementById('ci-clear');
+    if (cancel) cancel.textContent = 'Cancel editing';
+    editingBaseline = JSON.stringify(formValues());
     setStatus("Editing this note. Change fields below and save, or clear the form to cancel.");
     if (formWrap) {
       formWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -465,6 +512,7 @@
       if (loadId !== latestLoadId) return;
       var arr = Array.isArray(rows) ? rows : [];
       lastRows = arr;
+      renderContextScope();
       var visibleRows = arr.filter(function (r) { return !contextGameId || (r.gameId || r.game_id) === contextGameId; });
       if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(visibleRows));
       else renderIssueList();
@@ -498,6 +546,7 @@
       }
       void ensureGameOptions(contextGameId).then(function () {
         if (!editingId && contextGameId) document.getElementById('ci-game-select').value = contextGameId;
+        renderContextScope();
       });
       loadList();
     }
