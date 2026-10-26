@@ -28,3 +28,8 @@ test('era uses one OPDB display field; snapshot covers matched collection',()=>{
  for(const game of games.filter(g=>g.opdbId)){const label=ctx.gameEraLabel(game);assert.ok(label,game.title);counts[label]=(counts[label]||0)+1;}
  assert.deepEqual(counts,{EM:29,Modern:45,'Solid State':50});
 });
+
+test('external bulb icons use OPDB info rather than the external PinTips tab',()=>{
+ assert.equal(ctx.getOpdbInfoUrl({opdbId:'Gtest-Mtest'}),'https://app.matchplay.events/opdb/entries/Gtest-Mtest');
+ assert.equal(ctx.getOpdbInfoUrl({}), '');
+});

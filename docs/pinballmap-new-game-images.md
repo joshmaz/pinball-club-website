@@ -1,6 +1,6 @@
 # Automatic OPDB photos for newly imported games
 
-Pinball Map imports now resolve newly created catalog games against OPDB's structured export, import the matched record's photos as approved, and choose a playfield photo as the default. If there is no playfield, OPDB's primary photo wins, then a stable source-key ordering. Source attribution and image-size variants are retained. `autoApprovedVia: pinballmap_new_game` records this import policy; `rightsReviewed` does not claim a separate human review.
+Pinball Map imports now resolve newly created catalog games against OPDB's structured export, import the matched record's photos as approved, and choose a default in this order: closeup, playfield, backglass, then other images. Within a type, OPDB's primary flag breaks ties, followed by stable source-key ordering. Source attribution and image-size variants are retained. `autoApprovedVia: pinballmap_new_game` records this import policy; `rightsReviewed` does not claim a separate human review.
 
 Matching uses an exact supplied OPDB machine/alias ID or a unique IPDB identifier. A group ID limits the search to that group; it does not pick the first edition. Without identifiers, the normalized title, manufacturer and release year must all agree with exactly one entry. Only case and whitespace are normalized; edition names are preserved. Conflicting identifiers and ambiguous candidates are not approved. OPDB distinguishes group, machine and alias IDs: https://opdb.org/about.
 
@@ -14,10 +14,10 @@ New-game photo insertion and catalog creation share one database transaction. A 
 2. Redeploy `pinballmap-ingest` with the updated `index.ts` and `_shared/opdb-images.ts`. The migration must precede the function so photos are not silently ignored by the old catalog RPC.
 3. For the existing dashboard deployment with flat helper files, upload the updated shared helper as `opdb-images.ts` and keep the import path in `index.ts` mapped from `../_shared/opdb-images.ts` to `./opdb-images.ts`. Keep `merge.ts`, `auth.ts`, existing secrets and gateway settings with the function. No browser deployment is needed for this feature.
 
-Staging uses project `eptbdrwmcwogxcjleudv`; choose the intended target explicitly. No migration or Edge deployment is performed by this pull request.
+Staging uses project `eptbdrwmcwogxcjleudv`; choose the intended target explicitly. The original import migration predates the card-profile PR. The follow-up primary-preference migration `20261026153013_opdb_primary_image_preference.sql` has been applied to staging. Existing uploaded/curated photos are preserved. The database enforces selection independently of incoming image order; the shared parser update is included for the next Edge deployment.
 
 ## Local verification
 
 `node --test scripts/new-game-opdb.test.mjs scripts/opdb-images.test.mjs scripts/opdb-image-sync.test.mjs scripts/pinballmap-ingest-acceptance.test.mjs scripts/pinballmap-ingest-auth.test.mjs scripts/pinballmap-operations-db.test.mjs scripts/interactive-edge-auth.test.mjs`
 
-Tests execute the actual matcher/handler and PostgreSQL migration in PGlite. They cover real exported IDs, ambiguous/conflicting matches, outage ordering, approved images, playfield preference, fallback/no-photo behavior, existing-game/default preservation, repeat imports, Operations counts and transaction rollback.
+Tests execute the actual matcher/handler and PostgreSQL migration in PGlite. They cover real exported IDs, ambiguous/conflicting matches, outage ordering, approved images, closeup/playfield/backglass/other preference, fallback/no-photo behavior, existing-game/default preservation, repeat imports, Operations counts and transaction rollback.

@@ -763,8 +763,10 @@ function ensureGameMoreInfoModal() {
   const bodyEl = document.createElement("div");
   bodyEl.className = "games-more-info-body";
 
-  dialog.appendChild(closeBtn);
-  dialog.appendChild(titleEl);
+  const header = document.createElement('div');
+  header.className = 'games-profile-header';
+  header.append(titleEl, closeBtn);
+  dialog.appendChild(header);
   dialog.appendChild(bodyEl);
   root.appendChild(backdrop);
   root.appendChild(dialog);
@@ -954,6 +956,7 @@ function addGameProfileLink(row, label, url) {
   if (iconPath) {
     const icon = document.createElement('img'); icon.src = iconPath; icon.alt = ''; icon.className = 'games-provider-icon';
     link.append(icon, document.createTextNode(label));
+    if (label === 'PinTips') { link.title = 'Game info on OPDB'; link.setAttribute('aria-label', 'Game info on OPDB'); }
   } else link.textContent = label;
   row.appendChild(link);
 }
@@ -964,7 +967,7 @@ function renderGameTips(panel, tips, state, game) {
   panel.appendChild(credit);
   const links = document.createElement("div");
   links.className = "games-profile-links";
-  addGameProfileLink(links, "View on PinTips", getPinTipsUrl(game) || "https://app.matchplay.events/pintips");
+  addGameProfileLink(links, "Game info on OPDB", getOpdbInfoUrl(game) || "https://app.matchplay.events/pintips");
   if (!tips.length) {
     const note = document.createElement("p");
     note.className = state === "error" ? "games-more-info-error" : "games-more-info-empty";
@@ -1072,7 +1075,7 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
   addGameProfileLink(links, "Kineticist", game.kineticistUrl);
   addGameProfileLink(links, "Pinside", game.pinsideUrl);
   addGameProfileLink(links, "IPDB", game.ipdbUrl);
-  addGameProfileLink(links, "PinTips", getPinTipsUrl(game));
+  addGameProfileLink(links, "PinTips", getOpdbInfoUrl(game));
   if (links.childElementCount) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";
@@ -1148,7 +1151,8 @@ async function openGameMoreInfoModal(game) {
     }
   };
   document.addEventListener("keydown", gameMoreInfoUi.onKeyDown);
-  dialog.querySelector(".games-more-info-close")?.focus();
+  dialog.querySelector(".games-more-info-close")?.focus({ preventScroll: true });
+  dialog.scrollTop = 0;
 
   const client = getPublicSupabaseClient();
   if (!client || !gameHasCatalogUuid(game)) {
@@ -1265,7 +1269,7 @@ function createGamesList(games) {
     const kineticistUrl = game.kineticistUrl;
     const pinsideUrl = game.pinsideUrl;
     const ipdbUrl = game.ipdbUrl;
-    const pintipsUrl = getPinTipsUrl(game);
+    const pintipsUrl = getOpdbInfoUrl(game);
     const moreInfoEligible = true;
     const editHref = gamesCanManage ? gameEditorHref(game) : "";
     if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible || editHref) {
@@ -1338,8 +1342,8 @@ function createGamesList(games) {
         pintipsLink.href = pintipsUrl;
         pintipsLink.target = "_blank";
         pintipsLink.rel = "noopener";
-        pintipsLink.title = `View ${game.title} PinTips on Match Play Events`;
-        pintipsLink.setAttribute("aria-label", `View ${game.title} PinTips on Match Play Events`);
+        pintipsLink.title = `View ${game.title} info on OPDB`;
+        pintipsLink.setAttribute("aria-label", `View ${game.title} info on OPDB`);
 
         const pintipsIcon = document.createElement("img");
         pintipsIcon.className = "games-provider-icon";
@@ -1386,7 +1390,7 @@ function createGamesList(games) {
  * @param {{ opdbId?: unknown }} game
  * @returns {string}
  */
-function getPinTipsUrl(game) {
+function getOpdbInfoUrl(game) {
   if (!game || typeof game !== "object") {
     return "";
   }
@@ -1394,7 +1398,7 @@ function getPinTipsUrl(game) {
     return "";
   }
   const opdbId = String(game.opdbId).trim();
-  return `${MATCHPLAY_OPDB_ENTRY_BASE_URL}/${encodeURIComponent(opdbId)}/pintips`;
+  return `${MATCHPLAY_OPDB_ENTRY_BASE_URL}/${encodeURIComponent(opdbId)}`;
 }
 
 function showMessage(container, title, details) {

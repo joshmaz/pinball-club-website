@@ -64,3 +64,8 @@ test("entriesByOpdbId indexes machines and aliases once", () => {
   assert.equal(entries.get("G-one").name, "One");
   assert.equal(entries.get("G-two-A-one").name, "Two alias");
 });
+
+test('image preference is closeup, playfield, backglass, other before OPDB primary', () => {
+ const images=['cabinet','backglass','playfield','closeup'].map(type=>({group:type,type,primary:type==='cabinet',urls:{large:`https://example.org/${type}.jpg`}}));
+ assert.deepEqual(imageImportsForEntry({opdbId:'Gtest-Mtest',images}).map(i=>i.imageType),['closeup','playfield','backglass','cabinet']);
+});

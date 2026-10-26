@@ -78,3 +78,8 @@
  font: inherit; font-size: .85rem; padding: .55rem .75rem; border: 1px solid var(--club-control-line); border-radius: 3px; background: var(--club-soft); color: var(--club-teal); cursor: pointer;
 }
 .club-games .games-issue-form button:disabled { opacity: .65; cursor: wait; }
+
+/* The close control shares the title row instead of creating a blank floated row. */
+.club-games .games-profile-header { display: flex; align-items: flex-start; gap: .75rem; position: sticky; top: 0; z-index: 2; background: var(--club-surface); padding-bottom: .75rem; }
+.club-games .games-profile-header .games-more-info-title { flex: 1; min-width: 0; clear: none; margin: 0; }
+.club-games .games-profile-header .games-more-info-close { flex: 0 0 auto; float: none; position: static; margin: 0; }

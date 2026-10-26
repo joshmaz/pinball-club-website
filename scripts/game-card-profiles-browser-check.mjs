@@ -55,6 +55,14 @@ try {
  const open=async()=>{await page.evaluate(()=>{void openGameMoreInfoModal(window.__game);});await page.getByRole('tab',{name:'Overview',exact:true}).waitFor();};
  await open();
  const dialog=page.locator('.games-more-info-dialog');
+ assert.equal(await dialog.evaluate(n=>n.scrollTop),0);
+ const titleBox=await page.locator('.games-more-info-title').boundingBox();
+ const closeBox=await page.getByRole('button',{name:'Close',exact:true}).boundingBox();
+ assert.ok(Math.abs(titleBox.y-closeBox.y)<4,'title and Close share a row without a blank floated row');
+ for(const href of await page.locator('.games-pintips-link').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href')))) {
+  assert.ok(href.includes('/opdb/entries/') && !href.endsWith('/pintips'));
+ }
+
  assert.equal(await page.locator('main').evaluate(n=>n.inert),true);
  await page.getByRole('button',{name:'Close',exact:true}).press('Shift+Tab');
  assert.equal(await page.evaluate(()=>document.activeElement.closest('.games-more-info-dialog')!==null),true,'focus stays inside modal');
@@ -76,6 +84,7 @@ try {
  assert.equal(await page.locator('#games-more-info-root').isVisible(),true,'Escape closes photo viewer only');
  await page.getByRole('tab',{name:'Tips',exact:true}).click();
  await page.getByText('Preserved PinTips text',{exact:true}).waitFor();
+ assert.equal(await page.getByRole('link',{name:'Game info on OPDB',exact:true}).getAttribute('href'),`https://app.matchplay.events/opdb/entries/${game.opdbId}`);
  await page.getByRole('tab',{name:'Issues',exact:true}).click();
  await page.getByText('Left flipper is weak. · In progress',{exact:true}).waitFor();
  const signin=page.getByRole('link',{name:'Sign in or sign up',exact:true});

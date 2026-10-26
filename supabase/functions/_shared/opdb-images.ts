@@ -95,11 +95,12 @@ export function imageImportsForEntry(entry: OpdbExportEntry): OpdbImageImport[] 
   }
 
   rows.sort((a, b) => {
+    const rank = (v: string | null) => ({ closeup: 0, playfield: 1, backglass: 2 })[String(v || "").trim().toLowerCase()] ?? 3;
+    const typeOrder = rank(a.imageType) - rank(b.imageType);
+    if (typeOrder) return typeOrder;
     const ap = a.metadata.opdbPrimary === true ? 1 : 0;
     const bp = b.metadata.opdbPrimary === true ? 1 : 0;
-    if (ap !== bp) return bp - ap;
-    const rank = (v: string | null) => (v === "playfield" ? 0 : v === "backglass" ? 1 : 2);
-    return rank(a.imageType) - rank(b.imageType);
+    return bp - ap || a.sourceKey.localeCompare(b.sourceKey);
   });
   return rows;
 }
