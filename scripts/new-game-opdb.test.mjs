@@ -128,3 +128,13 @@ test('actual handler imports unmatched games with a review warning and keeps exi
   assert.ok(existing.calls.findIndex(c=>c.name==='snh_pinballmap_upsert_from_activity')<existing.calls.findIndex(c=>c.kind==='export'));
   assert.match(existing.calls.find(c=>c.name==='snh_pinballmap_finish').args.p_warning,/Catalog changes were retained/);
 });
+
+test('new imports retain OPDB display for era labels, with alias display inherited without borrowing photos',async()=>{
+ const oldFetch=globalThis.fetch;
+ globalThis.fetch=async()=>Response.json({machines:[machine('Gtest-Mone',{display:'lcd',images:[]})],aliases:[{opdbId:'Gtest-Mone-Aalias',name:'Test Game (LE)',images:[]}]});
+ try {
+  const rows=[game({opdbId:'Gtest-Mone',ipdbUrl:''}),game({opdbId:'Gtest-Mone-Aalias',ipdbUrl:''})];
+  await prepareNewGameOpdbImports(rows);
+  assert.equal(rows[0].display,'lcd');assert.equal(rows[1].display,'lcd');assert.deepEqual(rows[1].opdbImages,[]);
+ } finally {globalThis.fetch=oldFetch;}
+});

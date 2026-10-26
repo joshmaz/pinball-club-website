@@ -4,6 +4,399 @@ const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 const IPDB_ICON_PATH = "assets/images/icons/ipdb-favicon.png";
 const PINTIPS_ICON_PATH = "assets/images/icons/pintips-bulb.svg";
 let gamesCanManage = false;
+/** Club eras are a display convention, derived only from OPDB display metadata. */
+function gameEraLabel(game) {
+  return ({ reels: 'EM', lights: 'EM', alphanumeric: 'Solid State', dmd: 'Modern', lcd: 'Modern' })[
+    String(game.display || '').trim().toLowerCase()] || '';
+}
+
+function gameMetadataLabel(game) {
+  const date = String(game.releaseDate || game.manufactureDate || '');
+  return [game.manufacturer, /^\d{4}/.test(date) ? date.slice(0, 4) : '', gameEraLabel(game)].filter(Boolean).join(' · ');
+}
+
+function shortClubLocation(address) {
+  const value = String(address || '').trim();
+  if (/\bhaines\b/i.test(value)) return 'Haines St';
+  if (/\bbridge\b/i.test(value)) return 'Bridge St';
+  return value || 'Club location';
+}
+
+function compactStintDate(value) {
+  const iso = normalizeIsoDateOrEmpty(value);
+  if (!iso) return '';
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = Number(iso.slice(5, 7));
+  return month >= 1 && month <= 12 ? `${months[month - 1]} ${iso.slice(0, 4)}` : '';
+}
+
+function orderedClubStints(stints, atClub) {
+  const rows = (Array.isArray(stints) ? stints : []).filter(s => s && typeof s === 'object');
+  const today = todayIsoDate();
+  // A single newest open stint can be current. Do not mark every missing end as Present.
+  const candidates = atClub ? rows.filter(s => !hasNonemptyString(s.leftClubDate) &&
+    (!normalizeIsoDateOrEmpty(s.joinedClubDate) || s.joinedClubDate <= today)) : [];
+  candidates.sort((a, b) => String(b.joinedClubDate || '').localeCompare(String(a.joinedClubDate || '')));
+  const current = candidates[0];
+  return rows.map(stint => ({ stint, current: stint === current })).sort((a, b) =>
+    Number(b.current) - Number(a.current) ||
+    String(b.stint.joinedClubDate || b.stint.leftClubDate || '').localeCompare(String(a.stint.joinedClubDate || a.stint.leftClubDate || '')));
+}
+
+function profileText(tag, text, className) {
+  const node = document.createElement(tag);
+  node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+
+async function gameProfileRpc(name, args) {
+  const client = getPublicSupabaseClient();
+  if (!client) throw new Error('Service unavailable');
+  const result = await client.rpc(name, args);
+  if (result.error) throw result.error;
+  return typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+}
+
+/** A gallery owns its DOM: other profile requests cannot reset its focus or selection. */
+function createGameGallery(game) {
+  const panel = document.createElement('div');
+  panel.className = 'games-profile-panel games-profile-photos';
+  const stage = document.createElement('div');
+  const controls = document.createElement('div');
+  controls.className = 'games-gallery-controls';
+  const count = profileText('p', '', 'games-gallery-count');
+  count.setAttribute('role', 'status');
+  const thumbs = document.createElement('div');
+  thumbs.className = 'games-gallery-thumbnails';
+  thumbs.setAttribute('role', 'group');
+  thumbs.setAttribute('aria-label', 'Choose a machine photo');
+  let images = game.primaryImage ? [game.primaryImage] : [];
+  let selected = 0, loaded = false, loading = false;
+  const lightbox = document.createElement('dialog');
+  lightbox.className = 'games-photo-lightbox';
+  lightbox.setAttribute('aria-label', `${game.title} photo viewer`);
+  const fullStage = document.createElement('div');
+  const close = profileText('button', 'Close photo'); close.type = 'button';
+  close.addEventListener('click', () => lightbox.close());
+  lightbox.append(close, fullStage);
+  panel.append(stage, count, controls, thumbs, lightbox);
+  const previous = profileText('button', 'Previous photo'); previous.type = 'button';
+  const next = profileText('button', 'Next photo'); next.type = 'button';
+  const enlarge = profileText('button', 'Enlarge photo'); enlarge.type = 'button';
+  controls.append(previous, next, enlarge);
+  const move = delta => { selected = (selected + delta + images.length) % images.length; paint(); };
+  previous.addEventListener('click', () => move(-1));
+  next.addEventListener('click', () => move(1));
+  enlarge.addEventListener('click', () => { lightbox.showModal(); paintFull(); });
+  lightbox.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' && zoom === 1 && images.length > 1) { event.preventDefault(); move(-1); }
+    if (event.key === 'ArrowRight' && zoom === 1 && images.length > 1) { event.preventDefault(); move(1); }
+  });
+  const fullControls = document.createElement('div'); fullControls.className = 'games-gallery-controls';
+  for (const [label, delta] of [['Previous photo', -1], ['Next photo', 1]]) {
+    const button = profileText('button', label); button.type = 'button';
+    button.addEventListener('click', () => move(delta)); fullControls.appendChild(button);
+  }
+  lightbox.appendChild(fullControls);
+  let zoom = 1, zoomImage = null, viewport = null, fitWidth = 0, fitHeight = 0, zoomResize = null;
+  lightbox.addEventListener('close', () => { zoomResize?.disconnect(); zoomResize = null; });
+  const zoomControls = document.createElement('div'); zoomControls.className = 'games-gallery-controls';
+  zoomControls.setAttribute('role', 'group'); zoomControls.setAttribute('aria-label', 'Photo zoom');
+  const zoomOut = profileText('button', 'Zoom out'); zoomOut.type = 'button';
+  const zoomIn = profileText('button', 'Zoom in'); zoomIn.type = 'button';
+  const fit = profileText('button', 'Fit photo'); fit.type = 'button';
+  const zoomLabel = profileText('span', '100%'); zoomLabel.setAttribute('role', 'status');
+  const original = profileText('a', 'Open original image'); original.target = '_blank'; original.rel = 'noopener noreferrer';
+  zoomControls.append(zoomOut, zoomLabel, zoomIn, fit, original);
+  lightbox.insertBefore(zoomControls, fullStage);
+  zoomOut.addEventListener('click', () => setZoom(zoom / 1.5));
+  zoomIn.addEventListener('click', () => setZoom(zoom * 1.5));
+  fit.addEventListener('click', () => setZoom(1));
+  lightbox.addEventListener('keydown', event => {
+    if (event.key === '+' || event.key === '=') { event.preventDefault(); setZoom(zoom * 1.5); }
+    if (event.key === '-') { event.preventDefault(); setZoom(zoom / 1.5); }
+    if (event.key === '0') { event.preventDefault(); setZoom(1); }
+  });
+  function setZoom(value) {
+    if (!viewport || !zoomImage || !fitWidth) return;
+    const oldWidth = fitWidth * zoom, oldHeight = fitHeight * zoom;
+    const centerX = (viewport.scrollLeft + viewport.clientWidth / 2 - Math.max(0, (viewport.clientWidth - oldWidth) / 2)) / oldWidth;
+    const centerY = (viewport.scrollTop + viewport.clientHeight / 2 - Math.max(0, (viewport.clientHeight - oldHeight) / 2)) / oldHeight;
+    zoom = Math.min(4, Math.max(1, value));
+    const width = fitWidth * zoom, height = fitHeight * zoom;
+    zoomImage.style.width = `${width}px`; zoomImage.style.height = `${height}px`;
+    zoomImage.style.marginTop = `${Math.max(0, (viewport.clientHeight - height) / 2)}px`;
+    viewport.dataset.zoomed = String(zoom > 1);
+    zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+    const focused = document.activeElement;
+    zoomOut.disabled = fit.disabled = zoom === 1; zoomIn.disabled = zoom === 4;
+    if ([zoomOut, fit, zoomIn].includes(focused) && focused.disabled) viewport.focus({ preventScroll: true });
+    const image = images[selected];
+    const candidates = window.SNHGameImages.variants(image);
+    const maxWidth = candidates[candidates.length - 1]?.width || 0;
+    if (zoom > 1 && width * (window.devicePixelRatio || 1) > maxWidth) {
+      // Full source is requested only when zoom explicitly needs more than stored variants.
+      zoomImage.removeAttribute('srcset'); zoomImage.removeAttribute('sizes');
+      if (zoomImage.src !== image.url) zoomImage.src = image.url;
+    } else window.SNHGameImages.applyForWidth(zoomImage, image, width);
+    viewport.scrollLeft = centerX * width - viewport.clientWidth / 2 + Math.max(0, (viewport.clientWidth - width) / 2);
+    viewport.scrollTop = centerY * height - viewport.clientHeight / 2 + Math.max(0, (viewport.clientHeight - height) / 2);
+  }
+  function paintFull() {
+    zoomResize?.disconnect();
+    fullStage.replaceChildren(); zoom = 1; fitWidth = 0; fitHeight = 0;
+    zoomLabel.textContent = '100%'; zoomOut.disabled = fit.disabled = true; zoomIn.disabled = false;
+    if (images[selected]) {
+      const image = images[selected];
+      const figure = createGameImageFigure({ title: game.title, primaryImage: image }, true);
+      zoomImage = figure.querySelector('img'); zoomImage.draggable = false; zoomImage.loading = 'eager';
+      viewport = document.createElement('div'); viewport.className = 'games-photo-viewport'; viewport.tabIndex = 0;
+      viewport.setAttribute('role', 'region'); viewport.setAttribute('aria-label', 'Zoomable photo. Use zoom buttons, pinch, or double-click; drag or scroll to move around.');
+      zoomImage.replaceWith(viewport); viewport.appendChild(zoomImage); fullStage.appendChild(figure);
+      original.href = image.url;
+      const position = profileText('p', `Photo ${selected + 1} of ${images.length}`);
+      position.setAttribute('role', 'status'); fullStage.appendChild(position);
+      const thisImage = zoomImage, thisViewport = viewport;
+      function layout() {
+        if (zoomImage !== thisImage || !lightbox.open) return;
+        const dimensions = window.SNHGameImages.variants(image).find(row => row.height > 0);
+        const ratio = dimensions ? dimensions.width / dimensions.height : thisImage.naturalWidth / thisImage.naturalHeight;
+        if (!Number.isFinite(ratio) || ratio <= 0) return;
+        fitWidth = Math.min(thisViewport.clientWidth, thisViewport.clientHeight * ratio);
+        fitHeight = fitWidth / ratio;
+        setZoom(zoom);
+      }
+      thisImage.addEventListener('load', layout);
+      layout();
+      zoomResize = new ResizeObserver(layout); zoomResize.observe(thisViewport);
+      const pointers = new Map(); let pinchDistance = 0, pinchZoom = 1, drag = null;
+      thisViewport.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        thisViewport.setPointerCapture(event.pointerId);
+        if (pointers.size === 2) {
+          const [a, b] = Array.from(pointers.values()); pinchDistance = Math.hypot(a.x-b.x,a.y-b.y); pinchZoom = zoom; drag = null;
+        } else drag = { x: event.clientX, y: event.clientY, left: thisViewport.scrollLeft, top: thisViewport.scrollTop };
+      });
+      thisViewport.addEventListener('pointermove', event => {
+        if (!pointers.has(event.pointerId)) return;
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        if (pointers.size === 2 && pinchDistance) {
+          const [a,b] = Array.from(pointers.values()); setZoom(pinchZoom * Math.hypot(a.x-b.x,a.y-b.y) / pinchDistance);
+        } else if (drag && zoom > 1) {
+          thisViewport.scrollLeft = drag.left + drag.x - event.clientX;
+          thisViewport.scrollTop = drag.top + drag.y - event.clientY;
+        }
+      });
+      function release(event) { pointers.delete(event.pointerId); drag = null; pinchDistance = 0; }
+      thisViewport.addEventListener('pointerup', release); thisViewport.addEventListener('pointercancel', release);
+      thisViewport.addEventListener('dblclick', () => setZoom(zoom > 1 ? 1 : 2));
+    }
+    fullControls.hidden = images.length < 2;
+  }
+  function paint() {
+    stage.replaceChildren();
+    const image = images[selected];
+    if (image) {
+      stage.appendChild(createGameImageFigure({ title: game.title, primaryImage: image }, true));
+      if (stage.clientWidth) window.SNHGameImages.applyForWidth(stage.querySelector('img'), image, stage.clientWidth);
+    }
+    else stage.appendChild(profileText('p', 'No approved photos are available for this machine yet.'));
+    count.textContent = image ? `Photo ${selected + 1} of ${images.length}` : '';
+    controls.hidden = !image;
+    previous.hidden = next.hidden = images.length < 2;
+    // Keep the thumbnail buttons in place while selecting, preserving keyboard focus.
+    Array.from(thumbs.children).forEach((button, index) => button.setAttribute('aria-pressed', String(index === selected)));
+    if (lightbox.open) paintFull();
+  }
+  function paintThumbs() {
+    thumbs.replaceChildren();
+    thumbs.hidden = images.length < 2;
+    if (images.length < 2) return;
+    images.forEach((image, index) => {
+      const button = document.createElement('button'); button.type = 'button';
+      button.setAttribute('aria-label', `Show photo ${index + 1}: ${image.altText || game.title}`);
+      const thumbnail = document.createElement('img');
+      const variants = window.SNHGameImages.variants(image);
+      thumbnail.src = variants[0]?.url || image.url;
+      thumbnail.alt = ''; thumbnail.width = 80; thumbnail.height = 64;
+      thumbnail.loading = 'lazy'; thumbnail.decoding = 'async';
+      button.appendChild(thumbnail);
+      button.addEventListener('click', () => { selected = index; paint(); });
+      thumbs.appendChild(button);
+    });
+  }
+  const status = profileText('p', '', 'games-gallery-status'); status.setAttribute('role', 'status');
+  const retry = profileText('button', 'Retry photos'); retry.type = 'button'; retry.hidden = true;
+  retry.addEventListener('click', () => void load()); panel.append(status, retry);
+  async function load() {
+    if (loaded || loading || !gameHasCatalogUuid(game) || !getPublicSupabaseClient()) return;
+    loading = true; retry.hidden = true; status.textContent = 'Loading photos…';
+    try {
+      const rows = await gameProfileRpc('snh_public_game_images', { p_game_id: game.id });
+      if (!panel.isConnected) return;
+      images = Array.isArray(rows) ? rows.filter(image => image && image.url) : [];
+      selected = 0; loaded = true; paintThumbs(); paint(); status.textContent = '';
+    } catch {
+      if (!panel.isConnected) return;
+      status.textContent = 'Additional photos could not be loaded. The primary photo is shown when available.';
+      retry.hidden = false;
+    } finally { loading = false; }
+  }
+  paintThumbs(); paint();
+  return { panel, load };
+}
+
+function createGameNotes(game) {
+  const panel = document.createElement('div'); panel.className = 'games-profile-panel games-profile-notes';
+  const summary = document.createElement('div');
+  const member = document.createElement('div');
+  panel.append(summary, member);
+  let loaded = false, loading = false, disposed = false, generation = 0, activeUserId = '';
+  let subscription = null;
+  const current = version => !disposed && panel.isConnected && version === generation;
+  const portalHref = `members.html?panel=club-issues&issueGame=${encodeURIComponent(game.id)}`;
+  function noteStatus(value) {
+    return ({ open: 'Incoming', in_progress: 'In progress', resolved: 'Resolved' })[value] || 'Incoming';
+  }
+  async function showSummaries(version) {
+    const rows = await gameProfileRpc('snh_public_game_issues', { p_game_id: game.id });
+    if (!current(version)) return;
+    summary.replaceChildren(profileText('h4', 'Public notes'));
+    if (!Array.isArray(rows) || !rows.length) {
+      summary.appendChild(profileText('p', 'No public notes have been posted for this machine.'));
+      return;
+    }
+    const list = document.createElement('ul');
+    rows.forEach(row => list.appendChild(profileText('li', `${row.summary} · ${noteStatus(row.status)}`)));
+    summary.appendChild(list);
+  }
+  function retrySummary(version) {
+    if (!current(version)) return;
+    summary.replaceChildren(profileText('p', 'Public notes could not be loaded.'));
+    const retry = profileText('button', 'Retry public notes'); retry.type = 'button';
+    retry.addEventListener('click', () => {
+      summary.replaceChildren(profileText('p', 'Loading public notes…'));
+      void showSummaries(version).catch(() => retrySummary(version));
+    }); summary.appendChild(retry);
+  }
+  function renderMemberNotes(container, rows) {
+    const notes = (Array.isArray(rows) ? rows : []).filter(row => (row.gameId || row.game_id) === game.id)
+      .sort((a, b) => String(b.submittedAt || b.createdAt || '').localeCompare(String(a.submittedAt || a.createdAt || '')));
+    const unresolved = notes.filter(row => row.status !== 'resolved');
+    const resolved = notes.filter(row => row.status === 'resolved');
+    container.replaceChildren(profileText('h4', 'Machine notes'));
+    container.appendChild(profileText('p', 'Shared with signed-in club members. Check existing notes before adding one.'));
+    function list(records) {
+      const result = document.createElement('ul'); result.className = 'games-machine-notes';
+      records.forEach(row => {
+        const item = document.createElement('li');
+        item.appendChild(profileText('h5', row.title || 'Note'));
+        const date = String(row.submittedAt || row.createdAt || '').slice(0, 10);
+        item.appendChild(profileText('p', [noteStatus(row.status), date ? formatDateLabel(date) : ''].filter(Boolean).join(' · '), 'games-note-meta'));
+        if (row.body) item.appendChild(profileText('p', row.body, 'games-note-body'));
+        result.appendChild(item);
+      });
+      return result;
+    }
+    if (unresolved.length) container.appendChild(list(unresolved));
+    else container.appendChild(profileText('p', 'No unresolved notes for this machine.'));
+    if (resolved.length) {
+      const history = document.createElement('details'); history.className = 'games-resolved-notes';
+      history.append(profileText('summary', `Resolved notes (${resolved.length})`), list(resolved));
+      container.appendChild(history);
+    }
+  }
+  async function loadMemberNotes(container, version) {
+    container.replaceChildren(profileText('p', 'Loading machine notes…'));
+    try {
+      // Same authenticated read as Member Tools; only this game's records are rendered.
+      const rows = await gameProfileRpc('snh_club_issues_list');
+      if (!current(version)) return;
+      renderMemberNotes(container, rows);
+    } catch {
+      if (!current(version)) return;
+      container.replaceChildren(profileText('p', 'Machine notes could not be loaded.'));
+      const retry = profileText('button', 'Retry machine notes'); retry.type = 'button';
+      retry.addEventListener('click', () => void loadMemberNotes(container, version)); container.appendChild(retry);
+    }
+  }
+  async function load() {
+    if (disposed || loaded || loading) return;
+    loading = true;
+    const version = ++generation;
+    summary.hidden = false; summary.replaceChildren(profileText('p', 'Loading notes…')); member.replaceChildren();
+    try {
+      const session = window.SNHSiteAuth ? await window.SNHSiteAuth.getSession() : null;
+      if (!current(version)) return;
+      activeUserId = session?.user?.id || '';
+      if (!subscription && window.SNHSiteAuth?.onAuthStateChange) {
+        subscription = window.SNHSiteAuth.onAuthStateChange((event, next) => {
+          if (event !== 'SIGNED_OUT' && !(event === 'SIGNED_IN' && next?.user?.id !== activeUserId)) return;
+          // Remove private text immediately; stale requests cannot restore it after sign-out.
+          ++generation; activeUserId = ''; loaded = false; loading = false;
+          member.replaceChildren(); summary.replaceChildren(); summary.hidden = false;
+          setTimeout(() => { if (!disposed && panel.isConnected) void load(); }, 0);
+        });
+      }
+      // Public summaries are visible to everyone, independently of member-only notes.
+      const publicRead = gameHasCatalogUuid(game) && getPublicSupabaseClient()
+        ? showSummaries(version).catch(() => retrySummary(version))
+        : Promise.resolve(summary.replaceChildren(profileText('p', 'Public notes are unavailable right now.')));
+      if (!activeUserId) {
+        member.appendChild(profileText('p', 'Club members can add machine notes, report problems, or share useful observations. Sign in or sign up to join the club.'));
+        const signin = profileText('a', 'Sign in or sign up'); signin.href = `signin.html?next=${encodeURIComponent(portalHref)}`;
+        member.appendChild(signin);
+        await publicRead;
+      } else if (gameHasCatalogUuid(game)) {
+        // Members see original linked records, including those without a public summary.
+        const notes = document.createElement('div'); member.appendChild(notes);
+        const manage = profileText('a', 'View and manage notes in Member Tools'); manage.href = portalHref;
+        member.appendChild(manage);
+        const form = document.createElement('form'); form.className = 'games-issue-form';
+        form.appendChild(profileText('h4', 'Add a note'));
+        form.appendChild(profileText('p', 'Report a problem or share something useful about this machine.'));
+        const titleLabel = profileText('label', 'Title');
+        const title = document.createElement('input'); title.required = true; title.maxLength = 160; titleLabel.appendChild(title);
+        const bodyLabel = profileText('label', 'Details (optional)');
+        const body = document.createElement('textarea'); body.rows = 4; bodyLabel.appendChild(body);
+        const send = profileText('button', 'Add a note'); send.type = 'submit';
+        const status = profileText('p', 'Notes are shared with signed-in club members. A helper may publish a separate public summary.');
+        status.setAttribute('role', 'status'); form.append(titleLabel, bodyLabel, send, status);
+        form.addEventListener('submit', async event => {
+          event.preventDefault();
+          if (send.disabled || !current(version)) return;
+          const subject = title.value.trim(); if (!subject) { title.focus(); return; }
+          send.disabled = true; status.textContent = 'Saving note…';
+          try {
+            await gameProfileRpc('snh_club_issues_upsert', { p_id: null, p_fields: {
+              gameId: game.id, title: subject, body: body.value.trim() || null, status: 'open'
+            } });
+            if (!current(version)) return;
+            form.reset(); status.textContent = 'Note added. Thank you for helping care for this machine.';
+            await loadMemberNotes(notes, version);
+          } catch {
+            if (current(version)) status.textContent = 'The note could not be confirmed. Check existing notes before retrying, and sign in again if needed.';
+          } finally { send.disabled = false; }
+        });
+        member.appendChild(form);
+        await Promise.all([publicRead, loadMemberNotes(notes, version)]);
+      }
+      if (current(version)) loaded = true;
+    } catch {
+      if (!current(version)) return;
+      summary.replaceChildren(profileText('p', 'Sign-in status could not be checked. Open Member Tools to view or add notes.'));
+      const link = profileText('a', 'Open Member Tools'); link.href = portalHref; member.appendChild(link);
+    } finally { if (version === generation) loading = false; }
+  }
+  function dispose() {
+    disposed = true; ++generation; member.replaceChildren();
+    subscription?.data?.subscription?.unsubscribe(); subscription = null;
+  }
+  return { panel, load, dispose };
+}
+
 
 async function currentUserCanManageGames() {
   if (!window.SNHSiteAuth) return false;
@@ -288,29 +681,15 @@ function sortGamesNewestJoinFirst(games) {
 /**
  * @param {{ address?: string, joinedClubDate?: string, leftClubDate?: string, pinballMapLocationId?: number, dateUnknown?: boolean }[]} stints
  */
-function formatLocationStints(stints) {
-  if (!Array.isArray(stints) || stints.length === 0) {
-    return "";
-  }
-  const lines = [];
-  for (const s of stints) {
-    const where = (s.address && String(s.address).trim()) || "Club location";
-    const from = s.joinedClubDate ? String(s.joinedClubDate).trim() : "";
-    const through = s.leftClubDate ? String(s.leftClubDate).trim() : "";
-    let line = where;
-    if (from && through) {
-      line += `: ${from} – ${through}`;
-    } else if (from) {
-      line += `: from ${from}`;
-    } else if (through) {
-      line += `: through ${through}`;
-    }
-    if (s.dateUnknown) {
-      line += line === where ? ", tenure dates unknown" : " (tenure dates unknown)";
-    }
-    lines.push(line);
-  }
-  return lines.join("\n");
+function formatLocationStints(stints, atClub = false) {
+  return orderedClubStints(stints, atClub).map(({ stint: s, current }) => {
+    const from = compactStintDate(s.joinedClubDate);
+    const through = compactStintDate(s.leftClubDate);
+    const dates = current ? (from ? `${from} – Present` : 'Start unknown – Present')
+      : from && through ? `${from} – ${through}`
+      : from ? `${from} – End unknown` : through ? `Start unknown – ${through}` : 'Dates unknown';
+    return `${shortClubLocation(s.address)} · ${dates}`;
+  }).join('\n');
 }
 
 /**
@@ -502,6 +881,9 @@ const gameMoreInfoUi = {
   gameId: "",
   onKeyDown: /** @type {((e: KeyboardEvent) => void) | null} */ (null),
   requestId: 0,
+  notesDispose: null,
+  background: [],
+  previousOverflow: "",
 };
 
 function ensureGameMoreInfoModal() {
@@ -538,8 +920,10 @@ function ensureGameMoreInfoModal() {
   const bodyEl = document.createElement("div");
   bodyEl.className = "games-more-info-body";
 
-  dialog.appendChild(closeBtn);
-  dialog.appendChild(titleEl);
+  const header = document.createElement('div');
+  header.className = 'games-profile-header';
+  header.appendChild(titleEl);
+  dialog.append(closeBtn, header);
   dialog.appendChild(bodyEl);
   root.appendChild(backdrop);
   root.appendChild(dialog);
@@ -699,6 +1083,11 @@ function renderGameMoreInfoSections(payload, body, kind) {
 }
 
 function closeGameMoreInfoModal() {
+  gameMoreInfoUi.notesDispose?.(); gameMoreInfoUi.notesDispose = null;
+  gameMoreInfoUi.root?.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+  gameMoreInfoUi.background.forEach(([node, inert]) => { node.inert = inert; });
+  gameMoreInfoUi.background = [];
+  document.body.style.overflow = gameMoreInfoUi.previousOverflow;
   gameMoreInfoUi.requestId += 1;
   if (gameMoreInfoUi.onKeyDown) {
     document.removeEventListener("keydown", gameMoreInfoUi.onKeyDown);
@@ -721,7 +1110,12 @@ function addGameProfileLink(row, label, url) {
   link.href = String(url);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.textContent = label;
+  const iconPath = ({ Kineticist: KINETICIST_ICON_PATH, Pinside: PINSIDE_ICON_PATH, IPDB: IPDB_ICON_PATH, OPDB: PINTIPS_ICON_PATH })[label];
+  if (iconPath) {
+    const icon = document.createElement('img'); icon.src = iconPath; icon.alt = ''; icon.className = 'games-provider-icon';
+    link.append(icon, document.createTextNode(label));
+    if (label === 'OPDB') { link.title = 'Game info on OPDB'; link.setAttribute('aria-label', 'Game info on OPDB'); }
+  } else link.textContent = label;
   row.appendChild(link);
 }
 
@@ -731,7 +1125,7 @@ function renderGameTips(panel, tips, state, game) {
   panel.appendChild(credit);
   const links = document.createElement("div");
   links.className = "games-profile-links";
-  addGameProfileLink(links, "View on PinTips", getPinTipsUrl(game) || "https://app.matchplay.events/pintips");
+  addGameProfileLink(links, "Game info on OPDB", getOpdbInfoUrl(game) || "https://app.matchplay.events/pintips");
   if (!tips.length) {
     const note = document.createElement("p");
     note.className = state === "error" ? "games-more-info-error" : "games-more-info-empty";
@@ -765,14 +1159,13 @@ function renderGameTips(panel, tips, state, game) {
 function renderGameProfile(game, payload, error, tips = [], tipsState = "empty") {
   const body = gameMoreInfoUi.bodyEl;
   if (!body) return;
-  const selectedLabel = body.querySelector('[role="tab"][aria-selected="true"]')?.textContent;
   body.replaceChildren();
   const tabs = document.createElement("div");
   tabs.className = "games-profile-tabs";
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "Game profile sections");
   const panels = [];
-  function addTab(label, panel) {
+  function addTab(label, panel, onShow) {
     const index = panels.length;
     const tab = document.createElement("button");
     tab.type = "button";
@@ -785,10 +1178,11 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
     panel.setAttribute("aria-labelledby", tab.id);
     tab.textContent = label;
     tabs.appendChild(tab);
-    panels.push({ tab, panel });
+    panels.push({ tab, panel, onShow });
     tab.addEventListener("click", () => activate(index));
     tab.addEventListener("keydown", (event) => {
-      const next = event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
+      const next = event.key === "Home" ? 0 : event.key === "End" ? panels.length - 1
+        : event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
       if (next === null) return;
       event.preventDefault();
       activate((next + panels.length) % panels.length);
@@ -801,27 +1195,29 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
       tab.tabIndex = i === index ? 0 : -1;
       panel.hidden = i !== index;
     });
+    if (panels[index]?.onShow) void panels[index].onShow();
   }
 
   const overview = document.createElement("div");
   overview.className = "games-profile-panel";
-  const figure = createGameImageFigure(game, true);
+  const metadata = gameMetadataLabel(game);
+  if (metadata) overview.appendChild(profileText('p', metadata, 'games-machine-metadata'));
   if (hasNonemptyString(game.details)) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";
     const heading = document.createElement("h4");
-    heading.textContent = "Description";
+    heading.textContent = "About our machine";
     const details = document.createElement("p");
     details.textContent = String(game.details);
     section.append(heading, details);
     overview.appendChild(section);
   }
-  const stints = formatLocationStints(game.locationStints);
+  const stints = formatLocationStints(game.locationStints, game.atClub === true);
   if (stints) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";
     const heading = document.createElement("h4");
-    heading.textContent = "Club stints";
+    heading.textContent = "Location history";
     const list = document.createElement("ul");
     list.className = "games-more-info-list";
     for (const line of stints.split("\n")) {
@@ -837,7 +1233,7 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
   addGameProfileLink(links, "Kineticist", game.kineticistUrl);
   addGameProfileLink(links, "Pinside", game.pinsideUrl);
   addGameProfileLink(links, "IPDB", game.ipdbUrl);
-  addGameProfileLink(links, "PinTips", getPinTipsUrl(game));
+  addGameProfileLink(links, "OPDB", getOpdbInfoUrl(game));
   if (links.childElementCount) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";
@@ -858,22 +1254,23 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
   }
   addTab("Overview", overview);
 
-  if (figure) {
-    const photos = document.createElement("div");
-    photos.className = "games-profile-panel games-profile-photos";
-    photos.appendChild(figure);
-    addTab("Photos", photos);
-  }
+  const gallery = createGameGallery(game);
+  addTab("Photos", gallery.panel, gallery.load);
   const play = document.createElement("div");
   play.className = "games-profile-panel";
-  if (renderGameMoreInfoSections(payload, play, "play")) addTab("Play", play);
+  addTab("Play", play);
   const tipsPanel = document.createElement("div");
   tipsPanel.className = "games-profile-panel";
   renderGameTips(tipsPanel, tips, tipsState, game);
   addTab("Tips", tipsPanel);
+  gameMoreInfoUi.notesDispose?.();
+  const notes = createGameNotes(game);
+  gameMoreInfoUi.notesDispose = notes.dispose;
+  addTab("Notes", notes.panel, notes.load);
   body.appendChild(tabs);
   panels.forEach(({ panel }) => body.appendChild(panel));
-  activate(Math.max(0, panels.findIndex(({ tab }) => tab.textContent === selectedLabel)));
+  activate(0);
+  return { overview, play, tipsPanel, playTab: panels.find(p => p.panel === play) };
 }
 
 /** @param {{ title?: string, id?: string }} game */
@@ -886,34 +1283,78 @@ async function openGameMoreInfoModal(game) {
   const requestId = ++gameMoreInfoUi.requestId;
   gameMoreInfoUi.gameId = String(game.id || "");
   gameMoreInfoUi.lastFocus = /** @type {HTMLElement} */ (document.activeElement);
+  if (root.hidden) {
+    gameMoreInfoUi.previousOverflow = document.body.style.overflow;
+    gameMoreInfoUi.background = Array.from(document.body.children)
+      .filter(node => node !== root).map(node => [node, node.inert]);
+    gameMoreInfoUi.background.forEach(([node]) => { node.inert = true; });
+    document.body.style.overflow = 'hidden';
+  }
   root.hidden = false;
   titleEl.textContent = game.title ? `More about ${game.title}` : "Game details";
-  renderGameProfile(game, null, false, [], getPublicSupabaseClient() && gameHasCatalogUuid(game) ? "loading" : "empty");
+  const profile = renderGameProfile(game, null, false, [], getPublicSupabaseClient() && gameHasCatalogUuid(game) ? "loading" : "empty");
   gameMoreInfoUi.onKeyDown = (ev) => {
+    if (root.querySelector('dialog[open]')) return;
+    if (ev.key === 'Tab') {
+      const focusable = Array.from(dialog.querySelectorAll('button, a[href], input, textarea, select, [tabindex="0"]'))
+        .filter(node => !node.disabled && node.tabIndex >= 0 && node.getClientRects().length > 0);
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (ev.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+        ev.preventDefault(); last?.focus();
+      } else if (!ev.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {
+        ev.preventDefault(); first?.focus();
+      }
+    }
     if (ev.key === "Escape") {
       ev.preventDefault();
       closeGameMoreInfoModal();
     }
   };
   document.addEventListener("keydown", gameMoreInfoUi.onKeyDown);
-  dialog.querySelector(".games-more-info-close")?.focus();
+  dialog.querySelector(".games-more-info-close")?.focus({ preventScroll: true });
+  dialog.scrollTop = 0;
 
   const client = getPublicSupabaseClient();
-  if (!client || !gameHasCatalogUuid(game)) return;
-  const [infoResult, tipsResult] = await Promise.allSettled([
-    client.rpc("snh_public_game_more_info", { p_game_id: game.id }),
-    client.rpc("snh_public_game_tips", { p_game_id: game.id }),
-  ]);
-  const read = result => {
-    if (result.status === "rejected" || result.value.error) return { error: true, data: null };
-    try { return { error: false, data: typeof result.value.data === "string" ? JSON.parse(result.value.data) : result.value.data }; }
-    catch { return { error: true, data: null }; }
-  };
-  const info = read(infoResult), imported = read(tipsResult);
-  const tips = Array.isArray(imported.data) ? imported.data : [];
-  if (!root.hidden && requestId === gameMoreInfoUi.requestId) {
-    renderGameProfile(game, info.data, info.error, tips, imported.error ? "error" : "empty");
+  if (!client || !gameHasCatalogUuid(game)) {
+    profile.play.appendChild(profileText('p', 'Club play information is unavailable right now.'));
+    return;
   }
+  // Independent panels update in place; a slow request never resets gallery, tabs or a report draft.
+  const active = () => !root.hidden && requestId === gameMoreInfoUi.requestId;
+  const loadInfo = async () => {
+    try {
+      const payload = await gameProfileRpc('snh_public_game_more_info', { p_game_id: game.id });
+      if (!active()) return;
+      profile.overview.querySelector('.games-info-status')?.remove();
+      renderGameMoreInfoSections(payload, profile.overview, 'overview');
+      profile.play.replaceChildren();
+      if (!renderGameMoreInfoSections(payload, profile.play, 'play')) {
+        profile.play.appendChild(profileText('p', 'No club high scores or Pingolf targets have been added for this machine yet.'));
+      }
+    } catch {
+      if (!active()) return;
+      const note = profileText('div', '', 'games-info-status');
+      note.appendChild(profileText('p', 'Additional machine information could not be loaded.'));
+      const retry = profileText('button', 'Retry machine information'); retry.type = 'button';
+      retry.addEventListener('click', () => { note.remove(); void loadInfo(); }); note.appendChild(retry);
+      profile.overview.appendChild(note);
+      profile.play.replaceChildren(profileText('p', 'Club play information could not be loaded. Retry from Overview.'));
+    }
+  };
+  const loadTips = async () => {
+    try {
+      const tips = await gameProfileRpc('snh_public_game_tips', { p_game_id: game.id });
+      if (!active()) return;
+      profile.tipsPanel.replaceChildren(); renderGameTips(profile.tipsPanel, Array.isArray(tips) ? tips : [], 'empty', game);
+    } catch {
+      if (!active()) return;
+      profile.tipsPanel.replaceChildren(); renderGameTips(profile.tipsPanel, [], 'error', game);
+      const retry = profileText('button', 'Retry tips'); retry.type = 'button';
+      retry.addEventListener('click', () => void loadTips()); profile.tipsPanel.appendChild(retry);
+    }
+  };
+  profile.play.appendChild(profileText('p', 'Loading club play information…'));
+  await Promise.allSettled([loadInfo(), loadTips()]);
 }
 
 function createGamesList(games) {
@@ -947,7 +1388,7 @@ function createGamesList(games) {
         const imageButton = document.createElement("button");
         imageButton.type = "button";
         imageButton.className = "game-card-image-button";
-        imageButton.setAttribute("aria-label", `More info about ${game.title}`);
+        imageButton.setAttribute("aria-label", `View machine: ${game.title}`);
         imageButton.setAttribute("aria-haspopup", "dialog");
         imageButton.addEventListener("click", () => {
           void openGameMoreInfoModal(game);
@@ -958,12 +1399,20 @@ function createGamesList(games) {
       item.appendChild(imageFigure);
     }
 
+    const metadata = gameMetadataLabel(game);
+    if (metadata) item.appendChild(profileText('p', metadata, 'games-machine-metadata'));
     const details = document.createElement("p");
     details.className = "games-details";
-    details.textContent = game.details;
+    const brief = String(game.details || '').trim();
+    details.textContent = brief.length > 220 ? brief.slice(0, 217).replace(/\s+\S*$/, '') + '…' : brief;
     item.appendChild(details);
 
-    const stintsText = formatLocationStints(game.locationStints);
+    const currentStint = orderedClubStints(game.locationStints, isAtClub).find(row => row.current)?.stint;
+    if (currentStint) {
+      const since = compactStintDate(currentStint.joinedClubDate);
+      item.appendChild(profileText('p', `${shortClubLocation(currentStint.address)}${since ? ' · Since ' + since : ''}`, 'games-current-location'));
+    }
+    const stintsText = formatLocationStints(game.locationStints, game.atClub === true);
     if (stintsText) {
       const stintsEl = document.createElement("p");
       stintsEl.className = "games-location-stints";
@@ -980,7 +1429,7 @@ function createGamesList(games) {
     const kineticistUrl = game.kineticistUrl;
     const pinsideUrl = game.pinsideUrl;
     const ipdbUrl = game.ipdbUrl;
-    const pintipsUrl = getPinTipsUrl(game);
+    const pintipsUrl = getOpdbInfoUrl(game);
     const moreInfoEligible = true;
     const editHref = gamesCanManage ? gameEditorHref(game) : "";
     if (kineticistUrl || pinsideUrl || ipdbUrl || pintipsUrl || isAtClub || moreInfoEligible || editHref) {
@@ -1053,8 +1502,8 @@ function createGamesList(games) {
         pintipsLink.href = pintipsUrl;
         pintipsLink.target = "_blank";
         pintipsLink.rel = "noopener";
-        pintipsLink.title = `View ${game.title} PinTips on Match Play Events`;
-        pintipsLink.setAttribute("aria-label", `View ${game.title} PinTips on Match Play Events`);
+        pintipsLink.title = `View ${game.title} info on OPDB`;
+        pintipsLink.setAttribute("aria-label", `View ${game.title} info on OPDB`);
 
         const pintipsIcon = document.createElement("img");
         pintipsIcon.className = "games-provider-icon";
@@ -1071,7 +1520,7 @@ function createGamesList(games) {
         const moreBtn = document.createElement("button");
         moreBtn.type = "button";
         moreBtn.className = "games-more-info-btn";
-        moreBtn.textContent = "More info";
+        moreBtn.textContent = "View machine";
         moreBtn.setAttribute("aria-haspopup", "dialog");
         moreBtn.addEventListener("click", () => {
           void openGameMoreInfoModal(game);
@@ -1101,7 +1550,7 @@ function createGamesList(games) {
  * @param {{ opdbId?: unknown }} game
  * @returns {string}
  */
-function getPinTipsUrl(game) {
+function getOpdbInfoUrl(game) {
   if (!game || typeof game !== "object") {
     return "";
   }
@@ -1109,7 +1558,7 @@ function getPinTipsUrl(game) {
     return "";
   }
   const opdbId = String(game.opdbId).trim();
-  return `${MATCHPLAY_OPDB_ENTRY_BASE_URL}/${encodeURIComponent(opdbId)}/pintips`;
+  return `${MATCHPLAY_OPDB_ENTRY_BASE_URL}/${encodeURIComponent(opdbId)}`;
 }
 
 function showMessage(container, title, details) {
@@ -1134,16 +1583,23 @@ function filterGamesByQuery(games, query) {
   });
 }
 
+function filterGamesByEra(games, selectedEras) {
+  const selected = new Set(selectedEras);
+  return games.filter(game => selected.has(gameEraLabel(game) || 'Other'));
+}
+
 function renderGamesList(games) {
   const container = document.getElementById("games-list");
   const search = document.getElementById("games-search");
   const status = document.getElementById("games-search-status");
-  const filtered = filterGamesByQuery(games, search ? search.value : "");
+  const controls = Array.from(document.querySelectorAll('[data-game-era]'));
+  const eras = controls.length ? controls.filter(input => input.checked).map(input => input.dataset.gameEra) : ['EM', 'Solid State', 'Modern', 'Other'];
+  const filtered = filterGamesByEra(filterGamesByQuery(games, search ? search.value : ""), eras);
   if (status) status.textContent = `${filtered.length} of ${games.length} games in this lineup`;
   if (!container) return;
   if (!filtered.length) {
     showMessage(container, games.length ? "No matching games" : "No games on this date",
-      games.length ? "Try a different title or description, or clear your search." : "Choose another date or show all games to explore the club’s history.");
+      games.length ? "Try changing your era selections or search, or select All eras." : "Choose another date or show all games to explore the club’s history.");
     return;
   }
   container.replaceChildren(createGamesList(filtered));
@@ -1193,6 +1649,17 @@ async function loadGames() {
     const search = document.getElementById("games-search");
     if (linkedGame && search) search.value = "";
     if (search) search.addEventListener("input", () => renderGamesList(currentLineup));
+    const eraControls = Array.from(document.querySelectorAll('[data-game-era]'));
+    const otherOption = document.getElementById('games-era-other-option');
+    if (otherOption) otherOption.hidden = !sorted.some(game => !gameEraLabel(game));
+    eraControls.forEach(input => {
+      if (linkedGame) input.checked = true;
+      input.addEventListener('change', () => renderGamesList(currentLineup));
+    });
+    document.getElementById('games-era-all')?.addEventListener('click', () => {
+      eraControls.forEach(input => { input.checked = true; });
+      renderGamesList(currentLineup);
+    });
 
     if (transitionBanner) {
       transitionBanner.hidden = hasAnyAtClub;

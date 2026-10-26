@@ -3,7 +3,7 @@
     "schemaVersion": 1,
     "dataset": "games",
     "source": "games_catalog_v1",
-    "generatedAt": "2026-10-08T18:47:12.350Z",
+    "generatedAt": "2026-10-26T18:21:53.758Z",
     "recordCount": 126
   },
   "games": [
@@ -1739,35 +1739,32 @@
       "releaseDate": "1977-01-01",
       "manufacturer": "Bally",
       "primaryImage": {
-        "id": "78284d46-abb0-430b-a616-b78183ec0849",
-        "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png",
-        "altText": "Evel Knievel",
+        "id": "8e9860d7-777e-4070-8619-609c55070896",
+        "url": "https://img.opdb.org/82ab73fe-d159-4537-97e4-145d14d82543-large.jpg",
+        "altText": "Evel Knievel playfield",
         "variants": [
           {
-            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w320.webp",
-            "path": "dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w320.webp",
-            "width": 320,
-            "height": 206,
-            "sizeBytes": 21934
+            "url": "https://img.opdb.org/82ab73fe-d159-4537-97e4-145d14d82543-small.jpg",
+            "width": 206,
+            "height": 250
           },
           {
-            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w640.webp",
-            "path": "dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w640.webp",
-            "width": 640,
-            "height": 412,
-            "sizeBytes": 59940
+            "url": "https://img.opdb.org/82ab73fe-d159-4537-97e4-145d14d82543-medium.jpg",
+            "width": 527,
+            "height": 640
           },
           {
-            "url": "https://dawypferbucqanrkcdkj.supabase.co/storage/v1/object/public/game-images/dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w1200.webp",
-            "path": "dbae0d7a-8660-49ae-a18a-5c84d78b55f0/eb8a8204-6bfe-5b76-8568-f3bad94ec6e0.png.w1200.webp",
-            "width": 682,
-            "height": 439,
-            "sizeBytes": 67928
+            "url": "https://img.opdb.org/82ab73fe-d159-4537-97e4-145d14d82543-large.jpg",
+            "width": 1152,
+            "height": 1398
           }
         ],
-        "imageType": "game_photo",
-        "sourceType": "club",
-        "locationType": "remote_url"
+        "imageType": "playfield",
+        "sourceUrl": "https://app.matchplay.events/opdb/entries/G59wx-MLnZ3",
+        "sourceType": "opdb",
+        "locationType": "remote_url",
+        "attributionUrl": "https://app.matchplay.events/opdb/entries/G59wx-MLnZ3",
+        "attributionText": "Open Pinball Database (OPDB)"
       },
       "kineticistUrl": "https://www.kineticist.com/games/pinball/evel-knievel",
       "locationStints": [
@@ -5391,6 +5388,7 @@
       "atClub": false,
       "opdbId": "G2Lkd-M0ope-A97xV",
       "details": "2022 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2024-04-18. Removed from the map on 2024-05-02.",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6846",
       "mapAtClub": false,
       "releaseDate": "2022-01-01",
@@ -5448,7 +5446,7 @@
       "atClub": false,
       "opdbId": "G2Lkd-M0ope-A9dNy",
       "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration.",
-      "display": "Color display",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6845",
       "mapAtClub": false,
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
@@ -6008,6 +6006,7 @@
       "atClub": true,
       "opdbId": "G5vLR-ME049",
       "details": "Stern’s Star Wars takes on the original trilogy with a fast Steve Ritchie layout, tons of movie footage, and a ruleset with plenty to dig into. The Premium adds some of the game’s best toys, including the exploding Death Star and the ridiculously fun magnetic Hyperdrive ball accelerator.",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6429",
       "mapAtClub": true,
       "pinsideUrl": "https://pinside.com/pinball/machine/star-wars-stern-premium",
@@ -6064,6 +6063,7 @@
       "atClub": false,
       "opdbId": "G5vLR-MwNwy",
       "details": "2017 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2026-08-27. Removed from the map on 2026-09-15.",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6428",
       "mapAtClub": false,
       "releaseDate": "2017-01-01",
@@ -6816,6 +6816,7 @@
       "atClub": false,
       "opdbId": "G5bYr-MLezO-AO3J1",
       "details": "2016 Jersey Jack widebody. 27-inch HD LCD in backbox and upper playfield display. 3 flippers, 3 pop bumpers, 11 independent drop targets.",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6224",
       "mapAtClub": false,
       "pinsideUrl": "https://pinside.com/pinball/machine/the-hobbit",
@@ -6999,6 +7000,7 @@
       "atClub": true,
       "opdbId": "GBLLP-MW900-AOEEN",
       "details": "2021 Stern. From Pinball Map location activity (not on our site list before). First listed on the map on 2026-08-31. Still on the map as of the latest activity.",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6829",
       "mapAtClub": true,
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-the-mandalorian-premium",
@@ -7804,6 +7806,7 @@
       "atClub": false,
       "opdbId": "Grj6X-MJNV1-AO209",
       "details": "2012 Stern DMD. Designed by John Borg. 3 flippers, 2 ramps, 3 pop bumpers, Wolverine bash toy.",
+      "display": "dmd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=5824",
       "mapAtClub": false,
       "pinsideUrl": "https://pinside.com/pinball/machine/x-men-le",

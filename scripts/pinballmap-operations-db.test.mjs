@@ -41,6 +41,7 @@ test('Pinball Map Operations: actual changes, rollback, partial failures, author
   await db.exec(images.slice(images.indexOf('create or replace function public.snh_game_images_import_opdb')));
   await db.exec(await source('20261009010000_pinballmap_operations.sql'));
   await db.exec(await source('20261023050000_pinballmap_new_game_opdb_images.sql'));
+  await db.exec(await source('20261026153013_opdb_primary_image_preference.sql'));
   await db.exec('create unique index one_primary on game_images(game_id) where is_primary');
   for(const role of ['anon','authenticated']) {
    await db.exec(`set role ${role}; set request.jwt.claim.sub='${uid(2)}'`);
@@ -131,6 +132,26 @@ test('Pinball Map Operations: actual changes, rollback, partial failures, author
   ]}]);await finish(id);await db.exec('reset role');
   assert.equal((await q("select image_type from game_images i join games g on g.id=i.game_id where g.slug='fallback-photo' and i.is_primary"))[0].image_type,'backglass');
   assert.equal((await q("select i.location_value from game_images i join games g on g.id=i.game_id where g.slug='legacy-photo' and i.is_primary and i.source_type='club'"))[0].location_value,'supplied.jpg','explicit legacy default is normalized so approved OPDB photos cannot outrank it');
+  const closeup={...photos[1],sourceKey:'closeup',imageType:'closeup',imageUrl:'https://img.opdb.org/close.jpg'};
+  for(const [slug,images,expected] of [
+    ['prefer-close',[...photos,closeup],'closeup'],
+    ['prefer-back',[{...photos[0],metadata:{opdbPrimary:false}},{...closeup,sourceKey:'other',imageType:'cabinet',metadata:{opdbPrimary:true}}],'backglass'],
+    ['prefer-other',[{...closeup,sourceKey:'other',imageType:'cabinet'}],'cabinet']
+  ]) {
+    await db.exec(`insert into games(slug,title) values('${slug}','Preference fixture')`);
+    const gid=(await q('select id from games where slug=$1',[slug]))[0].id;
+    await q('select private.snh_pinballmap_new_game_images($1,$2,$3)',[gid,'G-pref',JSON.stringify(images)]);
+    assert.equal((await q('select image_type from game_images where game_id=$1 and is_primary',[gid]))[0].image_type,expected);
+  }
+  await db.exec("insert into games(slug,title) values('uploaded','Uploaded')");
+  const uploaded=(await q("select id from games where slug='uploaded'"))[0].id;
+  await q("insert into game_images(game_id,source_type,source_key,location_type,location_value,usage_status,is_primary) values($1,'club','upload','remote_url','https://example.org/upload.jpg','approved',false)",[uploaded]);
+  await q('select private.snh_pinballmap_new_game_images($1,$2,$3)',[uploaded,'G-upload',JSON.stringify([closeup])]);
+  assert.equal((await q("select count(*)::int n from game_images where game_id=$1 and source_type='opdb' and is_primary",[uploaded]))[0].n,0,'uploaded club photos retain fallback priority even without an explicit primary');
+  const curated=(await q("select id from games where slug='curated'"))[0].id;
+  await q('select private.snh_pinballmap_new_game_images($1,$2,$3)',[curated,'G-auto',JSON.stringify([closeup])]);
+  assert.equal((await q('select source_key from game_images where game_id=$1 and is_primary',[curated]))[0].source_key,'old','a new closeup never replaces a curated primary');
+
   id=await begin();
   await assert.rejects(q('select snh_pinballmap_upsert_from_activity($1)',[{...autoPayload,run_id:id,creates:[
    {slug:'rollback-photo',title:'Rollback',opdbId:'G-broken',opdbImages:[{...photos[0],licenseUrl:'http://invalid.example'}]}

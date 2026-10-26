@@ -6,17 +6,27 @@
     return (Array.isArray(rows) ? rows : []).filter(v => v && /^(https:\/\/|http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/)/.test(v.url) && Number.isInteger(v.width) && v.width > 0)
       .sort((a, b) => a.width - b.width).filter((v, i, a) => !i || v.width !== a[i - 1].width);
   }
-  function apply(img, image, detail) {
+  function applyForWidth(img, image, width, sizes) {
     const rows = variants(image);
-    const fallback = image.url || image.displayUrl || image.locationValue || '';
-    const chosen = rows.find(v => v.width >= (detail ? 1200 : 640)) || rows[rows.length - 1];
-    img.src = chosen ? chosen.url : fallback;
+    const cssWidth = Math.max(1, Math.ceil(Number(width) || 600));
+    const target = cssWidth * Math.max(1, Number(root.devicePixelRatio) || 1);
+    const chosen = rows.find(v => v.width >= target) || rows[rows.length - 1];
     if (rows.length) {
-      img.srcset = rows.map(v => `${v.url} ${v.width}w`).join(', ');
-      img.sizes = detail ? '(max-width: 700px) calc(100vw - 64px), 600px' : '(max-width: 650px) calc(100vw - 64px), (max-width: 1000px) 45vw, 360px';
+      // Publish responsive hints before src so the fallback cannot race a larger download.
+      const hint = sizes || `${cssWidth}px`;
+      const candidates = rows.map(v => `${v.url} ${v.width}w`).join(', ');
+      if (img.sizes !== hint) img.sizes = hint;
+      if (img.srcset !== candidates) img.srcset = candidates;
     } else {
       img.removeAttribute('srcset'); img.removeAttribute('sizes');
     }
+    const src = chosen ? chosen.url : image.url || image.displayUrl || image.locationValue || '';
+    if (img.src !== src) img.src = src;
+  }
+  function apply(img, image, detail) {
+    const viewport = Number(root.innerWidth) || 1000;
+    const slot = detail ? Math.min(600, viewport - 64) : viewport <= 650 ? viewport - 64 : viewport <= 1000 ? viewport * .45 : 360;
+    applyForWidth(img, image, slot, detail ? '(max-width: 700px) calc(100vw - 64px), 600px' : '(max-width: 650px) calc(100vw - 64px), (max-width: 1000px) 45vw, 360px');
   }
   async function animated(file) {
     if (file.type === 'image/gif') return true;
@@ -53,5 +63,5 @@
       return output;
     } finally { bitmap.close(); }
   }
-  root.SNHGameImages = { variants, apply, generate, widths };
+  root.SNHGameImages = { variants, apply, applyForWidth, generate, widths };
 })(typeof window === 'undefined' ? globalThis : window);
