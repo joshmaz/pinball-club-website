@@ -70,3 +70,9 @@ Visitors see only helper-authored public summaries, never the authenticated note
 Public summaries remain visible to signed-in users above the original machine notes. The two reads complete and retry independently, preserving the note draft if either request fails. Visitors still never request member-only notes.
 
 Game-linked Notes now displays a prominent game-filter banner with Show all notes. The All header button also clears the game filter from both the list and URL and exits editing. Unsaved text requires confirmation before discarding; cancelling leaves the draft and scope intact. Cancel editing is explicit in the edit form. Returning to Notes after clearing the scope stays unfiltered.
+
+## Photo zoom and size selection
+
+The enlarged viewer fills most of the viewport and supports 1–4× zoom, Fit photo, drag/scroll panning, two-finger pinch, double-click toggle, and keyboard +/−/0. Arrow keys change photos while fitted; when zoomed, the focusable photo region can scroll. An original-image link is available. Credits stay visible below the image.
+
+Gallery and enlarged-view sizing use measured CSS width and device density to select the smallest sufficient candidate. Responsive hints are assigned before the fallback src. The viewer updates its size hint when zoom or viewport dimensions change. The full source is requested only if explicit zoom needs more pixels than the available variants; records without variants necessarily fall back to their source. All 242 approved staging OPDB images were checked and have responsive candidates. Browser tests verify a fresh phone fit does not request the large/original URL, then requests a larger candidate on zoom. No database migration is needed.

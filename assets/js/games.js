@@ -88,10 +88,10 @@ function createGameGallery(game) {
   const move = delta => { selected = (selected + delta + images.length) % images.length; paint(); };
   previous.addEventListener('click', () => move(-1));
   next.addEventListener('click', () => move(1));
-  enlarge.addEventListener('click', () => { paintFull(); lightbox.showModal(); });
+  enlarge.addEventListener('click', () => { lightbox.showModal(); paintFull(); });
   lightbox.addEventListener('keydown', event => {
-    if (event.key === 'ArrowLeft' && images.length > 1) { event.preventDefault(); move(-1); }
-    if (event.key === 'ArrowRight' && images.length > 1) { event.preventDefault(); move(1); }
+    if (event.key === 'ArrowLeft' && zoom === 1 && images.length > 1) { event.preventDefault(); move(-1); }
+    if (event.key === 'ArrowRight' && zoom === 1 && images.length > 1) { event.preventDefault(); move(1); }
   });
   const fullControls = document.createElement('div'); fullControls.className = 'games-gallery-controls';
   for (const [label, delta] of [['Previous photo', -1], ['Next photo', 1]]) {
@@ -99,19 +99,107 @@ function createGameGallery(game) {
     button.addEventListener('click', () => move(delta)); fullControls.appendChild(button);
   }
   lightbox.appendChild(fullControls);
+  let zoom = 1, zoomImage = null, viewport = null, fitWidth = 0, fitHeight = 0, zoomResize = null;
+  lightbox.addEventListener('close', () => { zoomResize?.disconnect(); zoomResize = null; });
+  const zoomControls = document.createElement('div'); zoomControls.className = 'games-gallery-controls';
+  zoomControls.setAttribute('role', 'group'); zoomControls.setAttribute('aria-label', 'Photo zoom');
+  const zoomOut = profileText('button', 'Zoom out'); zoomOut.type = 'button';
+  const zoomIn = profileText('button', 'Zoom in'); zoomIn.type = 'button';
+  const fit = profileText('button', 'Fit photo'); fit.type = 'button';
+  const zoomLabel = profileText('span', '100%'); zoomLabel.setAttribute('role', 'status');
+  const original = profileText('a', 'Open original image'); original.target = '_blank'; original.rel = 'noopener noreferrer';
+  zoomControls.append(zoomOut, zoomLabel, zoomIn, fit, original);
+  lightbox.insertBefore(zoomControls, fullStage);
+  zoomOut.addEventListener('click', () => setZoom(zoom / 1.5));
+  zoomIn.addEventListener('click', () => setZoom(zoom * 1.5));
+  fit.addEventListener('click', () => setZoom(1));
+  lightbox.addEventListener('keydown', event => {
+    if (event.key === '+' || event.key === '=') { event.preventDefault(); setZoom(zoom * 1.5); }
+    if (event.key === '-') { event.preventDefault(); setZoom(zoom / 1.5); }
+    if (event.key === '0') { event.preventDefault(); setZoom(1); }
+  });
+  function setZoom(value) {
+    if (!viewport || !zoomImage || !fitWidth) return;
+    const oldWidth = fitWidth * zoom, oldHeight = fitHeight * zoom;
+    const centerX = (viewport.scrollLeft + viewport.clientWidth / 2 - Math.max(0, (viewport.clientWidth - oldWidth) / 2)) / oldWidth;
+    const centerY = (viewport.scrollTop + viewport.clientHeight / 2 - Math.max(0, (viewport.clientHeight - oldHeight) / 2)) / oldHeight;
+    zoom = Math.min(4, Math.max(1, value));
+    const width = fitWidth * zoom, height = fitHeight * zoom;
+    zoomImage.style.width = `${width}px`; zoomImage.style.height = `${height}px`;
+    zoomImage.style.marginTop = `${Math.max(0, (viewport.clientHeight - height) / 2)}px`;
+    viewport.dataset.zoomed = String(zoom > 1);
+    zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+    zoomOut.disabled = fit.disabled = zoom === 1; zoomIn.disabled = zoom === 4;
+    const image = images[selected];
+    const candidates = window.SNHGameImages.variants(image);
+    const maxWidth = candidates[candidates.length - 1]?.width || 0;
+    if (zoom > 1 && width * (window.devicePixelRatio || 1) > maxWidth) {
+      // Full source is requested only when zoom explicitly needs more than stored variants.
+      zoomImage.removeAttribute('srcset'); zoomImage.removeAttribute('sizes');
+      if (zoomImage.src !== image.url) zoomImage.src = image.url;
+    } else window.SNHGameImages.applyForWidth(zoomImage, image, width);
+    viewport.scrollLeft = centerX * width - viewport.clientWidth / 2 + Math.max(0, (viewport.clientWidth - width) / 2);
+    viewport.scrollTop = centerY * height - viewport.clientHeight / 2 + Math.max(0, (viewport.clientHeight - height) / 2);
+  }
   function paintFull() {
-    fullStage.replaceChildren();
+    zoomResize?.disconnect();
+    fullStage.replaceChildren(); zoom = 1; fitWidth = 0; fitHeight = 0;
+    zoomLabel.textContent = '100%'; zoomOut.disabled = fit.disabled = true; zoomIn.disabled = false;
     if (images[selected]) {
-      fullStage.appendChild(createGameImageFigure({ title: game.title, primaryImage: images[selected] }, true));
+      const image = images[selected];
+      const figure = createGameImageFigure({ title: game.title, primaryImage: image }, true);
+      zoomImage = figure.querySelector('img'); zoomImage.draggable = false; zoomImage.loading = 'eager';
+      viewport = document.createElement('div'); viewport.className = 'games-photo-viewport'; viewport.tabIndex = 0;
+      viewport.setAttribute('role', 'region'); viewport.setAttribute('aria-label', 'Zoomable photo. Use zoom buttons, pinch, or double-click; drag or scroll to move around.');
+      zoomImage.replaceWith(viewport); viewport.appendChild(zoomImage); fullStage.appendChild(figure);
+      original.href = image.url;
       const position = profileText('p', `Photo ${selected + 1} of ${images.length}`);
       position.setAttribute('role', 'status'); fullStage.appendChild(position);
+      const thisImage = zoomImage, thisViewport = viewport;
+      function layout() {
+        if (zoomImage !== thisImage || !lightbox.open) return;
+        const dimensions = window.SNHGameImages.variants(image).find(row => row.height > 0);
+        const ratio = dimensions ? dimensions.width / dimensions.height : thisImage.naturalWidth / thisImage.naturalHeight;
+        if (!Number.isFinite(ratio) || ratio <= 0) return;
+        fitWidth = Math.min(thisViewport.clientWidth, thisViewport.clientHeight * ratio);
+        fitHeight = fitWidth / ratio;
+        setZoom(zoom);
+      }
+      thisImage.addEventListener('load', layout);
+      layout();
+      zoomResize = new ResizeObserver(layout); zoomResize.observe(thisViewport);
+      const pointers = new Map(); let pinchDistance = 0, pinchZoom = 1, drag = null;
+      thisViewport.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        thisViewport.setPointerCapture(event.pointerId);
+        if (pointers.size === 2) {
+          const [a, b] = Array.from(pointers.values()); pinchDistance = Math.hypot(a.x-b.x,a.y-b.y); pinchZoom = zoom; drag = null;
+        } else drag = { x: event.clientX, y: event.clientY, left: thisViewport.scrollLeft, top: thisViewport.scrollTop };
+      });
+      thisViewport.addEventListener('pointermove', event => {
+        if (!pointers.has(event.pointerId)) return;
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        if (pointers.size === 2 && pinchDistance) {
+          const [a,b] = Array.from(pointers.values()); setZoom(pinchZoom * Math.hypot(a.x-b.x,a.y-b.y) / pinchDistance);
+        } else if (drag && zoom > 1) {
+          thisViewport.scrollLeft = drag.left + drag.x - event.clientX;
+          thisViewport.scrollTop = drag.top + drag.y - event.clientY;
+        }
+      });
+      function release(event) { pointers.delete(event.pointerId); drag = null; pinchDistance = 0; }
+      thisViewport.addEventListener('pointerup', release); thisViewport.addEventListener('pointercancel', release);
+      thisViewport.addEventListener('dblclick', () => setZoom(zoom > 1 ? 1 : 2));
     }
     fullControls.hidden = images.length < 2;
   }
   function paint() {
     stage.replaceChildren();
     const image = images[selected];
-    if (image) stage.appendChild(createGameImageFigure({ title: game.title, primaryImage: image }, true));
+    if (image) {
+      stage.appendChild(createGameImageFigure({ title: game.title, primaryImage: image }, true));
+      if (stage.clientWidth) window.SNHGameImages.applyForWidth(stage.querySelector('img'), image, stage.clientWidth);
+    }
     else stage.appendChild(profileText('p', 'No approved photos are available for this machine yet.'));
     count.textContent = image ? `Photo ${selected + 1} of ${images.length}` : '';
     controls.hidden = !image;

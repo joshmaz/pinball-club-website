@@ -89,3 +89,12 @@
 .club-games .games-note-meta { color: var(--club-muted); font-size: .8rem; margin: .25rem 0; }
 .club-games .games-note-body { margin: .4rem 0 0; white-space: pre-wrap; }
 .club-games .games-resolved-notes summary { min-height: 44px; padding: .65rem 0; cursor: pointer; color: var(--club-teal); }
+/* The viewer uses most of the screen and supports real image zoom with scroll/drag. */
+.club-games .games-photo-lightbox { width: 96vw; max-width: 96vw; max-height: 96dvh; overflow: auto; }
+.club-games .games-photo-viewport { height: 65dvh; width: 100%; overflow: auto; overscroll-behavior: contain; touch-action: none; background: var(--club-soft); }
+.club-games .games-photo-lightbox .games-photo-viewport .game-card-image { display: block; max-width: none; max-height: none; aspect-ratio: auto; object-fit: fill; margin: 0 auto; }
+.club-games .games-photo-viewport[data-zoomed="true"] { cursor: grab; }
+.club-games .games-photo-viewport[data-zoomed="true"]:active { cursor: grabbing; }
+.club-games .games-photo-lightbox .games-gallery-controls { align-items: center; }
+.club-games .games-photo-lightbox .games-gallery-controls button { min-height: 44px; }
+.club-games .games-photo-viewport:focus-visible { outline: 2px solid var(--club-teal); outline-offset: -2px; }

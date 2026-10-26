@@ -11,7 +11,7 @@ const image = {url:'https://example.test/original.jpg', variants:[
   {url:'https://example.test/large.webp',width:1200}]};
 test('card and detail use derivative candidates and never include original in srcset', () => {
  const api=context(), card=img(), detail=img(); api.apply(card,image,false); api.apply(detail,image,true);
- assert.equal(card.src,image.variants[1].url); assert.equal(detail.src,image.variants[2].url);
+ assert.equal(card.src,image.variants[1].url); assert.equal(detail.src,image.variants[1].url);
  assert.equal(card.srcset.includes('original'),false); assert.match(card.srcset,/320w.*640w.*1200w/);
 });
 test('old records and animation fallback clear previous slideshow srcset', () => {
@@ -71,4 +71,13 @@ test('animated PNG and WebP bypass Canvas and retain original delivery', async (
  const webp=new Uint8Array(24); webp.set([65,78,73,77,4,0,0,0],12);
  assert.equal((await api.generate({type:'image/png',arrayBuffer:async()=>png.buffer})).length,0);
  assert.equal((await api.generate({type:'image/webp',arrayBuffer:async()=>webp.buffer})).length,0);
+});
+
+test('measured viewer sizing chooses the smallest sufficient candidate at the device density', () => {
+ const normal=context({devicePixelRatio:1}), retina=context({devicePixelRatio:2});
+ const small=img(),large=img(),highDensity=img();
+ normal.applyForWidth(small,image,250);normal.applyForWidth(large,image,900);retina.applyForWidth(highDensity,image,400);
+ assert.equal(small.src,image.variants[0].url);assert.equal(small.sizes,'250px');
+ assert.equal(large.src,image.variants[2].url);assert.equal(large.sizes,'900px');
+ assert.equal(highDensity.src,image.variants[2].url);
 });
