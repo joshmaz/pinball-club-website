@@ -10,9 +10,9 @@ function gameEraLabel(game) {
     String(game.display || '').trim().toLowerCase()] || '';
 }
 
-function gameMetadataLabel(game) {
+function gameMetadataLabel(game, includeEra = true) {
   const date = String(game.releaseDate || game.manufactureDate || '');
-  return [game.manufacturer, /^\d{4}/.test(date) ? date.slice(0, 4) : '', gameEraLabel(game)].filter(Boolean).join(' · ');
+  return [game.manufacturer, /^\d{4}/.test(date) ? date.slice(0, 4) : '', includeEra ? gameEraLabel(game) : ''].filter(Boolean).join(' · ');
 }
 
 function shortClubLocation(address) {
@@ -1378,7 +1378,14 @@ function createGamesList(games) {
     const badge = document.createElement("span");
     badge.className = isAtClub ? "games-status-badge" : "games-status-badge games-status-badge--history";
     badge.textContent = isAtClub ? "At club" : "Club history";
-    heading.appendChild(badge);
+    const badges = document.createElement('div'); badges.className = 'games-card-badges';
+    badges.appendChild(badge);
+    const era = gameEraLabel(game);
+    if (era) {
+      const eraBadge = profileText('span', era, 'games-era-badge');
+      eraBadge.setAttribute('aria-label', `Era: ${era}`); badges.appendChild(eraBadge);
+    }
+    heading.appendChild(badges);
     item.appendChild(heading);
 
     const imageFigure = createGameImageFigure(game);
@@ -1399,7 +1406,7 @@ function createGamesList(games) {
       item.appendChild(imageFigure);
     }
 
-    const metadata = gameMetadataLabel(game);
+    const metadata = gameMetadataLabel(game, false);
     if (metadata) item.appendChild(profileText('p', metadata, 'games-machine-metadata'));
     const details = document.createElement("p");
     details.className = "games-details";
@@ -1583,16 +1590,23 @@ function filterGamesByQuery(games, query) {
   });
 }
 
+function filterGamesByEra(games, selectedEras) {
+  const selected = new Set(selectedEras);
+  return games.filter(game => selected.has(gameEraLabel(game) || 'Other'));
+}
+
 function renderGamesList(games) {
   const container = document.getElementById("games-list");
   const search = document.getElementById("games-search");
   const status = document.getElementById("games-search-status");
-  const filtered = filterGamesByQuery(games, search ? search.value : "");
+  const controls = Array.from(document.querySelectorAll('[data-game-era]'));
+  const eras = controls.length ? controls.filter(input => input.checked).map(input => input.dataset.gameEra) : ['EM', 'Solid State', 'Modern', 'Other'];
+  const filtered = filterGamesByEra(filterGamesByQuery(games, search ? search.value : ""), eras);
   if (status) status.textContent = `${filtered.length} of ${games.length} games in this lineup`;
   if (!container) return;
   if (!filtered.length) {
     showMessage(container, games.length ? "No matching games" : "No games on this date",
-      games.length ? "Try a different title or description, or clear your search." : "Choose another date or show all games to explore the club’s history.");
+      games.length ? "Try changing your era selections or search, or select All eras." : "Choose another date or show all games to explore the club’s history.");
     return;
   }
   container.replaceChildren(createGamesList(filtered));
@@ -1642,6 +1656,17 @@ async function loadGames() {
     const search = document.getElementById("games-search");
     if (linkedGame && search) search.value = "";
     if (search) search.addEventListener("input", () => renderGamesList(currentLineup));
+    const eraControls = Array.from(document.querySelectorAll('[data-game-era]'));
+    const otherOption = document.getElementById('games-era-other-option');
+    if (otherOption) otherOption.hidden = !sorted.some(game => !gameEraLabel(game));
+    eraControls.forEach(input => {
+      if (linkedGame) input.checked = true;
+      input.addEventListener('change', () => renderGamesList(currentLineup));
+    });
+    document.getElementById('games-era-all')?.addEventListener('click', () => {
+      eraControls.forEach(input => { input.checked = true; });
+      renderGamesList(currentLineup);
+    });
 
     if (transitionBanner) {
       transitionBanner.hidden = hasAnyAtClub;

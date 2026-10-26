@@ -33,3 +33,11 @@ test('external bulb icons use OPDB info rather than the external PinTips tab',()
  assert.equal(ctx.getOpdbInfoUrl({opdbId:'Gtest-Mtest'}),'https://app.matchplay.events/opdb/entries/Gtest-Mtest');
  assert.equal(ctx.getOpdbInfoUrl({}), '');
 });
+
+test('era toggles allow combinations and keep unclassified non-OPDB machines separate',()=>{
+ const games=[{title:'EM',display:'reels'},{title:'SS',display:'alphanumeric'},{title:'Modern',display:'lcd'},{title:'Pitch-n-bat'}];
+ assert.deepEqual(Array.from(ctx.filterGamesByEra(games,['EM','Modern']),g=>g.title),['EM','Modern']);
+ assert.deepEqual(Array.from(ctx.filterGamesByEra(games,[])),[]);
+ assert.deepEqual(Array.from(ctx.filterGamesByEra(games,['Other']),g=>g.title),['Pitch-n-bat']);
+ assert.deepEqual(Array.from(ctx.filterGamesByEra(ctx.filterGamesByQuery(games,'SS'),['EM','Modern'])),[]);
+});

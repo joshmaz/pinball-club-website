@@ -38,6 +38,38 @@ try {
  });
  await page.goto(`http://127.0.0.1:${server.address().port}/games.html`);
  await page.locator('.games-list-item').first().waitFor();
+ const eraGroup=page.getByRole('group',{name:'Show eras',exact:true});
+ const eraCheck=name=>eraGroup.getByRole('checkbox',{name,exact:true});
+ const cardCount=()=>page.locator('.games-list-item[data-game-id]').count();
+ const initialCount=await cardCount();
+ await eraCheck('Modern').uncheck(); assert.ok(await cardCount()<initialCount);
+ await eraCheck('Solid State').uncheck();
+ assert.deepEqual(await page.locator('.games-era-badge').allTextContents(),Array(await cardCount()).fill('EM'));
+ await eraCheck('EM').uncheck();await page.getByRole('heading',{name:'No matching games',exact:true}).waitFor();
+ await eraGroup.getByRole('button',{name:'All eras',exact:true}).click();assert.equal(await cardCount(),initialCount);
+ await page.getByRole('checkbox',{name:'Show all games',exact:true}).check();
+ assert.equal(await cardCount(),126);
+ await eraCheck('EM').uncheck();await eraCheck('Solid State').uncheck();await eraCheck('Modern').uncheck();
+ assert.equal(await cardCount(),2,'non-OPDB exceptions remain in Other');
+ await eraCheck('Other').uncheck();assert.equal(await cardCount(),0);
+ await eraGroup.getByRole('button',{name:'All eras',exact:true}).click();
+ await page.getByRole('checkbox',{name:'Show all games',exact:true}).uncheck();
+ await page.getByRole('searchbox',{name:'Search this lineup',exact:true}).fill('Future Spa');assert.equal(await cardCount(),1);
+ await eraCheck('Solid State').uncheck();assert.equal(await cardCount(),0);
+ await eraCheck('Solid State').check();assert.equal(await cardCount(),1);
+ await page.getByRole('searchbox',{name:'Search this lineup',exact:true}).fill('');
+ await eraCheck('Solid State').uncheck();await eraCheck('Modern').uncheck();await eraCheck('Other').uncheck();
+ const date=page.getByLabel('Jump to date',{exact:true});await date.fill('2019-01-01');
+ await page.getByRole('button',{name:'Apply',exact:true}).click();
+ assert.equal(await eraCheck('Modern').isChecked(),false,'era selection survives timeline changes');
+ assert.ok((await page.locator('.games-era-badge').allTextContents()).every(value=>value==='EM'));
+ await date.fill(await date.getAttribute('max'));await page.getByRole('button',{name:'Apply',exact:true}).click();
+ await eraGroup.getByRole('button',{name:'All eras',exact:true}).click();
+ await eraGroup.scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'era-filters-desktop.png')});
+ await page.setViewportSize({width:390,height:844});await eraGroup.scrollIntoViewIfNeeded();
+ await page.screenshot({path:path.join(output,'era-filters-phone.png')});
+ await page.setViewportSize({width:1280,height:900});
+
  await page.evaluate(game=>{
   window.__game=game;window.__calls=[];window.__member=false;window.__failPhotos=false;window.__failSummary=false;
   window.__resolveInfo=null;window.__failNotes=false;window.__deferNotes=false;window.__resolveNotes=null;
