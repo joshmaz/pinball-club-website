@@ -250,16 +250,17 @@ function createGameNotes(game) {
           setTimeout(() => { if (!disposed && panel.isConnected) void load(); }, 0);
         });
       }
+      // Public summaries are visible to everyone, independently of member-only notes.
+      const publicRead = gameHasCatalogUuid(game) && getPublicSupabaseClient()
+        ? showSummaries(version).catch(() => retrySummary(version))
+        : Promise.resolve(summary.replaceChildren(profileText('p', 'Public notes are unavailable right now.')));
       if (!activeUserId) {
         member.appendChild(profileText('p', 'Club members can add machine notes, report problems, or share useful observations. Sign in or sign up to join the club.'));
         const signin = profileText('a', 'Sign in or sign up'); signin.href = `signin.html?next=${encodeURIComponent(portalHref)}`;
         member.appendChild(signin);
-        if (gameHasCatalogUuid(game) && getPublicSupabaseClient()) {
-          await showSummaries(version).catch(() => retrySummary(version));
-        } else summary.replaceChildren(profileText('p', 'Public notes are unavailable right now.'));
+        await publicRead;
       } else if (gameHasCatalogUuid(game)) {
         // Members see original linked records, including those without a public summary.
-        summary.hidden = true; summary.replaceChildren();
         const notes = document.createElement('div'); member.appendChild(notes);
         const manage = profileText('a', 'View and manage notes in Member Tools'); manage.href = portalHref;
         member.appendChild(manage);
@@ -290,7 +291,7 @@ function createGameNotes(game) {
           } finally { send.disabled = false; }
         });
         member.appendChild(form);
-        await loadMemberNotes(notes, version);
+        await Promise.all([publicRead, loadMemberNotes(notes, version)]);
       }
       if (current(version)) loaded = true;
     } catch {

@@ -119,7 +119,8 @@ try {
  await page.getByText('Resolved notes (1)',{exact:true}).click();
  assert.equal(await page.getByText('Resolved machine note',{exact:true}).isVisible(),true);
  assert.equal(await page.locator('.games-note-body img').count(),0,'notes render as plain text');
- assert.equal(await page.getByText('Left flipper is weak. · In progress',{exact:true}).count(),0,'members see original notes instead of duplicate public summaries');
+ await page.getByText('Left flipper is weak. · In progress',{exact:true}).waitFor();
+ assert.equal(await page.getByRole('heading',{name:'Public notes',exact:true}).isVisible(),true,'members also see public summaries');
  await page.getByLabel('Title',{exact:true}).fill('Weak flipper');
  await page.getByLabel('Details (optional)',{exact:true}).fill('Left flipper loses power after a few shots.');
  await page.evaluate(()=>window.__resolveInfo({data:{}}));
@@ -136,7 +137,7 @@ try {
  assert.equal(await page.getByLabel('Title',{exact:true}).inputValue(),'Retained draft');
  await page.screenshot({path:path.join(output,'member-report-phone.png')});
  await page.getByRole('button',{name:'Close',exact:true}).click();
- await page.evaluate(()=>{window.__failNotes=true;});await open();
+ await page.evaluate(()=>{window.__failNotes=true;window.__failSummary=true;});await open();
  await page.getByRole('tab',{name:'Notes',exact:true}).click();
  await page.getByRole('button',{name:'Retry machine notes',exact:true}).waitFor();
  await page.getByLabel('Title',{exact:true}).fill('Draft while retrying notes');
@@ -144,6 +145,13 @@ try {
  await page.getByRole('button',{name:'Retry machine notes',exact:true}).click();
  await page.getByText('Member-only machine note',{exact:true}).waitFor();
  assert.equal(await page.getByLabel('Title',{exact:true}).inputValue(),'Draft while retrying notes');
+ await page.getByRole('button',{name:'Retry public notes',exact:true}).waitFor();
+ await page.evaluate(()=>{window.__failSummary=false;});
+ await page.getByRole('button',{name:'Retry public notes',exact:true}).click();
+ await page.getByText('Left flipper is weak. · In progress',{exact:true}).waitFor();
+ assert.equal(await page.getByLabel('Title',{exact:true}).inputValue(),'Draft while retrying notes','retrying public summaries preserves the member draft');
+ await page.getByRole('heading',{name:'Public notes',exact:true}).scrollIntoViewIfNeeded();
+ await page.screenshot({path:path.join(output,'member-public-notes-phone.png')});
  await page.getByRole('button',{name:'Close',exact:true}).click();
  await page.evaluate(()=>{window.__deferNotes=true;});await open();
  await page.getByRole('tab',{name:'Notes',exact:true}).click();
