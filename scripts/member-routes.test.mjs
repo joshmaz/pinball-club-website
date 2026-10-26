@@ -120,3 +120,11 @@ test("Operations section routes survive reload and legacy hashes", () => {
   assert.equal(fixture.replacedUrl(),"/members.html?panel=photos");
   assert.equal(loadRoutes({search:"?panel=photos&album=bad"}).routes.read().albumId,"");
  });
+
+test('issue reporting context survives sign-in return route and is removed outside Issues', () => {
+ const fixture=loadRoutes({search:`?panel=club-issues&issueGame=${GAME_ID}`});
+ assert.equal(fixture.routes.read().issueGameId,GAME_ID);
+ assert.equal(fixture.routes.build('club-issues'),`/members.html?panel=club-issues&issueGame=${GAME_ID}`);
+ assert.equal(fixture.routes.build('profile'),'/members.html');
+ assert.equal(loadRoutes({search:'?panel=club-issues&issueGame=bad'}).routes.build('club-issues'),'/members.html?panel=club-issues');
+});

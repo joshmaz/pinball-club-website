@@ -1,0 +1,52 @@
+# Club machine profiles
+
+Implemented against main `4254d7718fa9c96be043ce8ffb74bd8bb1105e14` after the October 26 game-card review.
+
+## Behavior
+
+- Cards use a brief excerpt of existing Details; the full text remains in **About our machine**. Editors see guidance to describe the actual club machine. Custom mods, public owner/lender credits, sale information, scores and Pingolf retain their existing fields and public/private boundaries.
+- Haines/Bridge addresses are abbreviated only for display. History is current first, then newest first. Exact stored dates and addresses are retained. Missing historical ends are not rendered as Present. Only the newest eligible open stint for a machine currently at the club receives Current; unknown starts remain explicit.
+- Era is derived from the existing OPDB `display` field: reels/lights = EM, alphanumeric = Solid State, dmd/lcd = Modern. No year cutoff or stored era field. Unknown values omit the badge. Seven reviewed display corrections are included in the snapshot and migration; exact OPDB ID and previous display must match before a live correction is applied. Other metadata is preserved. Major League and Play Boy still need OPDB identity matching.
+- Existing Kineticist/Pinside/IPDB/PinTips artwork is reused in the profile. PinTips keeps its current import, attribution, text handling and outbound destination.
+- Photos fetch approved associations when that tab is first opened. Primary first, club next, other approved images after; ties use creation time and ID. Thumbnails, image count, previous/next, credits and a native-dialog photo viewer reuse existing image delivery variants. A failed request retains the primary preview and offers retry. No additional image storage system or approvals are introduced.
+- Issues offers signed-in users a game-prefilled submission using the existing RPC. The link to Member Tools carries `issueGame` through the existing sign-in `next` route; the Issues editor filters and prefills that game, including historical games. Ordinary members still submit as Incoming. Existing helpers retain full edit/resolution access.
+- A helper can write an optional **Public machine summary** (280 characters). This is a separate editorial field, never an automatic copy/redaction of private title/body. Only nonblank summaries for unresolved issues on non-deleted games appear publicly. Public responses contain only summary and status, with no reporter, report ID, private body, provenance or exact timestamps. Existing reports remain private until a helper deliberately writes a summary. Resolution hides it; reopening shows it again until cleared.
+- No maintenance history, service log, parts tracking or Pinventory replacement is added.
+
+## Access and verification
+
+`20261026151512_game_card_profiles.sql` adds the optional summary, extends the existing authenticated list/upsert, and defines two narrow public read functions. Public projections use explicit approval/status/deletion filters and an empty search path. Execute is revoked from PUBLIC and granted only to anon/authenticated. No new direct table grants or changes to existing member/helper rules. The existing account-existence guard remains enforced, including against stale tokens after account deletion. Explicit anon grants on the two member issue RPCs are revoked.
+
+Tests execute the migration in local PGlite with anon/authenticated roles, real issue helper/editability definitions and fixture records. They cover ordinary-member create versus helper update/publication, all helper families, public field allowlisting, blank/resolved/deleted exclusion, secondary-image approval/ordering, delivery variants and guarded metadata updates. This is local PostgreSQL-compatible verification, not a claim that production policies or endpoints have been deployed.
+
+Run:
+
+```sh
+node --test scripts/game-card-formatting.test.mjs scripts/game-card-profiles-db.test.mjs scripts/member-routes.test.mjs scripts/game-deep-links.test.mjs scripts/games-contextual-edit.test.mjs scripts/game-image-delivery.test.mjs scripts/game-image-authorization.test.mjs scripts/pintips-db.test.mjs scripts/pintips-provider.test.mjs scripts/pingolf-db.test.mjs
+```
+
+Optional browser QA uses Playwright (install locally without saving a dependency) and isolated RPC fixtures. It never submits a production report:
+
+```sh
+node scripts/game-card-profiles-browser-check.mjs
+```
+
+Optional environment variables: `CHROMIUM_EXECUTABLE` selects an installed Chromium binary; `GAME_CARD_QA_PHOTO` supplies a local image fixture; `GAME_CARD_QA_DIR` selects screenshot output (defaults to `/tmp/game-card-qa`). Covers desktop 1280×900 and phone 390×844, lazy gallery requests, credits, lightbox Escape, focus containment, retained photo selection/drafts during slow responses, PinTips, visitor invitation, member submission/failure, retries, empty states, helper summary publication and ordinary-member field exclusion.
+
+## Release order
+
+1. Review and apply the migration through the normal database deployment process. Inspect advisors/policies in the deployed environment. The migration changes no existing summary visibility by default.
+2. Verify public functions as visitor/member/editor against a non-production game, including a reference-only secondary photo and an unpublished report. Confirm direct private issue reads remain inaccessible to visitors.
+3. Publish frontend changes, then refresh the public games snapshot from the database so live metadata and fallback agree. The checked-in snapshot includes the seven reviewed display corrections; deployment skips any live record independently edited since review.
+4. With test accounts, verify sign-in/sign-up return context, member report creation, helper summary publication/clear/resolution, primary fallback and approved image credits. Check real image `currentSrc` at phone/desktop densities.
+5. Helpers can start adding public summaries after editorial review. Do not copy reporter names, contact information or private notes into them.
+
+Rollback: revert frontend changes. Existing primary images, issue workflows and Tips remain usable; the additive summary column and public projections can remain until a separately reviewed cleanup. Do not delete images or issue records as rollback.
+
+## Staging deployment — October 26, 2026
+
+Applied only `20261026151512_game_card_profiles.sql` to **SNHPC Staging** (`eptbdrwmcwogxcjleudv`). The staging schema was already restored but had no recorded migration history; older migrations were not replayed. The repository filename matches the version recorded by the deployment tool.
+
+Verified the summary column and public read functions, retained account-existence checks, and revoked visitor execution of member-only list/upsert. No public summaries were auto-published. Staging had two of the seven reviewed OPDB entries; both now use LCD. Public gallery reads include only approved images. Production is unchanged.
+
+Security advisors retain existing baseline findings. The two new public read functions intentionally appear as SECURITY DEFINER executable advisories because they return allowlisted public projections; member-only issue functions are no longer executable by anon.

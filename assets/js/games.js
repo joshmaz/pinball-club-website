@@ -4,6 +4,243 @@ const PINSIDE_ICON_PATH = "assets/images/icons/pinside_logo-ball.png";
 const IPDB_ICON_PATH = "assets/images/icons/ipdb-favicon.png";
 const PINTIPS_ICON_PATH = "assets/images/icons/pintips-bulb.svg";
 let gamesCanManage = false;
+/** Club eras are a display convention, derived only from OPDB display metadata. */
+function gameEraLabel(game) {
+  return ({ reels: 'EM', lights: 'EM', alphanumeric: 'Solid State', dmd: 'Modern', lcd: 'Modern' })[
+    String(game.display || '').trim().toLowerCase()] || '';
+}
+
+function gameMetadataLabel(game) {
+  const date = String(game.releaseDate || game.manufactureDate || '');
+  return [game.manufacturer, /^\d{4}/.test(date) ? date.slice(0, 4) : '', gameEraLabel(game)].filter(Boolean).join(' · ');
+}
+
+function shortClubLocation(address) {
+  const value = String(address || '').trim();
+  if (/\bhaines\b/i.test(value)) return 'Haines St';
+  if (/\bbridge\b/i.test(value)) return 'Bridge St';
+  return value || 'Club location';
+}
+
+function compactStintDate(value) {
+  const iso = normalizeIsoDateOrEmpty(value);
+  if (!iso) return '';
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = Number(iso.slice(5, 7));
+  return month >= 1 && month <= 12 ? `${months[month - 1]} ${iso.slice(0, 4)}` : '';
+}
+
+function orderedClubStints(stints, atClub) {
+  const rows = (Array.isArray(stints) ? stints : []).filter(s => s && typeof s === 'object');
+  const today = todayIsoDate();
+  // A single newest open stint can be current. Do not mark every missing end as Present.
+  const candidates = atClub ? rows.filter(s => !hasNonemptyString(s.leftClubDate) &&
+    (!normalizeIsoDateOrEmpty(s.joinedClubDate) || s.joinedClubDate <= today)) : [];
+  candidates.sort((a, b) => String(b.joinedClubDate || '').localeCompare(String(a.joinedClubDate || '')));
+  const current = candidates[0];
+  return rows.map(stint => ({ stint, current: stint === current })).sort((a, b) =>
+    Number(b.current) - Number(a.current) ||
+    String(b.stint.joinedClubDate || b.stint.leftClubDate || '').localeCompare(String(a.stint.joinedClubDate || a.stint.leftClubDate || '')));
+}
+
+function profileText(tag, text, className) {
+  const node = document.createElement(tag);
+  node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+
+async function gameProfileRpc(name, args) {
+  const client = getPublicSupabaseClient();
+  if (!client) throw new Error('Service unavailable');
+  const result = await client.rpc(name, args);
+  if (result.error) throw result.error;
+  return typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+}
+
+/** A gallery owns its DOM: other profile requests cannot reset its focus or selection. */
+function createGameGallery(game) {
+  const panel = document.createElement('div');
+  panel.className = 'games-profile-panel games-profile-photos';
+  const stage = document.createElement('div');
+  const controls = document.createElement('div');
+  controls.className = 'games-gallery-controls';
+  const count = profileText('p', '', 'games-gallery-count');
+  count.setAttribute('role', 'status');
+  const thumbs = document.createElement('div');
+  thumbs.className = 'games-gallery-thumbnails';
+  thumbs.setAttribute('role', 'group');
+  thumbs.setAttribute('aria-label', 'Choose a machine photo');
+  let images = game.primaryImage ? [game.primaryImage] : [];
+  let selected = 0, loaded = false, loading = false;
+  const lightbox = document.createElement('dialog');
+  lightbox.className = 'games-photo-lightbox';
+  lightbox.setAttribute('aria-label', `${game.title} photo viewer`);
+  const fullStage = document.createElement('div');
+  const close = profileText('button', 'Close photo'); close.type = 'button';
+  close.addEventListener('click', () => lightbox.close());
+  lightbox.append(close, fullStage);
+  panel.append(stage, count, controls, thumbs, lightbox);
+  const previous = profileText('button', 'Previous photo'); previous.type = 'button';
+  const next = profileText('button', 'Next photo'); next.type = 'button';
+  const enlarge = profileText('button', 'Enlarge photo'); enlarge.type = 'button';
+  controls.append(previous, next, enlarge);
+  const move = delta => { selected = (selected + delta + images.length) % images.length; paint(); };
+  previous.addEventListener('click', () => move(-1));
+  next.addEventListener('click', () => move(1));
+  enlarge.addEventListener('click', () => { paintFull(); lightbox.showModal(); });
+  lightbox.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' && images.length > 1) { event.preventDefault(); move(-1); }
+    if (event.key === 'ArrowRight' && images.length > 1) { event.preventDefault(); move(1); }
+  });
+  const fullControls = document.createElement('div'); fullControls.className = 'games-gallery-controls';
+  for (const [label, delta] of [['Previous photo', -1], ['Next photo', 1]]) {
+    const button = profileText('button', label); button.type = 'button';
+    button.addEventListener('click', () => move(delta)); fullControls.appendChild(button);
+  }
+  lightbox.appendChild(fullControls);
+  function paintFull() {
+    fullStage.replaceChildren();
+    if (images[selected]) {
+      fullStage.appendChild(createGameImageFigure({ title: game.title, primaryImage: images[selected] }, true));
+      const position = profileText('p', `Photo ${selected + 1} of ${images.length}`);
+      position.setAttribute('role', 'status'); fullStage.appendChild(position);
+    }
+    fullControls.hidden = images.length < 2;
+  }
+  function paint() {
+    stage.replaceChildren();
+    const image = images[selected];
+    if (image) stage.appendChild(createGameImageFigure({ title: game.title, primaryImage: image }, true));
+    else stage.appendChild(profileText('p', 'No approved photos are available for this machine yet.'));
+    count.textContent = image ? `Photo ${selected + 1} of ${images.length}` : '';
+    controls.hidden = !image;
+    previous.hidden = next.hidden = images.length < 2;
+    // Keep the thumbnail buttons in place while selecting, preserving keyboard focus.
+    Array.from(thumbs.children).forEach((button, index) => button.setAttribute('aria-pressed', String(index === selected)));
+    if (lightbox.open) paintFull();
+  }
+  function paintThumbs() {
+    thumbs.replaceChildren();
+    thumbs.hidden = images.length < 2;
+    if (images.length < 2) return;
+    images.forEach((image, index) => {
+      const button = document.createElement('button'); button.type = 'button';
+      button.setAttribute('aria-label', `Show photo ${index + 1}: ${image.altText || game.title}`);
+      const thumbnail = document.createElement('img');
+      const variants = window.SNHGameImages.variants(image);
+      thumbnail.src = variants[0]?.url || image.url;
+      thumbnail.alt = ''; thumbnail.width = 80; thumbnail.height = 64;
+      thumbnail.loading = 'lazy'; thumbnail.decoding = 'async';
+      button.appendChild(thumbnail);
+      button.addEventListener('click', () => { selected = index; paint(); });
+      thumbs.appendChild(button);
+    });
+  }
+  const status = profileText('p', '', 'games-gallery-status'); status.setAttribute('role', 'status');
+  const retry = profileText('button', 'Retry photos'); retry.type = 'button'; retry.hidden = true;
+  retry.addEventListener('click', () => void load()); panel.append(status, retry);
+  async function load() {
+    if (loaded || loading || !gameHasCatalogUuid(game) || !getPublicSupabaseClient()) return;
+    loading = true; retry.hidden = true; status.textContent = 'Loading photos…';
+    try {
+      const rows = await gameProfileRpc('snh_public_game_images', { p_game_id: game.id });
+      if (!panel.isConnected) return;
+      images = Array.isArray(rows) ? rows.filter(image => image && image.url) : [];
+      selected = 0; loaded = true; paintThumbs(); paint(); status.textContent = '';
+    } catch {
+      if (!panel.isConnected) return;
+      status.textContent = 'Additional photos could not be loaded. The primary photo is shown when available.';
+      retry.hidden = false;
+    } finally { loading = false; }
+  }
+  paintThumbs(); paint();
+  return { panel, load };
+}
+
+function createGameIssues(game) {
+  const panel = document.createElement('div'); panel.className = 'games-profile-panel games-profile-issues';
+  const summary = document.createElement('div');
+  const member = document.createElement('div');
+  panel.append(summary, member);
+  let loaded = false, loading = false;
+  const args = { p_game_id: game.id };
+  function retrySummary(message) {
+    summary.replaceChildren(profileText('p', message));
+    const retry = profileText('button', 'Retry issues'); retry.type = 'button';
+    retry.addEventListener('click', () => {
+      summary.replaceChildren(profileText('p', 'Loading known issues…'));
+      void showSummaries().catch(() => retrySummary('Known issues could not be loaded.'));
+    }); summary.appendChild(retry);
+  }
+  async function showSummaries() {
+    const rows = await gameProfileRpc('snh_public_game_issues', args);
+    if (!panel.isConnected) return;
+    summary.replaceChildren(profileText('h4', 'Known issues'));
+    if (!Array.isArray(rows) || !rows.length) {
+      summary.appendChild(profileText('p', 'No public issue summaries have been posted for this machine.'));
+      return;
+    }
+    const list = document.createElement('ul');
+    rows.forEach(row => list.appendChild(profileText('li', `${row.summary} · ${row.status === 'in_progress' ? 'In progress' : 'Reported'}`)));
+    summary.appendChild(list);
+  }
+  async function load() {
+    if (loaded || loading) return;
+    loading = true; summary.replaceChildren(profileText('p', 'Loading known issues…')); member.replaceChildren();
+    // Public summaries and authentication resolve independently; no private data is rendered here.
+    const publicRead = gameHasCatalogUuid(game) && getPublicSupabaseClient()
+      ? showSummaries().catch(() => retrySummary('Known issues could not be loaded.'))
+      : Promise.resolve(summary.replaceChildren(profileText('p', 'Known issues are unavailable right now.')));
+    try {
+      const session = window.SNHSiteAuth ? await window.SNHSiteAuth.getSession() : null;
+      if (!panel.isConnected) return;
+      const portalHref = `members.html?panel=club-issues&issueGame=${encodeURIComponent(game.id)}`;
+      if (!session?.user) {
+        member.appendChild(profileText('p', 'Club members can report machine problems. Sign in or sign up to join the club.'));
+        const signin = profileText('a', 'Sign in or sign up');
+        signin.href = `signin.html?next=${encodeURIComponent(portalHref)}`;
+        member.appendChild(signin);
+      } else if (gameHasCatalogUuid(game)) {
+        const manage = profileText('a', 'View member reports and manage issues'); manage.href = portalHref;
+        member.append(profileText('p', 'Check existing member reports before adding another report.'), manage);
+        const form = document.createElement('form'); form.className = 'games-issue-form';
+        const titleLabel = profileText('label', 'Problem');
+        const title = document.createElement('input'); title.required = true; title.maxLength = 160;
+        titleLabel.appendChild(title);
+        const bodyLabel = profileText('label', 'Details (optional)');
+        const body = document.createElement('textarea'); body.rows = 4;
+        bodyLabel.appendChild(body);
+        const send = profileText('button', 'Report a problem'); send.type = 'submit';
+        const status = profileText('p', 'Reports are shared with signed-in club members. A helper may publish a separate public summary.');
+        status.setAttribute('role', 'status');
+        form.append(titleLabel, bodyLabel, send, status);
+        form.addEventListener('submit', async event => {
+          event.preventDefault();
+          if (send.disabled) return;
+          const subject = title.value.trim();
+          if (!subject) { title.focus(); return; }
+          send.disabled = true; status.textContent = 'Submitting report…';
+          try {
+            // Existing server RPC enforces sign-in and forces ordinary members to Incoming.
+            await gameProfileRpc('snh_club_issues_upsert', { p_id: null, p_fields: {
+              gameId: game.id, title: subject, body: body.value.trim() || null, status: 'open'
+            } });
+            form.reset(); status.textContent = 'Report submitted. Thank you for helping care for this machine.';
+          } catch { status.textContent = 'The report could not be confirmed. Check member reports before retrying, and sign in again if needed.'; }
+          finally { send.disabled = false; }
+        });
+        member.appendChild(form);
+      }
+      loaded = true;
+    } catch {
+      member.appendChild(profileText('p', 'Sign-in status could not be checked. Open Member Tools to report a problem.'));
+      const link = profileText('a', 'Open Member Tools'); link.href = `members.html?panel=club-issues&issueGame=${encodeURIComponent(game.id)}`; member.appendChild(link);
+    } finally { await publicRead; loading = false; }
+  }
+  return { panel, load };
+}
+
 
 async function currentUserCanManageGames() {
   if (!window.SNHSiteAuth) return false;
@@ -288,29 +525,15 @@ function sortGamesNewestJoinFirst(games) {
 /**
  * @param {{ address?: string, joinedClubDate?: string, leftClubDate?: string, pinballMapLocationId?: number, dateUnknown?: boolean }[]} stints
  */
-function formatLocationStints(stints) {
-  if (!Array.isArray(stints) || stints.length === 0) {
-    return "";
-  }
-  const lines = [];
-  for (const s of stints) {
-    const where = (s.address && String(s.address).trim()) || "Club location";
-    const from = s.joinedClubDate ? String(s.joinedClubDate).trim() : "";
-    const through = s.leftClubDate ? String(s.leftClubDate).trim() : "";
-    let line = where;
-    if (from && through) {
-      line += `: ${from} – ${through}`;
-    } else if (from) {
-      line += `: from ${from}`;
-    } else if (through) {
-      line += `: through ${through}`;
-    }
-    if (s.dateUnknown) {
-      line += line === where ? ", tenure dates unknown" : " (tenure dates unknown)";
-    }
-    lines.push(line);
-  }
-  return lines.join("\n");
+function formatLocationStints(stints, atClub = false) {
+  return orderedClubStints(stints, atClub).map(({ stint: s, current }) => {
+    const from = compactStintDate(s.joinedClubDate);
+    const through = compactStintDate(s.leftClubDate);
+    const dates = current ? (from ? `${from} – Present` : 'Start unknown – Present')
+      : from && through ? `${from} – ${through}`
+      : from ? `${from} – End unknown` : through ? `Start unknown – ${through}` : 'Dates unknown';
+    return `${shortClubLocation(s.address)} · ${dates}${current ? ' · Current' : ''}`;
+  }).join('\n');
 }
 
 /**
@@ -502,6 +725,8 @@ const gameMoreInfoUi = {
   gameId: "",
   onKeyDown: /** @type {((e: KeyboardEvent) => void) | null} */ (null),
   requestId: 0,
+  background: [],
+  previousOverflow: "",
 };
 
 function ensureGameMoreInfoModal() {
@@ -699,6 +924,10 @@ function renderGameMoreInfoSections(payload, body, kind) {
 }
 
 function closeGameMoreInfoModal() {
+  gameMoreInfoUi.root?.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+  gameMoreInfoUi.background.forEach(([node, inert]) => { node.inert = inert; });
+  gameMoreInfoUi.background = [];
+  document.body.style.overflow = gameMoreInfoUi.previousOverflow;
   gameMoreInfoUi.requestId += 1;
   if (gameMoreInfoUi.onKeyDown) {
     document.removeEventListener("keydown", gameMoreInfoUi.onKeyDown);
@@ -721,7 +950,11 @@ function addGameProfileLink(row, label, url) {
   link.href = String(url);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.textContent = label;
+  const iconPath = ({ Kineticist: KINETICIST_ICON_PATH, Pinside: PINSIDE_ICON_PATH, IPDB: IPDB_ICON_PATH, PinTips: PINTIPS_ICON_PATH })[label];
+  if (iconPath) {
+    const icon = document.createElement('img'); icon.src = iconPath; icon.alt = ''; icon.className = 'games-provider-icon';
+    link.append(icon, document.createTextNode(label));
+  } else link.textContent = label;
   row.appendChild(link);
 }
 
@@ -765,14 +998,13 @@ function renderGameTips(panel, tips, state, game) {
 function renderGameProfile(game, payload, error, tips = [], tipsState = "empty") {
   const body = gameMoreInfoUi.bodyEl;
   if (!body) return;
-  const selectedLabel = body.querySelector('[role="tab"][aria-selected="true"]')?.textContent;
   body.replaceChildren();
   const tabs = document.createElement("div");
   tabs.className = "games-profile-tabs";
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "Game profile sections");
   const panels = [];
-  function addTab(label, panel) {
+  function addTab(label, panel, onShow) {
     const index = panels.length;
     const tab = document.createElement("button");
     tab.type = "button";
@@ -785,10 +1017,11 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
     panel.setAttribute("aria-labelledby", tab.id);
     tab.textContent = label;
     tabs.appendChild(tab);
-    panels.push({ tab, panel });
+    panels.push({ tab, panel, onShow });
     tab.addEventListener("click", () => activate(index));
     tab.addEventListener("keydown", (event) => {
-      const next = event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
+      const next = event.key === "Home" ? 0 : event.key === "End" ? panels.length - 1
+        : event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
       if (next === null) return;
       event.preventDefault();
       activate((next + panels.length) % panels.length);
@@ -801,27 +1034,29 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
       tab.tabIndex = i === index ? 0 : -1;
       panel.hidden = i !== index;
     });
+    if (panels[index]?.onShow) void panels[index].onShow();
   }
 
   const overview = document.createElement("div");
   overview.className = "games-profile-panel";
-  const figure = createGameImageFigure(game, true);
+  const metadata = gameMetadataLabel(game);
+  if (metadata) overview.appendChild(profileText('p', metadata, 'games-machine-metadata'));
   if (hasNonemptyString(game.details)) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";
     const heading = document.createElement("h4");
-    heading.textContent = "Description";
+    heading.textContent = "About our machine";
     const details = document.createElement("p");
     details.textContent = String(game.details);
     section.append(heading, details);
     overview.appendChild(section);
   }
-  const stints = formatLocationStints(game.locationStints);
+  const stints = formatLocationStints(game.locationStints, game.atClub === true);
   if (stints) {
     const section = document.createElement("section");
     section.className = "games-more-info-section";
     const heading = document.createElement("h4");
-    heading.textContent = "Club stints";
+    heading.textContent = "Location history";
     const list = document.createElement("ul");
     list.className = "games-more-info-list";
     for (const line of stints.split("\n")) {
@@ -858,22 +1093,21 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
   }
   addTab("Overview", overview);
 
-  if (figure) {
-    const photos = document.createElement("div");
-    photos.className = "games-profile-panel games-profile-photos";
-    photos.appendChild(figure);
-    addTab("Photos", photos);
-  }
+  const gallery = createGameGallery(game);
+  addTab("Photos", gallery.panel, gallery.load);
   const play = document.createElement("div");
   play.className = "games-profile-panel";
-  if (renderGameMoreInfoSections(payload, play, "play")) addTab("Play", play);
+  addTab("Play", play);
   const tipsPanel = document.createElement("div");
   tipsPanel.className = "games-profile-panel";
   renderGameTips(tipsPanel, tips, tipsState, game);
   addTab("Tips", tipsPanel);
+  const issues = createGameIssues(game);
+  addTab("Issues", issues.panel, issues.load);
   body.appendChild(tabs);
   panels.forEach(({ panel }) => body.appendChild(panel));
-  activate(Math.max(0, panels.findIndex(({ tab }) => tab.textContent === selectedLabel)));
+  activate(0);
+  return { overview, play, tipsPanel, playTab: panels.find(p => p.panel === play) };
 }
 
 /** @param {{ title?: string, id?: string }} game */
@@ -886,10 +1120,28 @@ async function openGameMoreInfoModal(game) {
   const requestId = ++gameMoreInfoUi.requestId;
   gameMoreInfoUi.gameId = String(game.id || "");
   gameMoreInfoUi.lastFocus = /** @type {HTMLElement} */ (document.activeElement);
+  if (root.hidden) {
+    gameMoreInfoUi.previousOverflow = document.body.style.overflow;
+    gameMoreInfoUi.background = Array.from(document.body.children)
+      .filter(node => node !== root).map(node => [node, node.inert]);
+    gameMoreInfoUi.background.forEach(([node]) => { node.inert = true; });
+    document.body.style.overflow = 'hidden';
+  }
   root.hidden = false;
   titleEl.textContent = game.title ? `More about ${game.title}` : "Game details";
-  renderGameProfile(game, null, false, [], getPublicSupabaseClient() && gameHasCatalogUuid(game) ? "loading" : "empty");
+  const profile = renderGameProfile(game, null, false, [], getPublicSupabaseClient() && gameHasCatalogUuid(game) ? "loading" : "empty");
   gameMoreInfoUi.onKeyDown = (ev) => {
+    if (root.querySelector('dialog[open]')) return;
+    if (ev.key === 'Tab') {
+      const focusable = Array.from(dialog.querySelectorAll('button, a[href], input, textarea, select, [tabindex="0"]'))
+        .filter(node => !node.disabled && node.tabIndex >= 0 && node.getClientRects().length > 0);
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (ev.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+        ev.preventDefault(); last?.focus();
+      } else if (!ev.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {
+        ev.preventDefault(); first?.focus();
+      }
+    }
     if (ev.key === "Escape") {
       ev.preventDefault();
       closeGameMoreInfoModal();
@@ -899,21 +1151,46 @@ async function openGameMoreInfoModal(game) {
   dialog.querySelector(".games-more-info-close")?.focus();
 
   const client = getPublicSupabaseClient();
-  if (!client || !gameHasCatalogUuid(game)) return;
-  const [infoResult, tipsResult] = await Promise.allSettled([
-    client.rpc("snh_public_game_more_info", { p_game_id: game.id }),
-    client.rpc("snh_public_game_tips", { p_game_id: game.id }),
-  ]);
-  const read = result => {
-    if (result.status === "rejected" || result.value.error) return { error: true, data: null };
-    try { return { error: false, data: typeof result.value.data === "string" ? JSON.parse(result.value.data) : result.value.data }; }
-    catch { return { error: true, data: null }; }
-  };
-  const info = read(infoResult), imported = read(tipsResult);
-  const tips = Array.isArray(imported.data) ? imported.data : [];
-  if (!root.hidden && requestId === gameMoreInfoUi.requestId) {
-    renderGameProfile(game, info.data, info.error, tips, imported.error ? "error" : "empty");
+  if (!client || !gameHasCatalogUuid(game)) {
+    profile.play.appendChild(profileText('p', 'Club play information is unavailable right now.'));
+    return;
   }
+  // Independent panels update in place; a slow request never resets gallery, tabs or a report draft.
+  const active = () => !root.hidden && requestId === gameMoreInfoUi.requestId;
+  const loadInfo = async () => {
+    try {
+      const payload = await gameProfileRpc('snh_public_game_more_info', { p_game_id: game.id });
+      if (!active()) return;
+      profile.overview.querySelector('.games-info-status')?.remove();
+      renderGameMoreInfoSections(payload, profile.overview, 'overview');
+      profile.play.replaceChildren();
+      if (!renderGameMoreInfoSections(payload, profile.play, 'play')) {
+        profile.play.appendChild(profileText('p', 'No club high scores or Pingolf targets have been added for this machine yet.'));
+      }
+    } catch {
+      if (!active()) return;
+      const note = profileText('div', '', 'games-info-status');
+      note.appendChild(profileText('p', 'Additional machine information could not be loaded.'));
+      const retry = profileText('button', 'Retry machine information'); retry.type = 'button';
+      retry.addEventListener('click', () => { note.remove(); void loadInfo(); }); note.appendChild(retry);
+      profile.overview.appendChild(note);
+      profile.play.replaceChildren(profileText('p', 'Club play information could not be loaded. Retry from Overview.'));
+    }
+  };
+  const loadTips = async () => {
+    try {
+      const tips = await gameProfileRpc('snh_public_game_tips', { p_game_id: game.id });
+      if (!active()) return;
+      profile.tipsPanel.replaceChildren(); renderGameTips(profile.tipsPanel, Array.isArray(tips) ? tips : [], 'empty', game);
+    } catch {
+      if (!active()) return;
+      profile.tipsPanel.replaceChildren(); renderGameTips(profile.tipsPanel, [], 'error', game);
+      const retry = profileText('button', 'Retry tips'); retry.type = 'button';
+      retry.addEventListener('click', () => void loadTips()); profile.tipsPanel.appendChild(retry);
+    }
+  };
+  profile.play.appendChild(profileText('p', 'Loading club play information…'));
+  await Promise.allSettled([loadInfo(), loadTips()]);
 }
 
 function createGamesList(games) {
@@ -947,7 +1224,7 @@ function createGamesList(games) {
         const imageButton = document.createElement("button");
         imageButton.type = "button";
         imageButton.className = "game-card-image-button";
-        imageButton.setAttribute("aria-label", `More info about ${game.title}`);
+        imageButton.setAttribute("aria-label", `View machine: ${game.title}`);
         imageButton.setAttribute("aria-haspopup", "dialog");
         imageButton.addEventListener("click", () => {
           void openGameMoreInfoModal(game);
@@ -958,12 +1235,20 @@ function createGamesList(games) {
       item.appendChild(imageFigure);
     }
 
+    const metadata = gameMetadataLabel(game);
+    if (metadata) item.appendChild(profileText('p', metadata, 'games-machine-metadata'));
     const details = document.createElement("p");
     details.className = "games-details";
-    details.textContent = game.details;
+    const brief = String(game.details || '').trim();
+    details.textContent = brief.length > 220 ? brief.slice(0, 217).replace(/\s+\S*$/, '') + '…' : brief;
     item.appendChild(details);
 
-    const stintsText = formatLocationStints(game.locationStints);
+    const currentStint = orderedClubStints(game.locationStints, isAtClub).find(row => row.current)?.stint;
+    if (currentStint) {
+      const since = compactStintDate(currentStint.joinedClubDate);
+      item.appendChild(profileText('p', `${shortClubLocation(currentStint.address)}${since ? ' · Since ' + since : ''}`, 'games-current-location'));
+    }
+    const stintsText = formatLocationStints(game.locationStints, game.atClub === true);
     if (stintsText) {
       const stintsEl = document.createElement("p");
       stintsEl.className = "games-location-stints";
@@ -1071,7 +1356,7 @@ function createGamesList(games) {
         const moreBtn = document.createElement("button");
         moreBtn.type = "button";
         moreBtn.className = "games-more-info-btn";
-        moreBtn.textContent = "More info";
+        moreBtn.textContent = "View machine";
         moreBtn.setAttribute("aria-haspopup", "dialog");
         moreBtn.addEventListener("click", () => {
           void openGameMoreInfoModal(game);

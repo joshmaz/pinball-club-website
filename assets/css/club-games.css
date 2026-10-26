@@ -46,3 +46,35 @@
  .club-games .games-more-info-dialog { margin: 2vh .5rem; max-height: 96vh; padding: 1rem; }
 }
 .club-games .games-timeline-date-input-row :is(input[type="date"],button) { border-color: var(--club-control-line); }
+
+/* Compact profiles keep the focus on our machine and its club history. */
+.club-games .games-machine-metadata { color: var(--club-muted); font-size: .8rem; margin: .55rem 0 0; }
+.club-games .games-profile-panel { overflow-wrap: anywhere; }
+.club-games .games-profile-links a { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; }
+.club-games .games-profile-links .games-provider-icon { width: 24px; height: 24px; object-fit: contain; }
+.club-games .games-more-info-dialog { box-sizing: border-box; width: calc(100% - 2rem); overscroll-behavior: contain; }
+.club-games .games-gallery-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+.club-games .games-profile-panel button { min-height: 44px; }
+.club-games .games-gallery-thumbnails { display: flex; gap: .5rem; overflow-x: auto; padding: .35rem 0; }
+.club-games .games-gallery-thumbnails button { flex: 0 0 auto; border: 2px solid transparent; padding: 2px; border-radius: 3px; background: var(--club-soft); }
+.club-games .games-gallery-thumbnails button[aria-pressed="true"] { border-color: var(--club-teal); }
+.club-games .games-gallery-thumbnails img { display: block; width: 80px; height: 64px; object-fit: cover; }
+.club-games .games-profile-photos .game-card-image { max-height: 55vh; width: 100%; object-fit: contain; }
+.club-games .games-gallery-count, .club-games .games-gallery-status { font-size: .85rem; }
+.club-games .games-photo-lightbox { box-sizing: border-box; width: min(96vw, 76rem); max-width: 96vw; max-height: 96dvh; padding: 1rem; background: var(--club-surface); color: var(--club-ink); border: 1px solid var(--club-line); }
+.club-games .games-photo-lightbox::backdrop { background: var(--club-ink); opacity: .85; }
+.club-games .games-photo-lightbox .game-card-image { max-height: 72dvh; }
+.club-games .games-issue-form { display: grid; gap: .8rem; margin-top: 1rem; }
+.club-games .games-issue-form label { display: grid; gap: .3rem; }
+.club-games .games-issue-form :is(input,textarea) { box-sizing: border-box; width: 100%; font: inherit; padding: .6rem; border: 1px solid var(--club-control-line); background: var(--club-surface); color: var(--club-ink); }
+.club-games .games-profile-panel :is(button,a,input,textarea):focus-visible { outline: 2px solid var(--club-teal); outline-offset: 3px; }
+.club-games .games-gallery-controls[hidden], .club-games .games-gallery-thumbnails[hidden], .club-games .games-gallery-controls button[hidden] { display: none; }
+@media(max-width:650px) {
+ .club-games .games-more-info-dialog { width: calc(100% - 1rem); }
+}
+.club-games .games-current-location { font-size: .8rem; margin: .25rem 0; color: var(--club-teal); }
+.club-games .games-more-info-close { position: sticky; top: 0; z-index: 2; }
+.club-games :is(.games-gallery-controls button, .games-profile-panel > button, .games-issue-form button, .games-photo-lightbox > button) {
+ font: inherit; font-size: .85rem; padding: .55rem .75rem; border: 1px solid var(--club-control-line); border-radius: 3px; background: var(--club-soft); color: var(--club-teal); cursor: pointer;
+}
+.club-games .games-issue-form button:disabled { opacity: .65; cursor: wait; }

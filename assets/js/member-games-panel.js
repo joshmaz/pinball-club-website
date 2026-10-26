@@ -220,10 +220,11 @@
     );
     formEl.appendChild(
       fieldRow(
-        "Details",
+        "Brief public description of our machine",
         textareaInput("mg-details", "")
       )
     );
+    formEl.appendChild(el('p', { className: 'member-games-help', text: 'Shown on the game card and in About our machine. Keep it brief and focus on this club machine. Add modifications below; leave general rules and specifications to the linked resources.' }));
     formEl.appendChild(buildGameImagesSection());
     var metadataPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
     metadataPanel.appendChild(

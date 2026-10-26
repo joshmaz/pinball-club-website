@@ -4,7 +4,8 @@
     "dataset": "games",
     "source": "games_catalog_v1",
     "generatedAt": "2026-10-08T18:47:12.350Z",
-    "recordCount": 126
+    "recordCount": 126,
+    "displayMetadataReviewedAt": "2026-10-26"
   },
   "games": [
     {
@@ -5438,7 +5439,8 @@
       "opdbMatchedVia": "alias",
       "manufactureDate": "2022-01-01",
       "opdbCanonicalName": "Rush (LE)",
-      "manufacturerFullName": "Stern Pinball, Inc."
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "display": "lcd"
     },
     {
       "id": "8483f5b4-8434-4ede-9443-8ae0d78c9883",
@@ -5448,7 +5450,7 @@
       "atClub": false,
       "opdbId": "G2Lkd-M0ope-A9dNy",
       "details": "2022 Stern Insider Connected LCD. Design by John Borg and software by Keith Elwin and Raymond Davidson. 3 flippers, 2 ramps, subway VUK, and custom Rush soundtrack integration.",
-      "display": "Color display",
+      "display": "lcd",
       "ipdbUrl": "https://www.ipdb.org/machine.cgi?id=6845",
       "mapAtClub": false,
       "pinsideUrl": "https://pinside.com/pinball/machine/stern-rush-premium",
@@ -6055,7 +6057,8 @@
         }
       ],
       "opdbMatchedVia": "pinballmap_machine_details",
-      "opdbCanonicalName": "Star Wars (Premium)"
+      "opdbCanonicalName": "Star Wars (Premium)",
+      "display": "lcd"
     },
     {
       "id": "ef4bb84f-eacb-4465-8a7c-2a779bc2a3ab",
@@ -6107,7 +6110,8 @@
           "pinballMapLocationId": 8908
         }
       ],
-      "opdbCanonicalName": "Star Wars (Pro)"
+      "opdbCanonicalName": "Star Wars (Pro)",
+      "display": "lcd"
     },
     {
       "id": "fe1f2376-f440-41a7-9a24-22833f104b14",
@@ -6865,7 +6869,8 @@
       "opdbMatchedVia": "alias",
       "manufactureDate": "2015-12-01",
       "opdbCanonicalName": "The Hobbit (Smaug Gold)",
-      "manufacturerFullName": "Jersey Jack Pinball"
+      "manufacturerFullName": "Jersey Jack Pinball",
+      "display": "lcd"
     },
     {
       "id": "79dc4e14-64f1-44c2-917c-8610cbe19890",
@@ -7044,7 +7049,8 @@
         }
       ],
       "opdbMatchedVia": "pinballmap_machine_details",
-      "opdbCanonicalName": "The Mandalorian (Premium)"
+      "opdbCanonicalName": "The Mandalorian (Premium)",
+      "display": "lcd"
     },
     {
       "id": "30c922d7-2f5d-4687-87cc-bfcb33a6abf6",
@@ -7853,7 +7859,8 @@
       "opdbMatchedVia": "alias",
       "manufactureDate": "2012-06-01",
       "opdbCanonicalName": "X-Men Wolverine (LE)",
-      "manufacturerFullName": "Stern Pinball, Inc."
+      "manufacturerFullName": "Stern Pinball, Inc.",
+      "display": "dmd"
     },
     {
       "id": "f47d1550-17a1-43a1-a89a-4e8b0a5a061e",
