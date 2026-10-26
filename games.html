@@ -71,6 +71,16 @@
               <div class="club-field games-search"><label for="games-search">Search this lineup</label><input id="games-search" type="search" placeholder="Game title or description" aria-describedby="games-search-status"><p id="games-search-status" role="status"></p></div>
               <p class="games-legend"><span class="games-status-badge">At club</span> = here today<br><span class="games-history-label">Club history</span> = previously at SNHPC<br>Location dates show each machine’s time at the club.</p>
             </div>
+            <fieldset class="games-era-filters" id="games-era-filters">
+              <legend>Show eras</legend>
+              <div class="games-era-options">
+                <label><input type="checkbox" data-game-era="EM" checked> EM</label>
+                <label><input type="checkbox" data-game-era="Solid State" checked> Solid State</label>
+                <label><input type="checkbox" data-game-era="Modern" checked> Modern</label>
+                <label id="games-era-other-option" hidden><input type="checkbox" data-game-era="Other" checked> Other</label>
+                <button id="games-era-all" type="button">All eras</button>
+              </div>
+            </fieldset>
             <div id="games-list" aria-label="Club pinball machines active on the selected timeline date"></div>
             <p class="games-footnote">Historical stint dates come mainly from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a> location activity we sync through their public API. Thanks to the Pinball Map project for maintaining open, community-sourced pinball location data. Because SNHPC predates Pinball Map coverage, some older periods use generalized date ranges when exact dates are unavailable.</p>
         </section>

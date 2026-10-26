@@ -29,6 +29,7 @@
       gameId: panel === "games" ? validUuid(params.get("game")) : "",
       eventId: panel === "events" ? validUuid(params.get("event")) : ""
     };
+    if (panel === "club-issues") route.issueGameId = validUuid(params.get("issueGame"));
     if (panel === "photos") route.albumId = validUuid(params.get("album"));
     if (route.panel === "operations") {
       route.operationsSection = panel === "audit-log" ? "audit" : operationsSection(params.get("section"));
@@ -69,6 +70,8 @@
       params.delete("event");
     }
 
+    if (panel !== 'club-issues') params.delete('issueGame');
+    else if (!validUuid(params.get('issueGame'))) params.delete('issueGame');
     if (panel !== "photos") params.delete("album");
     else if (Object.prototype.hasOwnProperty.call(options, "albumId")) {
       var albumId = validUuid(options.albumId);

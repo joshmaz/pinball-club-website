@@ -4,6 +4,8 @@
   var listEl = null;
   var formWrap = null;
   var filterEl = null;
+  var scopeEl = null;
+  var editingBaseline = null;
   var inited = false;
   var lastRoles = [];
   var editingId = null;
@@ -13,6 +15,46 @@
   var latestLoadId = 0;
   var gameOptionsReady = false;
   var gameOptionsCacheKey = null;
+  var contextGameId = '';
+  function formValues() {
+    return ['ci-title','ci-body','ci-game-select','ci-status','ci-public-summary'].map(function (id) {
+      var input = document.getElementById(id); return input ? input.value : '';
+    });
+  }
+
+  function showAllNotes() {
+    var values = formValues();
+    var dirty = editingId ? JSON.stringify(values) !== editingBaseline : !!(values[0].trim() || values[1].trim() || values[4].trim());
+    if (dirty && !window.confirm('Discard unsaved changes to this note and show all notes?')) return;
+    contextGameId = '';
+    var url = new URL(window.location.href);
+    url.searchParams.delete('issueGame');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    hasManualFilterChoice = true;
+    resetForm();
+    renderContextScope();
+    selectFilter('all');
+    setStatus('Showing all ' + lastRows.length + ' notes across all games and the club.');
+  }
+
+  function renderContextScope() {
+    if (!scopeEl) return;
+    scopeEl.replaceChildren(); scopeEl.hidden = !contextGameId;
+    if (!contextGameId) return;
+    var match = lastRows.find(function (row) { return (row.gameId || row.game_id) === contextGameId; });
+    var select = document.getElementById('ci-game-select');
+    var option = select && Array.from(select.options).find(function (option) { return option.value === contextGameId; });
+    var name = match && match.gameTitle || option && option.textContent || 'Selected game';
+    scopeEl.appendChild(el('strong', { text: 'Game filter: ' + name }));
+    var clear = el('button', { type: 'button', className: 'member-club-issues-clear-scope', text: 'Show all notes' });
+    clear.addEventListener('click', showAllNotes);
+    scopeEl.appendChild(clear);
+  }
+
+  function readContextGame() {
+    var raw = new URLSearchParams(window.location.search).get('issueGame') || '';
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw) ? raw : '';
+  }
 
   async function ensureGameOptions(includeGameId) {
     if (!window.SNHMemberPortal || !window.SNHMemberPortal.clubIssuesGameOptions) return;
@@ -56,7 +98,7 @@
 
   function fieldRow(label, input) {
     var row = el("div", { className: "member-games-field" });
-    row.appendChild(el("label", { className: "member-games-label", text: label }));
+    row.appendChild(el("label", { className: "member-games-label", text: label, for: input.id }));
     row.appendChild(input);
     return row;
   }
@@ -84,33 +126,42 @@
 
   function resetForm() {
     editingId = null;
+    editingBaseline = null;
+    var heading = document.getElementById("ci-form-title");
+    if (heading) heading.textContent = "Add a note";
+    var cancel = document.getElementById("ci-clear");
+    if (cancel) cancel.textContent = "Clear form";
     var t = document.getElementById("ci-title");
     var b = document.getElementById("ci-body");
     var g = document.getElementById("ci-game-select");
     var s = document.getElementById("ci-status");
     if (t) t.value = "";
     if (b) b.value = "";
-    if (g) g.value = "";
+    if (g) g.value = contextGameId;
+    var pub = document.getElementById("ci-public-summary");
+    if (pub) pub.value = "";
     if (s) s.value = "open";
     var sub = document.getElementById("ci-submit");
     if (sub) sub.textContent = "Add note";
     gameOptionsReady = false;
     gameOptionsCacheKey = null;
-    void ensureGameOptions(null);
+    void ensureGameOptions(contextGameId).then(function () { if (g) g.value = contextGameId; });
   }
 
   function syncHelperOnlyFormBits() {
     var row = document.getElementById("ci-status-row");
     if (row) row.hidden = !hasClubIssuesHelperAccess();
+    var summaryRow = document.getElementById('ci-public-summary-row');
+    if (summaryRow) summaryRow.hidden = !hasClubIssuesHelperAccess();
   }
 
   function buildFilterBar() {
     var wrap = el("div", {
       className: "member-club-issues-filter",
       role: "group",
-      "aria-label": "Filter by status"
+      "aria-label": "Filter notes by status"
     });
-    var label = el("span", { className: "member-club-issues-filter-label", text: "Show:" });
+    var label = el("span", { className: "member-club-issues-filter-label", text: "Filter notes:" });
     wrap.appendChild(label);
     [
       { key: "all", text: "All" },
@@ -120,12 +171,15 @@
     ].forEach(function (opt) {
       var btn = el("button", {
         type: "button",
-        className: "members-sidebar-link member-club-issues-filter-btn",
+        className: "member-club-issues-filter-btn",
         "data-ci-filter": opt.key
       });
       btn.textContent = opt.text;
+      if (opt.key === 'all') btn.title = 'Show all notes across all games and the club';
+      btn.setAttribute("aria-pressed", String(opt.key === currentFilter));
       if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
       btn.addEventListener("click", function () {
+        if (opt.key === 'all') { showAllNotes(); return; }
         hasManualFilterChoice = true;
         selectFilter(opt.key);
       });
@@ -138,6 +192,7 @@
     currentFilter = key;
     if (filterEl) {
       filterEl.querySelectorAll(".member-club-issues-filter-btn").forEach(function (button) {
+        button.setAttribute('aria-pressed', String(button.getAttribute('data-ci-filter') === key));
         if (button.getAttribute("data-ci-filter") === key) button.setAttribute("aria-current", "true");
         else button.removeAttribute("aria-current");
       });
@@ -158,7 +213,7 @@
     filterEl = buildFilterBar();
     listEl = el("div", { className: "member-club-issues-list" });
     formWrap = el("div", { className: "member-club-issues-form member-games-form" });
-    formWrap.appendChild(el("h4", { text: "Add or edit a note" }));
+    formWrap.appendChild(el("h4", { id: "ci-form-title", text: "Add a note" }));
     formWrap.appendChild(
       el("p", {
         className: "member-games-help",
@@ -167,6 +222,14 @@
     );
     formWrap.appendChild(fieldRow("Title", textInput("ci-title", "")));
     formWrap.appendChild(fieldRow("Details", textareaInput("ci-body", "")));
+    var publicInput = textareaInput('ci-public-summary', '');
+    publicInput.maxLength = 280;
+    publicInput.setAttribute('aria-describedby', 'ci-public-summary-help');
+    var publicRow = fieldRow('Public machine summary (optional)', publicInput);
+    publicRow.id = 'ci-public-summary-row';
+    publicRow.appendChild(el('p', { id: 'ci-public-summary-help', className: 'member-games-help',
+      text: 'Visible to everyone on the game card while this note is unresolved. Describe the machine symptom only; omit names, contact details and private notes. Leave blank to keep the note out of the public summary.' }));
+    formWrap.appendChild(publicRow);
 
     var gameSel = el("select", { id: "ci-game-select", className: "member-games-input" });
     var blankOpt = el("option", { value: "" });
@@ -195,6 +258,9 @@
     formWrap.appendChild(el("div", { className: "member-games-form-actions" }, [sub, clr]));
 
     appEl.appendChild(statusEl);
+    scopeEl = el('div', { className: 'member-club-issues-scope', role: 'group', 'aria-label': 'Game filter' });
+    appEl.appendChild(scopeEl);
+    renderContextScope();
     appEl.appendChild(filterEl);
     appEl.appendChild(listEl);
     appEl.appendChild(formWrap);
@@ -222,6 +288,7 @@
       status: st,
       gameId: gid || null
     };
+    if (hasClubIssuesHelperAccess()) fields.publicSummary = document.getElementById('ci-public-summary').value.trim() || null;
     setStatus("Saving…");
     try {
       await window.SNHMemberPortal.clubIssuesUpsert(editingId, fields);
@@ -347,6 +414,7 @@
     if (!listEl) return;
     listEl.replaceChildren();
     var filtered = lastRows.filter(function (r) {
+      if (contextGameId && (r.gameId || r.game_id) !== contextGameId) return false;
       if (currentFilter === "all") return true;
       return noteStatus(r) === currentFilter;
     });
@@ -354,7 +422,7 @@
       listEl.appendChild(
         el("p", {
           className: "member-games-help",
-          text: lastRows.length === 0 ? "No issues logged yet." : "No issues match this filter."
+          text: lastRows.length === 0 ? "No notes added yet." : "No notes match this filter."
         })
       );
       return;
@@ -384,6 +452,7 @@
       if (row.body) {
         card.appendChild(el("p", { className: "member-club-issues-body", text: row.body }));
       }
+      if (row.publicSummary) card.appendChild(el('p', { className: 'member-games-help', text: 'Public summary: ' + row.publicSummary }));
       appendQuickActions(card, row);
       if (hasClubIssuesHelperAccess() && row.id) {
         var edit = el("button", { type: "button", className: "members-sidebar-link" });
@@ -409,8 +478,15 @@
     if (b) b.value = row.body || "";
     if (g) g.value = row.gameId || row.game_id || "";
     if (s) s.value = String(row.status || "open").toLowerCase();
+    var pub = document.getElementById('ci-public-summary');
+    if (pub) pub.value = row.publicSummary || '';
     var sub = document.getElementById("ci-submit");
     if (sub) sub.textContent = "Save changes";
+    var heading = document.getElementById('ci-form-title');
+    if (heading) heading.textContent = 'Edit note';
+    var cancel = document.getElementById('ci-clear');
+    if (cancel) cancel.textContent = 'Cancel editing';
+    editingBaseline = JSON.stringify(formValues());
     setStatus("Editing this note. Change fields below and save, or clear the form to cancel.");
     if (formWrap) {
       formWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -430,15 +506,17 @@
   async function loadList() {
     if (!listEl || !window.SNHMemberPortal) return;
     var loadId = ++latestLoadId;
-    setStatus("Loading issues…");
+    setStatus("Loading notes…");
     try {
       var rows = await window.SNHMemberPortal.clubIssuesList();
       if (loadId !== latestLoadId) return;
       var arr = Array.isArray(rows) ? rows : [];
       lastRows = arr;
-      if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(arr));
+      renderContextScope();
+      var visibleRows = arr.filter(function (r) { return !contextGameId || (r.gameId || r.game_id) === contextGameId; });
+      if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(visibleRows));
       else renderIssueList();
-      setStatus("Loaded " + arr.length + " issue(s).");
+      setStatus("Loaded " + visibleRows.length + " note(s).");
     } catch (err) {
       if (loadId !== latestLoadId) return;
       listEl.replaceChildren();
@@ -448,13 +526,14 @@
           text: window.SNHMemberPortal.getFriendlyAuthErrorMessage(err)
         })
       );
-      setStatus("Could not load issues.");
+      setStatus("Could not load notes.");
     }
   }
 
   window.SNHMemberClubIssuesPanel = {
     onPanelShown: function (roles) {
       lastRoles = roles || [];
+      contextGameId = readContextGame();
       if (!window.SNHMemberPortal || !window.SNHMemberPortal.clubIssuesList) return;
       if (!inited) {
         inited = true;
@@ -465,7 +544,10 @@
           resetForm();
         }
       }
-      void ensureGameOptions(null);
+      void ensureGameOptions(contextGameId).then(function () {
+        if (!editingId && contextGameId) document.getElementById('ci-game-select').value = contextGameId;
+        renderContextScope();
+      });
       loadList();
     }
   };

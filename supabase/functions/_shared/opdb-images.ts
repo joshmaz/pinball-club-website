@@ -26,6 +26,7 @@ export type OpdbExportEntry = {
   name?: unknown;
   ipdbId?: unknown;
   manufactureDate?: unknown;
+  display?: unknown;
   manufacturer?: { name?: unknown; fullName?: unknown } | null;
   images?: OpdbExportImage[] | null;
 };
@@ -95,11 +96,12 @@ export function imageImportsForEntry(entry: OpdbExportEntry): OpdbImageImport[] 
   }
 
   rows.sort((a, b) => {
+    const rank = (v: string | null) => ({ closeup: 0, playfield: 1, backglass: 2 })[String(v || "").trim().toLowerCase()] ?? 3;
+    const typeOrder = rank(a.imageType) - rank(b.imageType);
+    if (typeOrder) return typeOrder;
     const ap = a.metadata.opdbPrimary === true ? 1 : 0;
     const bp = b.metadata.opdbPrimary === true ? 1 : 0;
-    if (ap !== bp) return bp - ap;
-    const rank = (v: string | null) => (v === "playfield" ? 0 : v === "backglass" ? 1 : 2);
-    return rank(a.imageType) - rank(b.imageType);
+    return bp - ap || a.sourceKey.localeCompare(b.sourceKey);
   });
   return rows;
 }
@@ -221,6 +223,9 @@ export async function prepareNewGameOpdbImports(creates: Record<string, unknown>
     game.opdbId = match.entry.opdbId;
     game.opdbMatchedVia = match.via;
     game.opdbCanonicalName = nonemptyString(match.entry.name);
+    const baseId = String(match.entry.opdbId).split('-').slice(0, 2).join('-');
+    const display = nonemptyString(match.entry.display) || nonemptyString(entries.get(baseId)?.display);
+    if (display && ['reels', 'lights', 'alphanumeric', 'dmd', 'lcd'].includes(display)) game.display = display;
     game.opdbImages = imageImportsForEntry(match.entry);
     summary.matched += 1;
     if (!(game.opdbImages as OpdbImageImport[]).length) summary.withoutImages.push(slug);

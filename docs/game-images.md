@@ -219,8 +219,7 @@ See [Supabase image transformation plan requirements](https://supabase.com/docs/
 
 `assets/js/game-image-delivery.js` supplies `srcset`/`sizes` for cards, detail,
 and editor previews. The home carousel reuses its normalized candidates with a measured slot width. The browser selects candidates for rendered
-size and device pixel ratio. Cards default to 640, detail to the largest suitable
-candidate. Missing derivative metadata falls back to the current source URL.
+size and device pixel ratio. Card/detail fallbacks choose the smallest candidate sufficient for the slot width and device density. Missing derivative metadata falls back to the current source URL.
 The home carousel gives each source-only record its own image element, avoiding stale candidate URLs.
 Attribution, approval, and primary selection behavior are preserved. GIF and detected animated PNG/WebP uploads
 retain original delivery to preserve animation. Processing rejects still images
@@ -375,3 +374,5 @@ until the carousel enters the viewport. Offscreen and hidden-tab states pause
 animations and further neighbor loading, including queued cycle completion.
 Candidate `sizes` use the measured frame width and update on visible resizes.
 Existing hosted and OPDB candidates remain the source of responsive URLs.
+
+Game gallery and zoom-view delivery now use measured slot widths rather than a fixed detail-size hint. Zoom requests larger candidates as needed, and falls back to the original source only for explicit zoom beyond available variant widths. See `docs/game-card-profiles.md` for viewer interactions and browser verification.
