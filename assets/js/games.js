@@ -129,7 +129,9 @@ function createGameGallery(game) {
     zoomImage.style.marginTop = `${Math.max(0, (viewport.clientHeight - height) / 2)}px`;
     viewport.dataset.zoomed = String(zoom > 1);
     zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+    const focused = document.activeElement;
     zoomOut.disabled = fit.disabled = zoom === 1; zoomIn.disabled = zoom === 4;
+    if ([zoomOut, fit, zoomIn].includes(focused) && focused.disabled) viewport.focus({ preventScroll: true });
     const image = images[selected];
     const candidates = window.SNHGameImages.variants(image);
     const maxWidth = candidates[candidates.length - 1]?.width || 0;
