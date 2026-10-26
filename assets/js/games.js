@@ -10,9 +10,9 @@ function gameEraLabel(game) {
     String(game.display || '').trim().toLowerCase()] || '';
 }
 
-function gameMetadataLabel(game, includeEra = true) {
+function gameMetadataLabel(game) {
   const date = String(game.releaseDate || game.manufactureDate || '');
-  return [game.manufacturer, /^\d{4}/.test(date) ? date.slice(0, 4) : '', includeEra ? gameEraLabel(game) : ''].filter(Boolean).join(' · ');
+  return [game.manufacturer, /^\d{4}/.test(date) ? date.slice(0, 4) : '', gameEraLabel(game)].filter(Boolean).join(' · ');
 }
 
 function shortClubLocation(address) {
@@ -1378,14 +1378,7 @@ function createGamesList(games) {
     const badge = document.createElement("span");
     badge.className = isAtClub ? "games-status-badge" : "games-status-badge games-status-badge--history";
     badge.textContent = isAtClub ? "At club" : "Club history";
-    const badges = document.createElement('div'); badges.className = 'games-card-badges';
-    badges.appendChild(badge);
-    const era = gameEraLabel(game);
-    if (era) {
-      const eraBadge = profileText('span', era, 'games-era-badge');
-      eraBadge.setAttribute('aria-label', `Era: ${era}`); badges.appendChild(eraBadge);
-    }
-    heading.appendChild(badges);
+    heading.appendChild(badge);
     item.appendChild(heading);
 
     const imageFigure = createGameImageFigure(game);
@@ -1406,7 +1399,7 @@ function createGamesList(games) {
       item.appendChild(imageFigure);
     }
 
-    const metadata = gameMetadataLabel(game, false);
+    const metadata = gameMetadataLabel(game);
     if (metadata) item.appendChild(profileText('p', metadata, 'games-machine-metadata'));
     const details = document.createElement("p");
     details.className = "games-details";

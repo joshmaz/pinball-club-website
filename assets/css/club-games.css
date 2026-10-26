@@ -98,12 +98,10 @@
 .club-games .games-photo-lightbox .games-gallery-controls { align-items: center; }
 .club-games .games-photo-lightbox .games-gallery-controls button { min-height: 44px; }
 .club-games .games-photo-viewport:focus-visible { outline: 2px solid var(--club-teal); outline-offset: -2px; }
-.club-games .games-card-badges { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
-.club-games .games-era-badge { font-size: .75rem; line-height: 1.5; padding: .2rem .45rem; border: 1px solid var(--club-control-line); border-radius: 3px; color: var(--club-ink); background: var(--club-soft); }
-.club-games .games-era-filters { margin: 0 0 1.25rem; padding: .75rem 1rem; border: 1px solid var(--club-line); border-radius: 4px; min-width: 0; }
-.club-games .games-era-filters legend { font-weight: 650; padding: 0 .35rem; }
+.club-games .games-era-filters { margin: 0 0 1.25rem; padding: .75rem 1rem; border: 1px solid var(--club-line); border-radius: 4px; min-width: 0; font-size: .85rem; font-weight: 400; }
+.club-games .games-era-filters legend { font-size: inherit; font-weight: 400; padding: 0 .35rem; }
 .club-games .games-era-options { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
-.club-games .games-era-options label { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .4rem .65rem; border: 1px solid var(--club-control-line); border-radius: 3px; background: var(--club-surface); cursor: pointer; }
+.club-games .games-era-options label { font-size: inherit; font-weight: 400; display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .4rem .65rem; border: 1px solid var(--club-control-line); border-radius: 3px; background: var(--club-surface); cursor: pointer; }
 .club-games .games-era-options label:has(input:checked) { background: var(--club-soft); border-color: var(--club-teal); }
 .club-games .games-era-options label[hidden] { display: none; }
 .club-games .games-era-options input { accent-color: var(--club-teal); width: 18px; height: 18px; }

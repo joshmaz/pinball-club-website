@@ -40,11 +40,14 @@ try {
  await page.locator('.games-list-item').first().waitFor();
  const eraGroup=page.getByRole('group',{name:'Show eras',exact:true});
  const eraCheck=name=>eraGroup.getByRole('checkbox',{name,exact:true});
+ assert.equal(await page.locator('.games-era-badge').count(),0,'era stays in the metadata line');
+ assert.equal(await eraGroup.locator('legend').evaluate(n=>getComputedStyle(n).fontWeight),'400');
+ assert.equal(await eraGroup.locator('label').first().evaluate(n=>getComputedStyle(n).fontWeight),'400');
  const cardCount=()=>page.locator('.games-list-item[data-game-id]').count();
  const initialCount=await cardCount();
  await eraCheck('Modern').uncheck(); assert.ok(await cardCount()<initialCount);
  await eraCheck('Solid State').uncheck();
- assert.deepEqual(await page.locator('.games-era-badge').allTextContents(),Array(await cardCount()).fill('EM'));
+ assert.deepEqual((await page.locator('.games-machine-metadata').allTextContents()).map(value=>value.split(' · ').at(-1)),Array(await cardCount()).fill('EM'));
  await eraCheck('EM').uncheck();await page.getByRole('heading',{name:'No matching games',exact:true}).waitFor();
  await eraGroup.getByRole('button',{name:'All eras',exact:true}).click();assert.equal(await cardCount(),initialCount);
  await page.getByRole('checkbox',{name:'Show all games',exact:true}).check();
@@ -62,7 +65,7 @@ try {
  const date=page.getByLabel('Jump to date',{exact:true});await date.fill('2019-01-01');
  await page.getByRole('button',{name:'Apply',exact:true}).click();
  assert.equal(await eraCheck('Modern').isChecked(),false,'era selection survives timeline changes');
- assert.ok((await page.locator('.games-era-badge').allTextContents()).every(value=>value==='EM'));
+ assert.ok((await page.locator('.games-machine-metadata').allTextContents()).every(value=>value.endsWith('EM')));
  await date.fill(await date.getAttribute('max'));await page.getByRole('button',{name:'Apply',exact:true}).click();
  await eraGroup.getByRole('button',{name:'All eras',exact:true}).click();
  await eraGroup.scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'era-filters-desktop.png')});
