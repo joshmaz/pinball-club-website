@@ -117,9 +117,9 @@
     var wrap = el("div", {
       className: "member-club-issues-filter",
       role: "group",
-      "aria-label": "Filter by status"
+      "aria-label": "Filter notes by status"
     });
-    var label = el("span", { className: "member-club-issues-filter-label", text: "Show:" });
+    var label = el("span", { className: "member-club-issues-filter-label", text: "Filter notes:" });
     wrap.appendChild(label);
     [
       { key: "all", text: "All" },
@@ -129,10 +129,11 @@
     ].forEach(function (opt) {
       var btn = el("button", {
         type: "button",
-        className: "members-sidebar-link member-club-issues-filter-btn",
+        className: "member-club-issues-filter-btn",
         "data-ci-filter": opt.key
       });
       btn.textContent = opt.text;
+      btn.setAttribute("aria-pressed", String(opt.key === currentFilter));
       if (opt.key === currentFilter) btn.setAttribute("aria-current", "true");
       btn.addEventListener("click", function () {
         hasManualFilterChoice = true;
@@ -147,6 +148,7 @@
     currentFilter = key;
     if (filterEl) {
       filterEl.querySelectorAll(".member-club-issues-filter-btn").forEach(function (button) {
+        button.setAttribute('aria-pressed', String(button.getAttribute('data-ci-filter') === key));
         if (button.getAttribute("data-ci-filter") === key) button.setAttribute("aria-current", "true");
         else button.removeAttribute("aria-current");
       });
@@ -182,7 +184,7 @@
     var publicRow = fieldRow('Public machine summary (optional)', publicInput);
     publicRow.id = 'ci-public-summary-row';
     publicRow.appendChild(el('p', { id: 'ci-public-summary-help', className: 'member-games-help',
-      text: 'Visible to everyone on the game card while this issue is unresolved. Describe the machine symptom only; omit names, contact details and private notes. Leave blank to keep the report out of the public summary.' }));
+      text: 'Visible to everyone on the game card while this note is unresolved. Describe the machine symptom only; omit names, contact details and private notes. Leave blank to keep the note out of the public summary.' }));
     formWrap.appendChild(publicRow);
 
     var gameSel = el("select", { id: "ci-game-select", className: "member-games-input" });
@@ -213,8 +215,8 @@
 
     appEl.appendChild(statusEl);
     if (contextGameId) {
-      var contextNote = el('p', { className: 'member-games-help', text: 'Showing reports for the selected machine. ' });
-      contextNote.appendChild(el('a', { href: 'members.html?panel=club-issues', text: 'View all club issues' }));
+      var contextNote = el('p', { className: 'member-games-help', text: 'Showing notes for the selected machine. ' });
+      contextNote.appendChild(el('a', { href: 'members.html?panel=club-issues', text: 'View all notes' }));
       appEl.appendChild(contextNote);
     }
     appEl.appendChild(filterEl);
@@ -378,7 +380,7 @@
       listEl.appendChild(
         el("p", {
           className: "member-games-help",
-          text: lastRows.length === 0 ? "No issues logged yet." : "No issues match this filter."
+          text: lastRows.length === 0 ? "No notes added yet." : "No notes match this filter."
         })
       );
       return;
@@ -457,15 +459,16 @@
   async function loadList() {
     if (!listEl || !window.SNHMemberPortal) return;
     var loadId = ++latestLoadId;
-    setStatus("Loading issues…");
+    setStatus("Loading notes…");
     try {
       var rows = await window.SNHMemberPortal.clubIssuesList();
       if (loadId !== latestLoadId) return;
       var arr = Array.isArray(rows) ? rows : [];
       lastRows = arr;
-      if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(arr.filter(function (r) { return !contextGameId || (r.gameId || r.game_id) === contextGameId; })));
+      var visibleRows = arr.filter(function (r) { return !contextGameId || (r.gameId || r.game_id) === contextGameId; });
+      if (!hasManualFilterChoice) selectFilter(defaultFilterForRows(visibleRows));
       else renderIssueList();
-      setStatus("Loaded " + arr.length + " issue(s).");
+      setStatus("Loaded " + visibleRows.length + " note(s).");
     } catch (err) {
       if (loadId !== latestLoadId) return;
       listEl.replaceChildren();
@@ -475,7 +478,7 @@
           text: window.SNHMemberPortal.getFriendlyAuthErrorMessage(err)
         })
       );
-      setStatus("Could not load issues.");
+      setStatus("Could not load notes.");
     }
   }
 

@@ -257,3 +257,12 @@
 .operations-snapshot h4 { display: inline; margin-right: .75rem; }
 .operations-snapshot > small { color: var(--club-muted); }
 .operations-snapshot p { margin: .4rem 0 0; }
+
+/* Notes status filters are a prominent header control, separate from note actions. */
+.club-account .member-club-issues-filter { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin: 1rem 0 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--club-line); }
+.club-account .member-club-issues-filter-label { grid-column: 1 / -1; font-weight: 650; color: var(--club-ink); }
+.club-account .member-club-issues-filter-btn { min-height: 48px; padding: .75rem .6rem; font: 650 .9rem/1.3 var(--club-display); border: 2px solid var(--club-control-line); border-radius: 4px; background: var(--club-soft); color: var(--club-ink); cursor: pointer; }
+.club-account .member-club-issues-filter-btn[aria-pressed="true"] { background: var(--club-teal); border-color: var(--club-teal); color: var(--club-surface); text-decoration: underline; text-underline-offset: .25rem; }
+.club-account .member-club-issues-filter-btn:hover { border-color: var(--club-teal); }
+.club-account .member-club-issues-filter-btn:focus-visible { outline: 2px solid var(--club-teal); outline-offset: 3px; }
+@media(max-width: 480px) { .club-account .member-club-issues-filter { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

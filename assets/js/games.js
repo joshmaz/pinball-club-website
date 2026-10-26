@@ -158,87 +158,152 @@ function createGameGallery(game) {
   return { panel, load };
 }
 
-function createGameIssues(game) {
-  const panel = document.createElement('div'); panel.className = 'games-profile-panel games-profile-issues';
+function createGameNotes(game) {
+  const panel = document.createElement('div'); panel.className = 'games-profile-panel games-profile-notes';
   const summary = document.createElement('div');
   const member = document.createElement('div');
   panel.append(summary, member);
-  let loaded = false, loading = false;
-  const args = { p_game_id: game.id };
-  function retrySummary(message) {
-    summary.replaceChildren(profileText('p', message));
-    const retry = profileText('button', 'Retry issues'); retry.type = 'button';
-    retry.addEventListener('click', () => {
-      summary.replaceChildren(profileText('p', 'Loading known issues…'));
-      void showSummaries().catch(() => retrySummary('Known issues could not be loaded.'));
-    }); summary.appendChild(retry);
+  let loaded = false, loading = false, disposed = false, generation = 0, activeUserId = '';
+  let subscription = null;
+  const current = version => !disposed && panel.isConnected && version === generation;
+  const portalHref = `members.html?panel=club-issues&issueGame=${encodeURIComponent(game.id)}`;
+  function noteStatus(value) {
+    return ({ open: 'Incoming', in_progress: 'In progress', resolved: 'Resolved' })[value] || 'Incoming';
   }
-  async function showSummaries() {
-    const rows = await gameProfileRpc('snh_public_game_issues', args);
-    if (!panel.isConnected) return;
-    summary.replaceChildren(profileText('h4', 'Known issues'));
+  async function showSummaries(version) {
+    const rows = await gameProfileRpc('snh_public_game_issues', { p_game_id: game.id });
+    if (!current(version)) return;
+    summary.replaceChildren(profileText('h4', 'Public notes'));
     if (!Array.isArray(rows) || !rows.length) {
-      summary.appendChild(profileText('p', 'No public issue summaries have been posted for this machine.'));
+      summary.appendChild(profileText('p', 'No public notes have been posted for this machine.'));
       return;
     }
     const list = document.createElement('ul');
-    rows.forEach(row => list.appendChild(profileText('li', `${row.summary} · ${row.status === 'in_progress' ? 'In progress' : 'Reported'}`)));
+    rows.forEach(row => list.appendChild(profileText('li', `${row.summary} · ${noteStatus(row.status)}`)));
     summary.appendChild(list);
   }
+  function retrySummary(version) {
+    if (!current(version)) return;
+    summary.replaceChildren(profileText('p', 'Public notes could not be loaded.'));
+    const retry = profileText('button', 'Retry public notes'); retry.type = 'button';
+    retry.addEventListener('click', () => {
+      summary.replaceChildren(profileText('p', 'Loading public notes…'));
+      void showSummaries(version).catch(() => retrySummary(version));
+    }); summary.appendChild(retry);
+  }
+  function renderMemberNotes(container, rows) {
+    const notes = (Array.isArray(rows) ? rows : []).filter(row => (row.gameId || row.game_id) === game.id)
+      .sort((a, b) => String(b.submittedAt || b.createdAt || '').localeCompare(String(a.submittedAt || a.createdAt || '')));
+    const unresolved = notes.filter(row => row.status !== 'resolved');
+    const resolved = notes.filter(row => row.status === 'resolved');
+    container.replaceChildren(profileText('h4', 'Machine notes'));
+    container.appendChild(profileText('p', 'Shared with signed-in club members. Check existing notes before adding one.'));
+    function list(records) {
+      const result = document.createElement('ul'); result.className = 'games-machine-notes';
+      records.forEach(row => {
+        const item = document.createElement('li');
+        item.appendChild(profileText('h5', row.title || 'Note'));
+        const date = String(row.submittedAt || row.createdAt || '').slice(0, 10);
+        item.appendChild(profileText('p', [noteStatus(row.status), date ? formatDateLabel(date) : ''].filter(Boolean).join(' · '), 'games-note-meta'));
+        if (row.body) item.appendChild(profileText('p', row.body, 'games-note-body'));
+        result.appendChild(item);
+      });
+      return result;
+    }
+    if (unresolved.length) container.appendChild(list(unresolved));
+    else container.appendChild(profileText('p', 'No unresolved notes for this machine.'));
+    if (resolved.length) {
+      const history = document.createElement('details'); history.className = 'games-resolved-notes';
+      history.append(profileText('summary', `Resolved notes (${resolved.length})`), list(resolved));
+      container.appendChild(history);
+    }
+  }
+  async function loadMemberNotes(container, version) {
+    container.replaceChildren(profileText('p', 'Loading machine notes…'));
+    try {
+      // Same authenticated read as Member Tools; only this game's records are rendered.
+      const rows = await gameProfileRpc('snh_club_issues_list');
+      if (!current(version)) return;
+      renderMemberNotes(container, rows);
+    } catch {
+      if (!current(version)) return;
+      container.replaceChildren(profileText('p', 'Machine notes could not be loaded.'));
+      const retry = profileText('button', 'Retry machine notes'); retry.type = 'button';
+      retry.addEventListener('click', () => void loadMemberNotes(container, version)); container.appendChild(retry);
+    }
+  }
   async function load() {
-    if (loaded || loading) return;
-    loading = true; summary.replaceChildren(profileText('p', 'Loading known issues…')); member.replaceChildren();
-    // Public summaries and authentication resolve independently; no private data is rendered here.
-    const publicRead = gameHasCatalogUuid(game) && getPublicSupabaseClient()
-      ? showSummaries().catch(() => retrySummary('Known issues could not be loaded.'))
-      : Promise.resolve(summary.replaceChildren(profileText('p', 'Known issues are unavailable right now.')));
+    if (disposed || loaded || loading) return;
+    loading = true;
+    const version = ++generation;
+    summary.hidden = false; summary.replaceChildren(profileText('p', 'Loading notes…')); member.replaceChildren();
     try {
       const session = window.SNHSiteAuth ? await window.SNHSiteAuth.getSession() : null;
-      if (!panel.isConnected) return;
-      const portalHref = `members.html?panel=club-issues&issueGame=${encodeURIComponent(game.id)}`;
-      if (!session?.user) {
-        member.appendChild(profileText('p', 'Club members can report machine problems. Sign in or sign up to join the club.'));
-        const signin = profileText('a', 'Sign in or sign up');
-        signin.href = `signin.html?next=${encodeURIComponent(portalHref)}`;
+      if (!current(version)) return;
+      activeUserId = session?.user?.id || '';
+      if (!subscription && window.SNHSiteAuth?.onAuthStateChange) {
+        subscription = window.SNHSiteAuth.onAuthStateChange((event, next) => {
+          if (event !== 'SIGNED_OUT' && !(event === 'SIGNED_IN' && next?.user?.id !== activeUserId)) return;
+          // Remove private text immediately; stale requests cannot restore it after sign-out.
+          ++generation; activeUserId = ''; loaded = false; loading = false;
+          member.replaceChildren(); summary.replaceChildren(); summary.hidden = false;
+          setTimeout(() => { if (!disposed && panel.isConnected) void load(); }, 0);
+        });
+      }
+      if (!activeUserId) {
+        member.appendChild(profileText('p', 'Club members can add machine notes, report problems, or share useful observations. Sign in or sign up to join the club.'));
+        const signin = profileText('a', 'Sign in or sign up'); signin.href = `signin.html?next=${encodeURIComponent(portalHref)}`;
         member.appendChild(signin);
+        if (gameHasCatalogUuid(game) && getPublicSupabaseClient()) {
+          await showSummaries(version).catch(() => retrySummary(version));
+        } else summary.replaceChildren(profileText('p', 'Public notes are unavailable right now.'));
       } else if (gameHasCatalogUuid(game)) {
-        const manage = profileText('a', 'View member reports and manage issues'); manage.href = portalHref;
-        member.append(profileText('p', 'Check existing member reports before adding another report.'), manage);
+        // Members see original linked records, including those without a public summary.
+        summary.hidden = true; summary.replaceChildren();
+        const notes = document.createElement('div'); member.appendChild(notes);
+        const manage = profileText('a', 'View and manage notes in Member Tools'); manage.href = portalHref;
+        member.appendChild(manage);
         const form = document.createElement('form'); form.className = 'games-issue-form';
-        const titleLabel = profileText('label', 'Problem');
-        const title = document.createElement('input'); title.required = true; title.maxLength = 160;
-        titleLabel.appendChild(title);
+        form.appendChild(profileText('h4', 'Add a note'));
+        form.appendChild(profileText('p', 'Report a problem or share something useful about this machine.'));
+        const titleLabel = profileText('label', 'Title');
+        const title = document.createElement('input'); title.required = true; title.maxLength = 160; titleLabel.appendChild(title);
         const bodyLabel = profileText('label', 'Details (optional)');
-        const body = document.createElement('textarea'); body.rows = 4;
-        bodyLabel.appendChild(body);
-        const send = profileText('button', 'Report a problem'); send.type = 'submit';
-        const status = profileText('p', 'Reports are shared with signed-in club members. A helper may publish a separate public summary.');
-        status.setAttribute('role', 'status');
-        form.append(titleLabel, bodyLabel, send, status);
+        const body = document.createElement('textarea'); body.rows = 4; bodyLabel.appendChild(body);
+        const send = profileText('button', 'Add a note'); send.type = 'submit';
+        const status = profileText('p', 'Notes are shared with signed-in club members. A helper may publish a separate public summary.');
+        status.setAttribute('role', 'status'); form.append(titleLabel, bodyLabel, send, status);
         form.addEventListener('submit', async event => {
           event.preventDefault();
-          if (send.disabled) return;
-          const subject = title.value.trim();
-          if (!subject) { title.focus(); return; }
-          send.disabled = true; status.textContent = 'Submitting report…';
+          if (send.disabled || !current(version)) return;
+          const subject = title.value.trim(); if (!subject) { title.focus(); return; }
+          send.disabled = true; status.textContent = 'Saving note…';
           try {
-            // Existing server RPC enforces sign-in and forces ordinary members to Incoming.
             await gameProfileRpc('snh_club_issues_upsert', { p_id: null, p_fields: {
               gameId: game.id, title: subject, body: body.value.trim() || null, status: 'open'
             } });
-            form.reset(); status.textContent = 'Report submitted. Thank you for helping care for this machine.';
-          } catch { status.textContent = 'The report could not be confirmed. Check member reports before retrying, and sign in again if needed.'; }
-          finally { send.disabled = false; }
+            if (!current(version)) return;
+            form.reset(); status.textContent = 'Note added. Thank you for helping care for this machine.';
+            await loadMemberNotes(notes, version);
+          } catch {
+            if (current(version)) status.textContent = 'The note could not be confirmed. Check existing notes before retrying, and sign in again if needed.';
+          } finally { send.disabled = false; }
         });
         member.appendChild(form);
+        await loadMemberNotes(notes, version);
       }
-      loaded = true;
+      if (current(version)) loaded = true;
     } catch {
-      member.appendChild(profileText('p', 'Sign-in status could not be checked. Open Member Tools to report a problem.'));
-      const link = profileText('a', 'Open Member Tools'); link.href = `members.html?panel=club-issues&issueGame=${encodeURIComponent(game.id)}`; member.appendChild(link);
-    } finally { await publicRead; loading = false; }
+      if (!current(version)) return;
+      summary.replaceChildren(profileText('p', 'Sign-in status could not be checked. Open Member Tools to view or add notes.'));
+      const link = profileText('a', 'Open Member Tools'); link.href = portalHref; member.appendChild(link);
+    } finally { if (version === generation) loading = false; }
   }
-  return { panel, load };
+  function dispose() {
+    disposed = true; ++generation; member.replaceChildren();
+    subscription?.data?.subscription?.unsubscribe(); subscription = null;
+  }
+  return { panel, load, dispose };
 }
 
 
@@ -725,6 +790,7 @@ const gameMoreInfoUi = {
   gameId: "",
   onKeyDown: /** @type {((e: KeyboardEvent) => void) | null} */ (null),
   requestId: 0,
+  notesDispose: null,
   background: [],
   previousOverflow: "",
 };
@@ -926,6 +992,7 @@ function renderGameMoreInfoSections(payload, body, kind) {
 }
 
 function closeGameMoreInfoModal() {
+  gameMoreInfoUi.notesDispose?.(); gameMoreInfoUi.notesDispose = null;
   gameMoreInfoUi.root?.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
   gameMoreInfoUi.background.forEach(([node, inert]) => { node.inert = inert; });
   gameMoreInfoUi.background = [];
@@ -1105,8 +1172,10 @@ function renderGameProfile(game, payload, error, tips = [], tipsState = "empty")
   tipsPanel.className = "games-profile-panel";
   renderGameTips(tipsPanel, tips, tipsState, game);
   addTab("Tips", tipsPanel);
-  const issues = createGameIssues(game);
-  addTab("Issues", issues.panel, issues.load);
+  gameMoreInfoUi.notesDispose?.();
+  const notes = createGameNotes(game);
+  gameMoreInfoUi.notesDispose = notes.dispose;
+  addTab("Notes", notes.panel, notes.load);
   body.appendChild(tabs);
   panels.forEach(({ panel }) => body.appendChild(panel));
   activate(0);
