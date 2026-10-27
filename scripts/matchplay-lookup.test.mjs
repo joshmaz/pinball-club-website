@@ -26,7 +26,7 @@ function setup(t, payload = { data: tournament }, providerStatus = 200) {
   const fakeFetch = async (input, options = {}) => {
     const url = new URL(input);
     calls.push(url);
-    if (url.hostname === 'app.matchplay.events') {
+    if (url.hostname === 'api.matchplay.events') {
       assert.equal(options.headers.Authorization, `Bearer ${token}`);
       assert.equal(options.headers.Accept, 'application/json');
       return new Response(JSON.stringify(payload), { status: providerStatus });
@@ -74,8 +74,8 @@ for (const input of ['228825', 'https://app.matchplay.events/tournaments/228825'
     assert.equal(result.tournament.location, tournament.location.name);
     assert.equal(result.candidates[0].id, 'linked');
     assert.equal(result.candidates[0].match.confidence, 'linked URL');
-    assert.equal(calls.find(url => url.hostname === 'app.matchplay.events').href,
-      'https://app.matchplay.events/api/tournaments/228825?includeLocation=1');
+    assert.equal(calls.find(url => url.hostname === 'api.matchplay.events').href,
+      'https://api.matchplay.events/api/tournaments/228825?includeLocation=1');
   });
 }
 
@@ -104,8 +104,8 @@ test('title discovery retains its endpoint and does not query club events', asyn
   const result = await response.json();
   assert.equal(result.tournaments[0].id, '228825');
   assert.equal(result.has_next, true);
-  assert.equal(calls.find(url => url.hostname === 'app.matchplay.events').href,
-    'https://app.matchplay.events/api/search?query=SNHPC&type=tournaments&page=2');
+  assert.equal(calls.find(url => url.hostname === 'api.matchplay.events').href,
+    'https://api.matchplay.events/api/search?query=SNHPC&type=tournaments&page=2');
   assert.ok(!calls.some(url => url.pathname === '/rest/v1/events'));
 });
 

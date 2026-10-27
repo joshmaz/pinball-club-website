@@ -19,7 +19,7 @@ function safeExcerpt(body, token) {
 
 export async function getMatchplay(path, token) {
   try {
-    const response = await fetch(`https://app.matchplay.events/api/${path}`, {
+    const response = await fetch(`https://api.matchplay.events/api/${path}`, {
       headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
       signal: AbortSignal.timeout(10000),
     });
