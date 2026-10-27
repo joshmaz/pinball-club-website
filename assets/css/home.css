@@ -80,6 +80,6 @@
 .publishing-status-card .publishing-text { margin: .6rem 0; }
 
 .home-directions-preview { min-width:0; max-width:100%; display:flex; flex-direction:column; align-items:center; gap:.75rem; margin:1rem 0; padding:.75rem; border:1px solid var(--club-line); border-radius:var(--club-radius); background:var(--club-surface); }
-.home-directions-preview img { display:block; width:220px; max-width:100%; height:auto; aspect-ratio:3 / 2; object-fit:cover; object-position:center 62%; border-radius:.25rem; }
+.home-directions-preview img { display:block; width:220px; max-width:100%; height:auto; aspect-ratio:1246 / 1263; object-fit:contain; border-radius:.25rem; }
 .home-directions-preview span { display:block; text-align:center; overflow-wrap:anywhere; }
 .home-directions-preview:focus-visible { outline:3px solid var(--club-teal); outline-offset:3px; }
