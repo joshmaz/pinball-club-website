@@ -40,7 +40,7 @@
 .club-donate .content > p, .club-donate .donate-levels { max-width: 75ch; }
 
 
-/* Merch page: the Fourthwall catalog stays authoritative; this is one editorial feature. */
+/* Merch page: Fourthwall stays authoritative; these cards are editorial examples. */
 .club-public .merch-feature {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -65,6 +65,9 @@
 .club-public .merch-feature-copy { padding: clamp(1rem, 2vw, 2rem); }
 .club-public .merch-feature-copy h2 { color: var(--club-ink); font-size: clamp(1.7rem, 3vw, 2.2rem); letter-spacing: -.035em; }
 .club-public .merch-feature-copy p:not(.club-eyebrow) { max-width: 48ch; }
+.club-public .merch-more { max-width: 980px; margin: 2.5rem 0; }
+.club-public .merch-more > h2 { color: var(--club-ink); font-size: 1.5rem; letter-spacing: -.03em; }
+.club-public .merch-item .club-button { margin-top: .75rem; }
 .club-public .merch-club-gear { max-width: 75ch; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--club-line); }
 .club-public .merch-club-gear h2 { color: var(--club-ink); font-size: 1.3rem; letter-spacing: -.025em; }
 @media (max-width: 700px) {
