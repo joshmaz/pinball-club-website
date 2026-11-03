@@ -38,3 +38,36 @@
 .club-about .contact-block { padding: 1.25rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); }
 
 .club-donate .content > p, .club-donate .donate-levels { max-width: 75ch; }
+
+
+/* Merch page: the Fourthwall catalog stays authoritative; this is one editorial feature. */
+.club-public .merch-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 3rem);
+  max-width: 980px;
+  margin: 2rem 0;
+  overflow: hidden;
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+.club-public .merch-feature-figure { margin: 0; padding: clamp(.75rem, 2vw, 1.25rem); }
+.club-public .merch-feature-image {
+  display: block;
+  width: 100%;
+  max-height: 30rem;
+  object-fit: contain;
+  background: var(--club-logo-surface);
+}
+.club-public .merch-feature-figure figcaption { margin-top: .6rem; color: var(--club-muted); font-size: .8rem; text-align: center; }
+.club-public .merch-feature-copy { padding: clamp(1rem, 2vw, 2rem); }
+.club-public .merch-feature-copy h2 { color: var(--club-ink); font-size: clamp(1.7rem, 3vw, 2.2rem); letter-spacing: -.035em; }
+.club-public .merch-feature-copy p:not(.club-eyebrow) { max-width: 48ch; }
+.club-public .merch-club-gear { max-width: 75ch; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--club-line); }
+.club-public .merch-club-gear h2 { color: var(--club-ink); font-size: 1.3rem; letter-spacing: -.025em; }
+@media (max-width: 700px) {
+  .club-public .merch-feature { grid-template-columns: 1fr; }
+  .club-public .merch-feature-image { max-height: 24rem; }
+}
