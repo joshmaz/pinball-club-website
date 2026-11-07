@@ -18,3 +18,20 @@
 
 /* Keep the larger full-color club mark as a subtle, transparent watermark. */
 .slide-watermark{max-width:94px;max-height:94px;width:auto;height:auto;opacity:.35;object-fit:contain}
+
+/* Slideshow 2.1 source selection */
+.slide-duration-label{display:inline;white-space:nowrap}
+#slide-duration{display:block;width:100%;max-width:28rem}
+.slide-source-toggle{display:flex!important;align-items:center;gap:.55rem;max-width:none!important}
+.slide-source-toggle input{width:auto;margin:0}
+.slide-option-hint{font-size:.9rem;opacity:.75;margin:.5rem 0}
+.slide-activity-options{margin-top:1.25rem}
+#slide-activity-options{margin-top:.75rem}
+#slide-activity-options>label,#slide-activity-list label{display:flex;align-items:center;gap:.5rem;margin:.4rem 0}
+#slide-activity-options input{width:auto;margin:0}
+#slide-activity-list{padding:.5rem 0 .5rem 1.5rem}
+.slide-activity-card{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:clamp(2rem,6vw,7rem);background:linear-gradient(135deg,#172f4a,#09131f);color:white}
+.slide-activity-card h1{font-size:clamp(2.5rem,6vw,6rem);line-height:1.05;margin:0;max-width:22ch}
+.slide-activity-kicker{letter-spacing:.15em;text-transform:uppercase;color:#ffcb62;font-size:clamp(.8rem,1.2vw,1.2rem)}
+.slide-activity-body{font-size:clamp(1.1rem,2vw,2rem);line-height:1.4;max-width:45ch}
+.slide-activity-image{position:absolute;right:0;top:0;width:45%!important;height:100%!important;object-fit:cover!important;opacity:.3;mask-image:linear-gradient(to right,transparent,black)}
