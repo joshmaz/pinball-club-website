@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" class="clubhouse club-public club-store">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f4f2eb">
+    <meta name="application-name" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-title" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="assets/pwa/manifest.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
+    <meta name="description" content="Preview an alternate online store for Southern New Hampshire Pinball Club.">
+    <title>SNH Pinball Club Store Preview</title>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
+    <link rel="stylesheet" href="assets/css/club-public.css">
+    <link rel="stylesheet" href="assets/css/store.css">
+</head>
+<body>
+    <a class="club-skip" href="#store-main">Skip to content</a>
+    <header id="page-top" tabindex="-1">
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="events.html">Events</a>
+            <a href="games.html">Games</a>
+            <a href="merch.html">Merch</a>
+            <a href="photos.html">Photos</a>
+            <a href="resources.html">Resources</a>
+            <a href="about.html">About</a>
+            <a href="signin.html" data-site-account-link>Members</a>
+        </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
+    </header>
+    <main id="store-main">
+        <section class="club-page-heading" aria-labelledby="store-title">
+            <div>
+                <p class="club-eyebrow">Store preview</p>
+                <h1 id="store-title">SNH Pinball Club Store</h1>
+                <p class="club-lead">We’re trying out another way to shop for club gear. Browse the test store below and let us know what you think.</p>
+            </div>
+        </section>
+        <section class="content store-content" aria-label="Spreadshop store">
+            <div class="spreadshop-embed">
+                <div id="myShop">
+                    <a href="https://snhpinballclub.myspreadshop.com">snhpinballclub</a>
+                </div>
+                <script>
+                    var spread_shop_config = {
+                        shopName: 'snhpinballclub',
+                        locale: 'us_US',
+                        prefix: 'https://snhpinballclub.myspreadshop.com',
+                        baseId: 'myShop'
+                    };
+                </script>
+                <script type="text/javascript" src="https://snhpinballclub.myspreadshop.com/shopfiles/shopclient/shopclient.nocache.js"></script>
+            </div>
+            <aside class="store-feedback-note" aria-labelledby="store-feedback-title">
+                <h2 id="store-feedback-title">A note about this test store</h2>
+                <p>This is a test version of an alternate store we’re considering. For now, please make any real purchases through our <a href="merch.html">main Merch page</a>. If you were asked to visit this page, please share your feedback. Feedback is welcome from everyone.</p>
+            </aside>
+        </section>
+    </main>
+    <footer>
+        <a href="#page-top" aria-label="Back to top of this page"><img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo"></a>
+        <p>©2026 Southern New Hampshire Pinball Club</p>
+    </footer>
+    <script src="assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="assets/js/supabase-init.js"></script>
+    <script src="assets/js/site-auth.js"></script>
+    <script src="assets/js/site-account.js"></script>
+    <script src="assets/js/clubhouse.js"></script>
+</body>
+</html>
