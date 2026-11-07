@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const params=new URLSearchParams(location.search);
-const duration=Math.min(30,Math.max(3,Number(params.get('dur'))||5));
+const duration=Math.min(30,Math.max(3,Number(params.get('dur'))||17));
 const settingsUrl='/slideshow';
 function parseIds(value){return new Set((value||'').split(',').filter(v=>UUID.test(v)));}
 function selected(albums){const mode=params.has('include')?'include':params.has('exclude')?'exclude':'all';const ids=parseIds(params.get(mode));return albums.filter(a=>mode==='all'||(mode==='include'?ids.has(a.id):!ids.has(a.id)));}
