@@ -8,3 +8,10 @@
 .slide-options #slide-captions { margin: 0; width: auto; flex: 0 0 auto; }
 
 .slide-options .slide-framing{border:0;padding:0;margin:0;min-width:0}.slide-options .slide-framing legend{padding:0;margin-bottom:.5rem}.slide-options .slide-framing label{display:flex;align-items:center;gap:.5rem;max-width:none;margin:.35rem 0}.slide-options .slide-framing input[type=radio]{margin:0;flex:none}
+
+/* Image framing is a simple option, not a boxed form section. */
+.slide-options .slide-framing{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;min-width:0;display:grid;gap:.45rem}
+.slide-options .slide-framing legend{margin:0 0 .45rem;padding:0;font:inherit}
+.slide-options .slide-framing label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:.6rem!important;width:max-content;max-width:100%;margin:0;padding:0;text-align:left}
+.slide-options .slide-framing input[type="radio"]{appearance:auto;width:1rem!important;height:1rem!important;min-width:1rem!important;min-height:1rem!important;flex:0 0 1rem!important;margin:0!important;padding:0!important}
+.slide-options .slide-framing label span{display:inline;white-space:normal}
