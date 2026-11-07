@@ -18,3 +18,7 @@
 
 /* Keep the larger full-color club mark as a subtle, transparent watermark. */
 .slide-watermark{max-width:94px;max-height:94px;width:auto;height:auto;opacity:.35;object-fit:contain}
+
+/* Keep the duration title and its live value on one line; slider below. */
+.slide-options .slide-duration-label{display:inline;white-space:nowrap}
+.slide-options #slide-duration{display:block;width:100%;max-width:28rem}
