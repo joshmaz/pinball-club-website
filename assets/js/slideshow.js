@@ -20,7 +20,7 @@ return '/slideshow/play?'+q.toString();
 if($('slide-form')){
 const form=$('slide-form'),status=$('slide-status'),albumsBox=$('slide-albums'),dur=$('slide-duration'),captions=$('slide-captions'),fitOptions=[...document.querySelectorAll('input[name="slide-fit"]')];
 dur.value=duration;$('slide-duration-value').textContent=duration;dur.oninput=()=>{$('slide-duration-value').textContent=dur.value;};
-captions.checked=params.get('cap')!=='0';fitOptions.forEach(input=>{input.checked=input.value===(params.get('fit')==='fill'?'fill':'fit');});
+captions.checked=params.get('cap')==='1';fitOptions.forEach(input=>{input.checked=input.value===(params.get('fit')==='fill'?'fill':'fit');});
 let albums=[];
 function checked(){return [...albumsBox.querySelectorAll('input:checked')].map(x=>x.value);}
 function url(){return linkFor(albums,checked(),dur.value,captions.checked,(fitOptions.find(input=>input.checked)||fitOptions[0]).value);}
@@ -34,7 +34,7 @@ return;
 }
 if(!$('slide-stage'))return;
 const stage=$('slide-stage'),frames=[$('slide-frame-a'),$('slide-frame-b')],holding=$('slide-holding'),shade=$('slide-shade'),caption=$('slide-caption'),controls=$('slide-controls');
-const fit=params.get('fit')==='fill'?'fill':'fit',cap=params.get('cap')!=='0';
+const fit=params.get('fit')==='fill'?'fill':'fit',cap=params.get('cap')==='1';
 let items=[],order=[],cursor=-1,active=0,timer=null,paused=false,busy=false,hideTimer=null,retryTimer=null,last=-1;
 function shuffle(){const arr=items.map((_,i)=>i);for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}if(arr.length>1&&arr[0]===last)[arr[0],arr[1]]=[arr[1],arr[0]];return arr;}
 function nextIndex(){if(cursor+1>=order.length){order=shuffle();cursor=-1;}return order[++cursor];}
