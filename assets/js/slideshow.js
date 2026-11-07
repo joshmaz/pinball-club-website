@@ -76,7 +76,22 @@ function queueRefresh(){clearTimeout(refreshTimer);refreshTimer=setTimeout(async
 function shuffle(){const arr=items.map((_,i)=>i);for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}if(arr.length>1&&arr[0]===last)[arr[0],arr[1]]=[arr[1],arr[0]];return arr;}
 function nextIndex(){if(cursor+1>=order.length){order=makeOrder();cursor=-1;}return order[++cursor];}
 function shuffled(arr){const out=arr.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
-function makeOrder(){const photos=shuffled(items.map((x,i)=>x.kind==='photo'?i:-1).filter(i=>i>=0)),activities=shuffled(items.map((x,i)=>x.kind!=='photo'?i:-1).filter(i=>i>=0));const out=[];let p=0,a=0;while(p<photos.length||a<activities.length){out.push(...photos.slice(p,p+5));p+=5;if(a<activities.length)out.push(activities[a++]);if(p>=photos.length&&a<activities.length){out.push(...activities.slice(a));a=activities.length;}}if(out.length>1&&out[0]===last)[out[0],out[1]]=[out[1],out[0]];return out;}
+function makeOrder(){
+const photos=shuffled(items.map((x,i)=>x.kind==='photo'?i:-1).filter(i=>i>=0));
+const other=shuffled(items.map((x,i)=>x.kind!=='photo'?i:-1).filter(i=>i>=0));
+const out=[],total=photos.length+other.length;
+let p=0,o=0;
+for(let slot=0;slot<total;slot++){
+  // Distribute the smaller group throughout the full sequence instead of
+  // placing all non-photo slides after a fixed batch of photos.
+  const targetOther=Math.round((slot+1)*other.length/total);
+  if(o<other.length&&o<targetOther)out.push(other[o++]);
+  else if(p<photos.length)out.push(photos[p++]);
+  else out.push(other[o++]);
+}
+if(out.length>1&&out[0]===last)[out[0],out[1]]=[out[1],out[0]];
+return out;
+}
 function preload(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;});}
 function setHolding(message){holding.textContent=message;holding.hidden=false;}
 function schedule(){clearTimeout(timer);if(!paused&&items.length)timer=setTimeout(()=>void advance(1),currentDuration*1000);}
