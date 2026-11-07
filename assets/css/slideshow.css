@@ -69,3 +69,6 @@
 /* Distinguish the photo display preference from album selections. */
 .slide-photo-caption-option{display:flex;align-items:center;gap:.55rem;margin-top:1rem!important;padding-top:.85rem;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 22%,transparent)}
 .slide-photo-caption-option input{width:auto;margin:0}
+
+/* Nest promotional choices like the individual activity selections. */
+#slide-promo-options{padding-left:1.5rem}
