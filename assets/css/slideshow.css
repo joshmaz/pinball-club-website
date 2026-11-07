@@ -1,0 +1,20 @@
+.slide-album-actions,.slide-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:.75rem 0}.slide-options{display:grid;gap:1.25rem;margin:1.5rem 0}.slide-options label{display:grid;gap:.5rem;max-width:28rem}#slide-albums{display:grid;gap:.5rem;max-height:45vh;overflow:auto}#slide-albums label{display:block;padding:.3rem}.slide-player{margin:0;background:#090c11;color:white;overflow:hidden;font-family:system-ui,sans-serif}.slide-player #slide-stage{position:fixed;inset:0;overflow:hidden;background:#090c11}.slide-frame{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;overflow:hidden}.slide-frame.active{opacity:1}.slide-frame img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1);will-change:transform}.slide-frame.fill img{object-fit:cover}.slide-frame.moving img{animation:slide-kenburns var(--slide-time,5s) linear both}@keyframes slide-kenburns{from{transform:scale(1.015) translate(-.3%,-.3%)}to{transform:scale(1.045) translate(.3%,.3%)}}.slide-shade{position:absolute;bottom:0;left:0;right:0;padding:3rem 2rem 4rem;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none}.slide-shade p{margin:0;max-width:70ch;font-size:clamp(1rem,2vw,1.5rem)}.slide-watermark{position:absolute;right:1.25rem;top:1.25rem;max-width:75px;max-height:75px;opacity:.35;pointer-events:none}.slide-controls{position:absolute;bottom:0;left:0;right:0;display:flex;gap:.6rem;justify-content:center;padding:.7rem;background:rgba(0,0,0,.5);transition:opacity .3s}.slide-controls button{padding:.5rem .8rem}.slide-controls.hidden{opacity:0;pointer-events:none}.slide-holding{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:2rem;font-size:1.5rem}.slide-holding[hidden],.slide-shade[hidden]{display:none}@media(prefers-reduced-motion:reduce){.slide-frame.moving img{animation:none}.slide-frame{transition-duration:.2s}}
+/* Restore the normal clubhouse content gutter: clubhouse.css resets .content. */
+.clubhouse #slideshow-main.content { max-width: 1200px; margin-inline: auto; padding: 0 var(--club-space) 3rem; }
+.clubhouse #slideshow-main fieldset { min-width: 0; }
+
+/* Keep the captions checkbox and its text on one baseline. */
+.slide-options label:has(#slide-captions) { display: flex; align-items: center; gap: .55rem; }
+.slide-options #slide-captions { margin: 0; width: auto; flex: 0 0 auto; }
+
+.slide-options .slide-framing{border:0;padding:0;margin:0;min-width:0}.slide-options .slide-framing legend{padding:0;margin-bottom:.5rem}.slide-options .slide-framing label{display:flex;align-items:center;gap:.5rem;max-width:none;margin:.35rem 0}.slide-options .slide-framing input[type=radio]{margin:0;flex:none}
+
+/* Image framing is a simple option, not a boxed form section. */
+.slide-options .slide-framing{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;min-width:0;display:grid;gap:.45rem}
+.slide-options .slide-framing legend{margin:0 0 .45rem;padding:0;font:inherit}
+.slide-options .slide-framing label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:.6rem!important;width:max-content;max-width:100%;margin:0;padding:0;text-align:left}
+.slide-options .slide-framing input[type="radio"]{appearance:auto;width:1rem!important;height:1rem!important;min-width:1rem!important;min-height:1rem!important;flex:0 0 1rem!important;margin:0!important;padding:0!important}
+.slide-options .slide-framing label span{display:inline;white-space:normal}
+
+/* Keep the larger full-color club mark as a subtle, transparent watermark. */
+.slide-watermark{max-width:94px;max-height:94px;width:auto;height:auto;opacity:.35;object-fit:contain}

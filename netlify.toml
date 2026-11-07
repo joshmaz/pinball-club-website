@@ -23,3 +23,15 @@
   to = "/store.html"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/slideshow"
+  to = "/slideshow.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/slideshow/play"
+  to = "/slideshow-play.html"
+  status = 200
+  force = true
