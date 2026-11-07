@@ -6,3 +6,5 @@
 /* Keep the captions checkbox and its text on one baseline. */
 .slide-options label:has(#slide-captions) { display: flex; align-items: center; gap: .55rem; }
 .slide-options #slide-captions { margin: 0; width: auto; flex: 0 0 auto; }
+
+.slide-options .slide-framing{border:0;padding:0;margin:0;min-width:0}.slide-options .slide-framing legend{padding:0;margin-bottom:.5rem}.slide-options .slide-framing label{display:flex;align-items:center;gap:.5rem;max-width:none;margin:.35rem 0}.slide-options .slide-framing input[type=radio]{margin:0;flex:none}
