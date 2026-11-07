@@ -15,3 +15,6 @@
 .slide-options .slide-framing label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:.6rem!important;width:max-content;max-width:100%;margin:0;padding:0;text-align:left}
 .slide-options .slide-framing input[type="radio"]{appearance:auto;width:1rem!important;height:1rem!important;min-width:1rem!important;min-height:1rem!important;flex:0 0 1rem!important;margin:0!important;padding:0!important}
 .slide-options .slide-framing label span{display:inline;white-space:normal}
+
+/* Keep the full-color club mark legible against light or dark photographs. */
+.slide-watermark{max-width:94px;max-height:94px;width:auto;height:auto;box-sizing:content-box;padding:.5rem;background:rgba(255,255,255,.9);border-radius:.5rem;opacity:1;object-fit:contain}
