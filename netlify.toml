@@ -16,3 +16,10 @@
   to = "/donate/"
   status = 301
   force = true
+
+# Keep the alternate store at the short URL while serving the static page.
+[[redirects]]
+  from = "/store"
+  to = "/store.html"
+  status = 200
+  force = true
