@@ -345,7 +345,7 @@
     var excludeWrap = el("label", { className: "members-checkbox-label" });
     var excludeInput = el("input", { type: "checkbox", checked: !!asset.excludeFromSlideshow });
     excludeWrap.appendChild(excludeInput);
-    excludeWrap.appendChild(document.createTextNode(" Exclude from home highlights mosaic"));
+    excludeWrap.appendChild(document.createTextNode(" Exclude from highlights and slideshows"));
     meta.appendChild(excludeWrap);
 
     meta.appendChild(el("label", { text: "Promo role (requires linked event on this album)" }));
