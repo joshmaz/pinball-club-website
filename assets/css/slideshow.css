@@ -7,14 +7,14 @@
 .slide-options label:has(#slide-captions) { display: flex; align-items: center; gap: .55rem; }
 .slide-options #slide-captions { margin: 0; width: auto; flex: 0 0 auto; }
 
-.slide-options .slide-framing{border:0;padding:0;margin:0;min-width:0}.slide-options .slide-framing legend{padding:0;margin-bottom:.5rem}.slide-options .slide-framing label{display:flex;align-items:center;gap:.5rem;max-width:none;margin:.35rem 0}.slide-options .slide-framing input[type=radio]{margin:0;flex:none}
+.slide-photo-display .slide-framing{border:0;padding:0;margin:0;min-width:0}.slide-photo-display .slide-framing legend{padding:0;margin-bottom:.5rem}.slide-photo-display .slide-framing label{display:flex;align-items:center;gap:.5rem;max-width:none;margin:.35rem 0}.slide-photo-display .slide-framing input[type=radio]{margin:0;flex:none}
 
 /* Image framing is a simple option, not a boxed form section. */
-.slide-options .slide-framing{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;min-width:0;display:grid;gap:.45rem}
-.slide-options .slide-framing legend{margin:0 0 .45rem;padding:0;font:inherit}
-.slide-options .slide-framing label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:.6rem!important;width:max-content;max-width:100%;margin:0;padding:0;text-align:left}
-.slide-options .slide-framing input[type="radio"]{appearance:auto;width:1rem!important;height:1rem!important;min-width:1rem!important;min-height:1rem!important;flex:0 0 1rem!important;margin:0!important;padding:0!important}
-.slide-options .slide-framing label span{display:inline;white-space:normal}
+.slide-photo-display .slide-framing{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;min-width:0;display:grid;gap:.45rem}
+.slide-photo-display .slide-framing legend{margin:0 0 .45rem;padding:0;font:inherit}
+.slide-photo-display .slide-framing label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:.6rem!important;width:max-content;max-width:100%;margin:0;padding:0;text-align:left}
+.slide-photo-display .slide-framing input[type="radio"]{appearance:auto;width:1rem!important;height:1rem!important;min-width:1rem!important;min-height:1rem!important;flex:0 0 1rem!important;margin:0!important;padding:0!important}
+.slide-photo-display .slide-framing label span{display:inline;white-space:normal}
 
 /* Keep the larger full-color club mark as a subtle, transparent watermark. */
 .slide-watermark{max-width:94px;max-height:94px;width:auto;height:auto;opacity:.35;object-fit:contain}
@@ -72,3 +72,11 @@
 
 /* Nest promotional choices like the individual activity selections. */
 #slide-promo-options{padding-left:1.5rem}
+
+/* Album selection and photo-only presentation settings are distinct groups. */
+.slide-photo-display{margin-top:1.1rem;padding-top:.8rem;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent)}
+.slide-photo-display-heading{font-weight:650;margin:0 0 .65rem}
+.slide-photo-display .slide-photo-caption-option{margin:0 0 1rem!important;padding:0;border:0;display:flex;align-items:center;gap:.55rem}
+.slide-photo-display .slide-framing{margin-top:.4rem!important}
+.slide-photo-display .slide-framing legend{font-weight:600}
+.slide-duration-note{margin:.1rem 0 0;max-width:55ch;font-size:.9rem;opacity:.8;line-height:1.45}
