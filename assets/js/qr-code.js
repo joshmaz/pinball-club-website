@@ -25,7 +25,7 @@ function render(target,url,options={}){
   if(options.logo!==false){
     const markSize=Math.min(count*0.17,9);
     const center=quiet+count/2;
-    const pad=markSize*0.14;
+    const pad=markSize*0.025;
     const backing=document.createElementNS(ns,'rect');
     backing.setAttribute('x',center-markSize/2-pad);
     backing.setAttribute('y',center-markSize/2-pad);
@@ -35,7 +35,7 @@ function render(target,url,options={}){
     backing.setAttribute('fill','#fff');
     svg.append(backing);
     const logo=document.createElementNS(ns,'image');
-    logo.setAttribute('href',options.logoUrl||'/assets/images/snhpc_logo_small_cropped.png');
+    logo.setAttribute('href',options.logoUrl||'/assets/images/SNHPC_logo_color.png');
     logo.setAttribute('x',center-markSize/2);
     logo.setAttribute('y',center-markSize/2);
     logo.setAttribute('width',markSize);
