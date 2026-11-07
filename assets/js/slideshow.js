@@ -18,12 +18,12 @@ q.set('dur',String(dur));q.set('cap',cap?'1':'0');if(fit==='fill')q.set('fit','f
 return '/slideshow/play?'+q.toString();
 }
 if($('slide-form')){
-const form=$('slide-form'),status=$('slide-status'),albumsBox=$('slide-albums'),dur=$('slide-duration'),captions=$('slide-captions'),fit=$('slide-fit');
+const form=$('slide-form'),status=$('slide-status'),albumsBox=$('slide-albums'),dur=$('slide-duration'),captions=$('slide-captions'),fitOptions=[...document.querySelectorAll('input[name="slide-fit"]')];
 dur.value=duration;$('slide-duration-value').textContent=duration;dur.oninput=()=>{$('slide-duration-value').textContent=dur.value;};
-captions.checked=params.get('cap')!=='0';fit.value=params.get('fit')==='fill'?'fill':'fit';
+captions.checked=params.get('cap')!=='0';fitOptions.forEach(input=>{input.checked=input.value===(params.get('fit')==='fill'?'fill':'fit');});
 let albums=[];
 function checked(){return [...albumsBox.querySelectorAll('input:checked')].map(x=>x.value);}
-function url(){return linkFor(albums,checked(),dur.value,captions.checked,fit.value);}
+function url(){return linkFor(albums,checked(),dur.value,captions.checked,(fitOptions.find(input=>input.checked)||fitOptions[0]).value);}
 function draw(){albumsBox.replaceChildren();const ids=new Set(selected(albums).map(a=>a.id));albums.forEach(a=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=a.id;input.checked=ids.has(a.id);label.append(input,document.createTextNode(' '+a.title));albumsBox.append(label);});status.textContent=albums.length?albums.length+' published albums available.':'No published albums available.';}
 $('slide-all').onclick=()=>albumsBox.querySelectorAll('input').forEach(x=>x.checked=true);
 $('slide-none').onclick=()=>albumsBox.querySelectorAll('input').forEach(x=>x.checked=false);
