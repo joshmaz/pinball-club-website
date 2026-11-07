@@ -65,3 +65,7 @@
 .slide-promo-qr svg{display:block;width:100%;height:100%}
 .slide-promo-url{overflow-wrap:anywhere;font-size:clamp(1rem,1.5vw,1.5rem);color:#ffcb62}
 @media(max-width:650px){.slide-message-card:has(.slide-promo-qr){padding-right:2rem;padding-bottom:35vh}.slide-promo-qr{top:auto;bottom:2rem;right:50%;transform:translateX(50%);width:min(30vh,65vw)}}
+
+/* Distinguish the photo display preference from album selections. */
+.slide-photo-caption-option{display:flex;align-items:center;gap:.55rem;margin-top:1rem!important;padding-top:.85rem;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 22%,transparent)}
+.slide-photo-caption-option input{width:auto;margin:0}
