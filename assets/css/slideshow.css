@@ -80,3 +80,12 @@
 .slide-photo-display .slide-framing{margin-top:.4rem!important}
 .slide-photo-display .slide-framing legend{font-weight:600}
 .slide-duration-note{margin:.1rem 0 0;max-width:55ch;font-size:.9rem;opacity:.8;line-height:1.45}
+
+/* 2.4: restrained, varied photo motion; text and promotional slides remain still. */
+.slide-frame.moving.photo-motion-0 img{animation:slide-photo-drift-a var(--slide-time,5s) ease-in-out both}
+.slide-frame.moving.photo-motion-1 img{animation:slide-photo-drift-b var(--slide-time,5s) ease-in-out both}
+.slide-frame.moving.photo-motion-2 img{animation:slide-photo-drift-c var(--slide-time,5s) ease-in-out both}
+@keyframes slide-photo-drift-a{from{transform:scale(1.015) translate(-.35%,-.2%)}to{transform:scale(1.055) translate(.35%,.2%)}}
+@keyframes slide-photo-drift-b{from{transform:scale(1.05) translate(.3%,-.25%)}to{transform:scale(1.015) translate(-.3%,.25%)}}
+@keyframes slide-photo-drift-c{from{transform:scale(1.025) translate(-.25%,.35%)}to{transform:scale(1.05) translate(.25%,-.35%)}}
+@media(prefers-reduced-motion:reduce){.slide-frame.moving.photo-motion-0 img,.slide-frame.moving.photo-motion-1 img,.slide-frame.moving.photo-motion-2 img{animation:none}}
