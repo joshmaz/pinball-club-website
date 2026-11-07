@@ -58,3 +58,10 @@
 .slide-message-card h1{font-size:clamp(2.5rem,6vw,6rem);line-height:1.08;margin:0;max-width:21ch}
 .slide-message-body{font-size:clamp(1.2rem,2.3vw,2.4rem);line-height:1.4;max-width:48ch;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5}
 .slide-message-action{font-size:clamp(1.1rem,2vw,2rem);font-weight:700;color:#ffcb62}
+
+/* High-contrast, quiet-zone-preserving QR codes for viewing from a TV. */
+.slide-message-card:has(.slide-promo-qr){padding-right:clamp(15rem,30vw,36rem)}
+.slide-promo-qr{position:absolute;right:clamp(2rem,5vw,6rem);top:50%;transform:translateY(-50%);width:clamp(180px,22vw,360px);aspect-ratio:1;background:#fff;border-radius:10px;padding:.4rem;box-shadow:0 8px 28px #0005}
+.slide-promo-qr svg{display:block;width:100%;height:100%}
+.slide-promo-url{overflow-wrap:anywhere;font-size:clamp(1rem,1.5vw,1.5rem);color:#ffcb62}
+@media(max-width:650px){.slide-message-card:has(.slide-promo-qr){padding-right:2rem;padding-bottom:35vh}.slide-promo-qr{top:auto;bottom:2rem;right:50%;transform:translateX(50%);width:min(30vh,65vw)}}
