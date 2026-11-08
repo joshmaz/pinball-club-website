@@ -57,6 +57,8 @@
 .club-public .merch-feature-image {
   display: block;
   width: 100%;
+  max-width: 100%;
+  height: auto;
   max-height: 30rem;
   object-fit: contain;
   background: var(--club-logo-surface);
@@ -73,4 +75,33 @@
 @media (max-width: 700px) {
   .club-public .merch-feature { grid-template-columns: 1fr; }
   .club-public .merch-feature-image { max-height: 24rem; }
+}
+
+
+/* Donation appeal: clear impact, generous spacing, and a prominent path to give. */
+.club-donate .donate-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: center; }
+.club-donate .donate-heading-copy { max-width: 64ch; }
+.club-donate .donate-heading-copy h1 { max-width: 14ch; }
+.club-donate .donate-heading-copy > p:not(.club-lead):not(.club-page-note):not(.club-eyebrow):not(.donate-hero-actions) { line-height: 1.7; }
+.club-donate .donate-hero-actions { margin: 1.5rem 0 .5rem; }
+.club-donate .donate-hero-photo { margin: 0; overflow: hidden; border-radius: var(--club-radius); background: var(--club-soft); }
+.club-donate .donate-hero-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.club-donate .donate-content { max-width: 1100px; }
+.club-donate .donate-content h2 { color: var(--club-ink); font-size: clamp(1.5rem, 2.5vw, 2rem); letter-spacing: -.03em; }
+.club-donate .donate-section-heading { max-width: 75ch; margin: 1rem 0 1.5rem; }
+.club-donate .donate-impact { display: grid; margin: 1.5rem 0 2.5rem; }
+.club-donate .donate-impact-item { height: 100%; }
+.club-donate .donate-impact-number { display: inline-block; margin-bottom: .8rem; color: var(--club-teal); font-weight: 700; font-size: .8rem; letter-spacing: .12em; }
+.club-donate .donate-giving, .club-donate .donate-community { padding: 1.75rem 0; border-top: 1px solid var(--club-line); }
+.club-donate .donate-giving > p, .club-donate .donate-community > p { max-width: 75ch; }
+.club-donate .donate-levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: .75rem; list-style: none; padding: 0; margin: 1.25rem 0; }
+.club-donate .donate-levels li { display: flex; flex-direction: column; gap: .35rem; padding: 1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.club-donate .donate-levels strong { color: var(--club-ink); font-size: 1.5rem; }
+.club-donate .donate-smallprint, .club-donate .donate-disclaimer { font-size: .85rem; color: var(--club-muted); }
+.club-donate .donate-closing { padding: clamp(1.5rem, 4vw, 2.5rem); margin: 1rem 0 2rem; background: var(--club-soft); border-radius: var(--club-radius); }
+.club-donate .donate-closing p { max-width: 65ch; }
+.club-donate .donate-contact { margin-top: 2rem; }
+@media (max-width: 760px) {
+  .club-donate .donate-hero { grid-template-columns: 1fr; }
+  .club-donate .donate-hero-photo img { aspect-ratio: 16 / 9; }
 }

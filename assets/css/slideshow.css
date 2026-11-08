@@ -1,0 +1,91 @@
+.slide-album-actions,.slide-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:.75rem 0}.slide-options{display:grid;gap:1.25rem;margin:1.5rem 0}.slide-options label{display:grid;gap:.5rem;max-width:28rem}#slide-albums{display:grid;gap:.5rem;max-height:45vh;overflow:auto}#slide-albums label{display:block;padding:.3rem}.slide-player{margin:0;background:#090c11;color:white;overflow:hidden;font-family:system-ui,sans-serif}.slide-player #slide-stage{position:fixed;inset:0;overflow:hidden;background:#090c11}.slide-frame{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;overflow:hidden}.slide-frame.active{opacity:1}.slide-frame img{width:100%;height:100%;object-fit:contain;display:block;transform:scale(1);will-change:transform}.slide-frame.fill img{object-fit:cover}.slide-frame.moving img{animation:slide-kenburns var(--slide-time,5s) linear both}@keyframes slide-kenburns{from{transform:scale(1.015) translate(-.3%,-.3%)}to{transform:scale(1.045) translate(.3%,.3%)}}.slide-shade{position:absolute;bottom:0;left:0;right:0;padding:3rem 2rem 4rem;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none}.slide-shade p{margin:0;max-width:70ch;font-size:clamp(1rem,2vw,1.5rem)}.slide-watermark{position:absolute;right:1.25rem;top:1.25rem;max-width:75px;max-height:75px;opacity:.35;pointer-events:none}.slide-controls{position:absolute;bottom:0;left:0;right:0;display:flex;gap:.6rem;justify-content:center;padding:.7rem;background:rgba(0,0,0,.5);transition:opacity .3s}.slide-controls button{padding:.5rem .8rem}.slide-controls.hidden{opacity:0;pointer-events:none}.slide-holding{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:2rem;font-size:1.5rem}.slide-holding[hidden],.slide-shade[hidden]{display:none}@media(prefers-reduced-motion:reduce){.slide-frame.moving img{animation:none}.slide-frame{transition-duration:.2s}}
+/* Restore the normal clubhouse content gutter: clubhouse.css resets .content. */
+.clubhouse #slideshow-main.content { max-width: 1200px; margin-inline: auto; padding: 0 var(--club-space) 3rem; }
+.clubhouse #slideshow-main fieldset { min-width: 0; }
+
+/* Keep the captions checkbox and its text on one baseline. */
+.slide-options label:has(#slide-captions) { display: flex; align-items: center; gap: .55rem; }
+.slide-options #slide-captions { margin: 0; width: auto; flex: 0 0 auto; }
+
+.slide-photo-display .slide-framing{border:0;padding:0;margin:0;min-width:0}.slide-photo-display .slide-framing legend{padding:0;margin-bottom:.5rem}.slide-photo-display .slide-framing label{display:flex;align-items:center;gap:.5rem;max-width:none;margin:.35rem 0}.slide-photo-display .slide-framing input[type=radio]{margin:0;flex:none}
+
+/* Image framing is a simple option, not a boxed form section. */
+.slide-photo-display .slide-framing{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;min-width:0;display:grid;gap:.45rem}
+.slide-photo-display .slide-framing legend{margin:0 0 .45rem;padding:0;font:inherit}
+.slide-photo-display .slide-framing label{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:.6rem!important;width:max-content;max-width:100%;margin:0;padding:0;text-align:left}
+.slide-photo-display .slide-framing input[type="radio"]{appearance:auto;width:1rem!important;height:1rem!important;min-width:1rem!important;min-height:1rem!important;flex:0 0 1rem!important;margin:0!important;padding:0!important}
+.slide-photo-display .slide-framing label span{display:inline;white-space:normal}
+
+/* Keep the larger full-color club mark as a subtle, transparent watermark. */
+.slide-watermark{max-width:94px;max-height:94px;width:auto;height:auto;opacity:.35;object-fit:contain}
+
+/* Slideshow 2.1 source selection */
+.slide-duration-label{display:inline;white-space:nowrap}
+#slide-duration{display:block;width:100%;max-width:28rem}
+.slide-source-toggle{display:flex!important;align-items:center;gap:.55rem;max-width:none!important}
+.slide-source-toggle input{width:auto;margin:0}
+.slide-option-hint{font-size:.9rem;opacity:.75;margin:.5rem 0}
+.slide-activity-options{margin-top:1.25rem}
+#slide-activity-options{margin-top:.75rem}
+#slide-activity-options>label,#slide-activity-list label{display:flex;align-items:center;gap:.5rem;margin:.4rem 0}
+#slide-activity-options input{width:auto;margin:0}
+#slide-activity-list{padding:.5rem 0 .5rem 1.5rem}
+.slide-activity-card{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:clamp(2rem,6vw,7rem);background:linear-gradient(135deg,#172f4a,#09131f);color:white}
+.slide-activity-card h1{font-size:clamp(2.5rem,6vw,6rem);line-height:1.05;margin:0;max-width:22ch}
+.slide-activity-kicker{letter-spacing:.15em;text-transform:uppercase;color:#ffcb62;font-size:clamp(.8rem,1.2vw,1.2rem)}
+.slide-activity-body{font-size:clamp(1.1rem,2vw,2rem);line-height:1.4;max-width:45ch}
+.slide-activity-image{position:absolute;right:0;top:0;width:45%!important;height:100%!important;object-fit:cover!important;opacity:.3;mask-image:linear-gradient(to right,transparent,black)}
+
+/* 2.2 calendar source and television event cards */
+.slide-event-options{margin-top:1.25rem}
+#slide-event-options{margin-top:.75rem}
+#slide-event-options>label,#slide-event-list label{display:flex;align-items:center;gap:.5rem;margin:.4rem 0}
+#slide-event-options input{width:auto;margin:0}
+#slide-event-list{padding:.5rem 0 .5rem 1.5rem}
+.slide-event-card{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:1.1rem;padding:clamp(2rem,7vw,8rem);background:linear-gradient(135deg,#162d48,#09131f);color:#fff}
+.slide-event-card h1{font-size:clamp(2.4rem,6vw,6rem);line-height:1.07;margin:0;max-width:20ch}
+.slide-event-kicker{color:#ffcb62;font-size:clamp(.9rem,1.4vw,1.5rem);letter-spacing:.12em;text-transform:uppercase}
+.slide-event-date{font-size:clamp(1.5rem,3vw,3rem);font-weight:700}
+.slide-event-detail{font-size:clamp(1.1rem,2vw,2rem);line-height:1.35;max-width:55ch}
+
+/* 2.3 announcements and evergreen promotions */
+.slide-announcement-options,.slide-promo-options{margin-top:1.25rem}
+#slide-announcement-options,#slide-promo-options{margin-top:.75rem}
+#slide-promo-options label{display:flex;align-items:center;gap:.5rem;margin:.4rem 0}
+#slide-promo-options input{width:auto;margin:0}
+.slide-message-card{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:1.3rem;padding:clamp(2rem,7vw,8rem);background:linear-gradient(125deg,#142e49,#101b2c);color:#fff}
+.slide-message-kicker{font-size:clamp(.9rem,1.4vw,1.5rem);letter-spacing:.15em;text-transform:uppercase;color:#ffcb62}
+.slide-message-card h1{font-size:clamp(2.5rem,6vw,6rem);line-height:1.08;margin:0;max-width:21ch}
+.slide-message-body{font-size:clamp(1.2rem,2.3vw,2.4rem);line-height:1.4;max-width:48ch;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5}
+.slide-message-action{font-size:clamp(1.1rem,2vw,2rem);font-weight:700;color:#ffcb62}
+
+/* High-contrast, quiet-zone-preserving QR codes for viewing from a TV. */
+.slide-message-card:has(.slide-promo-qr){padding-right:clamp(15rem,30vw,36rem)}
+.slide-promo-qr{position:absolute;right:clamp(2rem,5vw,6rem);top:50%;transform:translateY(-50%);width:clamp(180px,22vw,360px);aspect-ratio:1;background:#fff;border-radius:10px;padding:.4rem;box-shadow:0 8px 28px #0005}
+.slide-promo-qr svg{display:block;width:100%;height:100%}
+.slide-promo-url{overflow-wrap:anywhere;font-size:clamp(1rem,1.5vw,1.5rem);color:#ffcb62}
+@media(max-width:650px){.slide-message-card:has(.slide-promo-qr){padding-right:2rem;padding-bottom:35vh}.slide-promo-qr{top:auto;bottom:2rem;right:50%;transform:translateX(50%);width:min(30vh,65vw)}}
+
+/* Distinguish the photo display preference from album selections. */
+.slide-photo-caption-option{display:flex;align-items:center;gap:.55rem;margin-top:1rem!important;padding-top:.85rem;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 22%,transparent)}
+.slide-photo-caption-option input{width:auto;margin:0}
+
+/* Nest promotional choices like the individual activity selections. */
+#slide-promo-options{padding-left:1.5rem}
+
+/* Album selection and photo-only presentation settings are distinct groups. */
+.slide-photo-display{margin-top:1.1rem;padding-top:.8rem;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent)}
+.slide-photo-display-heading{font-weight:650;margin:0 0 .65rem}
+.slide-photo-display .slide-photo-caption-option{margin:0 0 1rem!important;padding:0;border:0;display:flex;align-items:center;gap:.55rem}
+.slide-photo-display .slide-framing{margin-top:.4rem!important}
+.slide-photo-display .slide-framing legend{font-weight:600}
+.slide-duration-note{margin:.1rem 0 0;max-width:55ch;font-size:.9rem;opacity:.8;line-height:1.45}
+
+/* 2.4: visible but smooth photo motion; text and promotional slides remain still. */
+.slide-frame.moving.photo-motion-0 img{animation:slide-photo-drift-a var(--slide-time,5s) ease-in-out both}
+.slide-frame.moving.photo-motion-1 img{animation:slide-photo-drift-b var(--slide-time,5s) ease-in-out both}
+.slide-frame.moving.photo-motion-2 img{animation:slide-photo-drift-c var(--slide-time,5s) ease-in-out both}
+@keyframes slide-photo-drift-a{from{transform:scale(1.025) translate(-1.1%,-.65%)}to{transform:scale(1.12) translate(1.1%,.65%)}}
+@keyframes slide-photo-drift-b{from{transform:scale(1.12) translate(1%,-.8%)}to{transform:scale(1.025) translate(-1%,.8%)}}
+@keyframes slide-photo-drift-c{from{transform:scale(1.03) translate(-.8%,1%)}to{transform:scale(1.115) translate(.8%,-1%)}}
+@media(prefers-reduced-motion:reduce){.slide-frame.moving.photo-motion-0 img,.slide-frame.moving.photo-motion-1 img,.slide-frame.moving.photo-motion-2 img{animation:none}}
