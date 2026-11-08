@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-const pages = ['index.html', 'events.html', 'games.html', 'merch.html', 'resources.html', 'about.html', 'signin.html', 'members.html', 'donate/index.html'];
+const pages = ['index.html', 'events.html', 'games.html', 'merch.html', 'resources.html', 'about.html', 'signin.html', 'members.html', 'donate.html'];
 const manifestPath = 'assets/pwa/manifest.webmanifest';
 const manifest = JSON.parse(readFileSync(manifestPath));
 

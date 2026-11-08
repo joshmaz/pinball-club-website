@@ -15,7 +15,7 @@ const publicPages = [
   "merch.html",
   "resources.html",
   "members.html",
-  "donate/index.html"
+  "donate.html"
 ];
 
 test("major public pages progressively load the shared account navigation", async () => {
@@ -28,10 +28,10 @@ test("major public pages progressively load the shared account navigation", asyn
   }
 });
 
-test("nested donation navigation retains its parent-relative account paths", async () => {
-  const html = await readFile(path.join(root, "donate", "index.html"), "utf8");
-  assert.match(html, /href="\.\.\/signin\.html" data-site-account-link/);
-  assert.match(html, /src="\.\.\/assets\/js\/site-account\.js"/);
+test("donation page uses root-level account navigation paths", async () => {
+  const html = await readFile(path.join(root, "donate.html"), "utf8");
+  assert.match(html, /href="\/signin\.html" data-site-account-link/);
+  assert.match(html, /src="\/assets\/js\/site-account\.js"/);
 });
 
 test("the member dashboard keeps its sidebar logout and redirects after header sign-out", async () => {

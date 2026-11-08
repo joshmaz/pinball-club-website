@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { generatePublicConfig } from './write-config.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const publicDirectories = ['assets', 'donate', 'wix_archive'];
+const publicDirectories = ['assets', 'wix_archive'];
 const publicData = ['games.json', 'events.json', 'highlights.json', 'resources.json'];
 
 export async function buildPreview(root = repositoryRoot, env = process.env) {
