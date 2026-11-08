@@ -62,7 +62,7 @@ jobs:
           --exclude "README.md"
         aws s3 cp donate.html s3://${{ secrets.S3_BUCKET }}/donate \
           --content-type "text/html; charset=utf-8"
-        # Serve real donate page at /donate/ (not donate.html stub — its relative refresh breaks under /donate/)
+        # Legacy slash URL uses a one-way redirect to the canonical page.
         aws s3api put-object \
           --bucket "${{ secrets.S3_BUCKET }}" \
           --key "donate/" \
