@@ -1,0 +1,227 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Isolated AWS staging hosting for the SNH Pinball Club website.
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub "snhpc-staging-site-${AWS::AccountId}-${AWS::Region}"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Project
+          Value: snh-pinball-club-website
+        - Key: Environment
+          Value: staging
+
+  SiteOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-s3-oac"
+        Description: Restrict staging bucket access to its CloudFront distribution.
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  StagingCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: staging.snhpinballclub.com
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: staging.snhpinballclub.com
+          HostedZoneId: Z08795623MIU0JNJUE15
+      Tags:
+        - Key: Project
+          Value: snh-pinball-club-website
+        - Key: Environment
+          Value: staging
+
+  CleanUrlRewrite:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub "${AWS::StackName}-clean-url-rewrite"
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Rewrite staging clean URLs to the static HTML objects.
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          if (request.uri === '/donate') {
+            request.uri = '/donate.html';
+          } else if (request.uri === '/store') {
+            request.uri = '/store.html';
+          } else if (request.uri === '/slideshow') {
+            request.uri = '/slideshow.html';
+          } else if (request.uri === '/slideshow/play') {
+            request.uri = '/slideshow-play.html';
+          }
+          return request;
+        }
+
+  StagingNoIndexHeaders:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub "${AWS::StackName}-noindex"
+        Comment: Keep the staging site out of search results.
+        CustomHeadersConfig:
+          Items:
+            - Header: X-Robots-Tag
+              Value: noindex, nofollow
+              Override: true
+
+  StagingDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+      - StagingCertificate
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: SNH Pinball Club staging site.
+        Aliases:
+          - staging.snhpinballclub.com
+        DefaultRootObject: index.html
+        HttpVersion: http2
+        IPV6Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: StagingS3Origin
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt SiteOriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: StagingS3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          ResponseHeadersPolicyId: !Ref StagingNoIndexHeaders
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt CleanUrlRewrite.FunctionARN
+        ViewerCertificate:
+          AcmCertificateArn: !Ref StagingCertificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: none
+            Quantity: 0
+      Tags:
+        - Key: Project
+          Value: snh-pinball-club-website
+        - Key: Environment
+          Value: staging
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowReadFromStagingCloudFrontDistribution
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${StagingDistribution}"
+                AWS:SourceAccount: !Ref AWS::AccountId
+
+  StagingAliasA:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: Z08795623MIU0JNJUE15
+      Name: staging.snhpinballclub.com
+      Type: A
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2
+        DNSName: !GetAtt StagingDistribution.DomainName
+        EvaluateTargetHealth: false
+
+  StagingAliasAAAA:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: Z08795623MIU0JNJUE15
+      Name: staging.snhpinballclub.com
+      Type: AAAA
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2
+        DNSName: !GetAtt StagingDistribution.DomainName
+        EvaluateTargetHealth: false
+
+  GitHubStagingDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GitHubActionsS3DeployStagingRole
+      Description: Deploys only the staging website from the staging branch.
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:joshmaz/pinball-club-website:ref:refs/heads/staging
+      Policies:
+        - PolicyName: DeployStagingWebsiteOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ListOnlyStagingBucket
+                Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt SiteBucket.Arn
+              - Sid: ManageOnlyStagingObjects
+                Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:DeleteObject
+                  - s3:GetObject
+                  - s3:ListMultipartUploadParts
+                  - s3:PutObject
+                Resource: !Sub "${SiteBucket.Arn}/*"
+              - Sid: InvalidateOnlyStagingDistribution
+                Effect: Allow
+                Action: cloudfront:CreateInvalidation
+                Resource: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${StagingDistribution}"
+
+Outputs:
+  StagingUrl:
+    Description: Public URL for the staging website.
+    Value: https://staging.snhpinballclub.com
+  SiteBucketName:
+    Value: !Ref SiteBucket
+  CloudFrontDistributionId:
+    Value: !Ref StagingDistribution
+  CloudFrontDomainName:
+    Value: !GetAtt StagingDistribution.DomainName
+  GitHubDeployRoleArn:
+    Value: !GetAtt GitHubStagingDeployRole.Arn
