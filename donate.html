@@ -1,11 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="clubhouse club-public club-donate">
 <head>
-  <title>SNHPC - Support the Club</title>
-  <meta http-equiv="refresh" content="0; url=/donate/index.html">
-  <link rel="canonical" href="/donate/index.html">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f4f2eb">
+    <meta name="application-name" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-title" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="assets/pwa/manifest.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
+    <meta name="description" content="Support SNHPC with a one-time or monthly gift. Donations fund relocation, machine care, and community events as we build our next home.">
+    <title>SNHPC - Support the Club</title>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/clubhouse.css">
+    <link rel="stylesheet" href="assets/css/club-public.css">
 </head>
 <body>
-  <p>Redirecting...</p>
+    <a class="club-skip" href="#donate-main">Skip to content</a>
+
+    <header id="page-top" tabindex="-1">
+    <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+    <div class="club-header-links">
+<nav aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="games.html">Games</a>
+        <a href="merch.html">Merch</a>
+        <a href="photos.html">Photos</a>
+        <a href="resources.html">Resources</a>
+        <a href="about.html">About</a>
+        <a href="signin.html" data-site-account-link>Members</a>
+    </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
+    </header>
+
+    <main id="donate-main">
+
+        <section class="club-page-heading" aria-labelledby="donate-hero-title">
+            <div class="donate-heading-copy">
+                <h1 id="donate-hero-title">Help fund SNHPC&rsquo;s next home</h1>
+                <p class="club-lead">Your gift keeps our nonprofit pinball community moving while we relocate, repair, and reopen.</p>
+                <p class="club-page-note">One-time and monthly donations are both accepted through PayPal.</p>
+                <p class="donate-hero-actions">
+                    <a href="https://paypal.me/snhpinball" target="_blank" rel="noopener noreferrer" class="club-button">Donate with PayPal</a>
+                </p>
+            </div>
+        </section>
+
+        <section class="content donate-content">
+            <p class="donate-intro">
+                For over 10 years, SNHPC has brought people together to play, learn repairs, run leagues, and keep pinball culture thriving in Southern New Hampshire.
+                During our transition to a new space, donations provide flexible funding for the work that gets us reopened.
+            </p>
+
+            <div class="donate-impact" aria-label="How donations help">
+                <article class="donate-impact-item">
+                    <h3>Relocation &amp; setup</h3>
+                    <p>Moving logistics, storage, setup supplies, and early buildout needs for the next location.</p>
+                </article>
+                <article class="donate-impact-item">
+                    <h3>Machine preservation</h3>
+                    <p>Maintenance materials and parts so machines stay healthy and ready for public play.</p>
+                </article>
+                <article class="donate-impact-item">
+                    <h3>Community continuity</h3>
+                    <p>Communication, planning, and member events that keep the club connected between locations.</p>
+                </article>
+            </div>
+
+            <h3>Suggested giving levels</h3>
+            <p>You can donate any amount. If helpful, here are common gift sizes and what they typically support:</p>
+            <ul class="donate-levels">
+                <li><strong>$25</strong> helps cover consumable repair supplies.</li>
+                <li><strong>$50</strong> helps fund move-day materials and transport costs.</li>
+                <li><strong>$100</strong> helps support larger setup and reopening expenses.</li>
+                <li><strong>Monthly gifts</strong> provide stable support for ongoing club operations.</li>
+            </ul>
+
+            <h3>Donor transparency</h3>
+            <p>
+                SNHPC is volunteer-run. Donations are directed to club operations and transition costs, and we keep spending focused on mission-critical needs.
+                Questions about how funds are used are always welcome at <a href="mailto:support@snhpinballclub.com">support@snhpinballclub.com</a>.
+            </p>
+
+            <p class="donate-disclaimer">
+                Tax treatment can vary by donor and current nonprofit filings. Please consult your tax advisor for guidance on deductibility.
+            </p>
+
+            <p class="donate-cta-row">
+                <a href="https://paypal.me/snhpinball" target="_blank" rel="noopener noreferrer" class="club-button">Give now</a>
+                <a href="about.html">Learn more about the transition</a>
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <a href="#page-top" aria-label="Back to top of this page"><img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo"></a>
+        <p>©2026 Southern New Hampshire Pinball Club</p>
+    </footer>
+
+    <script src="assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="assets/js/supabase-init.js"></script>
+    <script src="assets/js/site-auth.js"></script>
+    <script src="assets/js/site-account.js"></script>
+    <script src="assets/js/clubhouse.js"></script>
 </body>
 </html>
