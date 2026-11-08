@@ -25,13 +25,24 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Build public site
+    - name: Build staging site
+      if: ${{ github.ref_name == 'staging' }}
       env:
-        SUPABASE_URL: ${{ github.ref_name == 'staging' && secrets.STAGING_SUPABASE_URL || secrets.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ github.ref_name == 'staging' && secrets.STAGING_SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+        SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
         GAMES_CATALOG_SOURCE: db
         CONTEXT: production
-        BRANCH: ${{ github.ref_name }}
+        BRANCH: staging
+      run: node scripts/build-site.mjs
+
+    - name: Build production site
+      if: ${{ github.ref_name == 'main' }}
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        GAMES_CATALOG_SOURCE: db
+        CONTEXT: production
+        BRANCH: main
       run: node scripts/build-site.mjs
 
     - name: Configure AWS credentials (OIDC)
