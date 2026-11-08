@@ -50,12 +50,16 @@ resources stay separate.
 
 ## Build configuration and public backend values
 
-In the Netlify staging project, keep Deploy Previews enabled for PRs targeting
-`staging`. Scope the public `SUPABASE_URL` and
-`SUPABASE_ANON_KEY` to the staging Supabase project in the Deploy Preview
-context. Do not provide service-role, Resend, Stripe secret, or AWS credentials
-to Netlify builds. Leave approval requirements for untrusted fork deploys
-enabled.
+Keep Deploy Previews enabled only on the Netlify staging project for
+PRs targeting `staging`; disable Deploy Previews on the production project to
+avoid duplicate preview deployments. Keep branch deploys disabled. The
+`ignore` command in `netlify.toml` also skips production-context and
+branch-deploy builds, leaving Netlify for PR previews only.
+
+Scope the public `SUPABASE_URL` and `SUPABASE_ANON_KEY` to the staging
+Supabase project in the staging project's Deploy Preview context. Do not provide
+service-role, Resend, Stripe secret, or AWS credentials to Netlify builds.
+Leave approval requirements for untrusted fork deploys enabled.
 
 Configure these repository Actions secrets for AWS builds:
 
