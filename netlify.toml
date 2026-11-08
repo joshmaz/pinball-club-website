@@ -10,19 +10,6 @@
 [build.processing.html]
   pretty_urls = false
 
-# Serve the donation page without redirect chains.
-[[redirects]]
-  from = "/donate"
-  to = "/donate.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/donate/"
-  to = "/donate.html"
-  status = 200
-  force = true
-
 # Keep the alternate store at the short URL while serving the static page.
 [[redirects]]
   from = "/store"
