@@ -15,7 +15,7 @@ const publicPages = [
   "merch.html",
   "resources.html",
   "members.html",
-  "donate/index.html"
+  "donate.html"
 ];
 
 test("major public pages progressively load the shared account navigation", async () => {
