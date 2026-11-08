@@ -20,7 +20,7 @@ async function fixture(t) {
   const files = {
     'index.html': '<h1>Club</h1>',
     'members.html': '<h1>Members</h1>',
-    'donate/index.html': '<h1>Donate</h1>',
+    'donate.html': '<h1>Donate</h1>',
     'wix_archive/site/home/index.html': '<h1>Archive</h1>',
     'assets/js/config.js': 'LOCAL CONFIG MUST NOT BE COPIED',
     'assets/js/site-auth.js': '// Public script',
@@ -44,9 +44,10 @@ async function fixture(t) {
 test('preview publishes public pages, nested routes and fresh config without private files', async (t) => {
   const root = await fixture(t);
   const output = await buildPreview(root, env);
-  for (const file of ['index.html', 'members.html', 'donate/index.html', 'wix_archive/site/home/index.html', 'assets/js/site-auth.js', 'data/events.json']) {
+  for (const file of ['index.html', 'members.html', 'donate.html', 'wix_archive/site/home/index.html', 'assets/js/site-auth.js', 'data/events.json']) {
     await access(path.join(output, file));
   }
+  await assert.rejects(access(path.join(output, 'donate/index.html')), { code: 'ENOENT' });
   for (const file of ['.env', 'assets/.env', 'scripts', 'supabase', 'README.md', 'data/latest-opdb.json', 'stale.html']) {
     await assert.rejects(access(path.join(output, file)), { code: 'ENOENT' });
   }
