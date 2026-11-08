@@ -1,24 +1,28 @@
 # Netlify previews and review workflow
 
-AWS S3 + CloudFront deployment still runs when `main` changes. Netlify's existing
-`snhpinballclub` project is connected to this repository and builds PR previews
-against `main`. A preview isolates frontend code, **not database writes**.
+AWS S3 + CloudFront currently publishes on pushes to `main`. The Netlify
+`snhpinballclub` project tracks `main`; the separate
+`snhpinballclub-staging` project tracks `staging`. Deploy Previews are for
+reviewing frontend changes; they share live Supabase data and do not isolate
+database writes.
 
 ## Build configuration
 
-`netlify.toml` pins Node 22, runs `node scripts/build-preview.mjs`, and publishes
-`dist/`. The script runs all `scripts/*.test.mjs` tests and the Events duplicate
-check, then generates public Supabase configuration using the same generator as
-the AWS build. Missing configuration fails the build instead of silently shipping
-an unauthenticated preview.
+`netlify.toml` pins Node 22, runs `node scripts/build-site.mjs`, and publishes
+`dist/`. The shared builder runs all `scripts/*.test.mjs` tests and the Events
+duplicate check, validates public snapshots, then generates public Supabase
+configuration. Missing configuration fails the build instead of silently
+shipping an unauthenticated preview.
 
-Only root HTML/favicon files, `assets/`, `donate/`, `wix_archive/` (legacy redirect pages), and the four
+Only root HTML/favicon files, `assets/`, `wix_archive/`, and the four selected
 runtime JSON files (Games, Events, Highlights, Resources) are copied. Repository
 internals, maintenance datasets, environment files, and symlinks are excluded or
 rejected. Existing local `assets/js/config.js` is not copied or modified.
 
-Preview and branch builds receive `noindex` headers and a blocking robots file.
-The Netlify production context retains the repository's normal robots file.
+Deploy Previews and branch builds receive `noindex` headers and a blocking
+robots file. The staging project's `staging` branch receives the same protections
+even though Netlify reports it as a production context. The `main` production
+branch retains the repository's normal robots file.
 Pretty URLs are disabled to preserve the `.html` routes used by authentication
 and editor deep links. `/donate` redirects to `/donate/`.
 
@@ -27,9 +31,12 @@ and editor deep links. `/donate` redirects to `/donate/`.
 In Project configuration → Developer settings:
 
 - Repository: `joshmaz/pinball-club-website`.
-- Production branch: `main`.
-- Deploy Previews: any pull request against the production branch.
-- Branch deploys: optional; not needed for the PR workflow.
+- Production project branch: `main`.
+- Staging project branch: `staging`.
+- Enable Deploy Previews on the staging project for pull requests targeting
+  `staging`; keep production deploys tied to `main`.
+- Branch deploys are optional; the staging branch deploy is useful as a persistent
+  review environment.
 - Build command and publish directory come from the checked-in configuration.
 
 In Environment variables, set these public build values for Deploy Previews and
@@ -50,7 +57,7 @@ Keep the production Site URL. In Authentication → URL Configuration, add this
 additional redirect URL for this Netlify project's PR previews:
 
 ```text
-https://deploy-preview-*--snhpinballclub.netlify.app/**
+https://deploy-preview-*--snhpinballclub-staging.netlify.app/**
 ```
 
 This is scoped to the project's preview hostnames. Do not allow all of
@@ -67,13 +74,14 @@ incompatible schema changes.
 
 ## Routine review workflow
 
-1. Create a feature branch, implement, and run checks.
-2. Commit, push, and open a draft PR against `main`.
-3. Wait for the Netlify Deploy Preview check. Open its URL from the PR.
-4. Review public pages and relevant authenticated behavior in that preview.
-5. Push feedback fixes to the same branch; the same preview URL updates.
-6. After user approval and passing checks, merge the PR.
-7. Verify the AWS production deploy and the changed behavior on the live site.
+1. Create a feature branch from `staging`, implement, and run checks.
+2. Push it and open a PR against `staging`.
+3. Review the staging project's Deploy Preview and the persistent staging site.
+4. Check public pages and relevant authenticated behavior without saving live data.
+5. Push feedback fixes to the same branch; the preview updates with the PR.
+6. After approval, merge into `staging`.
+7. Promote `staging` to `main` through a separate release PR. Until the hosting
+   decision changes, only `main` triggers the AWS production deploy.
 
 Commit/push happens before previewing. Merge remains the approval point.
 
@@ -85,8 +93,9 @@ Commit/push happens before previewing. Merge remains the approval point.
 - Authorized Game/Event Edit links open the correct item and preserve their
   destination through sign-in. Avoid saving unnecessary changes to live data.
 - Password recovery returns to the preview after the redirect allowlist update.
-- Homepage photo content, `/donate/`, render, and `wix_archive/index.html` redirects to the independent archive.
-- `/scripts/build-preview.mjs`, `/supabase/config.toml`, `/.env`, and `/README.md`
+- The friendly routes `/store`, `/slideshow`, and `/slideshow/play` resolve.
+- Homepage photo content and `wix_archive/index.html` load or redirect to the independent archive.
+- `/scripts/build-site.mjs`, `/supabase/config.toml`, `/.env`, and `/README.md`
   are not published.
 
 ## Local preview build
@@ -94,7 +103,7 @@ Commit/push happens before previewing. Merge remains the approval point.
 With Node 22 installed and public credentials in `.env`:
 
 ```bash
-GAMES_CATALOG_SOURCE=db node --env-file=.env scripts/build-preview.mjs
+GAMES_CATALOG_SOURCE=db node --env-file=.env scripts/build-site.mjs
 python3 -m http.server 8080 --directory dist
 ```
 

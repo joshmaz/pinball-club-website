@@ -152,13 +152,12 @@ and redirects, and sanitized request failures. Review addressed missing permissi
 checks, unbounded response reads, and the need for a shop guard inside MCP calls.
 The original connection test remains a selected-field read-only diagnostic.
 
-`netlify.toml` publishes `dist`, built by `scripts/build-preview.mjs`. That builder
-copies an explicit allowlist: root HTML/favicons, `assets`, `donate`, `wix_archive`,
+`netlify.toml` publishes `dist`, built by `scripts/build-site.mjs`. That builder
+copies an explicit allowlist: root HTML/favicons, `assets`, `wix_archive`, four
 selected `data` JSON files, generated public configuration, and robots/headers.
 It does not copy `scripts/`, `.codex/`, or the private credentials file. Files under
 `scripts/fourthwall/` therefore are excluded from this configured static output.
-This assessment concerns the current build code; keep secrets out of all public
-source directories. Larger build/publish architecture changes are deferred.
+Keep secrets out of all public source directories.
 
 Sources: [Codex MCP configuration](https://learn.chatgpt.com/docs/extend/mcp?surface=cli),
 [MCP stdio transport](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports),
