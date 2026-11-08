@@ -1,4 +1,5 @@
 [build]
+  ignore = "node scripts/netlify-ignore.mjs"
   command = "node scripts/build-site.mjs"
   publish = "dist"
 
