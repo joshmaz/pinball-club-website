@@ -24,7 +24,7 @@ robots file. The staging project's `staging` branch receives the same protection
 even though Netlify reports it as a production context. The `main` production
 branch retains the repository's normal robots file.
 Pretty URLs are disabled to preserve the `.html` routes used by authentication
-and editor deep links. `/donate` redirects to `/donate/`.
+and editor deep links.
 
 ## One-time Netlify settings
 
