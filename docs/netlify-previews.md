@@ -2,9 +2,10 @@
 
 AWS S3 + CloudFront currently publishes on pushes to `main`. The Netlify
 `snhpinballclub` project tracks `main`; the separate
-`snhpinballclub-staging` project tracks `staging`. Deploy Previews are for
-reviewing frontend changes; they share live Supabase data and do not isolate
-database writes.
+`snhpinballclub-staging` project tracks `staging`. Deploy Previews are for reviewing frontend changes. A preview does not create
+an isolated backend: authenticated writes go to the Supabase project selected by
+the environment variables available to that deploy. The staging project currently
+identifies its database as staging.
 
 ## Build configuration
 
@@ -39,11 +40,15 @@ In Project configuration → Developer settings:
   review environment.
 - Build command and publish directory come from the checked-in configuration.
 
-In Environment variables, set these public build values for Deploy Previews and
-production (the same build also runs for the existing Netlify main deployment):
+In Environment variables, scope these public build values to the intended
+backend for each deploy context:
 
-- `SUPABASE_URL`: the same project URL used by the live site.
-- `SUPABASE_ANON_KEY`: the live site's public anon/publishable key.
+- Staging project: staging Supabase URL and anon/publishable key for Deploy
+  Previews and the `staging` branch deploy.
+- Production Netlify project: live Supabase URL and anon/publishable key for the
+  `main` production deploy.
+- Verify the effective `SUPABASE_URL` for each deploy context before testing.
+  These public credentials are intentionally browser-readable.
 - `GAMES_CATALOG_SOURCE`: `db` (also the Netlify configuration default).
 
 These are intentionally browser-readable. Do not add service-role, Resend, Stripe
@@ -67,10 +72,10 @@ separately. Password recovery already requests a redirect to the current origin'
 it is expected to return to production before the user signs into a preview.
 
 Signing in on the live domain does not sign a user into the preview origin.
-Use an existing account to verify the preview. With the shared Supabase project,
-editing games/events, uploading photos, and changing memberships affects live
-data. Use a separate staging project before testing destructive workflows or
-incompatible schema changes.
+Use an existing account to verify the preview. First confirm the preview's
+configured `SUPABASE_URL` and its staging banner; edits, uploads, and membership
+changes affect whichever database that URL identifies. Avoid destructive tests
+until the target is confirmed.
 
 ## Routine review workflow
 
