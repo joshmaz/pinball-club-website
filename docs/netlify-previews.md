@@ -98,7 +98,7 @@ Commit/push happens before previewing. Merge remains the approval point.
 - Authorized Game/Event Edit links open the correct item and preserve their
   destination through sign-in. Avoid saving unnecessary changes to live data.
 - Password recovery returns to the preview after the redirect allowlist update.
-- The friendly routes `/store`, `/slideshow`, and `/slideshow/play` resolve.
+- The friendly routes `/donate`, `/store`, `/slideshow`, and `/slideshow/play` resolve.
 - Homepage photo content and `wix_archive/index.html` load or redirect to the independent archive.
 - `/scripts/build-site.mjs`, `/supabase/config.toml`, `/.env`, and `/README.md`
   are not published.

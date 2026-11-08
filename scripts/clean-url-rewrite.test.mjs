@@ -9,6 +9,7 @@ runInNewContext(`${source}\nthis.rewriteRequest = handler;`, context);
 
 test('rewrites the friendly website routes to published HTML files', () => {
   for (const [uri, expected] of [
+    ['/donate', '/donate.html'],
     ['/store', '/store.html'],
     ['/slideshow', '/slideshow.html'],
     ['/slideshow/play', '/slideshow-play.html'],

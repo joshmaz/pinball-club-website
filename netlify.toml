@@ -10,7 +10,13 @@
 [build.processing.html]
   pretty_urls = false
 
-# Keep the alternate store at the short URL while serving the static page.
+# Keep public friendly paths aligned with the CloudFront rewrite.
+[[redirects]]
+  from = "/donate"
+  to = "/donate.html"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/store"
   to = "/store.html"

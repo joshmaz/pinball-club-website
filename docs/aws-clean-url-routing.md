@@ -6,13 +6,14 @@ rewrite because S3 does not resolve these extensionless object keys:
 
 | Public path | S3 object |
 | --- | --- |
+| `/donate` | `/donate.html` |
 | `/store` | `/store.html` |
 | `/slideshow` | `/slideshow.html` |
 | `/slideshow/play` | `/slideshow-play.html` |
 
 The tested CloudFront Function source is
 [`cloudfront/clean-url-rewrite.js`](../cloudfront/clean-url-rewrite.js). It
-changes only those three paths and preserves query strings and all other request
+changes only those four paths and preserves query strings and all other request
 fields.
 
 ## One-time CloudFront setup
