@@ -2,7 +2,7 @@ name: Deploy to AWS S3
 
 on:
   push:
-    branches: [ main ]
+    branches: [ staging, main ]
   workflow_dispatch:
 
 permissions:
@@ -11,9 +11,13 @@ permissions:
 
 jobs:
   build-and-deploy:
+    if: ${{ github.ref_name == 'staging' || github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     env:
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      AWS_REGION: ${{ github.ref_name == 'staging' && 'us-east-1' || secrets.AWS_REGION }}
+      S3_BUCKET: ${{ github.ref_name == 'staging' && 'snhpc-staging-site-049145893448-us-east-1' || secrets.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref_name == 'staging' && 'PENDING_STAGING_DISTRIBUTION_ID' || secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
     steps:
     - uses: actions/checkout@v4
 
@@ -23,24 +27,23 @@ jobs:
 
     - name: Build public site
       env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        GAMES_CATALOG_SOURCE: ${{ secrets.GAMES_CATALOG_SOURCE }}
+        SUPABASE_URL: ${{ github.ref_name == 'staging' && secrets.STAGING_SUPABASE_URL || secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ github.ref_name == 'staging' && secrets.STAGING_SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+        GAMES_CATALOG_SOURCE: db
         CONTEXT: production
-        BRANCH: main
+        BRANCH: ${{ github.ref_name }}
       run: node scripts/build-site.mjs
 
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ github.ref_name == 'staging' && 'arn:aws:iam::049145893448:role/GitHubActionsS3DeployStagingRole' || secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Deploy public site to S3
-      run: aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }}/ --delete
+      run: aws s3 sync dist/ "s3://${{ env.S3_BUCKET }}/" --delete
 
     - name: Invalidate CloudFront cache
-      if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
       run: |
         aws cloudfront create-invalidation \
           --distribution-id "${{ env.CLOUDFRONT_DISTRIBUTION_ID }}" \
