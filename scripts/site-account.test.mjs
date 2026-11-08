@@ -30,8 +30,8 @@ test("major public pages progressively load the shared account navigation", asyn
 
 test("donation page uses root-level account navigation paths", async () => {
   const html = await readFile(path.join(root, "donate.html"), "utf8");
-  assert.match(html, /href="signin\.html" data-site-account-link/);
-  assert.match(html, /src="assets\/js\/site-account\.js"/);
+  assert.match(html, /href="\/signin\.html" data-site-account-link/);
+  assert.match(html, /src="\/assets\/js\/site-account\.js"/);
 });
 
 test("the member dashboard keeps its sidebar logout and redirects after header sign-out", async () => {
