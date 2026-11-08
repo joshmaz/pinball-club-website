@@ -126,7 +126,6 @@ Resources:
         Restrictions:
           GeoRestriction:
             RestrictionType: none
-            Quantity: 0
       Tags:
         - Key: Project
           Value: snh-pinball-club-website
