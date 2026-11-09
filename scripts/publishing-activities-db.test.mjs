@@ -72,6 +72,7 @@ try {
   const legacyText='Original description '.repeat(20);
   await query("insert into public.publishing_entries(id,kind,draft,published) values($1,'activity',$2,$3)",[legacyId,JSON.stringify({title:'Private legacy',body:legacyText,url:'https://example.com/'+ 'a'.repeat(1100)}),JSON.stringify({title:'Public legacy',body:'Published summary',url:'https://example.com/live',starts_at:'2020-01-01T00:00:00Z'})]);
   await migration('20261020140000_activity_details.sql');
+  await migration('20261109232615_public_activity_directory.sql');
   const legacy=(await query('select * from public.publishing_entries where id=$1',[legacyId]))[0];
   assert.equal(legacy.draft.details,legacyText);assert.ok(legacy.draft.body.length<=240);assert.equal(legacy.draft.summary_needs_review,true);
   assert.equal(legacy.draft.links[0].url.length,1120);assert.equal(legacy.published.title,'Public legacy');assert.equal(legacy.published.body,'Published summary');assert.equal(legacy.version,2);
@@ -86,6 +87,7 @@ try {
   const detail=async(id)=>(await query('select public.snh_public_activity($1) result',[id]))[0].result;
   const image=async(action,id=null,title=null,alt=null)=>(await query('select public.snh_publishing_image_write($1,$2,$3,$4) result',[action,id,title,alt]))[0].result;
   const feed=async()=>(await query('select public.snh_public_activities() result'))[0].result;
+  const directory=async()=>(await query('select public.snh_public_activity_directory() result'))[0].result;
   const values={title:'League night',body:'Play together',details:'More information\n\n- Register\n- Play',links:[{url:'https://example.com/league',label:'League'}],destination:'external',destination_url:'https://example.com/league',position:2,fit:'cover'};
   for(const n of [2,3,4,5,6,7,8,9,12,14,999]){await actor(n);await assert.rejects(activity('save',null,values),denied);await assert.rejects(image('reserve',null,'Art','Club artwork'),denied);}
   await actor(10);
@@ -153,6 +155,12 @@ try {
   const arrangements=new Set();for(let i=0;i<24;i++){const cards=await feed();assert.deepEqual(cards.map(c=>c.position),[0,1,1,1,1,2]);assert.equal(cards[0].title,'Shuffle 0');assert.equal(cards[5].title,'Shuffle 5');arrangements.add(cards.map(c=>c.id).join(','));}assert.ok(arrangements.size>1,'equal priority cards change order without moving bookends');
   await query("delete from public.publishing_entries where kind='activity' and draft->>'title' like 'Shuffle %'");
   for(let i=0;i<8;i++)await insertCard(0,'Shuffle '+i);
+  await db.exec('set role anon');
+  const all = await directory();
+  assert.deepEqual(all.map(card=>card.title), Array.from({length:8},(_,i)=>'Shuffle '+i));
+  assert.ok(all.every(card=>card.id && !('draft' in card)));
+  assert.equal((await feed()).length,6,'homepage remains capped');
+  await db.exec('reset role');
   const seen=new Set();for(let i=0;i<24;i++){const cards=await feed();assert.equal(cards.length,6);assert.equal(new Set(cards.map(c=>c.id)).size,6);cards.forEach(c=>seen.add(c.id));}assert.equal(seen.size,8,'shuffle happens before the six-card cutoff');
   await db.exec('reset role');const audit=await query("select action from public.audit_log where entity_type in ('activity','publishing_image')");assert.ok(audit.some(e=>e.action==='image_removed'));assert.ok(audit.some(e=>e.action==='publish'));assert.equal(audit.filter(e=>e.action==='reorder').length,2);
 } finally {await db.close();}
