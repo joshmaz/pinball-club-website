@@ -16,7 +16,7 @@ jobs:
     env:
       AWS_REGION: ${{ github.ref_name == 'staging' && 'us-east-1' || secrets.AWS_REGION }}
       S3_BUCKET: ${{ github.ref_name == 'staging' && 'snhpc-staging-site-049145893448-us-east-1' || secrets.S3_BUCKET }}
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref_name == 'staging' && 'PENDING_STAGING_DISTRIBUTION_ID' || secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref_name == 'staging' && 'E2MOL1K6PBXXFF' || secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
     steps:
     - uses: actions/checkout@v4
