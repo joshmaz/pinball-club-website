@@ -40,7 +40,7 @@ Public event records supply calendar dates without reliable start times. Cards r
 
 ## Validation and review
 
-The normal `node scripts/build-preview.mjs` pipeline runs all `scripts/*.test.mjs`, duplicate-event validation, public-snapshot checks and the static build. Local builds use placeholder public Supabase settings and exercise real checked-in snapshot fallback. No separate repository lint command exists; JavaScript/inline-script syntax checks and `git diff --check` supplement the build.
+The normal `node scripts/build-site.mjs` pipeline runs all `scripts/*.test.mjs`, duplicate-event validation, public-snapshot checks and the static build. Local builds use placeholder public Supabase settings and exercise real checked-in snapshot fallback. No separate repository lint command exists; JavaScript/inline-script syntax checks and `git diff --check` supplement the build.
 
 Browser review covers desktop/mobile light and dark, normal Home/Events/Games routes, search including no-results/clear and all-history, timeline selection, game dialog tabs/Escape/focus return, account field grouping, membership, role-gated navigation, simulated save success/error, and recovery layout. Account interactions use a temporary localhost-only fixture with fake data and stubbed writes; it is removed by the final clean build and is never committed or deployed. Live authenticated writes, role changes, door-code access and payment operations are not exercised.
 
