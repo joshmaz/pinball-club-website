@@ -46,13 +46,23 @@
 
 /* Compact editor-only display-order indicators; wider values remain readable. */
 .activity-order-controls { display:inline-flex; align-items:center; margin-inline-end:.5rem; vertical-align:middle; }
-.activity-order-steps { display:grid; }
+.activity-order-steps {
+  --step-height:1rem;
+  --chevron-offset:.3125rem;
+  display:grid;
+}
+@media (any-pointer:coarse) {
+  .activity-order-steps {
+    --step-height:1.5rem;
+    --chevron-offset:.5625rem;
+  }
+}
 .activity-order-step {
   display:grid;
   place-items:center;
   box-sizing:border-box;
   width:1.5rem;
-  height:1.5rem;
+  height:var(--step-height);
   padding:0;
   border:0;
   border-radius:.25rem;
@@ -66,9 +76,9 @@
   height:.5rem;
   border:solid currentColor;
   border-width:2px 2px 0 0;
-  transform:translateY(.2rem) rotate(-45deg);
+  transform:translateY(var(--chevron-offset)) rotate(-45deg);
 }
-.activity-order-step + .activity-order-step::before { transform:translateY(-.2rem) rotate(135deg); }
+.activity-order-step + .activity-order-step::before { transform:translateY(calc(-1 * var(--chevron-offset))) rotate(135deg); }
 .activity-order-step:hover:not([aria-disabled],[disabled]) { background:var(--club-soft); }
 .activity-order-step:focus-visible { outline:2px solid var(--club-teal); outline-offset:-2px; }
 .activity-order-step[aria-disabled], .activity-order-step:disabled { opacity:.5; cursor:default; }
