@@ -35,6 +35,15 @@ CloudFront Function map `/donate`, `/store`, `/slideshow`, and
 disabled to preserve the `.html` routes used by authentication and editor
 deep links.
 
+The canonical function source is `cloudfront/clean-url-rewrite.js`. The AWS workflow
+publishes it to the existing environment-specific function only when that file
+changes (or when the workflow is manually dispatched). `scripts/deploy-cloudfront-function.mjs`
+updates the DEVELOPMENT stage, tests the four friendly routes plus an unchanged
+HTML route, then publishes the tested version to LIVE. It does not update the
+distribution association. Function source changes should be validated on
+staging before promotion to `main`. The CloudFormation staging template keeps
+the same initial function code for infrastructure creation.
+
 ## AWS staging infrastructure
 
 `infrastructure/aws-staging.yaml` defines the isolated staging bucket,
@@ -48,10 +57,13 @@ authoritative in Cloudflare; the Route 53 zone in this AWS account is not
 authoritative. Add the ACM validation CNAME from the stack's certificate to the
 Cloudflare zone as DNS-only, then add a DNS-only CNAME for
 `staging.snhpinballclub.com` pointing at the CloudFront domain output. The
-CloudFormation template does not create public Route 53 aliases. The GitHub
-Actions role can list and update only the staging bucket, and invalidate only
-the staging distribution. The existing production role and production AWS
-resources stay separate.
+CloudFormation template does not create public Route 53 aliases. The GitHub Actions role can list and update only the staging bucket,
+invalidate only the staging distribution, and publish only the staging
+clean-URL function. `infrastructure/aws-staging.yaml` scopes those function
+permissions to that single function ARN. The production role gets equivalent
+permissions through `infrastructure/aws-production-cloudfront-function-policy.yaml`;
+that separate policy must be applied before a rewrite-source change is merged to
+`main`. The staging and production roles and resources remain separate.
 
 ## Build configuration and public backend values
 
