@@ -17,9 +17,27 @@ jobs:
       AWS_REGION: ${{ github.ref_name == 'staging' && 'us-east-1' || secrets.AWS_REGION }}
       S3_BUCKET: ${{ github.ref_name == 'staging' && 'snhpc-staging-site-049145893448-us-east-1' || secrets.S3_BUCKET }}
       CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref_name == 'staging' && 'E2MOL1K6PBXXFF' || secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      SITE_ENV: ${{ github.ref_name == 'staging' && 'staging' || 'production' }}
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Detect clean URL function changes
+      id: clean-url
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+      run: |
+        node --input-type=module <<'NODE'
+        import { appendFileSync, readFileSync } from 'node:fs';
+
+        const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+        const path = 'cloudfront/clean-url-rewrite.js';
+        const changed = process.env.EVENT_NAME === 'workflow_dispatch' ||
+          (event.commits || []).some((commit) =>
+            ['added', 'modified', 'removed'].some((kind) => (commit[kind] || []).includes(path))
+          );
+        appendFileSync(process.env.GITHUB_OUTPUT, 'changed=' + String(changed) + '\n');
+        NODE
 
     - uses: actions/setup-node@v4
       with:
@@ -56,6 +74,10 @@ jobs:
 
     - name: Deploy public site to S3
       run: aws s3 sync dist/ "s3://${{ env.S3_BUCKET }}/" --delete
+
+    - name: Publish tested CloudFront rewrite function
+      if: ${{ steps.clean-url.outputs.changed == 'true' }}
+      run: node scripts/deploy-cloudfront-function.mjs
 
     - name: Invalidate CloudFront cache
       run: |
