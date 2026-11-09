@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Least-privilege GitHub Actions permission to publish the production clean-URL CloudFront Function.
+Resources:
+  PublishProductionCleanUrlFunctionPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: GitHubActionsPublishProductionCleanUrlFunction
+      Roles:
+        - GitHubActionsS3DeployRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublishOnlyProductionCleanUrlFunction
+            Effect: Allow
+            Action:
+              - cloudfront:DescribeFunction
+              - cloudfront:UpdateFunction
+              - cloudfront:TestFunction
+              - cloudfront:PublishFunction
+            Resource: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:function/snhpc-website-clean-url-rewrite"

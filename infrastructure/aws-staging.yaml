@@ -189,6 +189,14 @@ Resources:
                 Effect: Allow
                 Action: cloudfront:CreateInvalidation
                 Resource: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${StagingDistribution}"
+              - Sid: PublishOnlyStagingCleanUrlFunction
+                Effect: Allow
+                Action:
+                  - cloudfront:DescribeFunction
+                  - cloudfront:UpdateFunction
+                  - cloudfront:TestFunction
+                  - cloudfront:PublishFunction
+                Resource: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:function/${AWS::StackName}-clean-url-rewrite"
 
 Outputs:
   StagingUrl:
