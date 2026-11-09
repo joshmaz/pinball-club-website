@@ -38,14 +38,19 @@ deep links.
 ## AWS staging infrastructure
 
 `infrastructure/aws-staging.yaml` defines the isolated staging bucket,
-CloudFront distribution and clean-URL function, TLS certificate and DNS
-records, noindex response header policy, and a GitHub OIDC role restricted to
-the `staging` branch. The bucket is private, encrypted, and readable through
-its CloudFront distribution only.
+CloudFront distribution and clean-URL function, TLS certificate, noindex
+response header policy, and a GitHub OIDC role restricted to the `staging`
+branch. The bucket is private, encrypted, and readable through its CloudFront
+distribution only.
 
-The stack is deployed in `us-east-1` as `snhpc-staging-site`. The staging
-GitHub Actions role can list and update only the staging bucket, and invalidate
-only the staging distribution. The existing production role and production AWS
+The stack is deployed in `us-east-1` as `snhpc-staging-site`. Public DNS is
+authoritative in Cloudflare; the Route 53 zone in this AWS account is not
+authoritative. Add the ACM validation CNAME from the stack's certificate to the
+Cloudflare zone as DNS-only, then add a DNS-only CNAME for
+`staging.snhpinballclub.com` pointing at the CloudFront domain output. The
+CloudFormation template does not create public Route 53 aliases. The GitHub
+Actions role can list and update only the staging bucket, and invalidate only
+the staging distribution. The existing production role and production AWS
 resources stay separate.
 
 ## Build configuration and public backend values
