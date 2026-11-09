@@ -7,6 +7,9 @@
   NODE_VERSION = "22"
   GAMES_CATALOG_SOURCE = "db"
 
+[context.deploy-preview.environment]
+  SITE_ENV = "staging"
+
 # Preserve .html URLs used by sign-in redirects and Member Tools routing.
 [build.processing.html]
   pretty_urls = false
