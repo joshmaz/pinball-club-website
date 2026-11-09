@@ -23,49 +23,40 @@
  function close(){if(busy||!canLeave())return;dirty=false;selected=null;list();status('');}
  async function refresh(){rows=await rpc('snh_publishing_activities');admin=await rpc('snh_member_has_publishing_admin_access');}
  function activityPosition(row){return (row.published||row.draft).position??0;}
- function list(focusId){
+ function list(focusId,focusStep){
   root.replaceChildren();
   button('Refresh activities',function(){void work(async function(){await refresh();list();status('');});});
   button('New activity',function(){edit(null);});
   button('Image library',function(){void library();});
-  node('p','Select an Order number to change it. Saving updates the homepage order for published cards. Lower numbers appear first. Reserve 0 for priority cards. Cards with the same value appear in random order.',root);
+  node('p','Use the arrows to adjust display order. Lower numbers appear first. Reserve 0 for priority cards. Cards with the same value appear in random order.',root);
   var ul=node('ul','',root);
   rows.slice().sort(function(a,b){return activityPosition(a)-activityPosition(b)||a.draft.title.localeCompare(b.draft.title)||String(a.id).localeCompare(String(b.id));}).forEach(function(row){
    var li=node('li','',ul),position=activityPosition(row);
-   li.className='activity-list-item';
+   var controls=node('span','',li);
+   controls.className='activity-order-controls';
+   var badge=node('span',String(position),controls);
+   badge.className='activity-order-badge'+(position===0?' activity-order-zero':'');
+   badge.title='Display order: '+position;
+   [[-1,'↑','Decrease'],[1,'↓','Increase']].forEach(function(pair){
+    var step=pair[0],next=position+step;
+    var move=button(pair[1],function(){
+     if(next<0||next>999)return;
+     void work(async function(){
+      status('Saving display order…');
+      var updated=await rpc('snh_publishing_activity_set_position',{p_id:row.id,p_version:row.version,p_position:next});
+      rows=rows.map(function(entry){return entry.id===updated.id?updated:entry;});
+      list(updated.id,step);
+      status('Display order for '+updated.draft.title+' is now '+activityPosition(updated)+'.');
+     }).then(function(){if(move.isConnected)move.focus();});
+    },controls);
+    move.className='activity-order-step';
+    move.title=pair[2]+' display order';
+    move.setAttribute('aria-label',move.title+' for '+row.draft.title);
+    if(next<0||next>999)move.setAttribute('aria-disabled','true');
+    if(row.id===focusId&&step===focusStep)move.focus();
+   });
    button(row.draft.title,function(){edit(row);},li);
    node('span',' \u2014 '+(row.archived?'Archived':!row.published?'Draft':new Date(row.published.starts_at)>new Date()?'Scheduled':row.published.ends_at&&new Date(row.published.ends_at)<=new Date()?'Ended':'Published'),li);
-
-   var details=node('details','',li);
-   details.className='activity-quick-order';
-   details.setAttribute('name','activity-quick-order');
-   var summary=node('summary','Order '+position,details);
-   summary.className='activity-order-badge'+(position===0?' activity-order-zero':'');
-   summary.setAttribute('aria-label','Order '+position+' for '+row.draft.title);
-   var form=node('form','',details);
-   var label=node('label','Display order ',form);
-   var order=node('input','',label);
-   order.type='number';
-   order.min=0;
-   order.max=999;
-   order.step=1;
-   order.required=true;
-   order.value=position;
-   var save=node('button','Save order',form);
-   save.type='submit';
-   form.addEventListener('submit',function(event){
-    event.preventDefault();
-    if(!form.reportValidity())return;
-    var next=order.valueAsNumber;
-    void work(async function(){
-     status('Saving display order…');
-     var updated=await rpc('snh_publishing_activity_set_position',{p_id:row.id,p_version:row.version,p_position:next});
-     rows=rows.map(function(entry){return entry.id===updated.id?updated:entry;});
-     list(updated.id);
-     status('Display order saved for '+updated.draft.title+'.');
-    });
-   });
-   if(row.id===focusId)summary.focus();
   });
   if(!rows.length)node('p','No featured activities yet.',root);
  }
