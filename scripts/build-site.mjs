@@ -8,7 +8,7 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const publicDirectories = ['assets', 'wix_archive'];
 const publicData = ['games.json', 'events.json', 'highlights.json', 'resources.json'];
 
-export async function buildPreview(root = repositoryRoot, env = process.env) {
+export async function buildSite(root = repositoryRoot, env = process.env) {
   // Validate before clearing output. No network or database writes during builds.
   const config = generatePublicConfig(env);
   const output = path.join(root, 'dist');
@@ -40,7 +40,9 @@ export async function buildPreview(root = repositoryRoot, env = process.env) {
   for (const file of publicData) await copyPublic(path.join('data', file));
   await mkdir(path.join(output, 'assets', 'js'), { recursive: true });
   await writeFile(path.join(output, 'assets', 'js', 'config.js'), config);
-  if (env.CONTEXT === 'production') {
+  // The staging Netlify project treats its `staging` branch as its production context.
+  // Keep that branch out of search results while the main production site stays indexable.
+  if (env.CONTEXT === 'production' && env.BRANCH !== 'staging') {
     await copyPublic('robots.txt');
   } else {
     await writeFile(path.join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
@@ -56,9 +58,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       .sort().map((name) => path.join('scripts', name));
     for (const args of [['--test', ...tests], ['scripts/check-events-duplicates.mjs'], ['scripts/snapshots.mjs', 'check']]) {
       const result = spawnSync(process.execPath, args, { cwd: repositoryRoot, stdio: 'inherit' });
-      if (result.error || result.status !== 0) throw new Error('Preview validation failed.');
+      if (result.error || result.status !== 0) throw new Error('Build validation failed.');
     }
-    console.log(`Preview ready: ${await buildPreview()}`);
+    console.log(`Site build ready: ${await buildSite()}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

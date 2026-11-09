@@ -2,67 +2,59 @@ name: Deploy to AWS S3
 
 on:
   push:
-    branches: [ main ]
+    branches: [ staging, main ]
   workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
-  
+
 jobs:
   build-and-deploy:
+    if: ${{ github.ref_name == 'staging' || github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     env:
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      AWS_REGION: ${{ github.ref_name == 'staging' && 'us-east-1' || secrets.AWS_REGION }}
+      S3_BUCKET: ${{ github.ref_name == 'staging' && 'snhpc-staging-site-049145893448-us-east-1' || secrets.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref_name == 'staging' && 'E2MOL1K6PBXXFF' || secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
     steps:
     - uses: actions/checkout@v4
 
     - uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '22'
 
-    - name: Check events JSON for duplicates
-      run: node scripts/check-events-duplicates.mjs
+    - name: Build staging site
+      if: ${{ github.ref_name == 'staging' }}
+      env:
+        SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+        GAMES_CATALOG_SOURCE: db
+        CONTEXT: production
+        BRANCH: staging
+      run: node scripts/build-site.mjs
 
-    - name: Validate public snapshots
-      run: node scripts/snapshots.mjs check
-
-    - name: Write public site config
+    - name: Build production site
+      if: ${{ github.ref_name == 'main' }}
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        GAMES_CATALOG_SOURCE: ${{ secrets.GAMES_CATALOG_SOURCE }}
-      run: node scripts/write-config.mjs
+        GAMES_CATALOG_SOURCE: db
+        CONTEXT: production
+        BRANCH: main
+      run: node scripts/build-site.mjs
 
     - name: Configure AWS credentials (OIDC)
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ github.ref_name == 'staging' && 'arn:aws:iam::049145893448:role/GitHubActionsS3DeployStagingRole' || secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
 
-    - name: Deploy to S3
-      run: |
-        aws s3 sync . s3://${{ secrets.S3_BUCKET }} \
-          --delete \
-          --exclude ".env" \
-          --exclude ".env.*" \
-          --exclude ".git/*" \
-          --exclude ".gitignore" \
-          --exclude ".github/*" \
-          --exclude ".cursor/*" \
-          --exclude ".netlify/*" \
-          --exclude "dist/*" \
-          --exclude "netlify.toml" \
-          --exclude "supabase/*" \
-          --exclude "scripts/*" \
-          --exclude "docs/*" \
-          --exclude "temp/*" \
-          --exclude "CLAUDE.md" \
-          --exclude "CONTENT_GUIDE.md" \
-          --exclude "README.md"
+    - name: Deploy public site to S3
+      run: aws s3 sync dist/ "s3://${{ env.S3_BUCKET }}/" --delete
 
     - name: Invalidate CloudFront cache
-      if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
       run: |
         aws cloudfront create-invalidation \
           --distribution-id "${{ env.CLOUDFRONT_DISTRIBUTION_ID }}" \

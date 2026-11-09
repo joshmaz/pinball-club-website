@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
-import { buildPreview } from './build-preview.mjs';
+import { buildSite } from './build-site.mjs';
 
 const env = {
   SUPABASE_URL: 'https://example.supabase.co',
@@ -43,7 +43,7 @@ async function fixture(t) {
 
 test('preview publishes public pages, nested routes and fresh config without private files', async (t) => {
   const root = await fixture(t);
-  const output = await buildPreview(root, env);
+  const output = await buildSite(root, env);
   for (const file of ['index.html', 'members.html', 'donate.html', 'wix_archive/site/home/index.html', 'assets/js/site-auth.js', 'data/events.json']) {
     await access(path.join(output, file));
   }
@@ -65,22 +65,22 @@ test('preview publishes public pages, nested routes and fresh config without pri
 
 test('Netlify production keeps the normal robots policy and removes preview headers', async (t) => {
   const root = await fixture(t);
-  await buildPreview(root, env);
-  const output = await buildPreview(root, { ...env, CONTEXT: 'production' });
+  await buildSite(root, env);
+  const output = await buildSite(root, { ...env, CONTEXT: 'production' });
   assert.match(await readFile(path.join(output, 'robots.txt'), 'utf8'), /Allow: \//);
   await assert.rejects(access(path.join(output, '_headers')), { code: 'ENOENT' });
 });
 
 test('missing public configuration fails before replacing prior output', async (t) => {
   const root = await fixture(t);
-  await assert.rejects(buildPreview(root, {}), /Missing SUPABASE_URL/);
+  await assert.rejects(buildSite(root, {}), /Missing SUPABASE_URL/);
   assert.equal(await readFile(path.join(root, 'dist/stale.html'), 'utf8'), 'previous build');
 });
 
 test('symlinks cannot publish files from outside public directories', async (t) => {
   const root = await fixture(t);
   await symlink(path.join(root, '.env'), path.join(root, 'assets', 'leak.txt'));
-  await assert.rejects(buildPreview(root, env), /Refusing to publish symlink/);
+  await assert.rejects(buildSite(root, env), /Refusing to publish symlink/);
 });
 
 test('homepage hero is a packaged WebP, independent of mutable gallery storage', async () => {
