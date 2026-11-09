@@ -85,52 +85,53 @@
   <section class="content members-dashboard">
     <div class="members-layout">
       <nav class="members-sidebar" aria-label="Member dashboard sections">
-        <p class="members-sidebar-title">Your account</p>
-        <ul class="members-sidebar-list">
+        <p class="members-sidebar-title" id="member-account-nav-title">My account</p>
+        <ul class="members-sidebar-list" aria-labelledby="member-account-nav-title">
           <li>
-            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">
-              Profile
-            </button>
-          </li>
-          <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">
-              Membership
-            </button>
+            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">Membership</button>
           </li>
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="door" id="member-nav-door" aria-controls="member-panel-door">Door code</button>
           </li>
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">
-              Notes
-            </button>
+            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">Profile</button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Member Tools">
-              Member Tools
-            </button>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Club &amp; machine notes</button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="operations" id="member-nav-operations" aria-controls="member-panel-operations">Operations</button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
-              Events
-            </button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="photos_editor,photos_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="photos" id="member-nav-photos" aria-controls="member-panel-photos">
-              Photos
-            </button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="games_editor,games_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="games" id="member-nav-games" aria-controls="member-panel-games">
-              Games
-            </button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="publishing_editor,publishing_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="publishing" id="member-nav-publishing" aria-controls="member-panel-publishing">Publishing</button>
-          </li>
+        </ul>
+        <div class="members-sidebar-group" id="member-volunteer-nav" hidden>
+          <p class="members-sidebar-title" id="member-volunteer-nav-title">Volunteer tools</p>
+          <ul class="members-sidebar-list" aria-labelledby="member-volunteer-nav-title">
+            <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin">
+                Manage members
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
+                Manage events
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="photos_editor,photos_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="photos" id="member-nav-photos" aria-controls="member-panel-photos">
+                Manage photos
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="games_editor,games_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="games" id="member-nav-games" aria-controls="member-panel-games">
+                Manage games
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="publishing_editor,publishing_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="publishing" id="member-nav-publishing" aria-controls="member-panel-publishing">Publishing</button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="operations" id="member-nav-operations" aria-controls="member-panel-operations">Operations</button>
+            </li>
+          </ul>
+        </div>
+        <ul class="members-sidebar-list">
           <li class="members-sidebar-logout-wrap">
             <button type="button" class="members-sidebar-link members-sidebar-logout" id="logout-btn" hidden>
               Log out
@@ -253,13 +254,17 @@
 
         <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
           <h2>Membership</h2>
-          <p class="member-panel-intro">Everyone who registers is a Basic Member. The treasurer changes your account to Full Access Member after checking your recurring PayPal subscription.</p>
           <div class="membership-card">
-            <p><strong>Current membership:</strong> <span id="membership-status">Loading...</span></p>
+            <p><strong>Current membership:</strong> <span id="membership-status" role="status">Loading…</span></p>
+            <p id="membership-basic-next" hidden>Your free website account gives you Basic Member access. <a href="mailto:info@snhpinballclub.com">Contact the club about Full Access</a>.</p>
+            <div id="membership-full-next" hidden>
+              <p>Your Full Access membership includes 24/7 access to the club.</p>
+              <button type="button" class="club-button" id="membership-door-button">Go to Door code</button>
+            </div>
             <p class="membership-card-note">Something off in your record? Email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a> and we will help sort it out.</p>
           </div>
 
-          <h4>How membership works today</h4>
+          <h3>How Full Access membership works</h3>
           <p>Full Access Members choose monthly or annual recurring PayPal billing. The treasurer checks subscriptions and updates membership by hand.</p>
           <ul class="membership-info-list">
             <li><strong>Monthly:</strong> $40</li>
@@ -267,7 +272,7 @@
             <li>To arrange recurring PayPal billing, email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a>.</li>
           </ul>
 
-          <h4>What membership gets you</h4>
+          <h3>What membership gets you</h3>
           <p>Full Access Members have 24/7 access to the club's pinball room on Bridge St in Nashua, with every game on free-play. Just stopping by for an event? Visitors can grab an all-day guest pass for $10 per visit.</p>
 
           <p class="membership-card-note">Memberships help keep this nonprofit pinball club afloat. If you want to push the club ahead in bigger ways, a <a href="donate/">donation</a> is the most direct boost.</p>
@@ -291,7 +296,7 @@
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
-          <h2>Member Tools</h2>
+          <h2>Manage members</h2>
           <p id="member-admin-intro" class="member-panel-intro">Look up members, review website responsibilities, and update membership status.</p>
           <p id="member-admin-access" class="member-panel-access-note" hidden></p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
@@ -858,10 +863,11 @@
       return "profile";
     }
 
-    function scrollActiveMemberPanelIntoView(panelId) {
+    function focusMemberPanel(panelId) {
       var id = String(panelId || "profile");
       var panel = document.getElementById("member-panel-" + id);
-      if (!panel || typeof panel.scrollIntoView !== "function") return;
+      if (!panel) return;
+      panel.focus({ preventScroll: true });
       var reduced =
         window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       try {
@@ -871,17 +877,20 @@
       }
     }
 
+    function openMemberPanelFromControl(panelId) {
+      if (panelId !== getActiveMemberPanelId()) showMemberPanel(panelId, {});
+      if (panelId === getActiveMemberPanelId()) focusMemberPanel(panelId);
+    }
+
     function wirePanelNav() {
       for (var i = 0; i < panelButtons.length; i += 1) {
         panelButtons[i].addEventListener("click", function () {
-          var pid = this.getAttribute("data-member-panel");
-          if (pid && pid === getActiveMemberPanelId()) {
-            scrollActiveMemberPanelIntoView(pid);
-            return;
-          }
-          showMemberPanel(pid, {});
+          openMemberPanelFromControl(this.getAttribute("data-member-panel"));
         });
       }
+      document.getElementById("membership-door-button").addEventListener("click", function () {
+        openMemberPanelFromControl("door");
+      });
     }
 
     function applyRbacNav(userRoles) {
@@ -892,6 +901,8 @@
         var show = window.SNHMemberPortal.memberHasAnyRole(userRoles, rolesCsv);
         li.hidden = !show;
       }
+      var group = document.getElementById("member-volunteer-nav");
+      group.hidden = !group.querySelector("[data-member-rbac-nav]:not([hidden])");
     }
 
     function normalizeRoleSlug(roleSlug) {
@@ -970,7 +981,7 @@
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS) ||
         ["membership_editor", "membership_admin", "club_admin"];
-      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Member Tools");
+      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Manage members");
     }
 
     function setPhotosPanelIntro(userRolesList) {
@@ -2220,7 +2231,10 @@
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
-    membershipStatus.textContent = membership && membership.status === "active" ? "Full Access Member" : "Basic Member";
+    var hasFullAccess = membership && membership.status === "active";
+    membershipStatus.textContent = hasFullAccess ? "Full Access Member" : "Basic Member";
+    document.getElementById("membership-basic-next").hidden = hasFullAccess;
+    document.getElementById("membership-full-next").hidden = !hasFullAccess;
     var doorReveal = document.getElementById("door-code-reveal");
     var doorValue = document.getElementById("door-code-value");
     var doorReminder = document.getElementById("door-code-reminder");

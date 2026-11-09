@@ -217,7 +217,7 @@
     formWrap.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "Anyone signed in can add a new note. If your account has a portal helper role (events, photos, games, or membership), you can also edit existing notes and use the status shortcuts. Each note shows who or what submitted it when that is known."
+        text: "Signed-in members can read the title and details you enter here. Volunteers with note-editing access can update existing notes and their status."
       })
     );
     formWrap.appendChild(fieldRow("Title", textInput("ci-title", "")));
