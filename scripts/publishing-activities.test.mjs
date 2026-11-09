@@ -30,3 +30,35 @@ test('card image, title, and action share the destination and external links ope
 test('detail uses the announcement bookmark style and opens useful links in a new tab',()=>{
  const root=new Element('div');setup().renderDetail(root,{id:'abc',title:'League',body:'Join',links:[{url:'https://example.com/',label:'League site'}]});const article=root.children[0];assert.equal(article.children.find(n=>n.tag==='ul').children[0].children[0].target,'_blank');const button=article.children.find(n=>n.className==='announcement-actions').children[0];assert.equal(button.className,'announcement-copy-link');assert.equal(button['aria-label'],'Copy Activity link');assert.equal(button.children[0].tag,'svg');
 });
+
+test('activity page lists the uncapped directory, keeps detail links, and leaves the homepage on its own feed', async()=>{
+ const id='00000000-0000-4000-8000-000000000001';
+ const cards=Array.from({length:8},(_,i)=>({id,title:'Activity '+i,body:'Summary'}));
+ async function load(page,search,reply){
+  const elements=Object.fromEntries(['public-activities','activities-status','activities-retry','activities-title','activity-back-to-list'].map(key=>[key,new Element('div')]));
+  const root=elements['public-activities'],calls=[];
+  root.hasAttribute=()=>page;
+  root.classList={add(){}};
+  let start;
+  const document={readyState:'loading',addEventListener(type,fn){start=fn;},getElementById:key=>page||key==='public-activities'?elements[key]:null,createElement:t=>new Element(t),createElementNS:(ns,t)=>new Element(t)};
+  const window={location:{search},SNHPublishing:{},snhSupabase:{async rpc(name,args){calls.push([name,args?.p_id]);return reply;}}};
+  vm.runInNewContext(source,{document,window,URLSearchParams});
+  await start();
+  return {root,calls,elements};
+ }
+ const directory=await load(true,'',{data:cards});
+ assert.deepEqual(directory.calls,[['snh_public_activity_directory',undefined]]);
+ assert.equal(directory.root.children.length,8);
+ assert.equal(directory.root.children[0].children[1].children[0].tag,'h2');
+ const detail=await load(true,'?id='+id,{data:cards[0]});
+ assert.deepEqual(detail.calls,[['snh_public_activity',id]]);
+ assert.equal(detail.elements['activity-back-to-list'].hidden,false);
+ assert.equal(detail.root.children[0].className,'activity-detail');
+ const home=await load(false,'',{data:cards.slice(0,6)});
+ assert.deepEqual(home.calls,[['snh_public_activities',undefined]]);
+ assert.equal(home.root.children.length,6);
+ const empty=await load(true,'',{data:[]});
+ assert.match(empty.elements['activities-status'].textContent,/No activities/);
+ const failed=await load(true,'',{error:new Error('offline')});
+ assert.equal(failed.elements['activities-retry'].hidden,false);
+});

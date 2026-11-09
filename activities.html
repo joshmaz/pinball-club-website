@@ -48,11 +48,12 @@
     </header>
 
 <main id="activities-main" class="content">
-  <nav class="activity-trail" aria-label="Activity navigation"><a href="index.html#home-activities">← What’s Happening</a><a href="events.html">Club calendar</a></nav>
-  <div id="public-activities" data-detail="true"></div>
-  <p id="activities-status" role="status">Loading Activity…</p>
+  <nav class="activity-trail" aria-label="Activity navigation"><a href="index.html#home-activities">← What’s Happening</a><a id="activity-back-to-list" href="activities.html" hidden>See all activities</a><a href="events.html">Club calendar</a></nav>
+  <h1 id="activities-title">Club activities</h1>
+  <div id="public-activities" data-activities-page></div>
+  <p id="activities-status" role="status">Loading activities…</p>
   <button id="activities-retry" type="button" hidden>Try again</button>
-  <noscript><p>Enable JavaScript to read this Activity, or visit our <a href="events.html">Events page</a>.</p></noscript>
+  <noscript><p>Enable JavaScript to see club activities, or visit our <a href="events.html">Events page</a>.</p></noscript>
 </main>
 <footer><a href="#page-top" aria-label="Back to top of this page"><img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo"></a><p>©2026 Southern New Hampshire Pinball Club</p><a href="donate/">Support the club</a> · <a href="mailto:support@snhpinballclub.com">Contact</a> · <a href="https://discord.gg/2DefFFcs8a" target="_blank" rel="noopener noreferrer">Discord</a></footer>
 <script src="assets/js/clubhouse.js"></script>
