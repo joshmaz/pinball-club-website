@@ -25,6 +25,9 @@ jobs:
       with:
         node-version: '22'
 
+    - name: Install build and test dependencies
+      run: npm ci
+
     - name: Build staging site
       if: ${{ github.ref_name == 'staging' }}
       env:
