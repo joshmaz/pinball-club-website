@@ -28,7 +28,8 @@
   button('Refresh activities',function(){void work(async function(){await refresh();list();status('');});});
   button('New activity',function(){edit(null);});
   button('Image library',function(){void library();});
-  node('p','Use the arrows to adjust display order. Lower numbers appear first. Reserve 0 for priority cards. Cards with the same value appear in random order.',root);
+  node('p','The homepage has six activity slots. Eligible activities are sorted by display order, lowest first. Ties are shuffled before the first six are selected. Reserve 0 for priority cards.',root);
+  node('p','Use the arrows to adjust display order. Select an activity title to edit it, or choose “Withdraw from public view” in the editor to unpublish it.',root);
   var ul=node('ul','',root);
   rows.slice().sort(function(a,b){return activityPosition(a)-activityPosition(b)||a.draft.title.localeCompare(b.draft.title)||String(a.id).localeCompare(String(b.id));}).forEach(function(row){
    var li=node('li','',ul),position=activityPosition(row);
