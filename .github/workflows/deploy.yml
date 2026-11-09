@@ -36,7 +36,7 @@ jobs:
           (event.commits || []).some((commit) =>
             ['added', 'modified', 'removed'].some((kind) => (commit[kind] || []).includes(path))
           );
-        appendFileSync(process.env.GITHUB_OUTPUT, 'changed=' + String(changed) + '\\n');
+        appendFileSync(process.env.GITHUB_OUTPUT, 'changed=' + String(changed) + '\n');
         NODE
 
     - uses: actions/setup-node@v4
