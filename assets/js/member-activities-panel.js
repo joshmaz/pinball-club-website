@@ -29,7 +29,7 @@
   button('New activity',function(){edit(null);});
   button('Image library',function(){void library();});
   node('p','The homepage has six activity slots. Eligible activities are sorted by display order, lowest first. Ties are shuffled before the first six are selected. Reserve 0 for priority cards.',root);
-  node('p','Use the arrows to adjust display order. Select an activity title to edit it, or choose “Withdraw from public view” in the editor to unpublish it.',root);
+  node('p','Use the up and down controls to adjust display order. Select an activity title to edit it, or choose “Withdraw from public view” in the editor to unpublish it.',root);
   var ul=node('ul','',root);
   rows.slice().sort(function(a,b){return activityPosition(a)-activityPosition(b)||a.draft.title.localeCompare(b.draft.title)||String(a.id).localeCompare(String(b.id));}).forEach(function(row){
    var li=node('li','',ul),position=activityPosition(row);
@@ -38,9 +38,11 @@
    var badge=node('span',String(position),controls);
    badge.className='activity-order-badge'+(position===0?' activity-order-zero':'');
    badge.title='Display order: '+position;
-   [[-1,'↑','Decrease'],[1,'↓','Increase']].forEach(function(pair){
+   var steps=node('span','',controls);
+   steps.className='activity-order-steps';
+   [[-1,'Decrease'],[1,'Increase']].forEach(function(pair){
     var step=pair[0],next=position+step;
-    var move=button(pair[1],function(){
+    var move=button('',function(){
      if(next<0||next>999)return;
      void work(async function(){
       status('Saving display order…');
@@ -49,9 +51,9 @@
       list(updated.id,step);
       status('Display order for '+updated.draft.title+' is now '+activityPosition(updated)+'.');
      }).then(function(){if(move.isConnected)move.focus();});
-    },controls);
+    },steps);
     move.className='activity-order-step';
-    move.title=pair[2]+' display order';
+    move.title=pair[1]+' display order';
     move.setAttribute('aria-label',move.title+' for '+row.draft.title);
     if(next<0||next>999)move.setAttribute('aria-disabled','true');
     if(row.id===focusId&&step===focusStep)move.focus();
