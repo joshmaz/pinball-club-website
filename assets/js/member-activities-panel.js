@@ -22,9 +22,46 @@
  }
  function close(){if(busy||!canLeave())return;dirty=false;selected=null;list();status('');}
  async function refresh(){rows=await rpc('snh_publishing_activities');admin=await rpc('snh_member_has_publishing_admin_access');}
- function list(){root.replaceChildren();button('Refresh activities',function(){void work(async function(){await refresh();list();status('');});});button('New activity',function(){edit(null);});button('Image library',function(){void library();});
-  node('p','Lower numbers appear first. Reserve 0 for priority cards. Cards with the same value appear in random order.',root);
-  var ul=node('ul','',root);rows.slice().sort(function(a,b){return (a.draft.position??0)-(b.draft.position??0)||a.draft.title.localeCompare(b.draft.title)||String(a.id).localeCompare(String(b.id));}).forEach(function(row){var li=node('li','',ul),position=row.draft.position??0;var badge=node('span',String(position),li);badge.className='activity-order-badge'+(position===0?' activity-order-zero':'');badge.title='Display order: '+position;badge.setAttribute('aria-label','Display order: '+position);button(row.draft.title,function(){edit(row);},li);node('span',' \u2014 '+(row.archived?'Archived':!row.published?'Draft':new Date(row.published.starts_at)>new Date()?'Scheduled':row.published.ends_at&&new Date(row.published.ends_at)<=new Date()?'Ended':'Published'),li);});if(!rows.length)node('p','No featured activities yet.',root);
+ function activityPosition(row){return (row.published||row.draft).position??0;}
+ function list(focusId,focusStep){
+  root.replaceChildren();
+  button('Refresh activities',function(){void work(async function(){await refresh();list();status('');});});
+  button('New activity',function(){edit(null);});
+  button('Image library',function(){void library();});
+  node('p','The homepage has six activity slots. Eligible activities are sorted by display order, lowest first. Ties are shuffled before the first six are selected. Reserve 0 for priority cards.',root);
+  node('p','Use the up and down controls to adjust display order. Select an activity title to edit it, or choose “Withdraw from public view” in the editor to unpublish it.',root);
+  var ul=node('ul','',root);
+  rows.slice().sort(function(a,b){return activityPosition(a)-activityPosition(b)||a.draft.title.localeCompare(b.draft.title)||String(a.id).localeCompare(String(b.id));}).forEach(function(row){
+   var li=node('li','',ul),position=activityPosition(row);
+   var controls=node('span','',li);
+   controls.className='activity-order-controls';
+   var badge=node('span',String(position),controls);
+   badge.className='activity-order-badge'+(position===0?' activity-order-zero':'');
+   badge.title='Display order: '+position;
+   var steps=node('span','',controls);
+   steps.className='activity-order-steps';
+   [[-1,'Decrease'],[1,'Increase']].forEach(function(pair){
+    var step=pair[0],next=position+step;
+    var move=button('',function(){
+     if(next<0||next>999)return;
+     void work(async function(){
+      status('Saving display order…');
+      var updated=await rpc('snh_publishing_activity_set_position',{p_id:row.id,p_version:row.version,p_position:next});
+      rows=rows.map(function(entry){return entry.id===updated.id?updated:entry;});
+      list(updated.id,step);
+      status('Display order for '+updated.draft.title+' is now '+activityPosition(updated)+'.');
+     }).then(function(){if(move.isConnected)move.focus();});
+    },steps);
+    move.className='activity-order-step';
+    move.title=pair[1]+' display order';
+    move.setAttribute('aria-label',move.title+' for '+row.draft.title);
+    if(next<0||next>999)move.setAttribute('aria-disabled','true');
+    if(row.id===focusId&&step===focusStep)move.focus();
+   });
+   button(row.draft.title,function(){edit(row);},li);
+   node('span',' \u2014 '+(row.archived?'Archived':!row.published?'Draft':new Date(row.published.starts_at)>new Date()?'Scheduled':row.published.ends_at&&new Date(row.published.ends_at)<=new Date()?'Ended':'Published'),li);
+  });
+  if(!rows.length)node('p','No featured activities yet.',root);
  }
  function edit(row){selected=row;dirty=false;root.replaceChildren();button('\u2190 Back to activities',close);node('h3',row?'Edit activity':'New activity',root);node('p','Save a private draft, then publish it. The homepage shows up to six activities. Lower numbers appear first. Reserve 0 for priority cards. Cards with the same value appear in random order. Ended and archived Activities leave the homepage but keep their published detail page. Withdraw removes public access.',root);
   var d=row?row.draft:{};var title=field('Title (required)','activity-title','text',d.title);title.maxLength=120;title.required=true;var body=field('Short summary (required)','activity-body','textarea',d.body);body.maxLength=240;body.required=true;
