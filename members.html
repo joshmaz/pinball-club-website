@@ -376,135 +376,142 @@
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h2>Events</h2>
-          <p id="member-events-intro" class="member-panel-intro">Keep the public events calendar accurate. Add tournaments, open houses, and league nights, edit details if plans change, and mark canceled or postponed events while keeping their original date. Anything you publish here lands on the public Events page right away.</p>
+          <p id="member-events-intro" class="member-panel-intro">Manage the club calendar. Import a Match Play tournament, add an event manually, or edit an event from the list. Published events appear on the public Events page.</p>
           <p id="member-events-access" class="member-panel-access-note" hidden></p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
+            <button type="button" class="club-button" id="member-events-import" aria-controls="member-events-import-panel" aria-expanded="false">Import from Match Play</button>
+            <button type="button" class="members-sidebar-link" id="member-events-new" aria-controls="member-events-editor">New event</button>
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
 
-          <h3>Find MatchPlay tournaments</h3>
-          <p class="member-form-hint">“Token account” means the MatchPlay account that supplied the API token, which may differ from your club login. You can also search another organizer, a series, or title words such as SNHPC.</p>
-          <form id="member-matchplay-discover-form" class="members-profile-form">
-            <label for="member-matchplay-discover-scope">Find by</label>
-            <select id="member-matchplay-discover-scope">
-              <option value="title">Tournament title</option>
-              <option value="owner">Organizer MatchPlay ID</option>
-              <option value="series">Series MatchPlay ID</option>
-              <option value="mine">Token account's tournaments</option>
-            </select>
-            <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
-            <span class="members-admin-search-wrap" id="member-matchplay-discover-value-wrap" hidden>
-              <input id="member-matchplay-discover-value" type="search" autocomplete="off" disabled>
-              <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
-            </span>
-            <button type="submit">List tournaments</button>
-          </form>
-          <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
-          <div id="member-matchplay-discover-results" hidden>
-            <div class="members-admin-table-wrap">
-              <table class="members-admin-table">
-                <caption>MatchPlay tournaments</caption>
-                <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
-                <tbody id="member-matchplay-discover-rows"></tbody>
-              </table>
-            </div>
-            <p class="members-admin-toolbar">
-              <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
-              <span id="member-matchplay-discover-page"></span>
-              <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
-            </p>
-          </div>
-
-          <h3>Review MatchPlay tournament</h3>
-          <p class="member-form-hint">Compare a MatchPlay tournament with club events. Open an existing event or prepare a new draft; neither action saves it.</p>
-          <form id="member-matchplay-review-form" class="members-profile-form">
-            <label for="member-matchplay-tournament">Tournament URL or ID</label>
-            <input id="member-matchplay-tournament" type="text" placeholder="https://app.matchplay.events/tournaments/228825" required>
-            <button type="submit">Find club event</button>
-          </form>
-          <p id="member-matchplay-review-status" class="members-page-status" role="status" aria-live="polite"></p>
-          <div id="member-matchplay-review-results" hidden>
-            <p id="member-matchplay-review-summary"></p>
-            <div class="members-admin-table-wrap">
-              <table class="members-admin-table">
-                <caption>Possible matching club events</caption>
-                <thead><tr><th scope="col">Club event</th><th scope="col">Date</th><th scope="col">Match</th><th scope="col">Action</th></tr></thead>
-                <tbody id="member-matchplay-review-candidates"></tbody>
-              </table>
-            </div>
-            <p class="members-admin-toolbar">
-              <button type="button" class="members-sidebar-link" id="member-matchplay-create-draft">Prepare new event draft</button>
-            </p>
-          </div>
-
-          <h3>Create / edit event</h3>
-          <form id="member-events-form" class="members-profile-form">
-            <input id="member-events-id" type="hidden">
-
-            <label for="member-events-title">Title</label>
-            <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
-
-            <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
-            <label for="member-events-starts-at">Starts at (local)</label>
-            <input id="member-events-starts-at" type="datetime-local">
-            <label for="member-events-ends-at">Ends at (local, optional)</label>
-            <input id="member-events-ends-at" type="datetime-local">
-            <p class="member-form-hint">New timed events default to 3 hours. Edit or clear the end time as needed.</p>
-            <label for="member-events-lifecycle">Event status</label>
-            <select id="member-events-lifecycle"><option value="scheduled">Scheduled</option><option value="canceled">Canceled</option><option value="postponed">Postponed</option></select>
-            <label class="members-checkbox-label"><input id="member-events-reschedule" type="checkbox" disabled> Explicitly reschedule this existing event</label>
-            <label for="member-events-reschedule-note">Reschedule note (optional)</label>
-            <input id="member-events-reschedule-note" type="text" maxlength="1000">
-            <p class="member-form-hint">Rescheduling records the previous schedule, keeps the event Scheduled, and displays Rescheduled publicly. Routine date corrections do not mark it rescheduled.</p>
-
-            <label for="member-events-location">Location</label>
-            <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
-
-            <fieldset class="event-links-editor">
-              <legend>External links</legend>
-              <small id="member-events-links-help">Up to 5 links</small>
-              <div id="member-events-links"></div>
-              <button id="member-events-add-link" type="button" aria-describedby="member-events-links-help">Add another link</button>
-            </fieldset>
-
-            <label for="member-events-source">Source</label>
-            <input id="member-events-source" type="text" maxlength="80" placeholder="manual">
-
-            <label for="member-events-description">Description</label>
-            <textarea id="member-events-description" rows="4" maxlength="4000" placeholder="Optional details"></textarea>
-
-            <label class="members-checkbox-label">
-              <input id="member-events-published" type="checkbox" checked>
-              Published (visible on public Events page)
-            </label>
-
-            <div id="member-events-photo-digest" class="member-events-photo-digest" hidden>
-              <h4 class="member-events-photo-digest-heading">Photos for this event</h4>
-              <p id="member-events-photo-digest-status" class="member-form-hint"></p>
-              <div id="member-events-photo-digest-body" class="member-events-photo-digest-body"></div>
+          <section id="member-events-import-panel" aria-labelledby="member-events-import-title" hidden>
+            <h3 id="member-events-import-title">Import from Match Play</h3>
+            <h4>Review a tournament by link or ID</h4>
+            <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
+            <form id="member-matchplay-review-form" class="members-profile-form">
+              <label for="member-matchplay-tournament">Tournament URL or ID</label>
+              <input id="member-matchplay-tournament" type="text" placeholder="https://app.matchplay.events/tournaments/228825" required>
+              <button type="submit">Find club event</button>
+            </form>
+            <p id="member-matchplay-review-status" class="members-page-status" role="status" aria-live="polite"></p>
+            <div id="member-matchplay-review-results" hidden>
+              <p id="member-matchplay-review-summary"></p>
+              <div class="members-admin-table-wrap">
+                <table class="members-admin-table">
+                  <caption>Possible matching club events</caption>
+                  <thead><tr><th scope="col">Club event</th><th scope="col">Date</th><th scope="col">Match</th><th scope="col">Action</th></tr></thead>
+                  <tbody id="member-matchplay-review-candidates"></tbody>
+                </table>
+              </div>
               <p class="members-admin-toolbar">
-                <button type="button" class="members-sidebar-link" id="member-events-open-photos-panel">Open Photos panel</button>
+                <button type="button" class="members-sidebar-link" id="member-matchplay-create-draft">Prepare new event draft</button>
               </p>
             </div>
 
-            <p class="members-admin-toolbar">
-              <button type="submit" class="members-events-form-action">Save event</button>
-              <button type="button" class="members-events-form-action" id="member-events-reset">Clear form</button>
-            </p>
-          </form>
+            <h4>Find Match Play tournaments</h4>
+            <p class="member-form-hint">“Token account” means the MatchPlay account that supplied the API token, which may differ from your club login. You can also search another organizer, a series, or title words such as SNHPC.</p>
+            <form id="member-matchplay-discover-form" class="members-profile-form">
+              <label for="member-matchplay-discover-scope">Find by</label>
+              <select id="member-matchplay-discover-scope">
+                <option value="title">Tournament title</option>
+                <option value="owner">Organizer MatchPlay ID</option>
+                <option value="series">Series MatchPlay ID</option>
+                <option value="mine">Token account's tournaments</option>
+              </select>
+              <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
+              <span class="members-admin-search-wrap" id="member-matchplay-discover-value-wrap" hidden>
+                <input id="member-matchplay-discover-value" type="search" autocomplete="off" disabled>
+                <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
+              </span>
+              <button type="submit">List tournaments</button>
+            </form>
+            <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
+            <div id="member-matchplay-discover-results" hidden>
+              <div class="members-admin-table-wrap">
+                <table class="members-admin-table">
+                  <caption>MatchPlay tournaments</caption>
+                  <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+                  <tbody id="member-matchplay-discover-rows"></tbody>
+                </table>
+              </div>
+              <p class="members-admin-toolbar">
+                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
+                <span id="member-matchplay-discover-page"></span>
+                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
+              </p>
+            </div>
+          </section>
 
-          <h3>Event list</h3>
+          <section id="member-events-editor" aria-labelledby="member-events-editor-title" hidden>
+            <h3 id="member-events-editor-title">New event</h3>
+            <form id="member-events-form" class="members-profile-form">
+              <input id="member-events-id" type="hidden">
+
+              <label for="member-events-title">Title</label>
+              <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
+
+              <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
+              <label for="member-events-starts-at">Starts at (local)</label>
+              <input id="member-events-starts-at" type="datetime-local">
+              <label for="member-events-ends-at">Ends at (local, optional)</label>
+              <input id="member-events-ends-at" type="datetime-local">
+              <p class="member-form-hint">New timed events default to 3 hours. Edit or clear the end time as needed.</p>
+              <label for="member-events-lifecycle">Event status</label>
+              <select id="member-events-lifecycle"><option value="scheduled">Scheduled</option><option value="canceled">Canceled</option><option value="postponed">Postponed</option></select>
+              <label class="members-checkbox-label"><input id="member-events-reschedule" type="checkbox" disabled> Explicitly reschedule this existing event</label>
+              <label for="member-events-reschedule-note">Reschedule note (optional)</label>
+              <input id="member-events-reschedule-note" type="text" maxlength="1000">
+              <p class="member-form-hint">Rescheduling records the previous schedule, keeps the event Scheduled, and displays Rescheduled publicly. Routine date corrections do not mark it rescheduled.</p>
+
+              <label for="member-events-location">Location</label>
+              <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
+
+              <fieldset class="event-links-editor">
+                <legend>External links</legend>
+                <small id="member-events-links-help">Up to 5 links</small>
+                <div id="member-events-links"></div>
+                <button id="member-events-add-link" type="button" aria-describedby="member-events-links-help">Add another link</button>
+              </fieldset>
+
+              <label for="member-events-source">Source</label>
+              <input id="member-events-source" type="text" maxlength="80" placeholder="manual">
+
+              <label for="member-events-description">Description</label>
+              <textarea id="member-events-description" rows="4" maxlength="4000" placeholder="Optional details"></textarea>
+
+              <label class="members-checkbox-label">
+                <input id="member-events-published" type="checkbox" checked>
+                Publish on the public Events page
+              </label>
+
+              <div id="member-events-photo-digest" class="member-events-photo-digest" hidden>
+                <h4 class="member-events-photo-digest-heading">Photos for this event</h4>
+                <p id="member-events-photo-digest-status" class="member-form-hint"></p>
+                <div id="member-events-photo-digest-body" class="member-events-photo-digest-body"></div>
+                <p class="members-admin-toolbar">
+                  <button type="button" class="members-sidebar-link" id="member-events-open-photos-panel">Open Photos panel</button>
+                </p>
+              </div>
+
+              <p class="members-admin-toolbar">
+                <button type="submit" class="members-events-form-action">Save event</button>
+                <button type="button" class="members-events-form-action" id="member-events-reset">Cancel</button>
+              </p>
+            </form>
+          </section>
+
+          <h3 id="member-events-list-title" tabindex="-1">Event list</h3>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table">
               <caption class="visually-hidden">Events management table</caption>
               <thead>
                 <tr>
                   <th scope="col">Title</th>
-                  <th scope="col">Date</th>
+                  <th scope="col">Starts</th>
                   <th scope="col">Location</th>
                   <th scope="col">Source</th>
-                  <th scope="col">Published</th>
+                  <th scope="col">Public visibility</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
@@ -613,6 +620,12 @@
     var memberEventsStatus = document.getElementById("member-events-status");
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
+    var memberEventsNew = document.getElementById("member-events-new");
+    var memberEventsEditor = document.getElementById("member-events-editor");
+    var memberEventsEditorTitle = document.getElementById("member-events-editor-title");
+    var memberEventsListTitle = document.getElementById("member-events-list-title");
+    var memberEventsImport = document.getElementById("member-events-import");
+    var memberEventsImportPanel = document.getElementById("member-events-import-panel");
     var memberEventsId = document.getElementById("member-events-id");
     var memberEventsTitle = document.getElementById("member-events-title");
     var memberEventsAllDay = document.getElementById("member-events-all-day");
@@ -1531,8 +1544,11 @@
     memberEventsStartsAt.addEventListener("input", updateEventEndDefault);
     memberEventsEndsAt.addEventListener("input", function () { memberEventsDefaultEnd = null; memberEventsEndTouched = true; });
 
-    function resetEventsForm() {
+    function resetEventsForm(returnToList) {
       if (!memberEventsForm) return;
+      memberEventsEditor.hidden = true;
+      memberEventsNew.hidden = false;
+      if (returnToList && getActiveMemberPanelId() === "events") memberEventsListTitle.focus();
       memberEventsForm.reset();
       memberEventsLinks.set([]);
       memberEventsOriginalSchedule = null;
@@ -1575,8 +1591,17 @@
       void loadEventPhotoDigest(row.id);
     }
 
+    function setMatchplayImportOpen(open) {
+      memberEventsImportPanel.hidden = !open;
+      memberEventsImport.setAttribute("aria-expanded", String(open));
+    }
+
     function focusAndHighlightEventsEditor() {
       if (!memberEventsForm) return;
+      setMatchplayImportOpen(false);
+      memberEventsEditorTitle.textContent = memberEventsId.value ? "Edit event" : "New event";
+      memberEventsEditor.hidden = false;
+      memberEventsNew.hidden = true;
       memberEventsForm.scrollIntoView({ behavior: "smooth", block: "start" });
       memberEventsForm.classList.remove("members-profile-form-edit-target");
       // Force reflow so repeated edit clicks retrigger the highlight animation.
@@ -1631,7 +1656,7 @@
         tdSource.textContent = row.source || "manual";
 
         var tdPub = document.createElement("td");
-        tdPub.textContent = row.published ? "Yes" : "No";
+        tdPub.textContent = row.published ? "Published" : "Unpublished";
 
         var tdActions = document.createElement("td");
 
@@ -1995,12 +2020,24 @@
       });
     }
 
-    if (memberEventsReset) {
-      memberEventsReset.addEventListener("click", function () {
-        resetEventsForm();
-        setEventsStatus("Form cleared.");
-      });
+    memberEventsImport.addEventListener("click", function () {
+      var open = memberEventsImportPanel.hidden;
+      setMatchplayImportOpen(open);
+      if (open) matchplayTournamentInput.focus();
+    });
+
+    function openNewEvent() {
+      resetEventsForm();
+      focusAndHighlightEventsEditor();
+      setEventsStatus("New event. Review public visibility before saving.");
     }
+
+    memberEventsNew.addEventListener("click", openNewEvent);
+
+    memberEventsReset.addEventListener("click", function () {
+      resetEventsForm(true);
+      setEventsStatus("Event changes discarded.");
+    });
 
     if (memberEventsOpenPhotosPanel) {
       memberEventsOpenPhotosPanel.addEventListener("click", function () {
@@ -2079,7 +2116,7 @@
           }
           setEventsStatus("Saving event…");
           await window.SNHMemberPortal.saveEventForAdmin(payload);
-          resetEventsForm();
+          resetEventsForm(true);
           if (onEventsPanelShown) await onEventsPanelShown();
           setEventsStatus("Event saved.");
         } catch (err) {
@@ -2162,6 +2199,8 @@
     }
     if (startPanel === "events" && initialRoute.eventId && window.snhNavigateToMemberEventEditor) {
       void window.snhNavigateToMemberEventEditor(initialRoute.eventId);
+    } else if (startPanel === "events" && initialRoute.newEvent) {
+      openNewEvent();
     }
 
     try {

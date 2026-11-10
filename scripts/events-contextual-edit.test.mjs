@@ -80,7 +80,7 @@ test("Add Event uses shared creation access and opens the blank Events workflow"
         assert.equal(empty.children.filter((node) => node.tagName === 'a').length, expected ? 1 : 0);
       }
       if (expected) {
-        assert.equal(links[0].href, 'members.html?panel=events');
+        assert.equal(links[0].href, 'members.html?panel=events&event=new');
         if (isEmpty) continue;
         const row = nodes.find((node) => node.className === 'events-upcoming-heading-row');
         assert.equal(row.children[0].tagName, 'h2');

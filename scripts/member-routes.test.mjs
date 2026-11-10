@@ -62,6 +62,21 @@ test("reads and builds a canonical event editor route", () => {
   assert.equal(fixture.replacedUrl(), "/members.html?panel=events");
 });
 
+test("opens the new event editor only on the explicit new event route", async () => {
+  const fixture = loadRoutes({ search: "?panel=events&event=new" });
+  assert.equal(fixture.routes.read().newEvent, true);
+  assert.equal(fixture.routes.read().eventId, "");
+  assert.equal(fixture.routes.build("events"), "/members.html?panel=events&event=new");
+  assert.equal(fixture.routes.build("photos"), "/members.html?panel=photos");
+  fixture.routes.setEvent(null);
+  assert.equal(fixture.replacedUrl(), "/members.html?panel=events");
+  assert.equal(loadRoutes({ search: "?panel=events" }).routes.read().newEvent, undefined);
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  assert.match(html, /id="member-events-editor"[^>]+hidden/);
+  assert.match(html, /id="member-events-import-panel"[^>]+hidden/);
+  assert.match(html, /initialRoute\.newEvent\) \{\s+openNewEvent\(\)/);
+});
+
 test("builds canonical routes and removes item parameters outside their panel", () => {
   const fixture = loadRoutes({ search: `?panel=games&game=${GAME_ID}` });
   assert.equal(fixture.routes.build("games"), `/members.html?panel=games&game=${GAME_ID}`);
