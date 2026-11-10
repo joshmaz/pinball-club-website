@@ -503,7 +503,7 @@
             </form>
           </section>
 
-          <h3 id="member-events-list-title" tabindex="-1">Event list</h3>
+          <h3 id="member-events-list-title" tabindex="-1">Complete Event List</h3>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table">
               <caption class="visually-hidden">Events management table</caption>
@@ -623,7 +623,7 @@
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
     var memberEventsNew = document.getElementById("member-events-new");
-    var memberEventsNewDraftSnapshot = null;
+    var memberEventsFormSnapshot = null;
     var memberEventsEditor = document.getElementById("member-events-editor");
     var memberEventsEditorTitle = document.getElementById("member-events-editor-title");
     var memberEventsListTitle = document.getElementById("member-events-list-title");
@@ -1553,7 +1553,7 @@
       if (!memberEventsForm) return;
       memberEventsEditor.hidden = true;
       memberEventsNew.setAttribute("aria-expanded", "false");
-      memberEventsNewDraftSnapshot = null;
+      memberEventsFormSnapshot = null;
       if (returnToList && getActiveMemberPanelId() === "events") memberEventsListTitle.focus();
       memberEventsForm.classList.remove("members-profile-form-edit-target");
       memberEventsForm.reset();
@@ -1573,7 +1573,6 @@
 
     function setEventsFormFromRow(row) {
       if (!row || !memberEventsForm) return;
-      memberEventsNewDraftSnapshot = null;
       if (memberEventsId) memberEventsId.value = String(row.id || "");
       memberEventsOriginalRow = row;
       memberEventsDefaultEnd = null;
@@ -1742,6 +1741,7 @@
         renderEventsPage();
       }
       setEventsFormFromRow(row);
+      memberEventsFormSnapshot = snapshotEventsForm();
       if (window.SNHMemberRoutes) window.SNHMemberRoutes.setEvent(row.id);
       highlightEventTableRow(row.id);
       focusAndHighlightEventsEditor();
@@ -2041,15 +2041,6 @@
       });
     }
 
-    memberEventsImport.addEventListener("click", function () {
-      var open = memberEventsImportPanel.hidden;
-      setMatchplayImportOpen(open);
-      if (open) {
-        matchplayTournamentClear.hidden = !matchplayTournamentInput.value;
-        matchplayTournamentInput.focus();
-      }
-    });
-
     function snapshotEventsForm() {
       var fields = memberEventsForm.querySelectorAll("input:not([type=hidden]), select, textarea");
       return JSON.stringify(Array.from(fields, function (field) {
@@ -2059,7 +2050,7 @@
 
     function openNewEvent() {
       resetEventsForm();
-      memberEventsNewDraftSnapshot = snapshotEventsForm();
+      memberEventsFormSnapshot = snapshotEventsForm();
       showEventsEditor();
       setEventsStatus("New event. Review public visibility before saving.");
     }
@@ -2067,7 +2058,7 @@
     function toggleNewEvent() {
       if (memberEventsEditor.hidden) {
         openNewEvent();
-      } else if (memberEventsNewDraftSnapshot === snapshotEventsForm()) {
+      } else if (!memberEventsId.value && memberEventsFormSnapshot === snapshotEventsForm()) {
         resetEventsForm();
         setEventsStatus("");
       } else {
@@ -2075,6 +2066,22 @@
       }
     }
 
+    function toggleMatchplayImport() {
+      var open = memberEventsImportPanel.hidden;
+      if (open && !memberEventsEditor.hidden) {
+        if (memberEventsFormSnapshot !== snapshotEventsForm() &&
+            !window.confirm("Discard unsaved event changes and open Match Play import?")) return;
+        resetEventsForm();
+        setEventsStatus("");
+      }
+      setMatchplayImportOpen(open);
+      if (open) {
+        matchplayTournamentClear.hidden = !matchplayTournamentInput.value;
+        matchplayTournamentInput.focus();
+      }
+    }
+
+    memberEventsImport.addEventListener("click", toggleMatchplayImport);
     memberEventsNew.addEventListener("click", toggleNewEvent);
 
     memberEventsReset.addEventListener("click", function () {
