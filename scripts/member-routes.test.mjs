@@ -143,3 +143,35 @@ test('issue reporting context survives sign-in return route and is removed outsi
  assert.equal(fixture.routes.build('profile'),'/members.html');
  assert.equal(loadRoutes({search:'?panel=club-issues&issueGame=bad'}).routes.build('club-issues'),'/members.html?panel=club-issues');
 });
+
+
+test("New event toggles a blank form and keeps open edits", async () => {
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  const start = html.indexOf("    function snapshotEventsForm()");
+  const end = html.indexOf("    memberEventsNew.addEventListener", start);
+  const field = { type: "text", value: "" };
+  const editor = { hidden: true };
+  const context = vm.createContext({
+    memberEventsEditor: editor,
+    memberEventsForm: { querySelectorAll: () => [field] },
+    memberEventsNewDraftSnapshot: null,
+    resetEventsForm() { editor.hidden = true; field.value = ""; context.memberEventsNewDraftSnapshot = null; },
+    focusAndHighlightEventsEditor() { editor.hidden = false; },
+    setEventsStatus(message) { context.status = message; }
+  });
+  vm.runInContext(html.slice(start, end), context);
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, false);
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, true);
+  vm.runInContext("toggleNewEvent()", context);
+  field.value = "Unsaved tournament";
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, false);
+  assert.equal(field.value, "Unsaved tournament");
+  assert.match(context.status, /Save or cancel/);
+  context.memberEventsNewDraftSnapshot = null;
+  field.value = "";
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, false);
+});

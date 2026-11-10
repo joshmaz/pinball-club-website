@@ -381,7 +381,7 @@
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
             <button type="button" class="club-button" id="member-events-import" aria-controls="member-events-import-panel" aria-expanded="false">Import from Match Play</button>
-            <button type="button" class="members-sidebar-link" id="member-events-new" aria-controls="member-events-editor">New event</button>
+            <button type="button" class="members-sidebar-link" id="member-events-new" aria-controls="member-events-editor" aria-expanded="false">New event</button>
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
 
@@ -621,6 +621,7 @@
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
     var memberEventsNew = document.getElementById("member-events-new");
+    var memberEventsNewDraftSnapshot = null;
     var memberEventsEditor = document.getElementById("member-events-editor");
     var memberEventsEditorTitle = document.getElementById("member-events-editor-title");
     var memberEventsListTitle = document.getElementById("member-events-list-title");
@@ -1547,7 +1548,8 @@
     function resetEventsForm(returnToList) {
       if (!memberEventsForm) return;
       memberEventsEditor.hidden = true;
-      memberEventsNew.hidden = false;
+      memberEventsNew.setAttribute("aria-expanded", "false");
+      memberEventsNewDraftSnapshot = null;
       if (returnToList && getActiveMemberPanelId() === "events") memberEventsListTitle.focus();
       memberEventsForm.reset();
       memberEventsLinks.set([]);
@@ -1566,6 +1568,7 @@
 
     function setEventsFormFromRow(row) {
       if (!row || !memberEventsForm) return;
+      memberEventsNewDraftSnapshot = null;
       if (memberEventsId) memberEventsId.value = String(row.id || "");
       memberEventsOriginalRow = row;
       memberEventsDefaultEnd = null;
@@ -1601,7 +1604,7 @@
       setMatchplayImportOpen(false);
       memberEventsEditorTitle.textContent = memberEventsId.value ? "Edit event" : "New event";
       memberEventsEditor.hidden = false;
-      memberEventsNew.hidden = true;
+      memberEventsNew.setAttribute("aria-expanded", "true");
       memberEventsForm.scrollIntoView({ behavior: "smooth", block: "start" });
       memberEventsForm.classList.remove("members-profile-form-edit-target");
       // Force reflow so repeated edit clicks retrigger the highlight animation.
@@ -2026,13 +2029,32 @@
       if (open) matchplayTournamentInput.focus();
     });
 
+    function snapshotEventsForm() {
+      var fields = memberEventsForm.querySelectorAll("input:not([type=hidden]), select, textarea");
+      return JSON.stringify(Array.from(fields, function (field) {
+        return field.type === "checkbox" ? field.checked : field.value;
+      }));
+    }
+
     function openNewEvent() {
       resetEventsForm();
+      memberEventsNewDraftSnapshot = snapshotEventsForm();
       focusAndHighlightEventsEditor();
       setEventsStatus("New event. Review public visibility before saving.");
     }
 
-    memberEventsNew.addEventListener("click", openNewEvent);
+    function toggleNewEvent() {
+      if (memberEventsEditor.hidden) {
+        openNewEvent();
+      } else if (memberEventsNewDraftSnapshot === snapshotEventsForm()) {
+        resetEventsForm();
+        setEventsStatus("");
+      } else {
+        setEventsStatus("Save or cancel the open event before closing the editor.");
+      }
+    }
+
+    memberEventsNew.addEventListener("click", toggleNewEvent);
 
     memberEventsReset.addEventListener("click", function () {
       resetEventsForm(true);
