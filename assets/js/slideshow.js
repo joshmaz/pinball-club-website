@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const params=new URLSearchParams(location.search);
-const duration=Math.min(30,Math.max(3,Number(params.get('dur'))||17));
+const duration=Math.min(30,Math.max(3,Number(params.get('dur'))||10));
 const settingsUrl='/slideshow';
 function parseIds(value){return new Set((value||'').split(',').filter(v=>UUID.test(v)));}
 function selected(albums){const mode=params.has('include')?'include':params.has('exclude')?'exclude':'all';const ids=parseIds(params.get(mode));return albums.filter(a=>mode==='all'||(mode==='include'?ids.has(a.id):!ids.has(a.id)));}
@@ -33,6 +33,8 @@ return '/slideshow/play?'+q.toString();
 }
 if($('slide-form')){
 const form=$('slide-form'),status=$('slide-status'),albumsBox=$('slide-albums'),dur=$('slide-duration'),captions=$('slide-captions'),fitOptions=[...document.querySelectorAll('input[name="slide-fit"]')];
+const customize=$('slide-customize'),start=$('slide-start'),copy=$('slide-copy');
+customize.open=Boolean(location.search);
 dur.value=duration;$('slide-duration-value').textContent=duration;dur.oninput=()=>{$('slide-duration-value').textContent=dur.value;};
 captions.checked=params.get('cap')==='1';fitOptions.forEach(input=>{input.checked=input.value===(params.get('fit')==='fill'?'fill':'fit');});
 let albums=[],activities=[],events=[],announcements=[];
@@ -57,9 +59,9 @@ function url(){return linkFor(albums,checked(),dur.value,captions.checked,(fitOp
 function draw(){albumsBox.replaceChildren();const ids=new Set(selected(albums).map(a=>a.id));albums.forEach(a=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=a.id;input.checked=ids.has(a.id);label.append(input,document.createTextNode(' '+a.title));albumsBox.append(label);});status.textContent=albums.length?albums.length+' published albums available.':'No published albums available.';}
 $('slide-all').onclick=()=>albumsBox.querySelectorAll('input').forEach(x=>x.checked=true);
 $('slide-none').onclick=()=>albumsBox.querySelectorAll('input').forEach(x=>x.checked=false);
-$('slide-copy').onclick=async()=>{try{await navigator.clipboard.writeText(new URL(url(),location.origin).href);status.textContent='Slideshow link copied.';}catch(_){status.textContent='Could not copy link. Please copy it from the address bar after starting.';}};
-form.onsubmit=e=>{e.preventDefault();if(!(photosOn.checked&&checked().length)&&!(activitiesOn.checked&&activities.length&&(mode()==='all'||activityChecked().length))&&!(eventsOn.checked&&events.length&&(eventMode()==='all'||eventChecked().length))&&!(announcementsOn.checked&&announcements.length)&&!promoChecked().length){status.textContent='Select at least one available slideshow source.';return;}location.href=url();};
-Promise.allSettled([catalog(),activityCatalog(),eventCatalog(),announcementCatalog()]).then(([p,a,e,n])=>{if(p.status==='fulfilled'){albums=p.value.filter(x=>(x.assets||[]).some(y=>!y.excludeFromSlideshow&&variant(y,'web')));draw();}else status.textContent='Could not load albums.';if(a.status==='fulfilled'){activities=a.value;drawActivities();}else $('slide-activity-status').textContent='Could not load activities. Refresh to retry.';if(e.status==='fulfilled'){events=e.value;drawEvents();}else $('slide-event-status').textContent='Could not load events. Refresh to retry.';if(n.status==='fulfilled'){announcements=n.value;$('slide-announcement-status').textContent=announcements.length+' published announcements available.';}else $('slide-announcement-status').textContent='Could not load announcements.';});
+copy.onclick=async()=>{try{await navigator.clipboard.writeText(new URL(url(),location.origin).href);status.textContent='Slideshow link copied.';}catch(_){status.textContent='Could not copy link. Please copy it from the address bar after starting.';}};
+form.onsubmit=e=>{e.preventDefault();if(!(photosOn.checked&&checked().length)&&!(activitiesOn.checked&&activities.length&&(mode()==='all'||activityChecked().length))&&!(eventsOn.checked&&events.length&&(eventMode()==='all'||eventChecked().length))&&!(announcementsOn.checked&&announcements.length)&&!promoChecked().length){status.textContent='Select at least one available slideshow source.';customize.open=true;customize.querySelector('summary').focus();return;}location.href=url();};
+Promise.allSettled([catalog(),activityCatalog(),eventCatalog(),announcementCatalog()]).then(([p,a,e,n])=>{if(p.status==='fulfilled'){albums=p.value.filter(x=>(x.assets||[]).some(y=>!y.excludeFromSlideshow&&variant(y,'web')));draw();}else status.textContent='Could not load albums.';if(a.status==='fulfilled'){activities=a.value;drawActivities();}else $('slide-activity-status').textContent='Could not load activities. Refresh to retry.';if(e.status==='fulfilled'){events=e.value;drawEvents();}else $('slide-event-status').textContent='Could not load events. Refresh to retry.';if(n.status==='fulfilled'){announcements=n.value;$('slide-announcement-status').textContent=announcements.length+' published announcements available.';}else $('slide-announcement-status').textContent='Could not load announcements.';start.disabled=false;copy.disabled=false;});
 return;
 }
 if(!$('slide-stage'))return;

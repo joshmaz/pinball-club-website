@@ -3,6 +3,29 @@
 .clubhouse #slideshow-main.content { max-width: 1200px; margin-inline: auto; padding: 0 var(--club-space) 3rem; }
 .clubhouse #slideshow-main fieldset { min-width: 0; }
 
+#slideshow-main .slide-actions { margin: 1rem 0 1.25rem; }
+#slideshow-main .slide-actions button,
+.slide-customize > summary {
+  min-height: 44px;
+  padding: .65rem .9rem;
+  border: 1px solid var(--club-control-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+#slideshow-main #slide-start {
+  border-color: var(--club-teal);
+  background: var(--club-teal);
+  color: var(--club-bg);
+}
+#slideshow-main .slide-actions button:disabled { opacity: .6; cursor: default; }
+.slide-customize { max-width: 46rem; }
+.slide-customize > summary { width: fit-content; }
+.slide-customize-body { margin-top: 1rem; }
+
 /* Keep the captions checkbox and its text on one baseline. */
 .slide-options label:has(#slide-captions) { display: flex; align-items: center; gap: .55rem; }
 .slide-options #slide-captions { margin: 0; width: auto; flex: 0 0 auto; }
