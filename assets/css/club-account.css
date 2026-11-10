@@ -85,6 +85,7 @@
 .club-account .members-admin-controls :is(input:not([type="checkbox"]),select,button) { border: 1px solid var(--club-control-line); background: var(--club-surface); color: var(--club-ink); border-radius: var(--club-radius); font: inherit; font-size: .85rem; padding: .55rem .7rem; }
 .club-account .members-admin-controls .members-admin-search-clear { padding: 0; }
 .club-account .members-profile-form .members-admin-search-wrap { flex: 1 1 20rem; }
+#member-matchplay-tournament { padding-inline-end: 2rem; }
 .club-account .members-profile-form .members-admin-search-clear { min-height: 1.5rem; width: 1.5rem; height: 1.5rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--club-muted); font: inherit; font-size: 1.15rem; line-height: 1; }
 .club-account .members-profile-form .members-admin-search-clear:hover,
 .club-account .members-profile-form .members-admin-search-clear:focus-visible { color: var(--club-ink); background: var(--club-soft); }
