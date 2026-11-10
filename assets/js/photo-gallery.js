@@ -62,7 +62,7 @@
         return { album: album, assets: assets };
       }).filter(function (item) { return item.assets.length; });
     if (eventId || albumId) { var all = node('a', 'All albums'); all.href = 'photos.html'; navigation.appendChild(all); }
-    function createAlbum(item) {
+    function createAlbum(item, showPreview) {
       var album = item.album, assets = item.assets;
       var section = node('details'); section.className = 'photos-album'; section.id = 'album-' + album.id;
       var summary = node('summary'), cover = node('img'), coverVariant = variant(assets.find(function (asset) { return asset.id === album.coverAssetId; }) || assets[0], 'thumb') || variant(assets.find(function (asset) { return asset.id === album.coverAssetId; }) || assets[0], 'web');
@@ -99,7 +99,8 @@
         var more = node('button'); more.type = 'button'; more.className = 'photos-more'; body.appendChild(more);
         var shown = 0;
         function addPhotos() {
-          var end = Math.min(shown + 24, assets.length);
+          var batchSize = showPreview && shown === 0 ? 6 : 24;
+          var end = Math.min(shown + batchSize, assets.length);
           while (shown < end) {
             (function (asset, position) {
               var figure = node('figure'), button = node('button'); button.type = 'button';
@@ -119,8 +120,7 @@
         more.onclick = addPhotos; addPhotos();
       }
       section.addEventListener('toggle', openAlbum);
-      // Event links lead to album choices; direct album links open that album.
-      if (albumId) { section.open = true; openAlbum(); }
+      section.open = Boolean(albumId || showPreview);
       return section;
     }
     var shown = 0, moreAlbums = node('button'); moreAlbums.type = 'button'; moreAlbums.className = 'photos-more';
@@ -128,7 +128,9 @@
     function addAlbums() {
       var end = Math.min(shown + 12, visible.length), first;
       while (shown < end) {
-        var section = createAlbum(visible[shown]); if (!first) first = section.querySelector('summary');
+        // Event links lead to album choices. Only the main gallery previews its first album.
+        var section = createAlbum(visible[shown], shown === 0 && !eventId && !albumId);
+        if (!first) first = section.querySelector('summary');
         root.insertBefore(section, moreAlbums); shown += 1;
       }
       moreAlbums.hidden = shown === visible.length;
