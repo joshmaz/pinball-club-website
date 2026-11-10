@@ -413,18 +413,17 @@
             </div>
 
             <h4>Find Match Play tournaments</h4>
-            <p class="member-form-hint">“Token account” means the MatchPlay account that supplied the API token, which may differ from your club login. You can also search another organizer, a series, or title words such as SNHPC.</p>
+            <p class="member-form-hint">Search by tournament title, organizer ID, or series ID. Try SNHPC to find club tournaments.</p>
             <form id="member-matchplay-discover-form" class="members-profile-form">
               <label for="member-matchplay-discover-scope">Find by</label>
               <select id="member-matchplay-discover-scope">
                 <option value="title">Tournament title</option>
                 <option value="owner">Organizer MatchPlay ID</option>
                 <option value="series">Series MatchPlay ID</option>
-                <option value="mine">Token account's tournaments</option>
               </select>
-              <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
-              <span class="members-admin-search-wrap" id="member-matchplay-discover-value-wrap" hidden>
-                <input id="member-matchplay-discover-value" type="search" autocomplete="off" disabled>
+              <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label">Title words</label>
+              <span class="members-admin-search-wrap">
+                <input id="member-matchplay-discover-value" type="search" autocomplete="off" required>
                 <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
               </span>
               <button type="submit">List tournaments</button>
@@ -657,7 +656,6 @@
     var matchplayDiscoverForm = document.getElementById("member-matchplay-discover-form");
     var matchplayDiscoverScope = document.getElementById("member-matchplay-discover-scope");
     var matchplayDiscoverValue = document.getElementById("member-matchplay-discover-value");
-    var matchplayDiscoverValueWrap = document.getElementById("member-matchplay-discover-value-wrap");
     var matchplayDiscoverClear = document.getElementById("member-matchplay-discover-clear");
     var matchplayDiscoverValueLabel = document.getElementById("member-matchplay-discover-value-label");
     var matchplayDiscoverStatus = document.getElementById("member-matchplay-discover-status");
@@ -1752,11 +1750,6 @@
 
     function syncMatchplayDiscoverScope() {
       var scope = matchplayDiscoverScope.value;
-      var needsValue = scope !== "mine";
-      matchplayDiscoverValueWrap.hidden = !needsValue;
-      matchplayDiscoverValue.disabled = !needsValue;
-      matchplayDiscoverValue.required = needsValue;
-      matchplayDiscoverValueLabel.hidden = !needsValue;
       matchplayDiscoverValueLabel.textContent = scope === "title" ? "Title words" :
         scope === "series" ? "Series MatchPlay ID" : "Organizer MatchPlay ID";
       matchplayDiscoverValue.placeholder = scope === "title" ? "SNHPC" :
@@ -1817,7 +1810,7 @@
         matchplayDiscoverLoading = false;
         if (button) button.disabled = false;
         matchplayDiscoverScope.disabled = false;
-        matchplayDiscoverValue.disabled = matchplayDiscoverScope.value === "mine";
+        matchplayDiscoverValue.disabled = false;
       }
     }
 
