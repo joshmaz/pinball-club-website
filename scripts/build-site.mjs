@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir, rm, writeFile, lstat } from 'node:fs/promises';
+import { cp, mkdir, readdir, rm, writeFile, lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -32,7 +32,21 @@ export async function buildSite(root = repositoryRoot, env = process.env) {
 
   const entries = await readdir(root, { withFileTypes: true });
   for (const entry of entries) {
-    if (entry.isFile() && (/\.html$/.test(entry.name) || /^favicon.*\.ico$/.test(entry.name))) {
+    if (entry.isFile() && /\.html$/.test(entry.name) && env.SITE_ENV === 'staging') {
+      const source = await readFile(path.join(root, entry.name), 'utf8');
+      if (!/<head\b[^>]*>/i.test(source) || !/<body\b[^>]*>/i.test(source)) {
+        throw new Error(`Cannot add staging banner to ${entry.name}: missing head or body element.`);
+      }
+      const withStylesheet = source.replace(
+        /<\/head>/i,
+        '  <link rel="stylesheet" href="/assets/css/staging-banner.css">\n</head>'
+      );
+      const withBanner = withStylesheet.replace(
+        /(<body\b[^>]*>)/i,
+        '$1\n<aside class="site-environment-banner" aria-label="Staging site notice"><strong>STAGING SITE</strong><span>This is a test environment. Data here is separate from production.</span></aside>'
+      );
+      await writeFile(path.join(output, entry.name), withBanner);
+    } else if (entry.isFile() && (/\.html$/.test(entry.name) || /^favicon.*\.ico$/.test(entry.name))) {
       await copyPublic(entry.name);
     }
   }

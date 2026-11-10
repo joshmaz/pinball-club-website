@@ -503,7 +503,7 @@ function renderPastEventsYearNavigator(region, pastByYearList) {
 function createAddEventLink() {
   const link = document.createElement('a');
   link.className = 'events-add-link';
-  link.href = 'members.html?panel=events';
+  link.href = 'members.html?panel=events&event=new';
   link.textContent = '+ Add Event';
   return link;
 }

@@ -85,52 +85,53 @@
   <section class="content members-dashboard">
     <div class="members-layout">
       <nav class="members-sidebar" aria-label="Member dashboard sections">
-        <p class="members-sidebar-title">Your account</p>
-        <ul class="members-sidebar-list">
+        <p class="members-sidebar-title" id="member-account-nav-title">My account</p>
+        <ul class="members-sidebar-list" aria-labelledby="member-account-nav-title">
           <li>
-            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">
-              Profile
-            </button>
-          </li>
-          <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">
-              Membership
-            </button>
+            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">Membership</button>
           </li>
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="door" id="member-nav-door" aria-controls="member-panel-door">Door code</button>
           </li>
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">
-              Notes
-            </button>
+            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">Profile</button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin" aria-label="Member Tools">
-              Member Tools
-            </button>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Club &amp; machine notes</button>
           </li>
-          <li data-member-rbac-nav data-rbac-roles="club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="operations" id="member-nav-operations" aria-controls="member-panel-operations">Operations</button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
-              Events
-            </button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="photos_editor,photos_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="photos" id="member-nav-photos" aria-controls="member-panel-photos">
-              Photos
-            </button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="games_editor,games_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="games" id="member-nav-games" aria-controls="member-panel-games">
-              Games
-            </button>
-          </li>
-          <li data-member-rbac-nav data-rbac-roles="publishing_editor,publishing_admin,club_admin">
-            <button type="button" class="members-sidebar-link" data-member-panel="publishing" id="member-nav-publishing" aria-controls="member-panel-publishing">Publishing</button>
-          </li>
+        </ul>
+        <div class="members-sidebar-group" id="member-volunteer-nav" hidden>
+          <p class="members-sidebar-title" id="member-volunteer-nav-title">Volunteer tools</p>
+          <ul class="members-sidebar-list" aria-labelledby="member-volunteer-nav-title">
+            <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin">
+                Manage members
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="events" id="member-nav-events" aria-controls="member-panel-events">
+                Manage events
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="photos_editor,photos_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="photos" id="member-nav-photos" aria-controls="member-panel-photos">
+                Manage photos
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="games_editor,games_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="games" id="member-nav-games" aria-controls="member-panel-games">
+                Manage games
+              </button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="publishing_editor,publishing_admin,club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="publishing" id="member-nav-publishing" aria-controls="member-panel-publishing">Publishing</button>
+            </li>
+            <li data-member-rbac-nav data-rbac-roles="club_admin">
+              <button type="button" class="members-sidebar-link" data-member-panel="operations" id="member-nav-operations" aria-controls="member-panel-operations">Operations</button>
+            </li>
+          </ul>
+        </div>
+        <ul class="members-sidebar-list">
           <li class="members-sidebar-logout-wrap">
             <button type="button" class="members-sidebar-link members-sidebar-logout" id="logout-btn" hidden>
               Log out
@@ -253,13 +254,17 @@
 
         <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
           <h2>Membership</h2>
-          <p class="member-panel-intro">Everyone who registers is a Basic Member. The treasurer changes your account to Full Access Member after checking your recurring PayPal subscription.</p>
           <div class="membership-card">
-            <p><strong>Current membership:</strong> <span id="membership-status">Loading...</span></p>
+            <p><strong>Current membership:</strong> <span id="membership-status" role="status">Loading…</span></p>
+            <p id="membership-basic-next" hidden>Your free website account gives you Basic Member access. <a href="mailto:info@snhpinballclub.com">Contact the club about Full Access</a>.</p>
+            <div id="membership-full-next" hidden>
+              <p>Your Full Access membership includes 24/7 access to the club.</p>
+              <button type="button" class="club-button" id="membership-door-button">Go to Door code</button>
+            </div>
             <p class="membership-card-note">Something off in your record? Email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a> and we will help sort it out.</p>
           </div>
 
-          <h4>How membership works today</h4>
+          <h3>How Full Access membership works</h3>
           <p>Full Access Members choose monthly or annual recurring PayPal billing. The treasurer checks subscriptions and updates membership by hand.</p>
           <ul class="membership-info-list">
             <li><strong>Monthly:</strong> $40</li>
@@ -267,7 +272,7 @@
             <li>To arrange recurring PayPal billing, email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a>.</li>
           </ul>
 
-          <h4>What membership gets you</h4>
+          <h3>What membership gets you</h3>
           <p>Full Access Members have 24/7 access to the club's pinball room on Bridge St in Nashua, with every game on free-play. Just stopping by for an event? Visitors can grab an all-day guest pass for $10 per visit.</p>
 
           <p class="membership-card-note">Memberships help keep this nonprofit pinball club afloat. If you want to push the club ahead in bigger ways, a <a href="donate/">donation</a> is the most direct boost.</p>
@@ -291,7 +296,7 @@
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
-          <h2>Member Tools</h2>
+          <h2>Manage members</h2>
           <p id="member-admin-intro" class="member-panel-intro">Look up members, review website responsibilities, and update membership status.</p>
           <p id="member-admin-access" class="member-panel-access-note" hidden></p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
@@ -371,135 +376,144 @@
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
           <h2>Events</h2>
-          <p id="member-events-intro" class="member-panel-intro">Keep the public events calendar accurate. Add tournaments, open houses, and league nights, edit details if plans change, and mark canceled or postponed events while keeping their original date. Anything you publish here lands on the public Events page right away.</p>
+          <p id="member-events-intro" class="member-panel-intro">Manage the club calendar. Import a Match Play tournament, add an event manually, or edit an event from the list. Published events appear on the public Events page.</p>
           <p id="member-events-access" class="member-panel-access-note" hidden></p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
+            <button type="button" class="club-button" id="member-events-import" aria-controls="member-events-import-panel" aria-expanded="false">Import from Match Play</button>
+            <button type="button" class="club-button" id="member-events-new" aria-controls="member-events-editor" aria-expanded="false">New event</button>
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
 
-          <h3>Find MatchPlay tournaments</h3>
-          <p class="member-form-hint">“Token account” means the MatchPlay account that supplied the API token, which may differ from your club login. You can also search another organizer, a series, or title words such as SNHPC.</p>
-          <form id="member-matchplay-discover-form" class="members-profile-form">
-            <label for="member-matchplay-discover-scope">Find by</label>
-            <select id="member-matchplay-discover-scope">
-              <option value="title">Tournament title</option>
-              <option value="owner">Organizer MatchPlay ID</option>
-              <option value="series">Series MatchPlay ID</option>
-              <option value="mine">Token account's tournaments</option>
-            </select>
-            <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label" hidden>MatchPlay ID or title words</label>
-            <span class="members-admin-search-wrap" id="member-matchplay-discover-value-wrap" hidden>
-              <input id="member-matchplay-discover-value" type="search" autocomplete="off" disabled>
-              <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
-            </span>
-            <button type="submit">List tournaments</button>
-          </form>
-          <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
-          <div id="member-matchplay-discover-results" hidden>
-            <div class="members-admin-table-wrap">
-              <table class="members-admin-table">
-                <caption>MatchPlay tournaments</caption>
-                <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
-                <tbody id="member-matchplay-discover-rows"></tbody>
-              </table>
-            </div>
-            <p class="members-admin-toolbar">
-              <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
-              <span id="member-matchplay-discover-page"></span>
-              <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
-            </p>
-          </div>
-
-          <h3>Review MatchPlay tournament</h3>
-          <p class="member-form-hint">Compare a MatchPlay tournament with club events. Open an existing event or prepare a new draft; neither action saves it.</p>
-          <form id="member-matchplay-review-form" class="members-profile-form">
-            <label for="member-matchplay-tournament">Tournament URL or ID</label>
-            <input id="member-matchplay-tournament" type="text" placeholder="https://app.matchplay.events/tournaments/228825" required>
-            <button type="submit">Find club event</button>
-          </form>
-          <p id="member-matchplay-review-status" class="members-page-status" role="status" aria-live="polite"></p>
-          <div id="member-matchplay-review-results" hidden>
-            <p id="member-matchplay-review-summary"></p>
-            <div class="members-admin-table-wrap">
-              <table class="members-admin-table">
-                <caption>Possible matching club events</caption>
-                <thead><tr><th scope="col">Club event</th><th scope="col">Date</th><th scope="col">Match</th><th scope="col">Action</th></tr></thead>
-                <tbody id="member-matchplay-review-candidates"></tbody>
-              </table>
-            </div>
-            <p class="members-admin-toolbar">
-              <button type="button" class="members-sidebar-link" id="member-matchplay-create-draft">Prepare new event draft</button>
-            </p>
-          </div>
-
-          <h3>Create / edit event</h3>
-          <form id="member-events-form" class="members-profile-form">
-            <input id="member-events-id" type="hidden">
-
-            <label for="member-events-title">Title</label>
-            <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
-
-            <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
-            <label for="member-events-starts-at">Starts at (local)</label>
-            <input id="member-events-starts-at" type="datetime-local">
-            <label for="member-events-ends-at">Ends at (local, optional)</label>
-            <input id="member-events-ends-at" type="datetime-local">
-            <p class="member-form-hint">New timed events default to 3 hours. Edit or clear the end time as needed.</p>
-            <label for="member-events-lifecycle">Event status</label>
-            <select id="member-events-lifecycle"><option value="scheduled">Scheduled</option><option value="canceled">Canceled</option><option value="postponed">Postponed</option></select>
-            <label class="members-checkbox-label"><input id="member-events-reschedule" type="checkbox" disabled> Explicitly reschedule this existing event</label>
-            <label for="member-events-reschedule-note">Reschedule note (optional)</label>
-            <input id="member-events-reschedule-note" type="text" maxlength="1000">
-            <p class="member-form-hint">Rescheduling records the previous schedule, keeps the event Scheduled, and displays Rescheduled publicly. Routine date corrections do not mark it rescheduled.</p>
-
-            <label for="member-events-location">Location</label>
-            <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
-
-            <fieldset class="event-links-editor">
-              <legend>External links</legend>
-              <small id="member-events-links-help">Up to 5 links</small>
-              <div id="member-events-links"></div>
-              <button id="member-events-add-link" type="button" aria-describedby="member-events-links-help">Add another link</button>
-            </fieldset>
-
-            <label for="member-events-source">Source</label>
-            <input id="member-events-source" type="text" maxlength="80" placeholder="manual">
-
-            <label for="member-events-description">Description</label>
-            <textarea id="member-events-description" rows="4" maxlength="4000" placeholder="Optional details"></textarea>
-
-            <label class="members-checkbox-label">
-              <input id="member-events-published" type="checkbox" checked>
-              Published (visible on public Events page)
-            </label>
-
-            <div id="member-events-photo-digest" class="member-events-photo-digest" hidden>
-              <h4 class="member-events-photo-digest-heading">Photos for this event</h4>
-              <p id="member-events-photo-digest-status" class="member-form-hint"></p>
-              <div id="member-events-photo-digest-body" class="member-events-photo-digest-body"></div>
+          <section id="member-events-import-panel" aria-labelledby="member-events-import-title" hidden>
+            <h3 id="member-events-import-title">Import from Match Play</h3>
+            <h4>Review a tournament by link or ID</h4>
+            <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
+            <form id="member-matchplay-review-form" class="members-profile-form">
+              <label for="member-matchplay-tournament">Tournament URL or ID</label>
+              <span class="members-admin-search-wrap">
+                <input id="member-matchplay-tournament" type="text" autocomplete="off" placeholder="https://app.matchplay.events/tournaments/228825" required>
+                <button type="button" id="member-matchplay-tournament-clear" class="members-admin-search-clear" title="Clear tournament URL or ID" aria-label="Clear tournament URL or ID" hidden>×</button>
+              </span>
+              <button type="submit">Find club event</button>
+            </form>
+            <p id="member-matchplay-review-status" class="members-page-status" role="status" aria-live="polite"></p>
+            <div id="member-matchplay-review-results" hidden>
+              <p id="member-matchplay-review-summary"></p>
+              <div class="members-admin-table-wrap">
+                <table class="members-admin-table">
+                  <caption>Possible matching club events</caption>
+                  <thead><tr><th scope="col">Club event</th><th scope="col">Date</th><th scope="col">Match</th><th scope="col">Action</th></tr></thead>
+                  <tbody id="member-matchplay-review-candidates"></tbody>
+                </table>
+              </div>
               <p class="members-admin-toolbar">
-                <button type="button" class="members-sidebar-link" id="member-events-open-photos-panel">Open Photos panel</button>
+                <button type="button" class="members-sidebar-link" id="member-matchplay-create-draft">Prepare new event draft</button>
               </p>
             </div>
 
-            <p class="members-admin-toolbar">
-              <button type="submit" class="members-events-form-action">Save event</button>
-              <button type="button" class="members-events-form-action" id="member-events-reset">Clear form</button>
-            </p>
-          </form>
+            <h4>Find Match Play tournaments</h4>
+            <p class="member-form-hint">Search by tournament title, organizer ID, or series ID. Try SNHPC to find club tournaments.</p>
+            <form id="member-matchplay-discover-form" class="members-profile-form">
+              <label for="member-matchplay-discover-scope">Find by</label>
+              <select id="member-matchplay-discover-scope">
+                <option value="title">Tournament title</option>
+                <option value="owner">Organizer MatchPlay ID</option>
+                <option value="series">Series MatchPlay ID</option>
+              </select>
+              <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label">Title words</label>
+              <span class="members-admin-search-wrap">
+                <input id="member-matchplay-discover-value" type="search" autocomplete="off" required>
+                <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
+              </span>
+              <button type="submit">List tournaments</button>
+            </form>
+            <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
+            <div id="member-matchplay-discover-results" hidden>
+              <div class="members-admin-table-wrap">
+                <table class="members-admin-table">
+                  <caption>MatchPlay tournaments</caption>
+                  <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+                  <tbody id="member-matchplay-discover-rows"></tbody>
+                </table>
+              </div>
+              <p class="members-admin-toolbar">
+                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
+                <span id="member-matchplay-discover-page"></span>
+                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
+              </p>
+            </div>
+          </section>
 
-          <h3>Event list</h3>
+          <section id="member-events-editor" aria-labelledby="member-events-editor-title" hidden>
+            <h3 id="member-events-editor-title">New event</h3>
+            <form id="member-events-form" class="members-profile-form">
+              <input id="member-events-id" type="hidden">
+
+              <label for="member-events-title">Title</label>
+              <input id="member-events-title" type="text" maxlength="300" required placeholder="Event title">
+
+              <label class="members-checkbox-label"><input id="member-events-all-day" type="checkbox"> All-day event</label>
+              <label for="member-events-starts-at">Starts at (local)</label>
+              <input id="member-events-starts-at" type="datetime-local">
+              <label for="member-events-ends-at">Ends at (local, optional)</label>
+              <input id="member-events-ends-at" type="datetime-local">
+              <p class="member-form-hint">New timed events default to 3 hours. Edit or clear the end time as needed.</p>
+              <label for="member-events-lifecycle">Event status</label>
+              <select id="member-events-lifecycle"><option value="scheduled">Scheduled</option><option value="canceled">Canceled</option><option value="postponed">Postponed</option></select>
+              <label class="members-checkbox-label"><input id="member-events-reschedule" type="checkbox" disabled> Explicitly reschedule this existing event</label>
+              <label for="member-events-reschedule-note">Reschedule note (optional)</label>
+              <input id="member-events-reschedule-note" type="text" maxlength="1000">
+              <p class="member-form-hint">Rescheduling records the previous schedule, keeps the event Scheduled, and displays Rescheduled publicly. Routine date corrections do not mark it rescheduled.</p>
+
+              <label for="member-events-location">Location</label>
+              <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
+
+              <fieldset class="event-links-editor">
+                <legend>External links</legend>
+                <small id="member-events-links-help">Up to 5 links</small>
+                <div id="member-events-links"></div>
+                <button id="member-events-add-link" type="button" aria-describedby="member-events-links-help">Add another link</button>
+              </fieldset>
+
+              <label for="member-events-source">Source</label>
+              <input id="member-events-source" type="text" maxlength="80" placeholder="manual">
+
+              <label for="member-events-description">Description</label>
+              <textarea id="member-events-description" rows="4" maxlength="4000" placeholder="Optional details"></textarea>
+
+              <label class="members-checkbox-label">
+                <input id="member-events-published" type="checkbox" checked>
+                Publish on the public Events page
+              </label>
+
+              <div id="member-events-photo-digest" class="member-events-photo-digest" hidden>
+                <h4 class="member-events-photo-digest-heading">Photos for this event</h4>
+                <p id="member-events-photo-digest-status" class="member-form-hint"></p>
+                <div id="member-events-photo-digest-body" class="member-events-photo-digest-body"></div>
+                <p class="members-admin-toolbar">
+                  <button type="button" class="members-sidebar-link" id="member-events-open-photos-panel">Open Photos panel</button>
+                </p>
+              </div>
+
+              <p class="members-admin-toolbar">
+                <button type="submit" class="members-events-form-action">Save event</button>
+                <button type="button" class="members-events-form-action" id="member-events-reset">Cancel</button>
+              </p>
+            </form>
+          </section>
+
+          <h3 id="member-events-list-title" tabindex="-1">Complete Event List</h3>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table">
               <caption class="visually-hidden">Events management table</caption>
               <thead>
                 <tr>
                   <th scope="col">Title</th>
-                  <th scope="col">Date</th>
+                  <th scope="col">Starts</th>
                   <th scope="col">Location</th>
                   <th scope="col">Source</th>
-                  <th scope="col">Published</th>
+                  <th scope="col">Public visibility</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
@@ -608,6 +622,13 @@
     var memberEventsStatus = document.getElementById("member-events-status");
     var memberEventsRefresh = document.getElementById("member-events-refresh");
     var memberEventsForm = document.getElementById("member-events-form");
+    var memberEventsNew = document.getElementById("member-events-new");
+    var memberEventsFormSnapshot = null;
+    var memberEventsEditor = document.getElementById("member-events-editor");
+    var memberEventsEditorTitle = document.getElementById("member-events-editor-title");
+    var memberEventsListTitle = document.getElementById("member-events-list-title");
+    var memberEventsImport = document.getElementById("member-events-import");
+    var memberEventsImportPanel = document.getElementById("member-events-import-panel");
     var memberEventsId = document.getElementById("member-events-id");
     var memberEventsTitle = document.getElementById("member-events-title");
     var memberEventsAllDay = document.getElementById("member-events-all-day");
@@ -635,7 +656,6 @@
     var matchplayDiscoverForm = document.getElementById("member-matchplay-discover-form");
     var matchplayDiscoverScope = document.getElementById("member-matchplay-discover-scope");
     var matchplayDiscoverValue = document.getElementById("member-matchplay-discover-value");
-    var matchplayDiscoverValueWrap = document.getElementById("member-matchplay-discover-value-wrap");
     var matchplayDiscoverClear = document.getElementById("member-matchplay-discover-clear");
     var matchplayDiscoverValueLabel = document.getElementById("member-matchplay-discover-value-label");
     var matchplayDiscoverStatus = document.getElementById("member-matchplay-discover-status");
@@ -647,6 +667,9 @@
     var matchplayDiscoverPage = 1;
     var matchplayDiscoverLoading = false;
     var matchplayTournamentInput = document.getElementById("member-matchplay-tournament");
+    var matchplayTournamentClear = document.getElementById("member-matchplay-tournament-clear");
+    var matchplayReviewSubmit = matchplayReviewForm.querySelector('button[type="submit"]');
+    var matchplayReviewRevision = 0;
     var matchplayReviewStatus = document.getElementById("member-matchplay-review-status");
     var matchplayReviewResults = document.getElementById("member-matchplay-review-results");
     var matchplayReviewSummary = document.getElementById("member-matchplay-review-summary");
@@ -858,10 +881,11 @@
       return "profile";
     }
 
-    function scrollActiveMemberPanelIntoView(panelId) {
+    function focusMemberPanel(panelId) {
       var id = String(panelId || "profile");
       var panel = document.getElementById("member-panel-" + id);
-      if (!panel || typeof panel.scrollIntoView !== "function") return;
+      if (!panel) return;
+      panel.focus({ preventScroll: true });
       var reduced =
         window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       try {
@@ -871,17 +895,20 @@
       }
     }
 
+    function openMemberPanelFromControl(panelId) {
+      if (panelId !== getActiveMemberPanelId()) showMemberPanel(panelId, {});
+      if (panelId === getActiveMemberPanelId()) focusMemberPanel(panelId);
+    }
+
     function wirePanelNav() {
       for (var i = 0; i < panelButtons.length; i += 1) {
         panelButtons[i].addEventListener("click", function () {
-          var pid = this.getAttribute("data-member-panel");
-          if (pid && pid === getActiveMemberPanelId()) {
-            scrollActiveMemberPanelIntoView(pid);
-            return;
-          }
-          showMemberPanel(pid, {});
+          openMemberPanelFromControl(this.getAttribute("data-member-panel"));
         });
       }
+      document.getElementById("membership-door-button").addEventListener("click", function () {
+        openMemberPanelFromControl("door");
+      });
     }
 
     function applyRbacNav(userRoles) {
@@ -892,6 +919,8 @@
         var show = window.SNHMemberPortal.memberHasAnyRole(userRoles, rolesCsv);
         li.hidden = !show;
       }
+      var group = document.getElementById("member-volunteer-nav");
+      group.hidden = !group.querySelector("[data-member-rbac-nav]:not([hidden])");
     }
 
     function normalizeRoleSlug(roleSlug) {
@@ -970,7 +999,7 @@
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS) ||
         ["membership_editor", "membership_admin", "club_admin"];
-      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Member Tools");
+      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Manage members");
     }
 
     function setPhotosPanelIntro(userRolesList) {
@@ -1520,8 +1549,13 @@
     memberEventsStartsAt.addEventListener("input", updateEventEndDefault);
     memberEventsEndsAt.addEventListener("input", function () { memberEventsDefaultEnd = null; memberEventsEndTouched = true; });
 
-    function resetEventsForm() {
+    function resetEventsForm(returnToList) {
       if (!memberEventsForm) return;
+      memberEventsEditor.hidden = true;
+      memberEventsNew.setAttribute("aria-expanded", "false");
+      memberEventsFormSnapshot = null;
+      if (returnToList && getActiveMemberPanelId() === "events") memberEventsListTitle.focus();
+      memberEventsForm.classList.remove("members-profile-form-edit-target");
       memberEventsForm.reset();
       memberEventsLinks.set([]);
       memberEventsOriginalSchedule = null;
@@ -1564,8 +1598,21 @@
       void loadEventPhotoDigest(row.id);
     }
 
+    function setMatchplayImportOpen(open) {
+      memberEventsImportPanel.hidden = !open;
+      memberEventsImport.setAttribute("aria-expanded", String(open));
+    }
+
+    function showEventsEditor() {
+      setMatchplayImportOpen(false);
+      memberEventsEditorTitle.textContent = memberEventsId.value ? "Edit event" : "New event";
+      memberEventsEditor.hidden = false;
+      memberEventsNew.setAttribute("aria-expanded", "true");
+      memberEventsTitle.focus({ preventScroll: true });
+    }
+
     function focusAndHighlightEventsEditor() {
-      if (!memberEventsForm) return;
+      showEventsEditor();
       memberEventsForm.scrollIntoView({ behavior: "smooth", block: "start" });
       memberEventsForm.classList.remove("members-profile-form-edit-target");
       // Force reflow so repeated edit clicks retrigger the highlight animation.
@@ -1578,9 +1625,6 @@
         memberEventsForm.classList.remove("members-profile-form-edit-target");
         memberEventsFormHighlightTimer = null;
       }, 2000);
-      if (memberEventsTitle) {
-        memberEventsTitle.focus({ preventScroll: true });
-      }
     }
 
     function highlightEventTableRow(eventId) {
@@ -1620,7 +1664,7 @@
         tdSource.textContent = row.source || "manual";
 
         var tdPub = document.createElement("td");
-        tdPub.textContent = row.published ? "Yes" : "No";
+        tdPub.textContent = row.published ? "Published" : "Unpublished";
 
         var tdActions = document.createElement("td");
 
@@ -1697,6 +1741,7 @@
         renderEventsPage();
       }
       setEventsFormFromRow(row);
+      memberEventsFormSnapshot = snapshotEventsForm();
       if (window.SNHMemberRoutes) window.SNHMemberRoutes.setEvent(row.id);
       highlightEventTableRow(row.id);
       focusAndHighlightEventsEditor();
@@ -1705,11 +1750,6 @@
 
     function syncMatchplayDiscoverScope() {
       var scope = matchplayDiscoverScope.value;
-      var needsValue = scope !== "mine";
-      matchplayDiscoverValueWrap.hidden = !needsValue;
-      matchplayDiscoverValue.disabled = !needsValue;
-      matchplayDiscoverValue.required = needsValue;
-      matchplayDiscoverValueLabel.hidden = !needsValue;
       matchplayDiscoverValueLabel.textContent = scope === "title" ? "Title words" :
         scope === "series" ? "Series MatchPlay ID" : "Organizer MatchPlay ID";
       matchplayDiscoverValue.placeholder = scope === "title" ? "SNHPC" :
@@ -1770,7 +1810,7 @@
         matchplayDiscoverLoading = false;
         if (button) button.disabled = false;
         matchplayDiscoverScope.disabled = false;
-        matchplayDiscoverValue.disabled = matchplayDiscoverScope.value === "mine";
+        matchplayDiscoverValue.disabled = false;
       }
     }
 
@@ -1805,6 +1845,22 @@
       });
     }
 
+    function resetMatchplayTournamentReview() {
+      matchplayReviewRevision += 1;
+      matchplayTournamentClear.hidden = !matchplayTournamentInput.value;
+      matchplayReviewData = null;
+      matchplayReviewResults.hidden = true;
+      matchplayReviewStatus.textContent = "";
+      matchplayReviewSubmit.disabled = false;
+    }
+
+    matchplayTournamentInput.addEventListener("input", resetMatchplayTournamentReview);
+    matchplayTournamentClear.addEventListener("click", function () {
+      matchplayTournamentInput.value = "";
+      resetMatchplayTournamentReview();
+      matchplayTournamentInput.focus();
+    });
+
     if (matchplayReviewForm) {
       function matchplayCacheNote(cache) {
         if (!cache || !cache.fetched_at) return "";
@@ -1813,13 +1869,13 @@
       }
       matchplayReviewForm.addEventListener("submit", async function (event) {
         event.preventDefault();
-        matchplayReviewData = null;
-        matchplayReviewResults.hidden = true;
+        resetMatchplayTournamentReview();
+        var revision = matchplayReviewRevision;
         matchplayReviewStatus.textContent = "Checking MatchPlay and club events…";
-        var button = matchplayReviewForm.querySelector('button[type="submit"]');
-        if (button) button.disabled = true;
+        matchplayReviewSubmit.disabled = true;
         try {
           var review = await window.SNHMemberPortal.reviewMatchplayTournament(matchplayTournamentInput.value);
+          if (revision !== matchplayReviewRevision) return;
           matchplayReviewData = review;
           var tournament = review.tournament || {};
           var candidates = Array.isArray(review.candidates) ? review.candidates : [];
@@ -1858,10 +1914,11 @@
             : "Review any suggested matches before preparing a new event.";
           matchplayReviewStatus.textContent += matchplayCacheNote(review.cache);
         } catch (error) {
+          if (revision !== matchplayReviewRevision) return;
           matchplayReviewStatus.textContent = "Could not review tournament: " +
             (error && error.message ? error.message : "Please try again.");
         } finally {
-          if (button) button.disabled = false;
+          if (revision === matchplayReviewRevision) matchplayReviewSubmit.disabled = false;
         }
       });
     }
@@ -1916,7 +1973,7 @@
         if (memberEventsSource) memberEventsSource.value = "matchplay";
         if (memberEventsDescription) memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
         if (memberEventsPublished) memberEventsPublished.checked = false;
-        focusAndHighlightEventsEditor();
+        showEventsEditor();
         setEventsStatus("New unpublished draft prepared. Confirm it is a club event, review the details, then save to create it.");
       });
     }
@@ -1984,12 +2041,53 @@
       });
     }
 
-    if (memberEventsReset) {
-      memberEventsReset.addEventListener("click", function () {
-        resetEventsForm();
-        setEventsStatus("Form cleared.");
-      });
+    function snapshotEventsForm() {
+      var fields = memberEventsForm.querySelectorAll("input:not([type=hidden]), select, textarea");
+      return JSON.stringify(Array.from(fields, function (field) {
+        return field.type === "checkbox" ? field.checked : field.value;
+      }));
     }
+
+    function openNewEvent() {
+      resetEventsForm();
+      memberEventsFormSnapshot = snapshotEventsForm();
+      showEventsEditor();
+      setEventsStatus("New event. Review public visibility before saving.");
+    }
+
+    function toggleNewEvent() {
+      if (memberEventsEditor.hidden) {
+        openNewEvent();
+      } else if (!memberEventsId.value && memberEventsFormSnapshot === snapshotEventsForm()) {
+        resetEventsForm();
+        setEventsStatus("");
+      } else {
+        setEventsStatus("Save or cancel the open event before closing the editor.");
+      }
+    }
+
+    function toggleMatchplayImport() {
+      var open = memberEventsImportPanel.hidden;
+      if (open && !memberEventsEditor.hidden) {
+        if (memberEventsFormSnapshot !== snapshotEventsForm() &&
+            !window.confirm("Discard unsaved event changes and open Match Play import?")) return;
+        resetEventsForm();
+        setEventsStatus("");
+      }
+      setMatchplayImportOpen(open);
+      if (open) {
+        matchplayTournamentClear.hidden = !matchplayTournamentInput.value;
+        matchplayTournamentInput.focus();
+      }
+    }
+
+    memberEventsImport.addEventListener("click", toggleMatchplayImport);
+    memberEventsNew.addEventListener("click", toggleNewEvent);
+
+    memberEventsReset.addEventListener("click", function () {
+      resetEventsForm(true);
+      setEventsStatus("Event changes discarded.");
+    });
 
     if (memberEventsOpenPhotosPanel) {
       memberEventsOpenPhotosPanel.addEventListener("click", function () {
@@ -2068,7 +2166,7 @@
           }
           setEventsStatus("Saving event…");
           await window.SNHMemberPortal.saveEventForAdmin(payload);
-          resetEventsForm();
+          resetEventsForm(true);
           if (onEventsPanelShown) await onEventsPanelShown();
           setEventsStatus("Event saved.");
         } catch (err) {
@@ -2151,6 +2249,8 @@
     }
     if (startPanel === "events" && initialRoute.eventId && window.snhNavigateToMemberEventEditor) {
       void window.snhNavigateToMemberEventEditor(initialRoute.eventId);
+    } else if (startPanel === "events" && initialRoute.newEvent) {
+      openNewEvent();
     }
 
     try {
@@ -2220,7 +2320,10 @@
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
-    membershipStatus.textContent = membership && membership.status === "active" ? "Full Access Member" : "Basic Member";
+    var hasFullAccess = membership && membership.status === "active";
+    membershipStatus.textContent = hasFullAccess ? "Full Access Member" : "Basic Member";
+    document.getElementById("membership-basic-next").hidden = hasFullAccess;
+    document.getElementById("membership-full-next").hidden = !hasFullAccess;
     var doorReveal = document.getElementById("door-code-reveal");
     var doorValue = document.getElementById("door-code-value");
     var doorReminder = document.getElementById("door-code-reminder");

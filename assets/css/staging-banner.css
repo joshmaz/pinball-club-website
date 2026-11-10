@@ -1,0 +1,32 @@
+.site-environment-banner {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.45rem 0.9rem;
+  background: #f6c445;
+  color: #171717;
+  font: 700 0.9rem/1.35 Arial, sans-serif;
+  text-align: center;
+}
+.site-environment-banner strong {
+  flex: 0 0 auto;
+  letter-spacing: 0.04em;
+}
+.site-environment-banner span {
+  font-weight: 500;
+}
+.slide-player .site-environment-banner {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 10000;
+}
+@media (max-width: 600px) {
+  .site-environment-banner {
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.4rem 0.65rem;
+  }
+}

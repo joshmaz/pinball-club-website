@@ -72,6 +72,7 @@ try {
   const legacyText='Original description '.repeat(20);
   await query("insert into public.publishing_entries(id,kind,draft,published) values($1,'activity',$2,$3)",[legacyId,JSON.stringify({title:'Private legacy',body:legacyText,url:'https://example.com/'+ 'a'.repeat(1100)}),JSON.stringify({title:'Public legacy',body:'Published summary',url:'https://example.com/live',starts_at:'2020-01-01T00:00:00Z'})]);
   await migration('20261020140000_activity_details.sql');
+  await migration('20261109232615_public_activity_directory.sql');
   const legacy=(await query('select * from public.publishing_entries where id=$1',[legacyId]))[0];
   assert.equal(legacy.draft.details,legacyText);assert.ok(legacy.draft.body.length<=240);assert.equal(legacy.draft.summary_needs_review,true);
   assert.equal(legacy.draft.links[0].url.length,1120);assert.equal(legacy.published.title,'Public legacy');assert.equal(legacy.published.body,'Published summary');assert.equal(legacy.version,2);
@@ -80,10 +81,13 @@ try {
   assert.equal(publicLegacy.title,'Public legacy');assert.equal(publicLegacy.details,'');assert.ok(!JSON.stringify(publicLegacy).includes('Private legacy'));assert.ok(!JSON.stringify(publicLegacy).includes(legacyText));
   await db.exec('reset role');await query('delete from public.publishing_entries where id=$1',[legacyId]);
   await db.exec("update public.audit_log set old_data=coalesce(old_data,'{}'),new_data=coalesce(new_data,'{}');alter table public.audit_log alter column old_data set default '{}',alter column new_data set default '{}',alter column old_data set not null,alter column new_data set not null;");
+  await migration('20261109220904_activity_inline_order.sql');
+  const order=async(row,position)=>(await query('select public.snh_publishing_activity_set_position($1,$2,$3) result',[row.id,row.version,position]))[0].result;
   const activity=async(action,row=null,values=null)=>(await query('select public.snh_publishing_activity_write($1,$2,$3,$4) result',[action,row?.id||null,row?.version||null,values]))[0].result;
   const detail=async(id)=>(await query('select public.snh_public_activity($1) result',[id]))[0].result;
   const image=async(action,id=null,title=null,alt=null)=>(await query('select public.snh_publishing_image_write($1,$2,$3,$4) result',[action,id,title,alt]))[0].result;
   const feed=async()=>(await query('select public.snh_public_activities() result'))[0].result;
+  const directory=async()=>(await query('select public.snh_public_activity_directory() result'))[0].result;
   const values={title:'League night',body:'Play together',details:'More information\n\n- Register\n- Play',links:[{url:'https://example.com/league',label:'League'}],destination:'external',destination_url:'https://example.com/league',position:2,fit:'cover'};
   for(const n of [2,3,4,5,6,7,8,9,12,14,999]){await actor(n);await assert.rejects(activity('save',null,values),denied);await assert.rejects(image('reserve',null,'Art','Club artwork'),denied);}
   await actor(10);
@@ -109,7 +113,26 @@ try {
   await assert.rejects(activity('save',row,values),e=>e.code==='PT409');
   row=await activity('save',published,{...values,title:'Private replacement',image_id:asset.id,image_alt:asset.alt});
   assert.equal((await feed())[0].title,'League night','draft changes preserve live snapshot');
+  await actor(2);await assert.rejects(order(row,0),denied);
+  await db.exec('reset role;set role anon');await assert.rejects(order(row,0),denied);
+  await actor(10);
+  for(const invalid of [null,-1,1000])await assert.rejects(order(row,invalid),e=>e.code==='22023');
+  await assert.rejects(order(announcement,0),e=>e.code==='P0002');
+  const reordered=await order(row,0);
+  assert.deepEqual(reordered.draft,{...row.draft,position:0});
+  assert.deepEqual(reordered.published,{...row.published,position:0});
+  assert.equal(reordered.published_at,row.published_at);
+  assert.equal(reordered.version,row.version+1);
+  assert.deepEqual(await order(reordered,0),reordered,'unchanged order does not bump version');
+  await assert.rejects(order(row,1),e=>e.code==='PT409');
+  await assert.rejects(activity('publish',row),e=>e.code==='PT409');
+  assert.equal((await feed())[0].position,0);
+  assert.equal((await feed())[0].title,'League night');
+  row=reordered;
   let other=await activity('save',null,{...values,title:'Another activity',image_id:asset.id,image_alt:asset.alt});
+  other=await order(other,4);
+  assert.equal(other.draft.position,4);
+  assert.equal(other.published,null,'reordering a draft keeps it private');
   await actor(11);await assert.rejects(image('remove',asset.id),'in-use image protected');
   await actor(10);row=await activity('archive',row);assert.equal((await feed()).length,0);assert.equal((await detail(row.id)).title,'League night');row=await activity('restore',row);
   row=await activity('save',row,{...values,destination:'internal',destination_url:null});assert.equal((await detail(row.id)).destination,'external');row=await activity('publish',row);assert.equal((await detail(row.id)).destination,'internal');
@@ -132,6 +155,12 @@ try {
   const arrangements=new Set();for(let i=0;i<24;i++){const cards=await feed();assert.deepEqual(cards.map(c=>c.position),[0,1,1,1,1,2]);assert.equal(cards[0].title,'Shuffle 0');assert.equal(cards[5].title,'Shuffle 5');arrangements.add(cards.map(c=>c.id).join(','));}assert.ok(arrangements.size>1,'equal priority cards change order without moving bookends');
   await query("delete from public.publishing_entries where kind='activity' and draft->>'title' like 'Shuffle %'");
   for(let i=0;i<8;i++)await insertCard(0,'Shuffle '+i);
+  await db.exec('set role anon');
+  const all = await directory();
+  assert.deepEqual(all.map(card=>card.title), Array.from({length:8},(_,i)=>'Shuffle '+i));
+  assert.ok(all.every(card=>card.id && !('draft' in card)));
+  assert.equal((await feed()).length,6,'homepage remains capped');
+  await db.exec('reset role');
   const seen=new Set();for(let i=0;i<24;i++){const cards=await feed();assert.equal(cards.length,6);assert.equal(new Set(cards.map(c=>c.id)).size,6);cards.forEach(c=>seen.add(c.id));}assert.equal(seen.size,8,'shuffle happens before the six-card cutoff');
-  await db.exec('reset role');const audit=await query("select action from public.audit_log where entity_type in ('activity','publishing_image')");assert.ok(audit.some(e=>e.action==='image_removed'));assert.ok(audit.some(e=>e.action==='publish'));
+  await db.exec('reset role');const audit=await query("select action from public.audit_log where entity_type in ('activity','publishing_image')");assert.ok(audit.some(e=>e.action==='image_removed'));assert.ok(audit.some(e=>e.action==='publish'));assert.equal(audit.filter(e=>e.action==='reorder').length,2);
 } finally {await db.close();}

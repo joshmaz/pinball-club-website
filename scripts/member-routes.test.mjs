@@ -62,6 +62,21 @@ test("reads and builds a canonical event editor route", () => {
   assert.equal(fixture.replacedUrl(), "/members.html?panel=events");
 });
 
+test("opens the new event editor only on the explicit new event route", async () => {
+  const fixture = loadRoutes({ search: "?panel=events&event=new" });
+  assert.equal(fixture.routes.read().newEvent, true);
+  assert.equal(fixture.routes.read().eventId, "");
+  assert.equal(fixture.routes.build("events"), "/members.html?panel=events&event=new");
+  assert.equal(fixture.routes.build("photos"), "/members.html?panel=photos");
+  fixture.routes.setEvent(null);
+  assert.equal(fixture.replacedUrl(), "/members.html?panel=events");
+  assert.equal(loadRoutes({ search: "?panel=events" }).routes.read().newEvent, undefined);
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  assert.match(html, /id="member-events-editor"[^>]+hidden/);
+  assert.match(html, /id="member-events-import-panel"[^>]+hidden/);
+  assert.match(html, /initialRoute\.newEvent\) \{\s+openNewEvent\(\)/);
+});
+
 test("builds canonical routes and removes item parameters outside their panel", () => {
   const fixture = loadRoutes({ search: `?panel=games&game=${GAME_ID}` });
   assert.equal(fixture.routes.build("games"), `/members.html?panel=games&game=${GAME_ID}`);
@@ -127,4 +142,108 @@ test('issue reporting context survives sign-in return route and is removed outsi
  assert.equal(fixture.routes.build('club-issues'),`/members.html?panel=club-issues&issueGame=${GAME_ID}`);
  assert.equal(fixture.routes.build('profile'),'/members.html');
  assert.equal(loadRoutes({search:'?panel=club-issues&issueGame=bad'}).routes.build('club-issues'),'/members.html?panel=club-issues');
+});
+
+
+test("New event toggles a blank form and keeps open edits", async () => {
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  const start = html.indexOf("    function snapshotEventsForm()");
+  const end = html.indexOf("    function toggleMatchplayImport()", start);
+  const field = { type: "text", value: "" };
+  const editor = { hidden: true };
+  const context = vm.createContext({
+    memberEventsEditor: editor,
+    memberEventsId: { value: "" },
+    memberEventsForm: { querySelectorAll: () => [field] },
+    memberEventsFormSnapshot: null,
+    resetEventsForm() { editor.hidden = true; field.value = ""; context.memberEventsFormSnapshot = null; },
+    showEventsEditor() { editor.hidden = false; },
+    setEventsStatus(message) { context.status = message; }
+  });
+  vm.runInContext(html.slice(start, end), context);
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, false);
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, true);
+  vm.runInContext("toggleNewEvent()", context);
+  field.value = "Unsaved tournament";
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, false);
+  assert.equal(field.value, "Unsaved tournament");
+  assert.match(context.status, /Save or cancel/);
+  context.memberEventsFormSnapshot = null;
+  field.value = "";
+  vm.runInContext("toggleNewEvent()", context);
+  assert.equal(editor.hidden, false);
+});
+
+test("clearing the tournament field also ignores a pending review result", async () => {
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  const start = html.indexOf("    function resetMatchplayTournamentReview()");
+  const end = html.indexOf("    if (matchplayReviewCandidates)", start);
+  const input = { value: "228825", addEventListener() {}, focus() { this.focused = true; } };
+  let clear, submit, finishReview;
+  const pending = new Promise(resolve => { finishReview = resolve; });
+  const context = vm.createContext({
+    matchplayTournamentInput: input,
+    matchplayTournamentClear: { addEventListener(_name, handler) { clear = handler; } },
+    matchplayReviewForm: { addEventListener(_name, handler) { submit = handler; } },
+    matchplayReviewData: null,
+    matchplayReviewResults: { hidden: true },
+    matchplayReviewStatus: {},
+    matchplayReviewRevision: 0,
+    matchplayReviewSubmit: {},
+    window: { SNHMemberPortal: { reviewMatchplayTournament: () => pending } }
+  });
+  vm.runInContext(html.slice(start, end), context);
+  const reviewing = submit({ preventDefault() {} });
+  assert.equal(context.matchplayTournamentClear.hidden, false);
+  clear();
+  finishReview({ tournament: { title: "Old result" } });
+  await reviewing;
+  assert.equal(input.value, "");
+  assert.equal(input.focused, true);
+  assert.equal(context.matchplayTournamentClear.hidden, true);
+  assert.equal(context.matchplayReviewResults.hidden, true);
+  assert.equal(context.matchplayReviewData, null);
+  assert.equal(context.matchplayReviewStatus.textContent, "");
+});
+
+test("switching to Match Play closes a clean event editor and confirms before discarding edits", async () => {
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  const start = html.indexOf("    function toggleMatchplayImport()");
+  const end = html.indexOf("    memberEventsImport.addEventListener", start);
+  const editor = { hidden: false };
+  const importer = { hidden: true };
+  let confirms = 0;
+  let discard = false;
+  const context = vm.createContext({
+    memberEventsEditor: editor,
+    memberEventsImportPanel: importer,
+    memberEventsFormSnapshot: "saved",
+    snapshotEventsForm: () => "unsaved",
+    resetEventsForm() { editor.hidden = true; },
+    setEventsStatus() {},
+    setMatchplayImportOpen(open) { importer.hidden = !open; },
+    matchplayTournamentClear: {},
+    matchplayTournamentInput: { value: "", focus() {} },
+    window: { confirm() { confirms += 1; return discard; } }
+  });
+  vm.runInContext(html.slice(start, end), context);
+  vm.runInContext("toggleMatchplayImport()", context);
+  assert.equal(confirms, 1);
+  assert.equal(editor.hidden, false);
+  assert.equal(importer.hidden, true);
+  discard = true;
+  vm.runInContext("toggleMatchplayImport()", context);
+  assert.equal(confirms, 2);
+  assert.equal(editor.hidden, true);
+  assert.equal(importer.hidden, false);
+  editor.hidden = false;
+  importer.hidden = true;
+  context.memberEventsFormSnapshot = "unsaved";
+  vm.runInContext("toggleMatchplayImport()", context);
+  assert.equal(confirms, 2);
+  assert.equal(editor.hidden, true);
+  assert.equal(importer.hidden, false);
 });

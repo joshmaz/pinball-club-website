@@ -29,6 +29,7 @@
       gameId: panel === "games" ? validUuid(params.get("game")) : "",
       eventId: panel === "events" ? validUuid(params.get("event")) : ""
     };
+    if (panel === "events" && params.get("event") === "new") route.newEvent = true;
     if (panel === "club-issues") route.issueGameId = validUuid(params.get("issueGame"));
     if (panel === "photos") route.albumId = validUuid(params.get("album"));
     if (route.panel === "operations") {
@@ -66,7 +67,7 @@
       var eventId = validUuid(options.eventId);
       if (eventId) params.set("event", eventId);
       else params.delete("event");
-    } else if (!validUuid(params.get("event"))) {
+    } else if (!validUuid(params.get("event")) && params.get("event") !== "new") {
       params.delete("event");
     }
 

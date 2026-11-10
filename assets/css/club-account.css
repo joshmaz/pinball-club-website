@@ -30,12 +30,13 @@
 .club-account .members-layout { max-width: none; grid-template-columns: 11rem minmax(0,1fr); gap: 2rem; padding: 0; }
 .club-account .members-sidebar { padding: .75rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
 .club-account .members-sidebar-title { color: var(--club-muted); font: 700 .7rem/1.5 var(--club-display); padding: .4rem; }
+.club-account .members-sidebar-group { margin-top: .65rem; padding-top: .55rem; border-top: 1px solid var(--club-line); }
 .club-account .members-sidebar-link { background: transparent; border-color: transparent; border-radius: 4px; min-height: 44px; font-size: .85rem; padding: .65rem .7rem; }
 .club-account .members-sidebar-link.is-active { border-color: var(--club-line); border-left: 3px solid var(--club-teal); background: var(--club-soft); color: var(--club-teal); font-weight: 700; }
 .club-account .members-sidebar-link:hover { background: var(--club-soft); }
 .account-help { font-size: .75rem; line-height: 1.7; color: var(--club-muted); margin: 1.2rem .4rem .4rem; }
 .club-account .members-panels { min-width: 0; }
-.club-account .member-panel { padding: 0; background: transparent; border: 0; }
+.club-account .member-panel { padding: 0; background: transparent; border: 0; scroll-margin-top: 1rem; }
 .club-account .member-panel > :is(h2,h3) { font-size: 1.5rem; letter-spacing: -.03em; margin: 0 0 .5rem; }
 .club-account .member-panel-intro { max-width: 70ch; color: var(--club-muted); font-size: .88rem; line-height: 1.65; margin-bottom: 1.25rem; }
 .club-account .members-profile-form { max-width: none; gap: 1.3rem; margin: 1.3rem 0; }
@@ -71,6 +72,7 @@
  .club-account .members-sidebar { position: static; }
  .club-account .members-sidebar-list { flex-direction: row; flex-wrap: wrap; gap: .3rem; }
  .club-account .members-sidebar-list li { flex: 1 1 8rem; }
+ .club-account .members-sidebar-list .members-sidebar-link { width: 100%; }
  .club-account .members-sidebar-logout-wrap { margin: 0; padding: 0; border: 0; }
  .account-help { margin: .5rem .4rem; }
 }
@@ -83,6 +85,7 @@
 .club-account .members-admin-controls :is(input:not([type="checkbox"]),select,button) { border: 1px solid var(--club-control-line); background: var(--club-surface); color: var(--club-ink); border-radius: var(--club-radius); font: inherit; font-size: .85rem; padding: .55rem .7rem; }
 .club-account .members-admin-controls .members-admin-search-clear { padding: 0; }
 .club-account .members-profile-form .members-admin-search-wrap { flex: 1 1 20rem; }
+#member-matchplay-tournament { padding-inline-end: 2rem; }
 .club-account .members-profile-form .members-admin-search-clear { min-height: 1.5rem; width: 1.5rem; height: 1.5rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--club-muted); font: inherit; font-size: 1.15rem; line-height: 1; }
 .club-account .members-profile-form .members-admin-search-clear:hover,
 .club-account .members-profile-form .members-admin-search-clear:focus-visible { color: var(--club-ink); background: var(--club-soft); }
