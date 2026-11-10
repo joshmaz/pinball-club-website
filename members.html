@@ -391,7 +391,10 @@
             <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
             <form id="member-matchplay-review-form" class="members-profile-form">
               <label for="member-matchplay-tournament">Tournament URL or ID</label>
-              <input id="member-matchplay-tournament" type="text" placeholder="https://app.matchplay.events/tournaments/228825" required>
+              <span class="members-admin-search-wrap">
+                <input id="member-matchplay-tournament" type="text" autocomplete="off" placeholder="https://app.matchplay.events/tournaments/228825" required>
+                <button type="button" id="member-matchplay-tournament-clear" class="members-admin-search-clear" title="Clear tournament URL or ID" aria-label="Clear tournament URL or ID" hidden>×</button>
+              </span>
               <button type="submit">Find club event</button>
             </form>
             <p id="member-matchplay-review-status" class="members-page-status" role="status" aria-live="polite"></p>
@@ -666,6 +669,9 @@
     var matchplayDiscoverPage = 1;
     var matchplayDiscoverLoading = false;
     var matchplayTournamentInput = document.getElementById("member-matchplay-tournament");
+    var matchplayTournamentClear = document.getElementById("member-matchplay-tournament-clear");
+    var matchplayReviewSubmit = matchplayReviewForm.querySelector('button[type="submit"]');
+    var matchplayReviewRevision = 0;
     var matchplayReviewStatus = document.getElementById("member-matchplay-review-status");
     var matchplayReviewResults = document.getElementById("member-matchplay-review-results");
     var matchplayReviewSummary = document.getElementById("member-matchplay-review-summary");
@@ -1551,6 +1557,7 @@
       memberEventsNew.setAttribute("aria-expanded", "false");
       memberEventsNewDraftSnapshot = null;
       if (returnToList && getActiveMemberPanelId() === "events") memberEventsListTitle.focus();
+      memberEventsForm.classList.remove("members-profile-form-edit-target");
       memberEventsForm.reset();
       memberEventsLinks.set([]);
       memberEventsOriginalSchedule = null;
@@ -1599,12 +1606,16 @@
       memberEventsImport.setAttribute("aria-expanded", String(open));
     }
 
-    function focusAndHighlightEventsEditor() {
-      if (!memberEventsForm) return;
+    function showEventsEditor() {
       setMatchplayImportOpen(false);
       memberEventsEditorTitle.textContent = memberEventsId.value ? "Edit event" : "New event";
       memberEventsEditor.hidden = false;
       memberEventsNew.setAttribute("aria-expanded", "true");
+      memberEventsTitle.focus({ preventScroll: true });
+    }
+
+    function focusAndHighlightEventsEditor() {
+      showEventsEditor();
       memberEventsForm.scrollIntoView({ behavior: "smooth", block: "start" });
       memberEventsForm.classList.remove("members-profile-form-edit-target");
       // Force reflow so repeated edit clicks retrigger the highlight animation.
@@ -1617,9 +1628,6 @@
         memberEventsForm.classList.remove("members-profile-form-edit-target");
         memberEventsFormHighlightTimer = null;
       }, 2000);
-      if (memberEventsTitle) {
-        memberEventsTitle.focus({ preventScroll: true });
-      }
     }
 
     function highlightEventTableRow(eventId) {
@@ -1844,6 +1852,22 @@
       });
     }
 
+    function resetMatchplayTournamentReview() {
+      matchplayReviewRevision += 1;
+      matchplayTournamentClear.hidden = !matchplayTournamentInput.value;
+      matchplayReviewData = null;
+      matchplayReviewResults.hidden = true;
+      matchplayReviewStatus.textContent = "";
+      matchplayReviewSubmit.disabled = false;
+    }
+
+    matchplayTournamentInput.addEventListener("input", resetMatchplayTournamentReview);
+    matchplayTournamentClear.addEventListener("click", function () {
+      matchplayTournamentInput.value = "";
+      resetMatchplayTournamentReview();
+      matchplayTournamentInput.focus();
+    });
+
     if (matchplayReviewForm) {
       function matchplayCacheNote(cache) {
         if (!cache || !cache.fetched_at) return "";
@@ -1852,13 +1876,13 @@
       }
       matchplayReviewForm.addEventListener("submit", async function (event) {
         event.preventDefault();
-        matchplayReviewData = null;
-        matchplayReviewResults.hidden = true;
+        resetMatchplayTournamentReview();
+        var revision = matchplayReviewRevision;
         matchplayReviewStatus.textContent = "Checking MatchPlay and club events…";
-        var button = matchplayReviewForm.querySelector('button[type="submit"]');
-        if (button) button.disabled = true;
+        matchplayReviewSubmit.disabled = true;
         try {
           var review = await window.SNHMemberPortal.reviewMatchplayTournament(matchplayTournamentInput.value);
+          if (revision !== matchplayReviewRevision) return;
           matchplayReviewData = review;
           var tournament = review.tournament || {};
           var candidates = Array.isArray(review.candidates) ? review.candidates : [];
@@ -1897,10 +1921,11 @@
             : "Review any suggested matches before preparing a new event.";
           matchplayReviewStatus.textContent += matchplayCacheNote(review.cache);
         } catch (error) {
+          if (revision !== matchplayReviewRevision) return;
           matchplayReviewStatus.textContent = "Could not review tournament: " +
             (error && error.message ? error.message : "Please try again.");
         } finally {
-          if (button) button.disabled = false;
+          if (revision === matchplayReviewRevision) matchplayReviewSubmit.disabled = false;
         }
       });
     }
@@ -1955,7 +1980,7 @@
         if (memberEventsSource) memberEventsSource.value = "matchplay";
         if (memberEventsDescription) memberEventsDescription.value = String(tournament.description || "").slice(0, 4000);
         if (memberEventsPublished) memberEventsPublished.checked = false;
-        focusAndHighlightEventsEditor();
+        showEventsEditor();
         setEventsStatus("New unpublished draft prepared. Confirm it is a club event, review the details, then save to create it.");
       });
     }
@@ -2026,7 +2051,10 @@
     memberEventsImport.addEventListener("click", function () {
       var open = memberEventsImportPanel.hidden;
       setMatchplayImportOpen(open);
-      if (open) matchplayTournamentInput.focus();
+      if (open) {
+        matchplayTournamentClear.hidden = !matchplayTournamentInput.value;
+        matchplayTournamentInput.focus();
+      }
     });
 
     function snapshotEventsForm() {
@@ -2039,7 +2067,7 @@
     function openNewEvent() {
       resetEventsForm();
       memberEventsNewDraftSnapshot = snapshotEventsForm();
-      focusAndHighlightEventsEditor();
+      showEventsEditor();
       setEventsStatus("New event. Review public visibility before saving.");
     }
 

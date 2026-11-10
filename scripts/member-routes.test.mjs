@@ -156,7 +156,7 @@ test("New event toggles a blank form and keeps open edits", async () => {
     memberEventsForm: { querySelectorAll: () => [field] },
     memberEventsNewDraftSnapshot: null,
     resetEventsForm() { editor.hidden = true; field.value = ""; context.memberEventsNewDraftSnapshot = null; },
-    focusAndHighlightEventsEditor() { editor.hidden = false; },
+    showEventsEditor() { editor.hidden = false; },
     setEventsStatus(message) { context.status = message; }
   });
   vm.runInContext(html.slice(start, end), context);
@@ -174,4 +174,36 @@ test("New event toggles a blank form and keeps open edits", async () => {
   field.value = "";
   vm.runInContext("toggleNewEvent()", context);
   assert.equal(editor.hidden, false);
+});
+
+test("clearing the tournament field also ignores a pending review result", async () => {
+  const html = await readFile(path.join(root, "members.html"), "utf8");
+  const start = html.indexOf("    function resetMatchplayTournamentReview()");
+  const end = html.indexOf("    if (matchplayReviewCandidates)", start);
+  const input = { value: "228825", addEventListener() {}, focus() { this.focused = true; } };
+  let clear, submit, finishReview;
+  const pending = new Promise(resolve => { finishReview = resolve; });
+  const context = vm.createContext({
+    matchplayTournamentInput: input,
+    matchplayTournamentClear: { addEventListener(_name, handler) { clear = handler; } },
+    matchplayReviewForm: { addEventListener(_name, handler) { submit = handler; } },
+    matchplayReviewData: null,
+    matchplayReviewResults: { hidden: true },
+    matchplayReviewStatus: {},
+    matchplayReviewRevision: 0,
+    matchplayReviewSubmit: {},
+    window: { SNHMemberPortal: { reviewMatchplayTournament: () => pending } }
+  });
+  vm.runInContext(html.slice(start, end), context);
+  const reviewing = submit({ preventDefault() {} });
+  assert.equal(context.matchplayTournamentClear.hidden, false);
+  clear();
+  finishReview({ tournament: { title: "Old result" } });
+  await reviewing;
+  assert.equal(input.value, "");
+  assert.equal(input.focused, true);
+  assert.equal(context.matchplayTournamentClear.hidden, true);
+  assert.equal(context.matchplayReviewResults.hidden, true);
+  assert.equal(context.matchplayReviewData, null);
+  assert.equal(context.matchplayReviewStatus.textContent, "");
 });
