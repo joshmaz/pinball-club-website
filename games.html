@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="manifest" href="assets/pwa/manifest.webmanifest">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
-    <meta name="description" content="Explore every machine that has passed through SNHPC, sorted by the date each game was first listed at the club. Games still at the club are highlighted.">
+    <meta name="description" content="See which pinball machines are at Southern New Hampshire Pinball Club today and explore past lineups on the club timeline.">
     <title>SNHPC - Our Games</title>
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -42,46 +42,62 @@
   </div>
     </header>
     <main id="games-main">
-        <section class="club-page-heading" aria-labelledby="games-hero-title">
-          <div><p class="club-eyebrow">The SNHPC collection</p><h1 id="games-hero-title">Our games.<br><span>Every era. Every flipper.</span></h1><p class="club-lead">From classic EMs to modern multiball monsters. Discover what’s on the floor and the machines that shaped our club.</p></div>
+        <section class="club-page-heading games-page-heading" aria-labelledby="games-hero-title">
+            <div>
+                <h1 id="games-hero-title">Our games</h1>
+                <p class="club-lead">See what’s on the floor today, or roll back the clock to see what we played then.</p>
+            </div>
         </section>
         <section class="content" aria-label="Club machine lineup">
-            <p class="games-note">By default this page shows machines currently at SNHPC. Use the timeline to travel backward and see which games were on the floor at a point in club history.</p>
-            <p id="games-transition-banner" class="games-transition-banner" hidden>We're between locations; games will return soon at our new venue. You can still explore our historical lineup by sliding the timeline or checking "Show all games."</p>
-            <div class="games-timeline-controls" aria-label="Games timeline controls">
-                <h2 class="club-section-title">Explore the lineup</h2>
-                <label class="games-timeline-label" for="games-timeline-range">Timeline</label>
-                <input id="games-timeline-range" class="games-timeline-range" type="range" min="0" max="0" step="1" value="0" aria-describedby="games-timeline-status">
-                <div class="games-timeline-axis-labels" aria-hidden="true">
-                    <span>Now</span>
-                    <span>Origins</span>
-                </div>
-                <div class="games-timeline-date-input-row">
-                    <label for="games-date-input">Jump to date</label>
-                    <input id="games-date-input" type="date">
-                    <button id="games-date-apply" type="button">Apply</button>
+            <div class="games-lineup-views" role="group" aria-label="Choose a lineup">
+                <button type="button" data-games-view="now" aria-pressed="true">On the floor now</button>
+                <button type="button" data-games-view="timeline" aria-pressed="false" aria-controls="games-timeline">Club timeline</button>
+            </div>
+            <p id="games-transition-banner" class="games-transition-banner" hidden>We’re between locations. Explore past lineups in the Club timeline while we get settled.</p>
+            <section id="games-timeline" class="games-timeline-controls" aria-label="Club timeline controls" hidden>
+                <div class="games-timeline-heading">
+                    <label class="games-timeline-label" for="games-timeline-range">Lineup on <strong id="games-timeline-date">Today</strong></label>
                     <label class="games-show-all-toggle">
                         <input id="games-show-all" type="checkbox">
-                        <span>Show all games</span>
+                        <span>All games we’ve hosted</span>
                     </label>
                 </div>
-                <p id="games-timeline-status" class="games-note games-timeline-status" aria-live="polite"></p>
-            </div>
+                <input id="games-timeline-range" class="games-timeline-range" type="range" min="0" max="0" step="1" value="0">
+                <div class="games-timeline-axis-labels" aria-hidden="true">
+                    <span>Today</span>
+                    <span>Earlier</span>
+                </div>
+                <form class="games-timeline-date-input-row" id="games-date-form">
+                    <label for="games-date-input">Jump to date</label>
+                    <input id="games-date-input" type="date" required>
+                    <button type="submit">Go</button>
+                    <span id="games-timeline-change" class="games-timeline-status" hidden></span>
+                </form>
+            </section>
             <div class="games-collection-toolbar">
-              <div class="club-field games-search"><label for="games-search">Search this lineup</label><input id="games-search" type="search" placeholder="Game title or description" aria-describedby="games-search-status"><p id="games-search-status" role="status"></p></div>
-              <p class="games-legend"><span class="games-status-badge">At club</span> = here today<br><span class="games-history-label">Club history</span> = previously at SNHPC<br>Location dates show each machine’s time at the club.</p>
+                <div class="club-field games-search">
+                    <label for="games-search">Search this lineup</label>
+                    <input id="games-search" type="search" placeholder="Game title or description">
+                </div>
+                <details class="games-era-disclosure">
+                    <summary>Eras</summary>
+                    <fieldset class="games-era-filters" id="games-era-filters">
+                        <legend>Show eras</legend>
+                        <div class="games-era-options">
+                            <label><input type="checkbox" data-game-era="EM" checked> Electromechanical</label>
+                            <label><input type="checkbox" data-game-era="Solid State" checked> Solid State</label>
+                            <label><input type="checkbox" data-game-era="Modern" checked> Modern</label>
+                            <label id="games-era-other-option" hidden><input type="checkbox" data-game-era="Other" checked> Other</label>
+                            <button id="games-era-all" type="button">All eras</button>
+                        </div>
+                    </fieldset>
+                </details>
             </div>
-            <fieldset class="games-era-filters" id="games-era-filters">
-              <legend>Show eras</legend>
-              <div class="games-era-options">
-                <label><input type="checkbox" data-game-era="EM" checked> EM</label>
-                <label><input type="checkbox" data-game-era="Solid State" checked> Solid State</label>
-                <label><input type="checkbox" data-game-era="Modern" checked> Modern</label>
-                <label id="games-era-other-option" hidden><input type="checkbox" data-game-era="Other" checked> Other</label>
-                <button id="games-era-all" type="button">All eras</button>
-              </div>
-            </fieldset>
-            <div id="games-list" aria-label="Club pinball machines active on the selected timeline date"></div>
+            <div class="games-results-heading">
+                <h2 id="games-lineup-title" class="club-section-title">Today’s lineup</h2>
+                <p id="games-search-status" role="status"></p>
+            </div>
+            <div id="games-list" aria-labelledby="games-lineup-title"></div>
             <p class="games-footnote">Historical stint dates come mainly from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a> location activity we sync through their public API. Thanks to the Pinball Map project for maintaining open, community-sourced pinball location data. Because SNHPC predates Pinball Map coverage, some older periods use generalized date ranges when exact dates are unavailable.</p>
         </section>
     </main>
