@@ -194,15 +194,19 @@
       var publishingLink=el('a','Open Publishing',publishingCard);publishingLink.href='members.html?panel=publishing';
       var analyticsCard = el('section', null, cards); el('h4', 'Website analytics', analyticsCard);
       el('p', 'Umami records page views on the public site and member portal in production. No Supabase member ID is sent; staging and preview traffic is excluded.', analyticsCard);
-      var analyticsEnabled = null;
-      try { analyticsEnabled = !window.localStorage.getItem('umami.disabled'); }
-      catch (error) { /* browser storage may be unavailable */ }
-      if (analyticsEnabled === null) {
-        el('p', 'Tracking stays off because this browser cannot store the preference.', analyticsCard);
+      if (window.location.hostname.toLowerCase() !== 'snhpinballclub.com') {
+        el('p', 'Browser tracking controls are available on the production site only.', analyticsCard);
       } else {
-        el('p', 'This browser: tracking is ' + (analyticsEnabled ? 'on.' : 'off.'), analyticsCard);
-        var analyticsToggle = el('a', analyticsEnabled ? 'Turn off tracking on this browser' : 'Turn on tracking on this browser', analyticsCard);
-        analyticsToggle.href = window.location.pathname + window.location.search + (analyticsEnabled ? '#umami-opt-out' : '#umami-opt-in');
+        var analyticsEnabled = null;
+        try { analyticsEnabled = !window.localStorage.getItem('umami.disabled'); }
+        catch (error) { /* browser storage may be unavailable */ }
+        if (analyticsEnabled === null) {
+          el('p', 'Tracking stays off because this browser cannot store the preference.', analyticsCard);
+        } else {
+          el('p', 'This browser: tracking is ' + (analyticsEnabled ? 'on.' : 'off.'), analyticsCard);
+          var analyticsToggle = el('a', analyticsEnabled ? 'Turn off tracking on this browser' : 'Turn on tracking on this browser', analyticsCard);
+          analyticsToggle.href = window.location.pathname + window.location.search + (analyticsEnabled ? '#umami-opt-out' : '#umami-opt-in');
+        }
       }
       var analyticsDashboard = el('a', 'Open Umami dashboard ↗', analyticsCard);
       analyticsDashboard.href = 'https://cloud.umami.is/';
