@@ -32,13 +32,7 @@
 .clubhouse .photos-edit-actions[hidden] { display: none; }
 .clubhouse .photos-album-actions .event-edit-link { min-height: 44px; padding: .5rem .8rem; box-sizing: border-box; }
 
-.photos-slideshow {
-  margin-top: 2rem;
-  padding: clamp(1rem, 3vw, 1.5rem);
-  border: 1px solid var(--club-line);
-  border-radius: var(--club-radius);
-  background: var(--club-surface);
-}
+.photos-slideshow { margin-top: 2rem; }
 .photos-slideshow h2 { margin-top: 0; }
 .photos-slideshow p { max-width: 64ch; }
 
