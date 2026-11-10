@@ -31,3 +31,10 @@
 .clubhouse .photos-album-actions { display: flex; flex-wrap: wrap; gap: .6rem; text-align: left; margin: 0 0 1rem; }
 .clubhouse .photos-edit-actions[hidden] { display: none; }
 .clubhouse .photos-album-actions .event-edit-link { min-height: 44px; padding: .5rem .8rem; box-sizing: border-box; }
+
+.photos-slideshow { margin-top: 2rem; }
+.photos-slideshow h2 { margin-top: 0; }
+.photos-slideshow p { max-width: 64ch; }
+
+.photos-slideshow-actions { display: flex; flex-wrap: wrap; gap: .5rem .75rem; }
+.photos-slideshow-play { background: var(--club-teal); color: var(--club-bg); }

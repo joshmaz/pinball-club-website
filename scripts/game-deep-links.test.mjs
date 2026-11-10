@@ -9,17 +9,30 @@ const gamesSource = read('assets/js/games.js').replace(/loadGames\(\);\s*$/, '')
 function library(search, records) {
   const nodes = new Map();
   const make = id => {
+    const listeners = {};
     const node = { id, value: '', hidden: false, disabled: false, notes: [], dataset: {},
-      classList: { toggle() {} }, addEventListener() {}, setAttribute() {},
+      classList: { toggle() {} },
+      addEventListener(event, callback) { listeners[event] = callback; },
+      dispatch(event) { listeners[event]?.({ preventDefault() {} }); },
+      setAttribute(name, value) { this[name] = value; },
       before(note) { this.notes.push(note); }, focus() {}, scrollIntoView() {} };
     nodes.set(id, node);
     return node;
   };
-  for (const id of ['games-list', 'games-search', 'games-show-all', 'games-date-input']) make(id);
+  for (const id of ['games-list', 'games-search', 'games-show-all', 'games-date-input',
+    'games-timeline', 'games-timeline-range', 'games-timeline-date', 'games-timeline-change',
+    'games-lineup-title', 'games-date-form', 'games-date-submit']) make(id);
+  nodes.get('games-date-form').querySelector = () => nodes.get('games-date-submit');
+  const viewButtons = ['now', 'timeline'].map(view => {
+    const button = make(view);
+    button.dataset.gamesView = view;
+    return button;
+  });
   const opened = [], rendered = [];
   const context = vm.createContext({ console, URLSearchParams,
     document: { getElementById: id => nodes.get(id) || null, querySelector: () => null,
-      createElement: () => make('note'), querySelectorAll: () => [] },
+      createElement: () => make('note'),
+      querySelectorAll: selector => selector === '[data-games-view]' ? viewButtons : [] },
     window: { location: { search } } });
   vm.runInContext(gamesSource, context);
   context.fetchGamesCatalogPayload = async () => ({ games: records });
@@ -51,6 +64,8 @@ test('historical deep link enables full history and opens once', async () => {
   assert.deepEqual(app.opened, ['past']);
   assert.equal(app.nodes.get('games-show-all').checked, true);
   assert.equal(app.nodes.get('games-date-input').disabled, true);
+  assert.equal(app.nodes.get('games-timeline').hidden, false);
+  assert.equal(app.nodes.get('timeline')['aria-pressed'], 'true');
   assert.ok(app.rendered[0].includes('past'));
   assert.equal(app.rendered.length, 2, 'permission refresh rerenders without reopening the dialog');
 });
@@ -71,6 +86,42 @@ test('ordinary library visit keeps current lineup and shows no link error', asyn
   assert.deepEqual(app.opened, []);
   assert.equal(app.nodes.get('games-list').notes.length, 0);
   assert.deepEqual(app.rendered[0], ['current']);
+});
+
+test('timeline keeps its applied date when switching to today or all games and back', async () => {
+  const app = library('', [current, historical]);
+  const get = id => app.nodes.get(id);
+  await app.context.loadGames();
+  assert.equal(get('games-timeline').hidden, true);
+
+  get('timeline').dispatch('click');
+  get('games-date-input').value = '2018-06-01';
+  get('games-date-form').dispatch('submit');
+  assert.deepEqual(app.rendered.at(-1), ['past']);
+  assert.equal(get('games-lineup-title').textContent, 'Lineup on Jun 1, 2018');
+  assert.equal(get('games-timeline-range')['aria-valuetext'], 'Jun 1, 2018');
+
+  get('games-date-input').value = '2018-07-01';
+  get('now').dispatch('click');
+  assert.equal(get('games-timeline').hidden, true);
+  assert.deepEqual(app.rendered.at(-1), ['current']);
+  get('timeline').dispatch('click');
+  assert.equal(get('games-date-input').value, '2018-06-01');
+  assert.deepEqual(app.rendered.at(-1), ['past']);
+
+  get('games-show-all').checked = true;
+  get('games-show-all').dispatch('change');
+  assert.deepEqual(app.rendered.at(-1), ['current', 'past']);
+  assert.equal(get('games-timeline-range').disabled, true);
+  get('games-show-all').checked = false;
+  get('games-show-all').dispatch('change');
+  assert.deepEqual(app.rendered.at(-1), ['past']);
+  assert.equal(get('games-timeline-range').disabled, false);
+
+  get('games-timeline-range').value = '0';
+  get('games-timeline-range').dispatch('input');
+  assert.equal(get('games-lineup-title').textContent, 'Today’s lineup');
+  assert.deepEqual(app.rendered.at(-1), ['current']);
 });
 
 test('editor link follows saved record and hides for new or deleted games', () => {

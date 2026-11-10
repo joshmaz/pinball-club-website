@@ -1588,18 +1588,21 @@ function filterGamesByEra(games, selectedEras) {
   return games.filter(game => selected.has(gameEraLabel(game) || 'Other'));
 }
 
-function renderGamesList(games) {
+function renderGamesList(games, emptyLineupMessage) {
   const container = document.getElementById("games-list");
   const search = document.getElementById("games-search");
   const status = document.getElementById("games-search-status");
   const controls = Array.from(document.querySelectorAll('[data-game-era]'));
   const eras = controls.length ? controls.filter(input => input.checked).map(input => input.dataset.gameEra) : ['EM', 'Solid State', 'Modern', 'Other'];
   const filtered = filterGamesByEra(filterGamesByQuery(games, search ? search.value : ""), eras);
-  if (status) status.textContent = `${filtered.length} of ${games.length} games in this lineup`;
+  if (status) {
+    const count = filtered.length === games.length ? filtered.length : `${filtered.length} of ${games.length}`;
+    status.textContent = `${count} ${games.length === 1 ? "game" : "games"}`;
+  }
   if (!container) return;
   if (!filtered.length) {
     showMessage(container, games.length ? "No matching games" : "No games on this date",
-      games.length ? "Try changing your era selections or search, or select All eras." : "Choose another date or show all games to explore the club’s history.");
+      games.length ? "Try a different search or change your era filters." : emptyLineupMessage);
     return;
   }
   container.replaceChildren(createGamesList(filtered));
@@ -1613,11 +1616,15 @@ function gameCardForId(id) {
 async function loadGames() {
   const container = document.getElementById("games-list");
   const transitionBanner = document.getElementById("games-transition-banner");
-  const timelineControls = document.querySelector(".games-timeline-controls");
+  const viewButtons = Array.from(document.querySelectorAll("[data-games-view]"));
+  const lineupTitle = document.getElementById("games-lineup-title");
+  const timelineControls = document.getElementById("games-timeline");
   const timelineRange = document.getElementById("games-timeline-range");
-  const timelineStatus = document.getElementById("games-timeline-status");
+  const timelineDate = document.getElementById("games-timeline-date");
+  const timelineChange = document.getElementById("games-timeline-change");
   const dateInput = document.getElementById("games-date-input");
-  const dateApplyButton = document.getElementById("games-date-apply");
+  const dateForm = document.getElementById("games-date-form");
+  const dateApplyButton = dateForm?.querySelector("button");
   const showAllCheckbox = document.getElementById("games-show-all");
   if (!container) {
     console.error("Games list container was not found.");
@@ -1637,137 +1644,103 @@ async function loadGames() {
     const todayIso = todayIsoDate();
     const linkedId = new URLSearchParams(window.location.search).get("game");
     const linkedGame = linkedId ? sorted.find(game => String(game.id) === linkedId) : null;
-    let priorGames = [];
-    let hasRenderedSnapshot = false;
-    let showAllMode = new URLSearchParams(window.location.search).get("view") === "all";
-    if (linkedGame && !isGameActiveOnDate(linkedGame, todayIso)) showAllMode = true;
+    const showHistoryOnLoad = new URLSearchParams(window.location.search).get("view") === "all"
+      || (linkedGame && !isGameActiveOnDate(linkedGame, todayIso));
+    let view = showHistoryOnLoad ? "timeline" : "now";
+    let selectedDate = todayIso;
     let currentLineup = [];
-    function renderLineup(games) {
-      currentLineup = games;
-      renderGamesList(games);
+
+    function renderLineup() {
+      const emptyMessage = view === "now"
+        ? "Open the Club timeline to explore past lineups."
+        : "Choose another date or browse all games we’ve hosted.";
+      renderGamesList(currentLineup, emptyMessage);
     }
+
     const search = document.getElementById("games-search");
     if (linkedGame && search) search.value = "";
-    if (search) search.addEventListener("input", () => renderGamesList(currentLineup));
+    if (search) search.addEventListener("input", renderLineup);
     const eraControls = Array.from(document.querySelectorAll('[data-game-era]'));
     const otherOption = document.getElementById('games-era-other-option');
     if (otherOption) otherOption.hidden = !sorted.some(game => !gameEraLabel(game));
     eraControls.forEach(input => {
       if (linkedGame) input.checked = true;
-      input.addEventListener('change', () => renderGamesList(currentLineup));
+      input.addEventListener('change', renderLineup);
     });
     document.getElementById('games-era-all')?.addEventListener('click', () => {
       eraControls.forEach(input => { input.checked = true; });
-      renderGamesList(currentLineup);
+      renderLineup();
     });
 
     if (transitionBanner) {
       transitionBanner.hidden = hasAnyAtClub;
     }
 
-    /**
-     * @param {string} selectedIso
-     * @param {boolean} fromCustomDate
-     */
-    function renderSnapshot(selectedIso, fromCustomDate) {
-      if (showAllMode) {
-        renderLineup(sorted);
-        if (timelineStatus) {
-          timelineStatus.textContent = hasAnyAtClub
-            ? `All history \u00b7 ${sorted.length} games`
-            : `All history \u00b7 ${sorted.length} games \u00b7 currently between locations`;
-        }
-        priorGames = sorted;
-        hasRenderedSnapshot = true;
-        return;
+    function renderSnapshot(compare = false) {
+      const historical = view === "timeline";
+      const showAll = historical && showAllCheckbox.checked;
+      const date = historical ? selectedDate : todayIso;
+      const dateLabel = formatDateLabel(date);
+      const nextLineup = showAll ? sorted : sorted.filter(game => isGameActiveOnDate(game, date));
+      let change = "";
+      if (compare) {
+        const previousTitles = gameTitleSet(currentLineup);
+        const nextTitles = gameTitleSet(nextLineup);
+        const added = nextLineup.filter(game => !previousTitles.has(String(game.title))).length;
+        const removed = currentLineup.filter(game => !nextTitles.has(String(game.title))).length;
+        if (added || removed) change = `+${added} / −${removed} from previous date`;
       }
-      const activeGames = sorted.filter((game) => isGameActiveOnDate(game, selectedIso));
-      const previousTitles = gameTitleSet(priorGames);
-      const activeTitles = gameTitleSet(activeGames);
-      const added = activeGames.filter((game) => !previousTitles.has(String(game.title))).length;
-      const removed = priorGames.filter((game) => !activeTitles.has(String(game.title))).length;
-      priorGames = activeGames;
-      renderLineup(activeGames);
 
-      if (timelineStatus) {
-        const lead = selectedIso === todayIso ? "Now" : formatDateLabel(selectedIso);
-        const via = fromCustomDate ? " (custom date)" : "";
-        const delta = hasRenderedSnapshot && (added || removed)
-          ? ` \u00b7 +${added} / -${removed} vs previous view`
-          : "";
-        timelineStatus.textContent = `${lead}${via} \u00b7 ${activeGames.length} games${delta}`;
-      }
-      hasRenderedSnapshot = true;
-    }
-
-    function setTimelineControlsEnabled(enabled) {
-      if (timelineControls) {
-        timelineControls.classList.toggle("games-timeline-controls--disabled", !enabled);
-      }
-      if (timelineRange) {
-        timelineRange.disabled = !enabled;
-      }
-      if (dateInput) {
-        dateInput.disabled = !enabled;
-      }
-      if (dateApplyButton) {
-        dateApplyButton.disabled = !enabled;
-      }
-    }
-
-    if (timelineRange && timelineDates.length > 0) {
-      timelineRange.min = "0";
-      timelineRange.max = String(timelineDates.length - 1);
-      timelineRange.value = "0";
-      timelineRange.addEventListener("input", () => {
-        const idx = Number(timelineRange.value);
-        const selected = timelineDates[idx] || todayIso;
-        if (dateInput) {
-          dateInput.value = selected;
-        }
-        renderSnapshot(selected, false);
+      viewButtons.forEach(button => {
+        button.setAttribute("aria-pressed", String(button.dataset.gamesView === view));
       });
+      timelineControls.hidden = !historical;
+      timelineControls.classList.toggle("games-timeline-controls--disabled", showAll);
+      timelineRange.disabled = showAll;
+      dateInput.disabled = showAll;
+      dateApplyButton.disabled = showAll;
+      timelineDate.textContent = dateLabel;
+      timelineRange.setAttribute("aria-valuetext", dateLabel);
+      timelineChange.hidden = !change;
+      timelineChange.textContent = change;
+      lineupTitle.textContent = showAll ? "All games we’ve hosted"
+        : date === todayIso ? "Today’s lineup" : `Lineup on ${dateLabel}`;
+      currentLineup = nextLineup;
+      renderLineup();
     }
 
-    if (dateInput) {
-      dateInput.value = todayIso;
-      dateInput.min = timelineDates[timelineDates.length - 1] || "";
-      dateInput.max = todayIso;
+    function selectDate(date) {
+      const changed = date !== selectedDate;
+      selectedDate = date;
+      dateInput.value = date;
+      renderSnapshot(changed);
     }
 
-    if (dateApplyButton) {
-      dateApplyButton.addEventListener("click", () => {
-        if (!dateInput) {
-          return;
-        }
-        const selected = normalizeIsoDateOrEmpty(dateInput.value);
-        if (!selected) {
-          return;
-        }
-        if (timelineRange && timelineDates.length > 0) {
-          const idx = findClosestTimelineIndex(timelineDates, selected);
-          timelineRange.value = String(idx);
-        }
-        renderSnapshot(selected, true);
-      });
-    }
+    timelineRange.max = String(timelineDates.length - 1);
+    timelineRange.value = "0";
+    timelineRange.addEventListener("input", () => {
+      selectDate(timelineDates[Number(timelineRange.value)] || todayIso);
+    });
 
-    if (showAllCheckbox) {
-      showAllCheckbox.checked = showAllMode;
-      showAllCheckbox.addEventListener("change", () => {
-        showAllMode = showAllCheckbox.checked;
-        setTimelineControlsEnabled(!showAllMode);
-        if (showAllMode) {
-          renderSnapshot(todayIso, false);
-          return;
-        }
-        const selected = dateInput ? normalizeIsoDateOrEmpty(dateInput.value) : "";
-        renderSnapshot(selected || todayIso, false);
-      });
-    }
+    dateInput.value = todayIso;
+    dateInput.min = timelineDates[timelineDates.length - 1] || "";
+    dateInput.max = todayIso;
+    dateForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const date = dateInput.value;
+      timelineRange.value = String(findClosestTimelineIndex(timelineDates, date));
+      selectDate(date);
+    });
 
-    setTimelineControlsEnabled(!showAllMode);
-    renderSnapshot(todayIso, false);
+    showAllCheckbox.checked = Boolean(showHistoryOnLoad);
+    showAllCheckbox.addEventListener("change", () => renderSnapshot());
+    viewButtons.forEach(button => button.addEventListener("click", () => {
+      if (button.dataset.gamesView === view) return;
+      view = button.dataset.gamesView;
+      dateInput.value = selectedDate;
+      renderSnapshot();
+    }));
+    renderSnapshot();
 
     if (linkedGame) {
       const card = gameCardForId(linkedId);
@@ -1785,8 +1758,7 @@ async function loadGames() {
     void currentUserCanManageGames().then((allowed) => {
       if (allowed === gamesCanManage) return;
       gamesCanManage = allowed;
-      const selected = dateInput ? normalizeIsoDateOrEmpty(dateInput.value) : "";
-      renderSnapshot(selected || todayIso, false);
+      renderLineup();
     });
   } catch (error) {
     console.error("Error loading games:", error);
