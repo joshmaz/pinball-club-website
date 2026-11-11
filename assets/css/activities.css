@@ -107,7 +107,8 @@
 }
 #member-publishing-app .announcement-management-list { list-style: none; margin: 1rem 0 0; padding: 0; }
 .announcement-management-list li { border-bottom: 1px solid var(--club-line); padding: .65rem 0; }
-#member-publishing-app .announcement-title-button {
+#member-publishing-app .announcement-title-button,
+#member-publishing-app .announcement-new-button {
   border: 0;
   background: transparent;
   color: var(--club-teal);

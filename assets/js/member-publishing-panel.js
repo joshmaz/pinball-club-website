@@ -25,7 +25,7 @@
     if (!entry.published) return 'Private draft';
     var now=Date.now();
     if (Date.parse(entry.published.starts_at)>now) return 'Scheduled';
-    if (Date.parse(entry.published.ends_at)<=now) return 'Homepage placement ended';
+    if (Date.parse(entry.published.ends_at)<=now) return 'Display period ended';
     return 'Published';
   }
   function addDate(parent,label,value) {
@@ -37,8 +37,8 @@
   function websiteDates(entry,parent) {
     if (entry.published) {
       addDate(parent,'Last published',entry.published_at);
-      addDate(parent,'Homepage starts',entry.published.starts_at);
-      addDate(parent,'Homepage ends',entry.published.ends_at);
+      addDate(parent,'Display starts',entry.published.starts_at);
+      addDate(parent,'Display ends',entry.published.ends_at);
     } else {
       addDate(parent,'Last updated',entry.updated_at);
     }
@@ -58,10 +58,12 @@
     input('Text','publishing-body','textarea',2000,content).value=entry?entry.draft.body:'';
     input('Optional web link','publishing-url','url',2000,content).value=entry?(entry.draft.url||''):'';
     var schedule=node('fieldset','',root);
-    node('legend','Homepage schedule',schedule);
-    node('p','Dates use your local timezone. Leave the start blank to show the announcement as soon as you publish it.',schedule);
-    input('Show on homepage from','publishing-start','datetime-local',0,schedule).value=entry?localDate(entry.draft.starts_at):'';
-    input('Remove from homepage after (optional)','publishing-end','datetime-local',0,schedule).value=entry?localDate(entry.draft.ends_at):'';
+    node('legend','Homepage and slideshow schedule',schedule);
+    node('p','Dates use your local timezone. Leave the start blank to go live when you publish.',schedule);
+    input('Show from','publishing-start','datetime-local',0,schedule).value=entry?localDate(entry.draft.starts_at):'';
+    input('Stop showing after (optional)','publishing-end','datetime-local',0,schedule).value=entry?localDate(entry.draft.ends_at):'';
+    node('p','During these dates, the announcement can appear on the homepage and in slideshows that include announcements. It stays in All Announcements after the end date or after archiving. Withdraw it to remove it from public view.',schedule);
+    node('p','The slideshow shows the title and up to 420 characters of text. Readers can find the full announcement and any link on All Announcements.',schedule);
     var discord=node('fieldset','',root);
     node('legend','Discord',discord);
     var share=input('Also share to Discord when published','publishing-share-discord','checkbox',0,discord);
@@ -95,9 +97,7 @@
   }
   function renderList() {
     root.replaceChildren();
-    var actions=node('div','',root);actions.className='announcement-editor-actions';
-    button('New announcement',function(){edit(null);},actions).className='announcement-primary-action';
-    button('Refresh announcements',function(){void load();},actions);
+    button('New announcement',function(){edit(null);}).className='announcement-new-button';
     var list=node('ul','',root);list.className='announcement-management-list';
     rows.forEach(function(entry){
       var item=node('li','',list);
@@ -117,7 +117,10 @@
     root=document.getElementById('member-publishing-app'); if(!root)return;
     busy=true;root.querySelectorAll('button,input,textarea').forEach(function(b){b.disabled=true;});status('Loading announcements…');
     try {var result=await window.snhSupabase.rpc('snh_publishing_list');if(result.error)throw result.error; rows=result.data||[];await refreshDeliveries();dirty=false;selected=null;renderList();status('');}
-    catch(e){status(e.message||'Could not load announcements.');} finally{busy=false;root.querySelectorAll('button,input,textarea').forEach(function(b){b.disabled=false;});}
+    catch(e){
+      status((e.message||'Could not load announcements.')+' ');
+      button('Try again',function(){void load();},document.getElementById('publishing-status'));
+    } finally{busy=false;root.querySelectorAll('button,input,textarea').forEach(function(b){b.disabled=false;});}
   }
   async function write(action) {
     if(busy)return;
