@@ -326,11 +326,17 @@
               <option value="inactive">Basic Members</option>
               <option value="unverified">Unverified Accounts</option>
             </select>
+            <label for="member-admin-directory-sort">Sort by</label>
+            <select id="member-admin-directory-sort">
+              <option value="default">Default order</option>
+              <option value="recent">Most recent sign-in first</option>
+              <option value="oldest">Oldest sign-in first</option>
+            </select>
           </div>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table members-admin-directory">
               <caption class="visually-hidden">Club member directory</caption>
-              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Assigned roles</th></tr></thead>
+              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Assigned roles</th><th scope="col">Last sign-in</th></tr></thead>
               <tbody id="member-admin-table-body"></tbody>
             </table>
           </div>
@@ -609,6 +615,7 @@
     var memberAdminStatus = document.getElementById("member-admin-status");
     var memberAdminStats = document.getElementById("member-admin-stats");
     var memberAdminRefresh = document.getElementById("member-admin-refresh");
+    var memberAdminDirectorySort = document.getElementById("member-admin-directory-sort");
     var memberAdminDirectoryFilter = document.getElementById("member-admin-directory-filter");
     var memberAdminTableBody = document.getElementById("member-admin-table-body");
     var memberAdminSearch = document.getElementById("member-admin-search");
@@ -1276,11 +1283,33 @@
         (mode === "all" || (mode === "with-roles" && roles.length > 0) || (mode === "active" && active) || (mode === "inactive" && !active && row.email_verified === true) || (mode === "unverified" && row.email_verified === false));
     }
 
+    function memberSignInTime(row) {
+      if (row.last_sign_in_at === null) return -Infinity;
+      return Date.parse(row.last_sign_in_at);
+    }
+
+    function memberSignInLabel(row) {
+      var time = memberSignInTime(row);
+      if (time === -Infinity) return "Never signed in";
+      return Number.isFinite(time) ? window.SNHMemberPortal.formatDate(row.last_sign_in_at) : "—";
+    }
+
     function adminRender() {
       if (!memberAdminTableBody) return;
       var query = (memberAdminSearch.value || "").trim().toLowerCase();
       var mode = memberAdminDirectoryFilter.value;
       var filtered = adminRows.filter(function (row) { return memberMatchesDirectoryFilter(row, mode, query); });
+      var sort = memberAdminDirectorySort.value;
+      if (sort !== "default") {
+        filtered.sort(function (left, right) {
+          var a = memberSignInTime(left);
+          var b = memberSignInTime(right);
+          if (Number.isNaN(a)) return Number.isNaN(b) ? 0 : 1;
+          if (Number.isNaN(b)) return -1;
+          if (a === b) return 0;
+          return sort === "oldest" ? a - b : b - a;
+        });
+      }
       var pages = Math.max(1, Math.ceil(filtered.length / adminPageSize));
       adminPage = Math.max(1, Math.min(adminPage, pages));
       var focused = document.activeElement;
@@ -1312,6 +1341,7 @@
           ? "Full Access Member" + (row.email_verified === false ? " · Unverified" : "")
           : row.email_verified === true ? "Basic Member" : row.email_verified === false ? "Unverified" : "Verification unavailable");
         rolePresentation.renderAssignments(adminCell(tr, ""), row.role_slugs || []);
+        adminCell(tr, memberSignInLabel(row));
         memberAdminTableBody.appendChild(tr);
         if (adminExpandedId === row.member_id) adminRenderEditor(row);
       });
@@ -1357,7 +1387,7 @@
       var tr = document.createElement("tr");
       tr.className = "members-admin-editor-row";
       var td = document.createElement("td");
-      td.colSpan = 3;
+      td.colSpan = 4;
       var box = document.createElement("div");
       box.className = "members-admin-editor";
       box.id = "member-detail-" + row.member_id;
@@ -1367,7 +1397,7 @@
       box.appendChild(info);
       var dates = document.createElement("p");
       dates.textContent = "Account created: " + (row.account_created_at ? window.SNHMemberPortal.formatDate(row.account_created_at) : "—") +
-        " · Last sign-in: " + (row.last_sign_in_at ? window.SNHMemberPortal.formatDate(row.last_sign_in_at) : Object.prototype.hasOwnProperty.call(row, "last_sign_in_at") ? "Never" : "—");
+        " · Last sign-in: " + memberSignInLabel(row);
       box.appendChild(dates);
       var membershipTitle = document.createElement("h4"); membershipTitle.textContent = "Club membership"; box.appendChild(membershipTitle);
       if (!emailVerified) {
@@ -1505,9 +1535,13 @@
       if (!quiet) memberAdminStatus.textContent = "";
     };
     memberAdminRefresh.addEventListener("click", function () { if (adminConfirmDiscard()) { adminDraft = null; void onMemberAdminPanelShown(); } });
-    memberAdminDirectoryFilter.addEventListener("change", function (ev) {
-      if (!adminConfirmDiscard()) { ev.target.value = ev.target.dataset.previous || "all"; return; }
-      ev.target.dataset.previous = ev.target.value; adminPage = 1; adminExpandedId = null; adminDraft = null; adminRender();
+    [memberAdminDirectoryFilter, memberAdminDirectorySort].forEach(function (control) {
+      var previous = control.value;
+      control.addEventListener("change", function () {
+        if (!adminConfirmDiscard()) { control.value = previous; return; }
+        previous = control.value;
+        adminPage = 1; adminExpandedId = null; adminDraft = null; adminRender();
+      });
     });
     memberAdminSearch.addEventListener("input", function () {
       memberAdminSearchClear.hidden = !memberAdminSearch.value.length;
