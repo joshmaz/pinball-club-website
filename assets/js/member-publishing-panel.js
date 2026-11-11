@@ -81,19 +81,18 @@
 
     var preview=node('section','',root);preview.id='publishing-announcement-preview';preview.className='publishing-preview';preview.hidden=true;
     preview.setAttribute('aria-label','Announcement preview');
-    var actions=node('div','',root);actions.className='announcement-editor-actions';
+    var actions=node('div','',root);
     button('Preview draft',function(){
       preview.hidden=false;
       window.SNHPublishing.render(preview,{title:document.getElementById('publishing-title').value,body:document.getElementById('publishing-body').value,url:document.getElementById('publishing-url').value,starts_at:dateValue('publishing-start')||new Date().toISOString()});
       preview.focus();
     },actions);
     preview.tabIndex=-1;
-    var save=button('Save draft',function(){void write('save');},actions);
-    if(!entry||entry.archived)save.className='announcement-primary-action';
+    button('Save draft',function(){void write('save');},actions);
     if(entry&&!entry.archived)button('Publish saved draft',function(){
       if(dirty){status('Save your draft before publishing.');return;}
       if(window.confirm('Publish this saved draft with its selected dates?'))void write('publish');
-    },actions).className='announcement-primary-action';
+    },actions);
     node('p','Save draft keeps your edits private. Publish saved draft applies them to the website and queues Discord sharing if selected.',root);
     if(entry) {
       var management=node('details','',root);management.className='announcement-management';
@@ -105,13 +104,12 @@
   }
   function renderList() {
     root.replaceChildren();
-    var actions=node('div','',root);actions.className='announcement-editor-actions';
-    button('New announcement',function(){edit(null);},actions).className='announcement-list-action';
-    button('Refresh announcements',function(){void load();},actions).className='announcement-list-action';
+    button('Refresh announcements',function(){void load();});
+    button('New announcement',function(){edit(null);});
     var list=node('ul','',root);list.className='announcement-management-list';
     rows.forEach(function(entry){
       var item=node('li','',list);
-      button(entry.draft.title,function(){edit(entry);},item).className='announcement-title-button';
+      button(entry.draft.title,function(){edit(entry);},item);
       var meta=node('div','',item);meta.className='announcement-record-meta';
       node('strong','Website: '+websiteState(entry),meta);
       var delivery=deliveries[entry.id];

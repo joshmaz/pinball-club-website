@@ -87,40 +87,10 @@
 }
 #member-publishing-app legend { padding: 0 .35rem; font-weight: 700; }
 #member-publishing-app .publishing-preview { border-color: var(--club-line); }
-#member-publishing-app .announcement-editor-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
-#member-publishing-app button {
-  min-height: 44px;
-  margin: 0;
-  padding: .5rem .75rem;
-  border: 1px solid var(--club-control-line);
-  border-radius: var(--club-radius);
-  background: var(--club-surface);
-  color: var(--club-ink);
-  font: inherit;
-  cursor: pointer;
-}
-#member-publishing-app button:disabled { opacity: .65; cursor: default; }
-#member-publishing-app .announcement-primary-action {
-  border-color: var(--club-teal);
-  background: var(--club-teal);
-  color: var(--club-bg);
-}
 #member-publishing-app .announcement-management-list { list-style: none; margin: 1rem 0 0; padding: 0; }
 .announcement-management-list li { border-bottom: 1px solid var(--club-line); padding: .65rem 0; }
-#member-publishing-app .announcement-title-button,
-#member-publishing-app .announcement-list-action {
-  border: 0;
-  background: transparent;
-  color: var(--club-teal);
-  padding-inline: 0;
-  font-weight: 700;
-  text-align: left;
-  overflow-wrap: anywhere;
-}
 .announcement-record-meta { display: flex; flex-wrap: wrap; gap: .25rem 1rem; color: var(--club-muted); font-size: .85rem; }
 .announcement-management summary { cursor: pointer; padding: .65rem 0; }
-#member-publishing-app .announcement-management button,
-#publishing-discord-state button { margin: 0 .5rem .5rem 0; }
 
 #member-publishing-app .announcement-checkbox { display: flex; align-items: flex-start; gap: .55rem; }
 #member-publishing-app .announcement-checkbox input { width: auto; flex: none; margin: .3em 0 0; }
