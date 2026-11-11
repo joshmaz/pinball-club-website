@@ -194,7 +194,7 @@
       var publishingLink=el('a','Open Publishing',publishingCard);publishingLink.href='members.html?panel=publishing';
       var analyticsCard = el('section', null, cards); el('h4', 'Website analytics', analyticsCard);
       el('p', 'Umami records page views on the public site and member portal in production. No Supabase member ID is sent; staging and preview traffic is excluded.', analyticsCard);
-      if (!window.location || window.location.hostname.toLowerCase() !== 'snhpinballclub.com') {
+      if (!window.location || ['snhpinballclub.com', 'www.snhpinballclub.com'].indexOf(window.location.hostname.toLowerCase()) === -1) {
         el('p', 'Browser tracking controls are available on the production site only.', analyticsCard);
       } else {
         var analyticsEnabled = null;
