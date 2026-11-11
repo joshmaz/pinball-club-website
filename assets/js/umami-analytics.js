@@ -7,7 +7,7 @@
  *   https://snhpinballclub.com/#umami-opt-out
  */
 (() => {
-  const productionHosts = new Set(["snhpinballclub.com"]);
+  const productionHosts = new Set(["snhpinballclub.com", "www.snhpinballclub.com"]);
   if (!productionHosts.has(window.location.hostname.toLowerCase())) return;
 
   const path = window.location.pathname.toLowerCase().replace(/\/+$/, "") || "/";

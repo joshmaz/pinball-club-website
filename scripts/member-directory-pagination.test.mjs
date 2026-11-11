@@ -17,7 +17,8 @@ function setup(count) {
     focus() {ctx.document.activeElement=this;}
   }
   const ctx={adminRows:Array.from({length:count},(_,i)=>({member_id:String(i),display_name:`Member ${i}`,email_verified:true})),adminPage:1,adminPageSize:20,adminExpandedId:null,adminDraft:null,allowDiscard:true,
-    memberAdminTableBody:new Element(),memberAdminPagination:new Element(),memberAdminSearch:{value:''},memberAdminDirectoryFilter:{value:'all'},
+    memberAdminTableBody:new Element(),memberAdminPagination:new Element(),memberAdminSearch:{value:''},memberAdminDirectoryFilter:{value:'all'},memberAdminDirectorySort:{value:'default'},
+    window:{SNHMemberPortal:{formatDate:value=>value.slice(0,10)}},
     adminMemberName:r=>r.display_name,adminConfirmDiscard:()=>ctx.allowDiscard,adminRenderEditor(){},rolePresentation:{renderAssignments(){}},document:{activeElement:null,createElement:()=>new Element(),getElementById(id){function find(e){return e.id===id?e:e.children.map(find).find(Boolean);}return find(ctx.memberAdminPagination);}}};
   vm.createContext(ctx);
   vm.runInContext(html.slice(html.indexOf('    function adminCell('),html.indexOf('    function adminRenderEditor(')),ctx);
@@ -36,4 +37,25 @@ test('page sizes reset, bound refreshed results, and preserve unsaved edits and 
   c.adminRows=[];c.adminRender();assert.equal(c.adminPage,1);assert.equal(control('member-admin-prev-page').disabled,true);assert.equal(control('member-admin-next-page').disabled,true);
   assert.match(c.memberAdminPagination.children[2].textContent,/0 of 0 members/);
   c.adminPage=-2;c.adminRender();assert.equal(c.adminPage,1);
+});
+
+test('last sign-in sorting applies to all filtered members before pagination',()=>{
+  const c=setup(53);
+  const visibleIds=()=>c.memberAdminTableBody.children.map(row=>row.children[0].children[0].getAttribute('data-member-focus'));
+  Object.assign(c.adminRows[40],{last_sign_in_at:'2026-11-10T18:00:00Z',membership_status:'active'});
+  Object.assign(c.adminRows[41],{last_sign_in_at:null,membership_status:'active'});
+  Object.assign(c.adminRows[42],{last_sign_in_at:'2026-10-01T18:00:00Z',membership_status:'active'});
+  Object.assign(c.adminRows[43],{last_sign_in_at:'2026-11-11T18:00:00Z'});
+  c.memberAdminDirectorySort.value='recent';
+  c.adminRender();
+  assert.deepEqual(visibleIds().slice(0,4),['43','40','42','41']);
+  c.memberAdminDirectorySort.value='oldest';
+  c.memberAdminDirectoryFilter.value='active';
+  c.adminRender();
+  assert.deepEqual(visibleIds(),['41','42','40']);
+  assert.deepEqual(c.memberAdminTableBody.children.map(row=>row.children[3].textContent),
+    ['Never signed in','2026-10-01','2026-11-10']);
+  c.memberAdminDirectorySort.value='default';
+  c.adminRender();
+  assert.deepEqual(visibleIds(),['40','41','42']);
 });
