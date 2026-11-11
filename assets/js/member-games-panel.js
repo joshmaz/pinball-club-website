@@ -452,8 +452,9 @@
     }
   }
 
-  function onFormPotentiallyDirty() {
+  function onFormPotentiallyDirty(event) {
     if (suppressDirtyTracking) return;
+    if (event && event.target && event.target.closest && event.target.closest(".member-games-review-scaffolds")) return;
     if (mode === "edit" || mode === "new") isDirty = true;
   }
 
@@ -1989,6 +1990,24 @@
     return fieldKey === "ipdbUrl" || fieldKey === "pinsideUrl" || fieldKey === "kineticistUrl";
   }
 
+  function makeAiFieldKeyUrlId(fieldKey) {
+    return "mg-ai-url-" + String(fieldKey || "").replace(/[^a-zA-Z0-9_-]+/g, "-");
+  }
+
+  function aiSourceFieldLabel(fieldKey) {
+    return { ipdbUrl: "IPDB", pinsideUrl: "Pinside", kineticistUrl: "Kineticist" }[fieldKey] || String(fieldKey || "Source");
+  }
+
+  function isValidAiSourceUrl(fieldKey, value) {
+    try {
+      var parsed = new URL(String(value || "").trim());
+      var hosts = { ipdbUrl: "www.ipdb.org", pinsideUrl: "pinside.com", kineticistUrl: "www.kineticist.com" };
+      return parsed.protocol === "https:" && parsed.hostname === hosts[fieldKey] && !parsed.username && !parsed.password && !parsed.port;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /** Prefix like "Current: " or ""; opens http(s) values in a new tab for verification. */
   function appendAiProposalUrlParagraph(row, prefixText, rawValue, extraClass) {
     var v = String(rawValue || "").trim();
@@ -2041,7 +2060,9 @@
     var evidence = Array.isArray(proposal.evidence) ? proposal.evidence : [];
     if (evidence.length) {
       var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
-      evidenceDetails.appendChild(el("summary", { text: "Source evidence (" + evidence.filter(function (item) { return item.verified; }).length + " verified)" }));
+      var verifiedCount = evidence.filter(function (item) { return item.verified; }).length;
+      evidenceDetails.appendChild(el("summary", { text: "Source evidence (" + verifiedCount + " verified)" }));
+      evidenceDetails.open = verifiedCount === 0;
       evidence.forEach(function (item) {
         var row = el("div", { className: "member-games-ai-field" });
         var heading = el("p", { className: "member-games-help" });
@@ -2085,21 +2106,46 @@
     fields.forEach(function (field) {
       if (!field || !isAiProposalLinkField(field.field)) return;
       var row = el("div", { className: "member-games-ai-field" });
-      if (String(field.reason || "").trim() === "Existing link retained.") {
-        row.appendChild(el("p", { className: "member-games-help", text: String(field.field) + " — existing link preserved." }));
-        appendAiProposalUrlParagraph(row, "", field.currentValue || field.suggestedValue, "member-games-ai-current");
-      } else {
-        var checkboxId = makeAiFieldKeyCheckboxId(field.field);
-        var checkbox = el("input", { type: "checkbox", id: checkboxId });
-        checkbox.checked = false;
-        row.appendChild(checkbox);
-        row.appendChild(el("label", { for: checkboxId, text: String(field.field) + " candidate (open and verify before applying)" }));
-        appendAiProposalUrlParagraph(row, "Candidate: ", field.suggestedValue);
-        if (field.reason) row.appendChild(el("p", { className: "member-games-help", text: String(field.reason) }));
-        (field.warnings || []).forEach(function (warning) {
-          row.appendChild(el("p", { className: "member-games-help", text: String(warning) }));
-        });
+      var checkboxId = makeAiFieldKeyCheckboxId(field.field);
+      var checkbox = el("input", { type: "checkbox", id: checkboxId });
+      checkbox.checked = false;
+      row.appendChild(checkbox);
+      var fieldLabel = aiSourceFieldLabel(field.field);
+      var isExisting = String(field.reason || "").trim() === "Existing link retained.";
+      row.appendChild(el("label", {
+        for: checkboxId,
+        text: isExisting ? fieldLabel + " URL (keep or replace)" : fieldLabel + " candidate (edit if needed; verify before applying)",
+      }));
+      var urlInput = el("input", {
+        type: "url",
+        id: makeAiFieldKeyUrlId(field.field),
+        className: "member-games-input",
+        autocomplete: "url",
+        spellcheck: "false",
+        "aria-label": fieldLabel + " URL",
+      });
+      urlInput.value = String(field.suggestedValue || field.currentValue || "");
+      row.appendChild(urlInput);
+      var openLink = el("a", {
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "member-games-ai-external-link",
+        text: "Open current URL",
+      });
+      function updateOpenLink() {
+        var value = String(urlInput.value || "").trim();
+        var valid = isValidAiSourceUrl(field.field, value);
+        openLink.hidden = !valid;
+        if (valid) openLink.href = value;
+        else openLink.removeAttribute("href");
       }
+      urlInput.addEventListener("input", updateOpenLink);
+      updateOpenLink();
+      row.appendChild(openLink);
+      if (field.reason) row.appendChild(el("p", { className: "member-games-help", text: String(field.reason) }));
+      (field.warnings || []).forEach(function (warning) {
+        row.appendChild(el("p", { className: "member-games-help", text: String(warning) }));
+      });
       aiProposalBodyEl.appendChild(row);
     });
   }
@@ -2118,7 +2164,11 @@
         notes: (document.getElementById("mg-ai-notes") || {}).value || "",
       });
       renderAiProposal(proposal);
-      setAiStatus(proposal.status === "unavailable" ? "No description draft was created." : "Review the results below.");
+      if (action === "sources" && !(proposal.evidence || []).some(function (item) { return item.verified; })) {
+        setAiStatus("No source page was verified. Check the evidence details, correct a URL below, select it, and apply the link before drafting.");
+      } else {
+        setAiStatus(proposal.status === "unavailable" ? "No description draft was created." : "Review the results below.");
+      }
     } catch (err) {
       setAiStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     } finally {
@@ -2133,9 +2183,10 @@
       if (!f || !f.field) return;
       var cb = document.getElementById(makeAiFieldKeyCheckboxId(f.field));
       if (!cb || !cb.checked) return;
-      if (f.field === "ipdbUrl") out.ipdbUrl = f.suggestedValue || null;
-      if (f.field === "pinsideUrl") out.pinsideUrl = f.suggestedValue || null;
-      if (f.field === "kineticistUrl") out.kineticistUrl = f.suggestedValue || null;
+      if (isAiProposalLinkField(f.field)) {
+        var valueInput = document.getElementById(makeAiFieldKeyUrlId(f.field));
+        if (valueInput) out[f.field] = String(valueInput.value || "").trim() || null;
+      }
     });
     return out;
   }
@@ -2148,16 +2199,16 @@
       setAiStatus("Select at least one field to apply.");
       return;
     }
-    if (selected.ipdbUrl && !isValidHttpUrl(selected.ipdbUrl)) {
-      setAiStatus("IPDB URL is invalid. Deselect or fix before apply.");
+    if (selected.ipdbUrl && !isValidAiSourceUrl("ipdbUrl", selected.ipdbUrl)) {
+      setAiStatus("Use a valid https://www.ipdb.org URL for IPDB.");
       return;
     }
-    if (selected.pinsideUrl && !isValidHttpUrl(selected.pinsideUrl)) {
-      setAiStatus("Pinside URL is invalid. Deselect or fix before apply.");
+    if (selected.pinsideUrl && !isValidAiSourceUrl("pinsideUrl", selected.pinsideUrl)) {
+      setAiStatus("Use a valid https://pinside.com URL for Pinside.");
       return;
     }
-    if (selected.kineticistUrl && !isValidHttpUrl(selected.kineticistUrl)) {
-      setAiStatus("Kineticist URL is invalid. Deselect or fix before apply.");
+    if (selected.kineticistUrl && !isValidAiSourceUrl("kineticistUrl", selected.kineticistUrl)) {
+      setAiStatus("Use a valid https://www.kineticist.com URL for Kineticist.");
       return;
     }
     setAiStatus("Applying selected source links…");
@@ -2179,7 +2230,7 @@
 
   function buildReviewScaffolds() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Find or verify links separately from writing. Descriptions use verified source text or notes you provide." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Find or verify links separately from writing. Edit a candidate URL here, open it to check the page, then select and apply it. Descriptions use verified source text or notes you provide." }));
     var notes = textareaInput("mg-ai-notes", "");
     notes.setAttribute("rows", "3");
     notes.setAttribute("placeholder", "Gameplay fragments to polish when source coverage is thin");

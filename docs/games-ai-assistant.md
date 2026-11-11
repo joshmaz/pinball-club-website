@@ -67,7 +67,7 @@ the actual request handler and canonical SQL role boundary before protected work
 2. Open the evidence details to review which source pages matched the selected title and the excerpts retrieved from them.
 3. Choose **Draft description** for two editable options grounded in verified source text or specific existing catalog copy. If evidence is thin, the assistant reports that instead of writing generic copy.
 4. Add gameplay fragments under **Operator notes** and choose **Polish notes** when source coverage is thin. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
-5. Select source-link candidates only after opening and checking them. Apply selected links separately. Applying links preserves unsaved description edits in the editor.
+5. Edit a proposed URL directly in the source review row if its path needs correction. Open the current URL, confirm it is the exact machine page, select that row, and apply the link. Applying links preserves unsaved description edits in the editor. Then draft again so the corrected saved link is fetched for evidence.
 
 The short card target remains roughly 220–320 characters. Include manufacturer, release year, and a designer only when supported by verified catalog/source evidence. The public Games page is unchanged.
 
