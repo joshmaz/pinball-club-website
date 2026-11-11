@@ -215,6 +215,16 @@
       analyticsDashboard.target = '_blank';
       analyticsDashboard.rel = 'noopener noreferrer';
       el('p', 'Detailed reports are in Umami. We can add a small summary here later.', analyticsCard);
+      var storeCard = el('section', null, cards); el('h4', 'Store management', storeCard);
+      el('p', 'The Fourthwall store is managed separately. Products, orders, settings, and sales reports are in Fourthwall.', storeCard);
+      var storefrontLink = el('a', 'Open storefront ↗', storeCard);
+      storefrontLink.href = 'https://shop.snhpinballclub.com/';
+      storefrontLink.target = '_blank'; storefrontLink.rel = 'noopener noreferrer';
+      var fourthwallLinkParagraph = el('p', null, storeCard);
+      var fourthwallLink = el('a', 'Manage store in Fourthwall ↗', fourthwallLinkParagraph);
+      fourthwallLink.href = 'https://admin.fourthwall.com/';
+      fourthwallLink.target = '_blank'; fourthwallLink.rel = 'noopener noreferrer';
+      el('p', 'Store status is not monitored here.', storeCard);
       el('p', 'Health reflects the latest recorded requests, not continuous monitoring.', content);
     }
     if (current === 'integrations') {
