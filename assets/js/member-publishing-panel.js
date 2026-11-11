@@ -1,49 +1,113 @@
 (function () {
   'use strict';
   var root, selected=null, rows=[], busy=false, dirty=false, admin=false, deliveries={};
+  var deliveryLabels={pending:'Pending',sending:'Sending',shared:'Shared',failed:'Failed',uncertain:'Needs a channel check',not_shared:'Not shared',skipped:'Expired before delivery'};
+  var dateFormat=new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short'});
   function node(tag,text,parent) {var n=document.createElement(tag); if(text)n.textContent=text; if(parent)parent.appendChild(n); return n;}
   function status(text) {document.getElementById('publishing-status').textContent=text;}
   function localDate(value) {if(!value)return ''; var d=new Date(value); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
   function dateValue(id) {var value=document.getElementById(id).value; return value ? new Date(value).toISOString() : null;}
-  function input(label,id,type,max) {
-    var wrap=node('label',label,root), field=node(type==='textarea'?'textarea':'input','',wrap);
+  function input(label,id,type,max,parent) {
+    var wrap=node('label',label,parent||root), field=node(type==='textarea'?'textarea':'input','',wrap);
     field.id=id; if(type==='checkbox')field.setAttribute('style','width:auto;justify-self:start'); if(type!=='textarea')field.type=type; if(max)field.maxLength=max;
-    field.addEventListener('input',function(){dirty=true;}); return field;
+    field.addEventListener('input',function(){
+      dirty=true;
+      var preview=document.getElementById('publishing-announcement-preview');
+      if(preview)preview.hidden=true;
+    });
+    return field;
   }
   function button(text,handler,parent) {var b=node('button',text,parent||root);b.type='button';b.addEventListener('click',handler);return b;}
   function canLeave(){return !dirty || window.confirm('Discard unsaved announcement changes?');}
   function closeEditor(){if(busy||!canLeave())return;selected=null;dirty=false;renderList();status('');}
+  function websiteState(entry) {
+    if (entry.archived) return 'Archived';
+    if (!entry.published) return 'Private draft';
+    var now=Date.now();
+    if (Date.parse(entry.published.starts_at)>now) return 'Scheduled';
+    if (Date.parse(entry.published.ends_at)<=now) return 'Homepage placement ended';
+    return 'Published';
+  }
+  function addDate(parent,label,value) {
+    var timestamp=Date.parse(value);
+    if (!Number.isFinite(timestamp)) return;
+    var line=node('span',label+' ',parent);
+    node('time',dateFormat.format(timestamp),line).dateTime=value;
+  }
+  function websiteDates(entry,parent) {
+    if (entry.published) {
+      addDate(parent,'Last published',entry.published_at);
+      addDate(parent,'Homepage starts',entry.published.starts_at);
+      addDate(parent,'Homepage ends',entry.published.ends_at);
+    } else {
+      addDate(parent,'Last updated',entry.updated_at);
+    }
+  }
   function edit(entry) {
     selected=entry; dirty=false; root.replaceChildren();
     button('← Back to announcements',closeEditor);
     var heading=node('h3',entry?'Edit announcement':'New announcement',root); heading.tabIndex=-1;
-    node('p','Plain text only. Saving a draft leaves the published version unchanged. Dates use your local timezone.',root);
-    input('Title','publishing-title','text',120).value=entry?entry.draft.title:'';
-    input('Text','publishing-body','textarea',2000).value=entry?entry.draft.body:'';
-    input('Optional web link','publishing-url','url',2000).value=entry?(entry.draft.url||''):'';
-    input('Publish from (blank means now when published)','publishing-start','datetime-local').value=entry?localDate(entry.draft.starts_at):'';
-    input('Remove from homepage after (optional)','publishing-end','datetime-local').value=entry?localDate(entry.draft.ends_at):'';
-    input('Also share to Discord when published','publishing-share-discord','checkbox').checked=!!(entry&&entry.draft_discord);
-    node('p','Discord sharing starts at publication time. Saving this choice alone does not send a message.',root);
-    if(entry){var discordState=node('section','',root);discordState.id='publishing-discord-state';renderDelivery(entry);}
-    var preview=node('section','',root);preview.className='publishing-preview';preview.setAttribute('aria-label','Announcement preview');
-    button('Preview draft',function(){window.SNHPublishing.render(preview,{title:document.getElementById('publishing-title').value,body:document.getElementById('publishing-body').value,url:document.getElementById('publishing-url').value,starts_at:dateValue('publishing-start')||new Date().toISOString()});});
-    button('Save draft',function(){void write('save');});
-    if(entry) {
-      node('p',entry.archived?'Archived. Retained in history if previously published.':entry.published?'Published version retained. Use Publish saved draft to replace it.':'Private draft. Not visible to visitors.',root);
-      if(!entry.archived)button('Publish saved draft',function(){if(dirty){status('Save your draft before publishing.');return;} if(window.confirm('Publish this saved draft with its selected dates?'))void write('publish');});
-      if(entry.published)button('Withdraw from public view',function(){if(window.confirm('Remove this announcement from the homepage and public history?'))void write('withdraw');});
-      button(entry.archived?'Restore':'Archive',function(){void write(entry.archived?'restore':'archive');});
-      if(admin&&entry.archived&&!entry.published)button('Permanently delete',function(){if(window.confirm('Permanently delete this announcement? Its audit history will be retained.'))void write('delete');});
+    if (entry) {
+      var website=node('div','',root); website.className='announcement-record-meta';
+      node('strong','Website: '+websiteState(entry),website);
+      websiteDates(entry,website);
     }
-    button('Cancel / back to announcements',closeEditor);
+    var content=node('fieldset','',root);
+    node('legend','Announcement content',content);
+    input('Title','publishing-title','text',120,content).value=entry?entry.draft.title:'';
+    input('Text','publishing-body','textarea',2000,content).value=entry?entry.draft.body:'';
+    input('Optional web link','publishing-url','url',2000,content).value=entry?(entry.draft.url||''):'';
+    var schedule=node('fieldset','',root);
+    node('legend','Homepage schedule',schedule);
+    node('p','Dates use your local timezone. Leave the start blank to show the announcement as soon as you publish it.',schedule);
+    input('Show on homepage from','publishing-start','datetime-local',0,schedule).value=entry?localDate(entry.draft.starts_at):'';
+    input('Remove from homepage after (optional)','publishing-end','datetime-local',0,schedule).value=entry?localDate(entry.draft.ends_at):'';
+    var discord=node('fieldset','',root);
+    node('legend','Discord',discord);
+    var share=input('Also share to Discord when published','publishing-share-discord','checkbox',0,discord);
+    share.checked=!!(entry&&entry.draft_discord);
+    node('p','Discord sharing begins when the announcement goes live.',discord);
+    if(entry){var discordState=node('div','',discord);discordState.id='publishing-discord-state';renderDelivery(entry);}
+
+    var preview=node('section','',root);preview.id='publishing-announcement-preview';preview.className='publishing-preview';preview.hidden=true;
+    preview.setAttribute('aria-label','Announcement preview');
+    var actions=node('div','',root);actions.className='announcement-editor-actions';
+    button('Preview draft',function(){
+      preview.hidden=false;
+      window.SNHPublishing.render(preview,{title:document.getElementById('publishing-title').value,body:document.getElementById('publishing-body').value,url:document.getElementById('publishing-url').value,starts_at:dateValue('publishing-start')||new Date().toISOString()});
+      preview.focus();
+    },actions);
+    preview.tabIndex=-1;
+    var save=button('Save draft',function(){void write('save');},actions);
+    if(!entry||entry.archived)save.className='announcement-primary-action';
+    if(entry&&!entry.archived)button('Publish saved draft',function(){
+      if(dirty){status('Save your draft before publishing.');return;}
+      if(window.confirm('Publish this saved draft with its selected dates?'))void write('publish');
+    },actions).className='announcement-primary-action';
+    node('p','Save draft keeps your edits private. Publish saved draft applies them to the website and queues Discord sharing if selected.',root);
+    if(entry) {
+      var management=node('details','',root);management.className='announcement-management';
+      node('summary','Manage announcement',management);
+      if(entry.published)button('Withdraw from public view',function(){if(window.confirm('Remove this announcement from the homepage and public history?'))void write('withdraw');},management);
+      button(entry.archived?'Restore':'Archive',function(){void write(entry.archived?'restore':'archive');},management);
+      if(admin&&entry.archived&&!entry.published)button('Permanently delete',function(){if(window.confirm('Permanently delete this announcement? Its audit history will be retained.'))void write('delete');},management);
+    }
   }
   function renderList() {
-    root.replaceChildren();button('Refresh announcements',function(){void load();});button('New announcement',function(){edit(null);});
-    var list=node('ul','',root);
-    rows.forEach(function(entry){var item=node('li','',list);button(entry.draft.title,function(){edit(entry);},item);
-      var state=entry.archived?'Archived':!entry.published?'Draft':new Date(entry.published.starts_at)>new Date()?'Scheduled':entry.published.ends_at&&new Date(entry.published.ends_at)<=new Date()?'Expired':'Published';
-      node('span',' — '+state,item);
+    root.replaceChildren();
+    var actions=node('div','',root);actions.className='announcement-editor-actions';
+    button('New announcement',function(){edit(null);},actions).className='announcement-primary-action';
+    button('Refresh announcements',function(){void load();},actions);
+    var list=node('ul','',root);list.className='announcement-management-list';
+    rows.forEach(function(entry){
+      var item=node('li','',list);
+      button(entry.draft.title,function(){edit(entry);},item).className='announcement-title-button';
+      var meta=node('div','',item);meta.className='announcement-record-meta';
+      node('strong','Website: '+websiteState(entry),meta);
+      var delivery=deliveries[entry.id];
+      if(delivery)node('span','Discord: '+(deliveryLabels[delivery.status]||delivery.status),meta);
+      else if(entry.draft_discord)node('span','Discord selected in draft',meta);
+      websiteDates(entry,meta);
     });
     if(!rows.length)node('p','No announcements yet.',root);
   }
@@ -70,7 +134,7 @@
       busy=true;root.querySelectorAll('button,input,textarea').forEach(function(b){b.disabled=true;});
       var result=await window.snhSupabase.rpc('snh_publishing_write',args);if(result.error)throw result.error;
       dirty=false; if(action!=='delete'){var index=rows.findIndex(function(row){return row.id===result.data.id;});if(index===-1)rows.unshift(result.data);else rows[index]=result.data;} if(action==='delete'){busy=false;await load();} else edit(result.data);
-      if(['publish','withdraw','delete'].indexOf(action)!==-1&&(result.data.discord_requested||deliveries[args.p_id]))void dispatch();
+      if(['publish','withdraw','delete'].indexOf(action)!==-1&&((result.data&&result.data.discord_requested)||deliveries[args.p_id]))void dispatch();
       status(action==='save'?'Draft saved. The public version is unchanged.':'Announcement updated.');
     } catch(e){status(e.message||'Could not save. Reload before trying again.');}
     finally{busy=false;root.querySelectorAll('button,input,textarea').forEach(function(b){b.disabled=false;});}
@@ -85,14 +149,16 @@
       var result=await window.snhSupabase.functions.invoke('publishing-discord-dispatch',{body:{}});
       if(result.error)throw result.error;
       await refreshDeliveries();
-      if(selected)renderDelivery(selected);
+      if(selected)renderDelivery(selected);else renderList();
       if(result.data&&result.data.configured===false)status('Website saved. Discord delivery is waiting for server setup.');
     }catch(_){status('Website saved. Discord delivery is pending; use Check delivery to retry the worker.');}
   }
   function renderDelivery(entry){
     var parent=document.getElementById('publishing-discord-state');if(!parent)return;parent.replaceChildren();
-    var delivery=deliveries[entry.id],labels={pending:'Pending (scheduled items wait for their publication time)',sending:'Sending',shared:'Shared',failed:'Failed',uncertain:'Needs a channel check',not_shared:'Not shared',skipped:'Expired before delivery'};
-    node('h4','Discord',parent);node('p',delivery?(labels[delivery.status]||delivery.status):entry.draft_discord?'Will be queued when published.':'Sharing is off for this draft.',parent);
+    var delivery=deliveries[entry.id];
+    node('h4','Delivery status',parent);
+    node('p',delivery?(deliveryLabels[delivery.status]||delivery.status):'No delivery recorded.',parent);
+    if(delivery&&delivery.status==='pending')node('p','Scheduled posts wait until the announcement goes live.',parent);
     if(delivery&&delivery.last_error)node('p',delivery.last_error,parent);
     if(delivery&&delivery.guild_id&&delivery.message_id){var a=node('a','Open Discord message ↗',parent);a.href='https://discord.com/channels/'+[delivery.guild_id,delivery.channel_id,delivery.message_id].map(encodeURIComponent).join('/');}
     if(delivery||entry.draft_discord)button('Check delivery',function(){void dispatch();},parent);
