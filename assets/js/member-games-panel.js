@@ -67,6 +67,7 @@
   var aiApplyBtnEl = null;
   var aiProposalData = null;
   var aiDescriptionRegenCount = 0;
+  var aiOperatorVerifiedSourcesByGame = Object.create(null);
   var aiBusy = false;
   var filterAtClubOnly = false;
   var pinballMapIngestStatusRowEl = null;
@@ -2054,6 +2055,13 @@
     setAiStatus("");
   }
 
+  function currentAiOperatorVerifiedSources() {
+    var byProvider = aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {};
+    return Object.keys(byProvider).map(function (provider) {
+      return { provider: provider, url: byProvider[provider] };
+    });
+  }
+
   function renderAiProposal(proposal) {
     if (!aiProposalBodyEl) return;
     aiProposalBodyEl.replaceChildren();
@@ -2067,8 +2075,13 @@
     var evidence = Array.isArray(proposal.evidence) ? proposal.evidence : [];
     if (evidence.length) {
       var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
-      var verifiedCount = evidence.filter(function (item) { return item.verified; }).length;
-      evidenceDetails.appendChild(el("summary", { text: "Source evidence (" + verifiedCount + " verified)" }));
+      var verifiedCount = evidence.filter(function (item) {
+        var confirmed = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider];
+        return (item.verified && item.verificationMethod !== "operator") || confirmed === item.url;
+      }).length;
+      var fetchedCount = evidence.filter(function (item) { return item.verified && item.verificationMethod !== "operator"; }).length;
+      var evidenceSummary = el("summary", { text: "Source evidence (" + verifiedCount + " confirmed; " + fetchedCount + " fetched)" });
+      evidenceDetails.appendChild(evidenceSummary);
       evidenceDetails.open = verifiedCount === 0;
       evidence.forEach(function (item) {
         var row = el("div", { className: "member-games-ai-field" });
@@ -2078,9 +2091,43 @@
         if (href && isValidHttpUrl(href)) {
           heading.appendChild(el("a", { href: href, target: "_blank", rel: "noopener noreferrer", className: "member-games-ai-external-link", text: href }));
         }
-        heading.appendChild(document.createTextNode(item.verified ? " — verified match" : " — not used"));
+        var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
+        heading.appendChild(document.createTextNode(item.verificationMethod === "operator" || priorOperatorConfirmation
+          ? " — operator-confirmed match"
+          : item.verified ? " — page fetched; identity matched" : " — not used"));
         row.appendChild(heading);
         row.appendChild(el("p", { className: "member-games-help", text: String(item.excerpt || item.reason || "") }));
+        if (href && isValidAiSourceUrl(item.field || ({ IPDB: "ipdbUrl", Pinside: "pinsideUrl", Kineticist: "kineticistUrl" })[item.provider], href)) {
+          var verifyId = "mg-ai-manual-verify-" + String(item.provider || "").toLowerCase();
+          var verifyCheckbox = el("input", { type: "checkbox", id: verifyId });
+          verifyCheckbox.checked = priorOperatorConfirmation || item.verificationMethod === "operator";
+          var verifyLabel = el("label", {
+            className: "member-games-help",
+            for: verifyId,
+            text: "I opened this page and confirmed it is for this game",
+          });
+          verifyCheckbox.addEventListener("change", function () {
+            var gameKey = String(currentGameId || "");
+            if (!aiOperatorVerifiedSourcesByGame[gameKey]) aiOperatorVerifiedSourcesByGame[gameKey] = Object.create(null);
+            if (verifyCheckbox.checked) aiOperatorVerifiedSourcesByGame[gameKey][item.provider] = href;
+            else if (aiOperatorVerifiedSourcesByGame[gameKey][item.provider] === href) delete aiOperatorVerifiedSourcesByGame[gameKey][item.provider];
+            var operatorUrl = (aiOperatorVerifiedSourcesByGame[gameKey] || {})[item.provider];
+            var count = evidence.filter(function (source) {
+              return (source.verified && source.verificationMethod !== "operator")
+                || ((aiOperatorVerifiedSourcesByGame[gameKey] || {})[source.provider] === source.url);
+            }).length;
+            var fetched = evidence.filter(function (source) { return source.verified && source.verificationMethod !== "operator"; }).length;
+            evidenceSummary.textContent = "Source evidence (" + count + " confirmed; " + fetched + " fetched)";
+            heading.lastChild.textContent = operatorUrl === href
+              ? " — operator-confirmed match"
+              : item.verified && item.verificationMethod !== "operator" ? " — page fetched; identity matched" : " — not used";
+            if (verifyCheckbox.checked) {
+              setAiStatus("Manual confirmation saved for this editing session. The page text is still unavailable to metadata suggestions and description drafting.");
+            }
+          });
+          row.appendChild(verifyCheckbox);
+          row.appendChild(verifyLabel);
+        }
         evidenceDetails.appendChild(row);
       });
       aiProposalBodyEl.appendChild(evidenceDetails);
@@ -2199,6 +2246,7 @@
         gameId: currentGameId,
         action: action,
         notes: (document.getElementById("mg-ai-notes") || {}).value || "",
+        operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
       if (action === "sources" && !(proposal.evidence || []).some(function (item) { return item.verified; })) {

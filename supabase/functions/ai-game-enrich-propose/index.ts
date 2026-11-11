@@ -53,6 +53,7 @@ type EnrichmentRequest = {
   gameId: string;
   action?: "sources" | "metadata" | "description" | "polish";
   notes?: string;
+  operatorVerifiedSources?: Array<{ provider?: string; url?: string }>;
   regenerateDescription?: boolean;
   runContext?: {
     requestId?: string;
@@ -177,18 +178,22 @@ Deno.serve(async (req) => {
       status = warnings.some((warning) => warning.includes("unavailable")) ? "needs_review" : "ok";
     } else if (action === "sources") {
       fields = buildLinkSuggestions(game);
-      evidence = await collectSourceEvidence(game, true);
+      evidence = await collectSourceEvidence(game, true, body.operatorVerifiedSources);
       if (!evidence.some((item) => item.verified)) {
         warnings.push("No linked source page could be verified for this game. Existing URLs were preserved.");
         status = "needs_review";
+      } else if (evidence.some((item) => item.verificationMethod === "operator")) {
+        warnings.push("You confirmed the linked pages match this game. Some providers block page-text retrieval, so their text is unavailable to metadata suggestions and description drafting.");
       }
     } else if (action === "metadata") {
-      evidence = await collectSourceEvidence(game, false);
+      evidence = await collectSourceEvidence(game, false, body.operatorVerifiedSources);
       const verifiedEvidence = evidence.filter((item) => item.verified && item.excerpt.length >= 40);
       const missingFields = metadataFieldsMissing(game);
       if (!verifiedEvidence.length) {
         status = "unavailable";
-        warnings.push("Verify at least one source URL before asking for metadata suggestions. No metadata was changed.");
+        warnings.push(evidence.some((item) => item.verificationMethod === "operator")
+          ? "The pages are manually confirmed, but their text could not be retrieved. Enter the missing metadata manually; no metadata was changed."
+          : "Verify at least one source URL before asking for metadata suggestions. No metadata was changed.");
       } else if (!missingFields.length) {
         status = "unavailable";
         warnings.push("The supported metadata fields are already filled. No values were changed.");
@@ -226,7 +231,7 @@ Deno.serve(async (req) => {
         }
       }
     } else {
-      evidence = await collectSourceEvidence(game, false);
+      evidence = await collectSourceEvidence(game, false, body.operatorVerifiedSources);
       const notes = (body.notes || "").trim().slice(0, 3000);
       const hasGrounding = evidence.some((item) => item.verified && item.excerpt.length >= 40)
         || hasSpecificCatalogDetails(game.details || "");
@@ -242,7 +247,7 @@ Deno.serve(async (req) => {
           status = "unavailable";
           warnings.push("LLM unavailable: missing API key. No fallback description was generated.");
         } else {
-          const evidenceText = evidence.filter((item) => item.verified).map((item) =>
+          const evidenceText = evidence.filter((item) => item.verified && item.excerpt.length >= 40).map((item) =>
             `- ${item.provider} (${item.url}) — ${item.excerpt}`
           ).join("\n");
           const grounding = [evidenceText, notes ? `OPERATOR NOTES (use only these additional gameplay claims):\n${notes}` : ""]
@@ -513,11 +518,16 @@ type SourceEvidence = {
   provider: ResearchProvider;
   url: string;
   verified: boolean;
+  verificationMethod?: "fetch" | "operator";
   excerpt: string;
   reason: string;
 };
 
-async function collectSourceEvidence(game: GameRow, includeCandidates: boolean): Promise<SourceEvidence[]> {
+async function collectSourceEvidence(
+  game: GameRow,
+  includeCandidates: boolean,
+  operatorVerifiedSources: EnrichmentRequest["operatorVerifiedSources"] = [],
+): Promise<SourceEvidence[]> {
   const refs: Array<{ label: ResearchProvider; url: string | null; existing: boolean }> = [
     { label: "IPDB", url: game.ipdb_url, existing: true },
     { label: "Pinside", url: game.pinside_url, existing: true },
@@ -533,16 +543,27 @@ async function collectSourceEvidence(game: GameRow, includeCandidates: boolean):
       if (!refs.some((r) => r.label === guess.label && r.url)) refs.push({ ...guess, existing: false });
     }
   }
+  const operatorUrls = new Set((operatorVerifiedSources || []).slice(0, 10).flatMap((item) => {
+    const provider = item.provider as ResearchProvider;
+    if (!Object.prototype.hasOwnProperty.call(RESEARCH_HOSTS, provider)) return [];
+    const url = researchUrl(provider, String(item.url || ""));
+    return url ? [`${provider}:${url.href}`] : [];
+  }));
   const results = await Promise.all(refs.filter((r) => r.url).map(async (ref) => {
     const url = String(ref.url);
     const page = await fetchReferenceEvidence(game, ref.label, url);
-    const verified = !!page && page.identityMatches;
+    const normalizedUrl = researchUrl(ref.label, url)?.href || url;
+    const operatorVerified = operatorUrls.has(`${ref.label}:${normalizedUrl}`);
+    const verified = (!!page && page.identityMatches) || operatorVerified;
     return {
       provider: ref.label,
       url,
       verified,
-      excerpt: verified ? page.excerpt : "",
-      reason: !page ? "The source could not be fetched or did not return usable page text. You can still apply a URL after opening and confirming it."
+      verificationMethod: operatorVerified && !(page && page.identityMatches) ? "operator" as const : verified ? "fetch" as const : undefined,
+      excerpt: page?.identityMatches ? page.excerpt : "",
+      reason: operatorVerified && !(page && page.identityMatches)
+        ? "You confirmed this page matches the game. The provider blocked page-text retrieval, so the text is unavailable to the assistant."
+        : !page ? "The source could not be fetched or did not return usable page text. Open it and confirm the game, then check the manual confirmation below."
         : page.failureReason || (verified ? (ref.existing ? "Existing link matches the selected game." : "Candidate page matches the selected game.")
         : "Page identity did not match the selected game; excluded from drafting."),
     };
