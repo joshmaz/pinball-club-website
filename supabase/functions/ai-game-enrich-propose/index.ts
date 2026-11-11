@@ -542,9 +542,9 @@ async function collectSourceEvidence(game: GameRow, includeCandidates: boolean):
       url,
       verified,
       excerpt: verified ? page.excerpt : "",
-      reason: !page ? "Page could not be fetched or did not contain usable game text."
-        : verified ? (ref.existing ? "Existing link matches the selected game." : "Candidate page matches the selected game.")
-        : "Page identity did not match the selected game; excluded from drafting.",
+      reason: !page ? "The source could not be fetched or did not return usable page text. You can still apply a URL after opening and confirming it."
+        : page.failureReason || (verified ? (ref.existing ? "Existing link matches the selected game." : "Candidate page matches the selected game.")
+        : "Page identity did not match the selected game; excluded from drafting."),
     };
   }));
   return results;
@@ -557,15 +557,13 @@ function hasSpecificCatalogDetails(value: string): boolean {
     && !/\b(part of the club lineup|gameplay notes can be refined|supports up to \d+ players)\b/i.test(text);
 }
 
-async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider, value: string): Promise<{ identityMatches: boolean; excerpt: string } | null> {
-  const url = researchUrl(provider, value);
-  if (!url) return null;
+async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider, value: string): Promise<{ identityMatches: boolean; excerpt: string; failureReason?: string } | null> {
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), 4500);
   try {
-    const res = await fetch(url.href, { signal: controller.signal, redirect: "error", credentials: "omit", headers: { Accept: "text/html, application/xhtml+xml" } });
-    const html = await boundedReferenceHtml(res);
-    if (!html) return null;
+    const result = await fetchReferenceHtml(provider, value, controller.signal);
+    if (!result.html) return { identityMatches: false, excerpt: "", failureReason: result.reason };
+    const html = result.html;
     const title = firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
     const h1 = firstMatch(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i);
     const main = firstMatch(html, /<(?:main|article)[^>]*>([\s\S]*?)<\/(?:main|article)>/i);
@@ -585,7 +583,7 @@ async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider,
     const identityMatches = titleMatches && !yearConflict && !manufacturerConflict;
     const excerpt = pageText.replace(/\s+/g, " ").trim().slice(0, 900);
     return { identityMatches, excerpt };
-  } catch { return null; }
+  } catch { return { identityMatches: false, excerpt: "", failureReason: "The source request failed or timed out." }; }
   finally { clearTimeout(tid); }
 }
 
@@ -657,6 +655,41 @@ async function boundedReferenceHtml(res: Response): Promise<string> {
   } finally { reader.releaseLock(); }
 }
 
+// Follow only a small number of redirects that stay on the provider's canonical
+// HTTPS host. Some catalog paths redirect to their current canonical slug.
+async function fetchReferenceHtml(provider: ResearchProvider, value: string, signal: AbortSignal): Promise<{ html: string; reason: string }> {
+  let url = researchUrl(provider, value);
+  if (!url) return { html: "", reason: "The URL is not on this provider's approved HTTPS host." };
+  for (let hop = 0; hop <= 3; hop++) {
+    const res = await fetch(url.href, {
+      signal,
+      redirect: "manual",
+      credentials: "omit",
+      headers: { Accept: "text/html, application/xhtml+xml", "User-Agent": "Pinball Club catalog link checker" },
+    });
+    if ([301, 302, 303, 307, 308].includes(res.status)) {
+      const location = res.headers.get("location");
+      await res.body?.cancel();
+      if (!location || hop === 3) return { html: "", reason: "The source redirected too many times or omitted its redirect destination." };
+      let next: URL;
+      try { next = new URL(location, url); } catch { return { html: "", reason: "The source returned an invalid redirect." }; }
+      const safeNext = researchUrl(provider, next.href);
+      if (!safeNext) return { html: "", reason: "The source redirected outside its approved HTTPS host." };
+      url = safeNext;
+      continue;
+    }
+    if (!res.ok) {
+      await res.body?.cancel();
+      return { html: "", reason: `The source returned HTTP ${res.status}; it was not used.` };
+    }
+    const html = await boundedReferenceHtml(res);
+    return html
+      ? { html, reason: "" }
+      : { html: "", reason: "The source did not return usable HTML page text." };
+  }
+  return { html: "", reason: "The source could not be fetched." };
+}
+
 function decodeHtmlEntities(text: string): string {
   return text
     .replace(/&nbsp;/gi, " ")
@@ -683,19 +716,12 @@ function firstMatch(input: string, regex: RegExp): string {
 }
 
 async function fetchReferenceSummary(provider: ResearchProvider, value: string): Promise<string> {
-  const url = researchUrl(provider, value);
-  if (!url) return "";
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), 4500);
   try {
-    const res = await fetch(url.href, {
-      signal: controller.signal,
-      redirect: "error",
-      credentials: "omit",
-      headers: { Accept: "text/html, application/xhtml+xml" },
-    });
-    const html = await boundedReferenceHtml(res);
-    if (!html) return "";
+    const result = await fetchReferenceHtml(provider, value, controller.signal);
+    if (!result.html) return "";
+    const html = result.html;
     const title = firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
     const metaDesc =
       firstMatch(html, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']+)["'][^>]*>/i) ||

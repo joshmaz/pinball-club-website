@@ -33,9 +33,9 @@ test('the fetch boundary accepts catalog/provider generators and rejects hostile
   assert.equal(f.calls.length,3);
   for (const {url,init} of f.calls) {
     assert.ok(Object.values(providerLinks).includes(url));
-    assert.equal(init.redirect,'error');assert.equal(init.credentials,'omit');
+    assert.equal(init.redirect,'manual');assert.equal(init.credentials,'omit');
     assert.ok(init.signal instanceof AbortSignal);
-    assert.deepEqual(Object.keys(init.headers),['Accept'],'No caller/provider/service credentials are forwarded');
+    assert.deepEqual(Object.keys(init.headers),['Accept','User-Agent'],'No caller/provider/service credentials are forwarded');
   }
   const rejected = [
     'http://pinside.com/pinball/machine/test', '//pinside.com/pinball/machine/test',
@@ -77,7 +77,7 @@ test('redirects, HTTP errors, non-HTML responses and network failures yield no s
       status,headers:{'content-type':'text/html',location:'https://169.254.169.254/'},
     }));
     assert.equal(await f.fetchReferenceSummary('IPDB',providerLinks.IPDB),'');
-    assert.equal(f.calls.length,1);assert.equal(f.calls[0].init.redirect,'error');
+    assert.equal(f.calls.length,1);assert.equal(f.calls[0].init.redirect,'manual');
   }
   for(const type of ['', 'application/json','image/svg+xml','text/plain','application/octet-stream']) {
     let canceled=false;
