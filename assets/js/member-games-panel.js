@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 30977)
-Total output lines: 3033
-
 (function () {
   var GAMES_ROLE_CSV =
     (window.SNHMemberPortal && window.SNHMemberPortal.rolesToCsv && window.SNHMemberPortal.rolesToCsv(
@@ -1527,7 +1524,104 @@ Total output lines: 3033
     partyComboboxPanelEl.appendChild(partyComboboxOptionsEl);
     partyComboboxPanelEl.appendChild(partyPinnedNew);
     partyComboboxPanelEl.appendChild(partyComboboxEmptyEl);
-    partyComboWrapEl.…977 tokens truncated…or: "mg-party-vis-public", text: "Allow display name on public More Info" }));
+    partyComboWrapEl.appendChild(partyComboboxInputEl);
+    partyComboWrapEl.appendChild(partyComboboxPanelEl);
+    partiesBlockEl.appendChild(fieldRow("Search directory", partyComboWrapEl));
+
+    partyComboboxInputEl.addEventListener("focus", function () {
+      setPartyComboboxOpen(true);
+      renderPartyComboboxOptions();
+    });
+    partyComboboxInputEl.addEventListener("click", function () {
+      setPartyComboboxOpen(true);
+      renderPartyComboboxOptions();
+    });
+    partyComboboxInputEl.addEventListener("input", function () {
+      setPartyComboboxOpen(true);
+      partyComboboxActiveIndex = -1;
+      renderPartyComboboxOptions();
+    });
+    partyComboboxInputEl.addEventListener("keydown", function (evt) {
+      if (evt.key === "ArrowDown") {
+        evt.preventDefault();
+        if (!partyComboboxOpen) setPartyComboboxOpen(true);
+        if (filteredParties.length) {
+          partyComboboxActiveIndex = Math.min(filteredParties.length - 1, partyComboboxActiveIndex + 1);
+          refreshPartyComboboxActiveStyles();
+          updatePartyActiveDescendant();
+        }
+      } else if (evt.key === "ArrowUp") {
+        evt.preventDefault();
+        if (!partyComboboxOpen) setPartyComboboxOpen(true);
+        if (filteredParties.length) {
+          partyComboboxActiveIndex = Math.max(0, partyComboboxActiveIndex - 1);
+          refreshPartyComboboxActiveStyles();
+          updatePartyActiveDescendant();
+        }
+      } else if (evt.key === "Enter") {
+        if (!partyComboboxOpen) return;
+        evt.preventDefault();
+        if (partyComboboxActiveIndex >= 0 && partyComboboxActiveIndex < filteredParties.length) {
+          var pPick = filteredParties[partyComboboxActiveIndex];
+          startEditParty(pPick);
+          setPartyComboboxOpen(false);
+          if (partyComboboxInputEl) partyComboboxInputEl.value = pPick.__label || "";
+        } else if (!filteredParties.length) {
+          beginNewPartyFromCombobox();
+        }
+      } else if (evt.key === "Escape") {
+        if (partyComboboxOpen) {
+          evt.preventDefault();
+          setPartyComboboxOpen(false);
+          partyComboboxInputEl.focus();
+        }
+      }
+    });
+
+    partyFieldsWrapEl = el("div", {
+      className: "member-games-party-fields-shell",
+      id: "mg-party-fields-shell",
+      hidden: "hidden",
+      "aria-hidden": "true"
+    });
+    partyFieldsWrapEl.appendChild(
+      el("p", {
+        className: "member-games-mode-note",
+        id: "member-parties-mode-note",
+        text: "",
+        hidden: "hidden"
+      })
+    );
+
+    partyFieldsWrapEl.appendChild(
+      el("h4", { className: "member-games-parties-block-heading", text: "Party details and contacts" })
+    );
+    var fnIn = textInput("mg-party-full-name", "");
+    var dnIn = textInput("mg-party-display-name", "");
+    dnIn.dataset.userEdited = "0";
+    fnIn.addEventListener("input", function () {
+      if (editingPartyId) return;
+      if (dnIn.dataset.userEdited === "1") return;
+      dnIn.value = fnIn.value;
+    });
+    dnIn.addEventListener("input", function () {
+      dnIn.dataset.userEdited = "1";
+    });
+    partyFieldsWrapEl.appendChild(fieldRow("Full name", fnIn));
+    partyFieldsWrapEl.appendChild(fieldRow("Display name (public)", dnIn));
+    var kindSel = el("select", { id: "mg-party-kind", className: "member-games-input" });
+    kindSel.appendChild(el("option", { value: "", text: "(unspecified)" }));
+    ["person", "organization", "club", "operator"].forEach(function (k) {
+      var o = el("option", { value: k });
+      o.textContent = k;
+      kindSel.appendChild(o);
+    });
+    partyFieldsWrapEl.appendChild(fieldRow("Kind", kindSel));
+    var visRow = el("div", { className: "member-games-field member-games-checkbox-row" });
+    var visCb = el("input", { type: "checkbox", id: "mg-party-vis-public" });
+    visCb.checked = true;
+    visRow.appendChild(visCb);
+    visRow.appendChild(el("label", { for: "mg-party-vis-public", text: "Allow display name on public More Info" }));
     partyFieldsWrapEl.appendChild(visRow);
     partyFieldsWrapEl.appendChild(fieldRow("Contact email", textInput("mg-party-email", "")));
     partyFieldsWrapEl.appendChild(fieldRow("Contact phone", textInput("mg-party-phone", "")));
