@@ -56,7 +56,10 @@ type EnrichmentRequest = {
 };
 
 type EnrichmentResponse = {
-  proposalVersion: "1.1";
+  proposalVersion: "1.1" | "2.0";
+  action?: string;
+  evidence?: SourceEvidence[];
+  drafts?: string[];
   runId: string;
   status: ProposalStatus;
   model: { provider: string; model: string; fallbackUsed: boolean };
@@ -476,7 +479,7 @@ async function collectSourceEvidence(game: GameRow, includeCandidates: boolean):
   }
   const results = await Promise.all(refs.filter((r) => r.url).map(async (ref) => {
     const url = String(ref.url);
-    const page = await fetchReferenceEvidence(ref.label, url);
+    const page = await fetchReferenceEvidence(game, ref.label, url);
     const verified = !!page && page.identityMatches;
     return {
       provider: ref.label,
@@ -496,7 +499,7 @@ function hasSpecificCatalogDetails(value: string): boolean {
   return text.length >= 80 && !/\b(part of the club lineup|gameplay notes can be refined|supports up to \d+ players)\b/i.test(text);
 }
 
-async function fetchReferenceEvidence(provider: ResearchProvider, value: string): Promise<{ identityMatches: boolean; excerpt: string } | null> {
+async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider, value: string): Promise<{ identityMatches: boolean; excerpt: string } | null> {
   const url = researchUrl(provider, value);
   if (!url) return null;
   const controller = new AbortController();
@@ -505,16 +508,16 @@ async function fetchReferenceEvidence(provider: ResearchProvider, value: string)
     const res = await fetch(url.href, { signal: controller.signal, redirect: "error", credentials: "omit", headers: { Accept: "text/html, application/xhtml+xml" } });
     const html = await boundedReferenceHtml(res);
     if (!html) return null;
-    const title = firstMatch(html, /<title[^>]*>([\\s\\S]*?)<\\/title>/i);
-    const h1 = firstMatch(html, /<h1[^>]*>([\\s\\S]*?)<\\/h1>/i);
-    const main = firstMatch(html, /<(?:main|article)[^>]*>([\\s\\S]*?)<\\/(?:main|article)>/i);
-    const paragraphs = Array.from(html.matchAll(/<p[^>]*>([\\s\\S]*?)<\\/p>/gi)).map((m) => stripHtmlToText(m[1])).filter((p) => p.length > 35);
+    const title = firstMatch(html, /<title[^>]*>([\s\S]*?)<\\/title>/i);
+    const h1 = firstMatch(html, /<h1[^>]*>([\s\S]*?)<\\/h1>/i);
+    const main = firstMatch(html, /<(?:main|article)[^>]*>([\s\S]*?)<\\/(?:main|article)>/i);
+    const paragraphs = Array.from(html.matchAll(/<p[^>]*>([\s\S]*?)<\\/p>/gi)).map((m) => stripHtmlToText(m[1])).filter((p) => p.length > 35);
     const pageText = [title, h1, stripHtmlToText(main), ...paragraphs].filter(Boolean).join(" ").slice(0, 5000);
     const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     const identity = normalize([title, h1].join(" "));
     const titleTokens = normalize(stripTitleEditionForSlug(game.title)).split(" ").filter((t) => t.length > 2);
     const identityMatches = titleTokens.length > 0 && titleTokens.filter((t) => identity.includes(t)).length >= Math.max(1, Math.ceil(titleTokens.length * 0.6));
-    const excerpt = pageText.replace(/\\s+/g, " ").trim().slice(0, 900);
+    const excerpt = pageText.replace(/\s+/g, " ").trim().slice(0, 900);
     return { identityMatches, excerpt };
   } catch { return null; }
   finally { clearTimeout(tid); }
