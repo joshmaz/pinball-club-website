@@ -135,6 +135,7 @@ test('real expanded row uses canonical names, assigned-only removal and delegati
       adminMayManageRole: slug => auth.canAssignMemberRole([actor], slug),
       adminMayRemoveRole: (_, slug) => auth.canAssignMemberRole([actor], slug), userRoles: [actor]
     });
+    vm.runInContext(html.slice(html.indexOf('    function memberSignInTime(row)'), html.indexOf('    function adminRender()')), context);
     vm.runInContext(html.slice(html.indexOf('    function adminRenderEditor(row)'), html.indexOf('    onMemberAdminPanelShown = async')), context);
     context.adminRenderEditor({ member_id: 'target', role_slugs: ['games_admin'], membership_status: 'active', email_verified: true });
     assert.equal(deletionControls.length, actor === 'membership_editor' ? 0 : 1);
@@ -174,6 +175,7 @@ test('expanded row blocks unverified grants, permits deactivation and removal, a
         adminMayRemoveRole: () => true, userRoles: ['club_admin'],
         memberAdminStatus: new Element('p'), onMemberAdminPanelShown: async () => {}, adminRender() {}
       });
+      vm.runInContext(html.slice(html.indexOf('    function memberSignInTime(row)'), html.indexOf('    function adminRender()')), context);
       vm.runInContext(html.slice(html.indexOf('    function adminRenderEditor(row)'), html.indexOf('    onMemberAdminPanelShown = async')), context);
       context.adminRenderEditor({ member_id: 'target', role_slugs: ['games_editor'],
         membership_status: active ? 'active' : 'inactive', email_verified: emailVerified });
