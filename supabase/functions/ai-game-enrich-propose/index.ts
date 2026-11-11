@@ -46,6 +46,8 @@ type ProposalField = {
 
 type EnrichmentRequest = {
   gameId: string;
+  action?: "sources" | "description" | "polish";
+  notes?: string;
   regenerateDescription?: boolean;
   runContext?: {
     requestId?: string;
@@ -148,32 +150,103 @@ Deno.serve(async (req) => {
     }
 
     const runId = crypto.randomUUID();
+    const action = body.action || "description";
+    if (!["sources", "description", "polish"].includes(action)) {
+      return json({ ok: false, error: "Unsupported enrichment action" }, 400);
+    }
     const fallbackUsed = { value: false };
     const warnings: string[] = [];
-    const modelResult = await buildDescriptionSuggestion(game, fallbackUsed, warnings);
-    const linkFields = buildLinkSuggestions(game);
+    let fields: ProposalField[] = [];
+    let evidence: SourceEvidence[] = [];
+    let drafts: string[] = [];
+    let modelName = "none";
+    let status: ProposalStatus = "ok";
 
-    const fields: ProposalField[] = [
-      modelResult,
-      ...linkFields,
-    ];
+    if (action === "sources") {
+      fields = buildLinkSuggestions(game);
+      evidence = await collectSourceEvidence(game, true);
+      if (!evidence.some((item) => item.verified)) {
+        warnings.push("No linked source page could be verified for this game. Existing URLs were preserved.");
+        status = "needs_review";
+      }
+    } else {
+      evidence = await collectSourceEvidence(game, false);
+      const notes = (body.notes || "").trim().slice(0, 3000);
+      const hasGrounding = evidence.some((item) => item.verified && item.excerpt.length >= 40)
+        || hasSpecificCatalogDetails(game.details || "");
+      if (!hasGrounding && !(action === "polish" && notes)) {
+        status = "unavailable";
+        warnings.push("There is not enough verified gameplay evidence to draft a description yet. Add operator notes, then choose Polish notes.");
+      } else {
+        const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || Deno.env.get("LLM_API_KEY") || "";
+        if (!apiKey) {
+          status = "unavailable";
+          warnings.push("LLM unavailable: missing API key. No fallback description was generated.");
+        } else {
+          const evidenceText = evidence.filter((item) => item.verified).map((item) =>
+            `- ${item.provider} (${item.url}) — ${item.excerpt}`
+          ).join("\n");
+          const grounding = [evidenceText, notes ? `OPERATOR NOTES (use only these additional gameplay claims):\n${notes}` : ""]
+            .filter(Boolean).join("\n\n");
+          const basePrompt = buildDescriptionPrompt(game, grounding);
+          const prompt = [
+            basePrompt,
+            "",
+            "Return exactly one concise, factual option for a public pinball machine card.",
+            "Use verified designer attribution only if it appears in the evidence or operator notes.",
+            "Do not infer gameplay from machine type, player count, title, or theme alone.",
+          ].join("\n");
+          const primaryModel = Deno.env.get("LLM_PRIMARY_MODEL") || "gpt-4o-mini";
+          const secondaryModel = Deno.env.get("LLM_SECONDARY_MODEL") || "gpt-4.1-mini";
+          const generated = await Promise.all([0, 1].map(async (variant) => {
+            const variantPrompt = prompt + `\nDraft option: ${variant + 1}. Make this wording distinct while keeping every factual claim grounded.`;
+            let result = await callOpenAI(primaryModel, variantPrompt, apiKey);
+            if (!result.ok && shouldFallback(result.status)) {
+              result = await callOpenAI(secondaryModel, variantPrompt, apiKey);
+              if (result.ok) fallbackUsed.value = true;
+            }
+            if (result.ok && result.text) {
+              modelName = fallbackUsed.value ? secondaryModel : primaryModel;
+              return enforceDescriptionBrevity(sanitizeDescription(result.text)).text;
+            }
+            warnings.push(result.reason || "Description draft could not be generated.");
+            return "";
+          }));
+          drafts = generated.filter((draft) => draft.length >= 60);
+          if (drafts.length < 2) {
+            status = drafts.length ? "needs_review" : "unavailable";
+            warnings.push("Two usable drafts were not available. Review evidence or add notes and try again.");
+          }
+          fields = drafts.map((draft) => ({
+            field: "details" as const,
+            currentValue: game.details,
+            suggestedValue: draft,
+            confidence: "medium" as const,
+            confidenceScore: 0.72,
+            reason: notes ? "Draft grounded in verified catalog facts, source excerpts, and operator notes." : "Draft grounded in verified source excerpts and catalog facts.",
+            sourceType: `openai:${modelName}`,
+            sourceUrl: null,
+            warnings: [],
+            reviewRequired: true,
+            applyByDefault: false,
+          }));
+        }
+      }
+    }
 
-    const response: EnrichmentResponse = {
-      proposalVersion: "1.1",
+    const response = {
+      proposalVersion: "2.0",
       runId,
-      status: warnings.some((w) => w.includes("unavailable")) ? "needs_review" : "ok",
-      model: {
-        provider: "openai",
-        model: modelResult.sourceType,
-        fallbackUsed: fallbackUsed.value,
-      },
+      action,
+      status,
+      model: { provider: "openai", model: modelName, fallbackUsed: fallbackUsed.value },
       recordVersion: game.updated_at,
       thresholds: THRESHOLDS,
       game: { id: game.id, slug: game.slug, title: game.title },
       fields,
-      regenerationLimits: {
-        descriptionRemaining: DESCRIPTION_REGEN_LIMIT,
-      },
+      evidence,
+      drafts,
+      regenerationLimits: { descriptionRemaining: DESCRIPTION_REGEN_LIMIT },
       warnings,
     };
 
@@ -375,6 +448,76 @@ function enforceDescriptionBrevity(suggested: string): { text: string; warnings:
     text: trimmed,
     warnings: ["Suggestion trimmed to target card-friendly length."],
   };
+}
+
+type SourceEvidence = {
+  provider: ResearchProvider;
+  url: string;
+  verified: boolean;
+  excerpt: string;
+  reason: string;
+};
+
+async function collectSourceEvidence(game: GameRow, includeCandidates: boolean): Promise<SourceEvidence[]> {
+  const refs: Array<{ label: ResearchProvider; url: string | null; existing: boolean }> = [
+    { label: "IPDB", url: game.ipdb_url, existing: true },
+    { label: "Pinside", url: game.pinside_url, existing: true },
+    { label: "Kineticist", url: game.kineticist_url, existing: true },
+  ];
+  if (includeCandidates) {
+    const guesses = [
+      { label: "IPDB" as const, url: guessIpdbUrl(game).value },
+      { label: "Pinside" as const, url: guessPinsideUrl(game).value },
+      { label: "Kineticist" as const, url: guessKineticistUrl(game).value },
+    ];
+    for (const guess of guesses) {
+      if (!refs.some((r) => r.label === guess.label && r.url)) refs.push({ ...guess, existing: false });
+    }
+  }
+  const results = await Promise.all(refs.filter((r) => r.url).map(async (ref) => {
+    const url = String(ref.url);
+    const page = await fetchReferenceEvidence(ref.label, url);
+    const verified = !!page && page.identityMatches;
+    return {
+      provider: ref.label,
+      url,
+      verified,
+      excerpt: verified ? page.excerpt : "",
+      reason: !page ? "Page could not be fetched or did not contain usable game text."
+        : verified ? (ref.existing ? "Existing link matches the selected game." : "Candidate page matches the selected game.")
+        : "Page identity did not match the selected game; excluded from drafting.",
+    };
+  }));
+  return results;
+}
+
+function hasSpecificCatalogDetails(value: string): boolean {
+  const text = value.trim();
+  return text.length >= 80 && !/\b(part of the club lineup|gameplay notes can be refined|supports up to \d+ players)\b/i.test(text);
+}
+
+async function fetchReferenceEvidence(provider: ResearchProvider, value: string): Promise<{ identityMatches: boolean; excerpt: string } | null> {
+  const url = researchUrl(provider, value);
+  if (!url) return null;
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 4500);
+  try {
+    const res = await fetch(url.href, { signal: controller.signal, redirect: "error", credentials: "omit", headers: { Accept: "text/html, application/xhtml+xml" } });
+    const html = await boundedReferenceHtml(res);
+    if (!html) return null;
+    const title = firstMatch(html, /<title[^>]*>([\\s\\S]*?)<\\/title>/i);
+    const h1 = firstMatch(html, /<h1[^>]*>([\\s\\S]*?)<\\/h1>/i);
+    const main = firstMatch(html, /<(?:main|article)[^>]*>([\\s\\S]*?)<\\/(?:main|article)>/i);
+    const paragraphs = Array.from(html.matchAll(/<p[^>]*>([\\s\\S]*?)<\\/p>/gi)).map((m) => stripHtmlToText(m[1])).filter((p) => p.length > 35);
+    const pageText = [title, h1, stripHtmlToText(main), ...paragraphs].filter(Boolean).join(" ").slice(0, 5000);
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    const identity = normalize([title, h1].join(" "));
+    const titleTokens = normalize(stripTitleEditionForSlug(game.title)).split(" ").filter((t) => t.length > 2);
+    const identityMatches = titleTokens.length > 0 && titleTokens.filter((t) => identity.includes(t)).length >= Math.max(1, Math.ceil(titleTokens.length * 0.6));
+    const excerpt = pageText.replace(/\\s+/g, " ").trim().slice(0, 900);
+    return { identityMatches, excerpt };
+  } catch { return null; }
+  finally { clearTimeout(tid); }
 }
 
 async function buildDescriptionResearchContext(game: GameRow): Promise<string> {
