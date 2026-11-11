@@ -8,8 +8,16 @@
   function localDate(value) {if(!value)return ''; var d=new Date(value); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
   function dateValue(id) {var value=document.getElementById(id).value; return value ? new Date(value).toISOString() : null;}
   function input(label,id,type,max,parent) {
-    var wrap=node('label',label,parent||root), field=node(type==='textarea'?'textarea':'input','',wrap);
-    field.id=id; if(type==='checkbox')field.setAttribute('style','width:auto;justify-self:start'); if(type!=='textarea')field.type=type; if(max)field.maxLength=max;
+    var checkbox=type==='checkbox';
+    var wrap=node('label',checkbox?'':label,parent||root);
+    var field=node(type==='textarea'?'textarea':'input','',wrap);
+    if(checkbox){
+      wrap.className='announcement-checkbox';
+      node('span',label,wrap);
+    }
+    field.id=id;
+    if(type!=='textarea')field.type=type;
+    if(max)field.maxLength=max;
     field.addEventListener('input',function(){
       dirty=true;
       var preview=document.getElementById('publishing-announcement-preview');
@@ -97,7 +105,9 @@
   }
   function renderList() {
     root.replaceChildren();
-    button('New announcement',function(){edit(null);}).className='announcement-new-button';
+    var actions=node('div','',root);actions.className='announcement-editor-actions';
+    button('New announcement',function(){edit(null);},actions).className='announcement-list-action';
+    button('Refresh announcements',function(){void load();},actions).className='announcement-list-action';
     var list=node('ul','',root);list.className='announcement-management-list';
     rows.forEach(function(entry){
       var item=node('li','',list);
