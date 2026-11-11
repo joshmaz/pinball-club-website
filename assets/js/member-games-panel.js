@@ -224,7 +224,7 @@
         textareaInput("mg-details", "")
       )
     );
-    formEl.appendChild(el('p', { className: 'member-games-help', text: 'Shown on the game card and in About our machine. Keep it brief and focus on this club machine. Add modifications below; leave general rules and specifications to the linked resources.' }));
+    formEl.appendChild(el("p", { className: "member-games-help", text: "Shown on the game card and About our machine. Keep it brief, specific, and supported by evidence." }));
     formEl.appendChild(buildGameImagesSection());
     var metadataPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
     metadataPanel.appendChild(
@@ -2022,6 +2022,8 @@
   function resetAiProposalUi() {
     aiProposalData = null;
     aiDescriptionRegenCount = 0;
+    var notesInput = document.getElementById("mg-ai-notes");
+    if (notesInput) notesInput.value = "";
     if (aiProposalBodyEl) aiProposalBodyEl.replaceChildren();
     setAiStatus("");
   }
@@ -2032,97 +2034,91 @@
     aiProposalData = proposal || null;
     if (!proposal) return;
 
-    var intro = el("p", {
-      className: "member-games-help",
-      text: "Review field suggestions, then apply selected fields."
+    (proposal.warnings || []).forEach(function (message) {
+      aiProposalBodyEl.appendChild(el("p", { className: "member-games-help member-games-ai-reason", text: String(message) }));
     });
-    aiProposalBodyEl.appendChild(intro);
 
-    var warningList = proposal.warnings || [];
-    if (warningList.length) {
-      var warn = el("ul", { className: "member-games-ai-warnings" });
-      warningList.forEach(function (w) {
-        warn.appendChild(el("li", { text: String(w) }));
+    var evidence = Array.isArray(proposal.evidence) ? proposal.evidence : [];
+    if (evidence.length) {
+      var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
+      evidenceDetails.appendChild(el("summary", { text: "Source evidence (" + evidence.filter(function (item) { return item.verified; }).length + " verified)" }));
+      evidence.forEach(function (item) {
+        var row = el("div", { className: "member-games-ai-field" });
+        var heading = el("p", { className: "member-games-help" });
+        heading.appendChild(el("strong", { text: String(item.provider || "Source") + ": " }));
+        var href = String(item.url || "");
+        if (href && isValidHttpUrl(href)) {
+          heading.appendChild(el("a", { href: href, target: "_blank", rel: "noopener noreferrer", className: "member-games-ai-external-link", text: href }));
+        }
+        heading.appendChild(document.createTextNode(item.verified ? " — verified match" : " — not used"));
+        row.appendChild(heading);
+        row.appendChild(el("p", { className: "member-games-help", text: String(item.excerpt || item.reason || "") }));
+        evidenceDetails.appendChild(row);
       });
-      aiProposalBodyEl.appendChild(warn);
+      aiProposalBodyEl.appendChild(evidenceDetails);
+    }
+
+    var drafts = Array.isArray(proposal.drafts) ? proposal.drafts : [];
+    if (drafts.length) {
+      aiProposalBodyEl.appendChild(el("p", { className: "member-games-help", text: "Choose a draft to place it in the description field. Edit it there, then use Save game when ready." }));
+      drafts.forEach(function (draft, index) {
+        var row = el("div", { className: "member-games-ai-field" });
+        row.appendChild(el("label", { className: "member-games-label", text: "Draft option " + (index + 1) }));
+        var draftInput = textareaInput("mg-ai-draft-" + index, String(draft || ""));
+        draftInput.setAttribute("rows", "4");
+        row.appendChild(draftInput);
+        var useBtn = el("button", { type: "button", className: "members-sidebar-link", text: "Use this draft" });
+        useBtn.addEventListener("click", function () {
+          var target = document.getElementById("mg-details");
+          if (!target) return;
+          target.value = draftInput.value;
+          target.dispatchEvent(new Event("input", { bubbles: true }));
+          target.focus();
+          setAiStatus("Draft copied to the editable description field. Review it and save the game to keep it.");
+        });
+        row.appendChild(useBtn);
+        aiProposalBodyEl.appendChild(row);
+      });
     }
 
     var fields = Array.isArray(proposal.fields) ? proposal.fields : [];
-    fields.forEach(function (f) {
-      if (!f || !f.field) return;
+    fields.forEach(function (field) {
+      if (!field || !isAiProposalLinkField(field.field)) return;
       var row = el("div", { className: "member-games-ai-field" });
-
-      var isExistingLinkRetained =
-        String(f.reason || "").trim() === "Existing link retained." && isAiProposalLinkField(f.field);
-
-      if (isExistingLinkRetained) {
-        row.classList.add("member-games-ai-field-link-confirmed");
-        var retainedLine = el("p", { className: "member-games-help" });
-        retainedLine.appendChild(document.createTextNode(String(f.field) + ": confirmed. "));
-        var keptUrl = String(f.currentValue || f.suggestedValue || "").trim();
-        if (keptUrl && isValidHttpUrl(keptUrl)) {
-          retainedLine.appendChild(
-            el("a", {
-              href: keptUrl,
-              target: "_blank",
-              rel: "noopener noreferrer",
-              className: "member-games-ai-external-link",
-              text: keptUrl,
-            })
-          );
-        } else if (keptUrl) {
-          retainedLine.appendChild(document.createTextNode(keptUrl));
-        } else {
-          retainedLine.appendChild(document.createTextNode("—"));
-        }
-        row.appendChild(retainedLine);
-        aiProposalBodyEl.appendChild(row);
-        return;
-      }
-
-      var checkboxId = makeAiFieldKeyCheckboxId(f.field);
-      var cb = el("input", { type: "checkbox", id: checkboxId });
-      cb.checked = !!f.applyByDefault && !f.reviewRequired;
-      if (f.reviewRequired) cb.checked = false;
-      var label = el("label", { for: checkboxId, text: String(f.field) + " (" + fmtConfidence(f.confidenceScore) + ")" });
-      row.appendChild(cb);
-      row.appendChild(label);
-
-      var currentText = String(f.currentValue || "").trim() || "—";
-      var suggestedText = String(f.suggestedValue || "").trim() || "—";
-      if (isAiProposalLinkField(f.field)) {
-        appendAiProposalUrlParagraph(row, "Current: ", f.currentValue, "member-games-ai-current");
-        appendAiProposalUrlParagraph(row, "Suggested: ", f.suggestedValue, "member-games-ai-suggested");
+      if (String(field.reason || "").trim() === "Existing link retained.") {
+        row.appendChild(el("p", { className: "member-games-help", text: String(field.field) + " — existing link preserved." }));
+        appendAiProposalUrlParagraph(row, "", field.currentValue || field.suggestedValue, "member-games-ai-current");
       } else {
-        row.appendChild(el("p", { className: "member-games-help member-games-ai-current", text: "Current: " + currentText }));
-        row.appendChild(el("p", { className: "member-games-help member-games-ai-suggested", text: "Suggested: " + suggestedText }));
-      }
-      if (f.reason) row.appendChild(el("p", { className: "member-games-help member-games-ai-reason", text: "Reason: " + String(f.reason) }));
-      var fw = Array.isArray(f.warnings) ? f.warnings : [];
-      if (fw.length) {
-        var fwul = el("ul", { className: "member-games-ai-warnings" });
-        fw.forEach(function (w) {
-          fwul.appendChild(el("li", { text: String(w) }));
+        var checkboxId = makeAiFieldKeyCheckboxId(field.field);
+        var checkbox = el("input", { type: "checkbox", id: checkboxId });
+        checkbox.checked = false;
+        row.appendChild(checkbox);
+        row.appendChild(el("label", { for: checkboxId, text: String(field.field) + " candidate (open and verify before applying)" }));
+        appendAiProposalUrlParagraph(row, "Candidate: ", field.suggestedValue);
+        if (field.reason) row.appendChild(el("p", { className: "member-games-help", text: String(field.reason) }));
+        (field.warnings || []).forEach(function (warning) {
+          row.appendChild(el("p", { className: "member-games-help", text: String(warning) }));
         });
-        row.appendChild(fwul);
       }
       aiProposalBodyEl.appendChild(row);
     });
-
   }
 
   async function runAiPropose(opts) {
     if (!currentGameId || !window.SNHMemberPortal || !window.SNHMemberPortal.aiGameEnrichPropose) return;
     if (aiBusy) return;
     aiBusy = true;
-    setAiStatus("Generating AI proposal…");
+    var action = (opts && opts.action) || "description";
+    var labels = { sources: "Checking source links…", description: "Drafting from verified evidence…", polish: "Polishing operator notes…" };
+    setAiStatus(labels[action] || "Working…");
     try {
       var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
         gameId: currentGameId,
-        regenerateDescription: !!(opts && opts.regenerateDescription),
+        action: action,
+        notes: (document.getElementById("mg-ai-notes") || {}).value || "",
       });
       renderAiProposal(proposal);
-      setAiStatus("AI proposal ready.");
+      setAiStatus(proposal.status === "unavailable" ? "No description draft was created." : "Review the results below.");
     } catch (err) {
       setAiStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     } finally {
@@ -2137,7 +2133,6 @@
       if (!f || !f.field) return;
       var cb = document.getElementById(makeAiFieldKeyCheckboxId(f.field));
       if (!cb || !cb.checked) return;
-      if (f.field === "details") out.details = f.suggestedValue || "";
       if (f.field === "ipdbUrl") out.ipdbUrl = f.suggestedValue || null;
       if (f.field === "pinsideUrl") out.pinsideUrl = f.suggestedValue || null;
       if (f.field === "kineticistUrl") out.kineticistUrl = f.suggestedValue || null;
@@ -2165,68 +2160,55 @@
       setAiStatus("Kineticist URL is invalid. Deselect or fix before apply.");
       return;
     }
-    setAiStatus("Applying selected AI fields…");
+    setAiStatus("Applying selected source links…");
     try {
+      var keepFormDirty = isDirty;
       await window.SNHMemberPortal.gamesUpsert(currentGameId, selected);
+      if (Object.prototype.hasOwnProperty.call(selected, "ipdbUrl")) (document.getElementById("mg-ipdb") || {}).value = selected.ipdbUrl || "";
+      if (Object.prototype.hasOwnProperty.call(selected, "pinsideUrl")) (document.getElementById("mg-pinside") || {}).value = selected.pinsideUrl || "";
+      if (Object.prototype.hasOwnProperty.call(selected, "kineticistUrl")) (document.getElementById("mg-kineticist") || {}).value = selected.kineticistUrl || "";
       var data = await window.SNHMemberPortal.gamesEditorLoad();
       gamesCache = (data && data.games) || [];
       populateCombobox();
-      await populateForm(currentGameId);
-      setAiStatus("Applied selected AI fields.");
-      isDirty = false;
+      isDirty = keepFormDirty;
+      setAiStatus("Applied selected source links. Existing description edits remain in the editor.");
     } catch (err) {
       setAiStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
     }
   }
 
   function buildReviewScaffolds() {
-    var missing = el("section", { className: "member-games-collapsible-panel" });
-    missing.appendChild(
-      el("p", {
-        text: "Open a game, run AI refresh, then review and apply only the fields you approve."
-      })
-    );
-    missing.appendChild(
-      el("p", {
-        className: "member-games-help",
-        text:
-          "Image suggestions use the game's persisted image associations. Manage source, approval, primary selection, and OPDB sync in the Images section.",
-      })
-    );
+    var panel = el("section", { className: "member-games-collapsible-panel" });
+    panel.appendChild(el("p", { className: "member-games-help", text: "Find or verify links separately from writing. Descriptions use verified source text or notes you provide." }));
+    var notes = textareaInput("mg-ai-notes", "");
+    notes.setAttribute("rows", "3");
+    notes.setAttribute("placeholder", "Gameplay fragments to polish when source coverage is thin");
+    panel.appendChild(fieldRow("Operator notes (optional)", notes));
+
     var actions = el("div", { className: "member-games-form-actions" });
-    var proposeBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-refresh" });
-    proposeBtn.textContent = "Attempt Metadata Enhancement";
-    proposeBtn.addEventListener("click", function () {
-      if (!currentGameId || mode !== "edit") {
-        setAiStatus("Select a game first.");
-        return;
-      }
-      void runAiPropose({});
-    });
-    var regenDescBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-regen-desc" });
-    regenDescBtn.textContent = "Attempt Description Update";
-    regenDescBtn.addEventListener("click", function () {
-      if (aiDescriptionRegenCount >= 2) {
-        setAiStatus("Description regenerate limit reached for this session.");
-        return;
-      }
-      aiDescriptionRegenCount += 1;
-      void runAiPropose({ regenerateDescription: true });
-    });
-    var applyBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply" });
-    applyBtn.textContent = "Apply selected AI fields";
-    applyBtn.addEventListener("click", function () {
-      void onApplyAiSelection();
-    });
-    actions.appendChild(proposeBtn);
-    actions.appendChild(regenDescBtn);
+    function addActionButton(id, label, action) {
+      var button = el("button", { type: "button", className: "members-sidebar-link", id: id, text: label });
+      button.addEventListener("click", function () {
+        if (!currentGameId || mode !== "edit") {
+          setAiStatus("Select a saved game first.");
+          return;
+        }
+        void runAiPropose({ action: action });
+      });
+      actions.appendChild(button);
+    }
+    addActionButton("mg-ai-sources", "Find or verify sources", "sources");
+    addActionButton("mg-ai-description", "Draft description", "description");
+    addActionButton("mg-ai-polish", "Polish notes", "polish");
+    var applyBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected source links" });
+    applyBtn.addEventListener("click", function () { void onApplyAiSelection(); });
     actions.appendChild(applyBtn);
-    missing.appendChild(actions);
+    panel.appendChild(actions);
     aiStatusEl = el("p", { className: "member-games-help", id: "mg-ai-status" });
     aiProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-proposal" });
-    missing.appendChild(aiStatusEl);
-    missing.appendChild(aiProposalBodyEl);
-    reviewScaffoldsEl = wrapCollapsible("AI enrichment assistant", missing, "member-games-review-scaffolds");
+    panel.appendChild(aiStatusEl);
+    panel.appendChild(aiProposalBodyEl);
+    reviewScaffoldsEl = wrapCollapsible("AI description assistant", panel, "member-games-review-scaffolds");
     aiWrapEl = reviewScaffoldsEl;
     return reviewScaffoldsEl;
   }

@@ -32,6 +32,13 @@ House style targets for **`games.details`** when using the enrichment assistant 
 
 - When IPDB/Pinside/Kineticist snippets or existing `details` mention **theme** (sport, band, horror, diner, bowling, etc.) or concrete layout cues, surface them rather than generic “engaging gameplay” lines.
 - Uncertain facts: omit or hedge (`likely`, `needs verification`). Do not assert without support.
+- Include a designer only when a verified source excerpt or operator note explicitly supports the credit.
+
+## Evidence and operator notes
+
+- Draft only when retrieved game-specific source text or concrete existing catalog copy provides gameplay evidence.
+- If the evidence is thin, ask the operator to add gameplay fragments and polish those notes without adding unsupported gameplay claims.
+- Keep source evidence and draft choices inside the collapsed assistant section so the editor remains scannable.
 
 ## Post-proposer checks
 

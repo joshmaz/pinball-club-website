@@ -153,8 +153,8 @@ Deno.serve(async (req) => {
     }
 
     const runId = crypto.randomUUID();
-    const action = body.action || "description";
-    if (!["sources", "description", "polish"].includes(action)) {
+    const action = body.action || "legacy";
+    if (!["legacy", "sources", "description", "polish"].includes(action)) {
       return json({ ok: false, error: "Unsupported enrichment action" }, 400);
     }
     const fallbackUsed = { value: false };
@@ -165,7 +165,12 @@ Deno.serve(async (req) => {
     let modelName = "none";
     let status: ProposalStatus = "ok";
 
-    if (action === "sources") {
+    if (action === "legacy") {
+      const result = await buildDescriptionSuggestion(game, fallbackUsed, warnings);
+      fields = [result, ...buildLinkSuggestions(game)];
+      modelName = result.sourceType;
+      status = warnings.some((warning) => warning.includes("unavailable")) ? "needs_review" : "ok";
+    } else if (action === "sources") {
       fields = buildLinkSuggestions(game);
       evidence = await collectSourceEvidence(game, true);
       if (!evidence.some((item) => item.verified)) {
@@ -177,7 +182,10 @@ Deno.serve(async (req) => {
       const notes = (body.notes || "").trim().slice(0, 3000);
       const hasGrounding = evidence.some((item) => item.verified && item.excerpt.length >= 40)
         || hasSpecificCatalogDetails(game.details || "");
-      if (!hasGrounding && !(action === "polish" && notes)) {
+      if (action === "polish" && !notes) {
+        status = "unavailable";
+        warnings.push("Add gameplay fragments in Operator notes before choosing Polish notes.");
+      } else if (!hasGrounding && !(action === "polish" && notes)) {
         status = "unavailable";
         warnings.push("There is not enough verified gameplay evidence to draft a description yet. Add operator notes, then choose Polish notes.");
       } else {
@@ -238,7 +246,7 @@ Deno.serve(async (req) => {
     }
 
     const response = {
-      proposalVersion: "2.0",
+      proposalVersion: action === "legacy" ? "1.1" : "2.0",
       runId,
       action,
       status,
@@ -496,7 +504,9 @@ async function collectSourceEvidence(game: GameRow, includeCandidates: boolean):
 
 function hasSpecificCatalogDetails(value: string): boolean {
   const text = value.trim();
-  return text.length >= 80 && !/\b(part of the club lineup|gameplay notes can be refined|supports up to \d+ players)\b/i.test(text);
+  return text.length >= 60
+    && /\b(ramp|loop|orbit|scoop|vuk|spinner|multiball|drop target|standup target|magnet|bash toy|skill shot|playfield|mode|shot|flipper|pop bumper|rollover|upper playfield|ramp)\b/i.test(text)
+    && !/\b(part of the club lineup|gameplay notes can be refined|supports up to \d+ players)\b/i.test(text);
 }
 
 async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider, value: string): Promise<{ identityMatches: boolean; excerpt: string } | null> {
@@ -508,15 +518,23 @@ async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider,
     const res = await fetch(url.href, { signal: controller.signal, redirect: "error", credentials: "omit", headers: { Accept: "text/html, application/xhtml+xml" } });
     const html = await boundedReferenceHtml(res);
     if (!html) return null;
-    const title = firstMatch(html, /<title[^>]*>([\s\S]*?)<\\/title>/i);
-    const h1 = firstMatch(html, /<h1[^>]*>([\s\S]*?)<\\/h1>/i);
-    const main = firstMatch(html, /<(?:main|article)[^>]*>([\s\S]*?)<\\/(?:main|article)>/i);
-    const paragraphs = Array.from(html.matchAll(/<p[^>]*>([\s\S]*?)<\\/p>/gi)).map((m) => stripHtmlToText(m[1])).filter((p) => p.length > 35);
+    const title = firstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
+    const h1 = firstMatch(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    const main = firstMatch(html, /<(?:main|article)[^>]*>([\s\S]*?)<\/(?:main|article)>/i);
+    const paragraphs = Array.from(html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)).map((m) => stripHtmlToText(m[1])).filter((p) => p.length > 35);
     const pageText = [title, h1, stripHtmlToText(main), ...paragraphs].filter(Boolean).join(" ").slice(0, 5000);
     const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     const identity = normalize([title, h1].join(" "));
     const titleTokens = normalize(stripTitleEditionForSlug(game.title)).split(" ").filter((t) => t.length > 2);
-    const identityMatches = titleTokens.length > 0 && titleTokens.filter((t) => identity.includes(t)).length >= Math.max(1, Math.ceil(titleTokens.length * 0.6));
+    const titleMatches = titleTokens.length > 0
+      && titleTokens.filter((t) => identity.includes(t)).length >= Math.max(1, Math.ceil(titleTokens.length * 0.6));
+    const year = game.release_date ? game.release_date.slice(0, 4) : "";
+    const yearConflict = !!year && /\b(19|20)\d{2}\b/.test(pageText)
+      && !pageText.includes(year);
+    const manufacturer = (game.manufacturer_full_name || game.manufacturer || "").trim().toLowerCase();
+    const manufacturerConflict = !!manufacturer && pageText.toLowerCase().includes("manufacturer")
+      && !pageText.toLowerCase().includes(manufacturer);
+    const identityMatches = titleMatches && !yearConflict && !manufacturerConflict;
     const excerpt = pageText.replace(/\s+/g, " ").trim().slice(0, 900);
     return { identityMatches, excerpt };
   } catch { return null; }
@@ -918,6 +936,8 @@ async function writeAudit(
       status: params.response.status,
       thresholds: params.response.thresholds,
       model: params.response.model,
+      evidence: params.response.evidence || [],
+      drafts: params.response.drafts || [],
     },
     request_id: params.runId,
   };

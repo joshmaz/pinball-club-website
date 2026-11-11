@@ -63,10 +63,13 @@ the actual request handler and canonical SQL role boundary before protected work
 
 ## Editor workflow (short)
 
-1. Open a game → **Attempt Metadata Enhancement** or **Attempt Description Update**.
-2. Review fields; use **Open in new tab** links to validate URLs.
-3. **Apply selected fields** only for rows you trust. Manage all images in the separate **Images** section through club uploads and deterministic OPDB sync.
-4. Rollback mistakes: `docs/games-ai-rollback-runbook.md`.
+1. Open a saved game and choose **Find or verify sources**. Existing URLs stay in place; generated candidates are shown for operator review and never saved automatically.
+2. Open the evidence details to review which source pages matched the selected title and the excerpts retrieved from them.
+3. Choose **Draft description** for two editable options grounded in verified source text or specific existing catalog copy. If evidence is thin, the assistant reports that instead of writing generic copy.
+4. Add gameplay fragments under **Operator notes** and choose **Polish notes** when source coverage is thin. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
+5. Select source-link candidates only after opening and checking them. Apply selected links separately. Applying links preserves unsaved description edits in the editor.
+
+The short card target remains roughly 220–320 characters. Include manufacturer, release year, and a designer only when supported by verified catalog/source evidence. The public Games page is unchanged.
 
 ## Related files
 
