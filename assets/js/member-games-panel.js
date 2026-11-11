@@ -64,6 +64,7 @@
   var aiWrapEl = null;
   var aiStatusEl = null;
   var aiProposalBodyEl = null;
+  var aiApplyBtnEl = null;
   var aiProposalData = null;
   var aiDescriptionRegenCount = 0;
   var aiBusy = false;
@@ -2049,6 +2050,7 @@
     var notesInput = document.getElementById("mg-ai-notes");
     if (notesInput) notesInput.value = "";
     if (aiProposalBodyEl) aiProposalBodyEl.replaceChildren();
+    if (aiApplyBtnEl) aiApplyBtnEl.hidden = true;
     setAiStatus("");
   }
 
@@ -2170,6 +2172,19 @@
       });
       aiProposalBodyEl.appendChild(row);
     });
+
+    if (aiApplyBtnEl) {
+      var hasApplyableFields = fields.some(function (field) {
+        return field && (isAiProposalLinkField(field.field) || !!aiMetadataFieldTarget(field.field));
+      });
+      var isSourceAction = proposal.action === "sources";
+      var isMetadataAction = proposal.action === "metadata";
+      aiApplyBtnEl.hidden = !hasApplyableFields || (!isSourceAction && !isMetadataAction);
+      if (!aiApplyBtnEl.hidden) {
+        aiApplyBtnEl.textContent = isMetadataAction ? "Apply selected metadata to form" : "Apply selected source links";
+        aiProposalBodyEl.appendChild(aiApplyBtnEl);
+      }
+    }
   }
 
   async function runAiPropose(opts) {
@@ -2313,9 +2328,8 @@
     actions.appendChild(el("p", { className: "member-games-help", text: "Description writing" }));
     addActionButton("mg-ai-description", "Draft our description", "description");
     addActionButton("mg-ai-polish", "Polish our notes", "polish");
-    var applyBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions" });
-    applyBtn.addEventListener("click", function () { void onApplyAiSelection(); });
-    actions.appendChild(applyBtn);
+    aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
+    aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
     aiStatusEl = el("p", { className: "member-games-help", id: "mg-ai-status" });
     aiProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-proposal" });
