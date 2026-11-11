@@ -64,6 +64,9 @@
 .club-account .members-admin-stats { gap: .75rem; }
 .club-account .members-admin-stat { background: var(--club-surface); border-color: var(--club-line); border-radius: var(--club-radius); }
 .club-account .members-admin-controls { gap: .6rem; }
+.members-admin-directory-field { display: grid; gap: .25rem; min-width: 0; max-width: 100%; }
+.members-admin-directory-field select { min-width: 0; }
+.members-admin-directory-search { flex: 1 1 16rem; max-width: min(100%, 22.5rem); }
 .club-account .members-admin-controls :is(input,select,button) { min-height: 44px; }
 .club-account .members-admin-table-wrap { max-width: 100%; }
 .club-account .members-admin-table { font-size: .82rem; }
