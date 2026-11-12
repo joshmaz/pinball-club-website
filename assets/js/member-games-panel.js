@@ -63,7 +63,9 @@
   var partyLinkWrapEl = null;
   var aiWrapEl = null;
   var aiStatusEl = null;
+  var aiSourceStatusEl = null;
   var aiProposalBodyEl = null;
+  var aiSourceProposalBodyEl = null;
   var aiApplyBtnEl = null;
   var aiProposalData = null;
   var aiDescriptionRegenCount = 0;
@@ -214,14 +216,11 @@
         textInput("mg-title", "")
       )
     );
-    formEl.appendChild(
-      fieldRow(
-        "Slug (optional; auto from title if empty)",
-        textInput("mg-slug", "")
-      )
-    );
     formEl.appendChild(buildGameImagesSection());
     var metadataPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
+    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "Game information" }));
+    metadataPanel.appendChild(fieldRow("Page URL slug", textInput("mg-slug", "")));
+    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "This identifies the game’s public page URL. New games use the title when this is blank; existing slugs are read-only." }));
     metadataPanel.appendChild(
       fieldRow(
         "Release date",
@@ -264,7 +263,7 @@
         numberInput("mg-players", "")
       )
     );
-    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "OPDB match details are imported from OPDB and shown for reference." }));
+    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "OPDB info · imported and read-only" }));
     metadataPanel.appendChild(
       fieldRow(
         "OPDB id",
@@ -284,6 +283,7 @@
       )
     );
 
+    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "PinballMap info" }));
     var mapRow = el("p", { className: "member-games-meta" });
     mapRow.appendChild(el("strong", { text: "Map at club (read-only): " }));
     mapRow.appendChild(el("span", { id: "mg-map-at", text: "—" }));
@@ -300,11 +300,15 @@
     manualWrapEl.appendChild(fieldRow("Override", manSel));
     manualWrapEl.appendChild(fieldRow("Override note", textInput("mg-manual-note", "")));
     metadataPanel.appendChild(manualWrapEl);
-    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "Third-party source URLs (verify before applying)." }));
-    metadataPanel.appendChild(fieldRow("Pinside URL", textInput("mg-pinside", "")));
-    metadataPanel.appendChild(fieldRow("IPDB URL", textInput("mg-ipdb", "")));
-    metadataPanel.appendChild(fieldRow("Kineticist URL", textInput("mg-kineticist", "")));
     formEl.appendChild(wrapCollapsible("Game metadata", metadataPanel));
+
+    var linksPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
+    linksPanel.appendChild(el("p", { className: "member-games-help", text: "Links to external game references. Open and confirm a page before applying a suggested URL." }));
+    linksPanel.appendChild(fieldRow("Pinside URL", textInput("mg-pinside", "")));
+    linksPanel.appendChild(fieldRow("IPDB URL", textInput("mg-ipdb", "")));
+    linksPanel.appendChild(fieldRow("Kineticist URL", textInput("mg-kineticist", "")));
+    linksPanel.appendChild(buildSourceAssistantScaffold());
+    formEl.appendChild(wrapCollapsible("Third-party links", linksPanel));
 
     formEl.appendChild(buildReviewScaffolds());
     formEl.appendChild(fieldRow(
@@ -1145,6 +1149,8 @@
       var n = document.getElementById(id);
       if (n) n.value = "";
     });
+    var slugInput = document.getElementById("mg-slug");
+    if (slugInput) slugInput.readOnly = false;
     var mapAt = document.getElementById("mg-map-at");
     if (mapAt) mapAt.textContent = "—";
     var man = document.getElementById("mg-manual");
@@ -2042,7 +2048,9 @@
   }
 
   function setAiStatus(msg) {
-    if (aiStatusEl) aiStatusEl.textContent = msg || "";
+    var isSourceAction = aiProposalData && aiProposalData.action === "sources";
+    var target = isSourceAction ? aiSourceStatusEl : aiStatusEl;
+    if (target) target.textContent = msg || "";
   }
 
   function resetAiProposalUi() {
@@ -2051,8 +2059,10 @@
     var notesInput = document.getElementById("mg-ai-notes");
     if (notesInput) notesInput.value = "";
     if (aiProposalBodyEl) aiProposalBodyEl.replaceChildren();
+    if (aiSourceProposalBodyEl) aiSourceProposalBodyEl.replaceChildren();
     if (aiApplyBtnEl) aiApplyBtnEl.hidden = true;
-    setAiStatus("");
+    if (aiStatusEl) aiStatusEl.textContent = "";
+    if (aiSourceStatusEl) aiSourceStatusEl.textContent = "";
   }
 
   function currentAiOperatorVerifiedSources() {
@@ -2063,26 +2073,29 @@
   }
 
   function renderAiProposal(proposal) {
-    if (!aiProposalBodyEl) return;
-    aiProposalBodyEl.replaceChildren();
+    var isSourceAction = proposal && proposal.action === "sources";
+    var targetBody = isSourceAction ? aiSourceProposalBodyEl : aiProposalBodyEl;
+    if (!targetBody) return;
+    targetBody.replaceChildren();
     aiProposalData = proposal || null;
     if (!proposal) return;
 
     (proposal.warnings || []).forEach(function (message) {
-      aiProposalBodyEl.appendChild(el("p", { className: "member-games-help member-games-ai-reason", text: String(message) }));
+      targetBody.appendChild(el("p", { className: "member-games-help member-games-ai-reason", text: String(message) }));
     });
 
     var evidence = Array.isArray(proposal.evidence) ? proposal.evidence : [];
     if (evidence.length) {
       var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
-      var verifiedCount = evidence.filter(function (item) {
+      var usableCount = evidence.filter(function (item) {
         var confirmed = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider];
-        return (item.verified && item.verificationMethod !== "operator") || confirmed === item.url;
+        return item.provider === "Operator context"
+          || (item.verified && item.verificationMethod !== "operator") || confirmed === item.url;
       }).length;
       var fetchedCount = evidence.filter(function (item) { return item.verified && item.verificationMethod !== "operator"; }).length;
-      var evidenceSummary = el("summary", { text: "Source evidence (" + verifiedCount + " confirmed; " + fetchedCount + " fetched)" });
+      var evidenceSummary = el("summary", { text: "Source evidence (" + usableCount + " usable; " + fetchedCount + " fetched)" });
       evidenceDetails.appendChild(evidenceSummary);
-      evidenceDetails.open = verifiedCount === 0;
+      evidenceDetails.open = usableCount === 0;
       evidence.forEach(function (item) {
         var row = el("div", { className: "member-games-ai-field" });
         var heading = el("p", { className: "member-games-help" });
@@ -2092,7 +2105,9 @@
           heading.appendChild(el("a", { href: href, target: "_blank", rel: "noopener noreferrer", className: "member-games-ai-external-link", text: href }));
         }
         var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
-        heading.appendChild(document.createTextNode(item.verificationMethod === "operator" || priorOperatorConfirmation
+        heading.appendChild(document.createTextNode(item.provider === "Operator context"
+          ? " — supplied by operator"
+          : item.verificationMethod === "operator" || priorOperatorConfirmation
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));
         row.appendChild(heading);
@@ -2117,8 +2132,10 @@
                 || ((aiOperatorVerifiedSourcesByGame[gameKey] || {})[source.provider] === source.url);
             }).length;
             var fetched = evidence.filter(function (source) { return source.verified && source.verificationMethod !== "operator"; }).length;
-            evidenceSummary.textContent = "Source evidence (" + count + " confirmed; " + fetched + " fetched)";
-            heading.lastChild.textContent = operatorUrl === href
+            evidenceSummary.textContent = "Source evidence (" + count + " usable; " + fetched + " fetched)";
+            heading.lastChild.textContent = item.provider === "Operator context"
+              ? " — supplied by operator"
+              : operatorUrl === href
               ? " — operator-confirmed match"
               : item.verified && item.verificationMethod !== "operator" ? " — page fetched; identity matched" : " — not used";
             if (verifyCheckbox.checked) {
@@ -2130,12 +2147,12 @@
         }
         evidenceDetails.appendChild(row);
       });
-      aiProposalBodyEl.appendChild(evidenceDetails);
+      targetBody.appendChild(evidenceDetails);
     }
 
     var drafts = Array.isArray(proposal.drafts) ? proposal.drafts : [];
     if (drafts.length) {
-      aiProposalBodyEl.appendChild(el("p", { className: "member-games-help", text: "Choose a draft to place it in the description field. Edit it there, then use Save game when ready." }));
+      targetBody.appendChild(el("p", { className: "member-games-help", text: "Choose a draft to place it in the description field. Edit it there, then use Save game when ready." }));
       drafts.forEach(function (draft, index) {
         var row = el("div", { className: "member-games-ai-field" });
         row.appendChild(el("label", { className: "member-games-label", text: "Draft option " + (index + 1) }));
@@ -2152,7 +2169,7 @@
           setAiStatus("Draft copied to the editable description field. Review it and save the game to keep it.");
         });
         row.appendChild(useBtn);
-        aiProposalBodyEl.appendChild(row);
+        targetBody.appendChild(row);
       });
     }
 
@@ -2178,7 +2195,7 @@
           row.appendChild(el("a", { href: field.sourceUrl, target: "_blank", rel: "noopener noreferrer", className: "member-games-ai-external-link", text: "Open supporting " + String(field.sourceType || "source") + " page" }));
         }
         if (field.reason) row.appendChild(el("p", { className: "member-games-help", text: String(field.reason) }));
-        aiProposalBodyEl.appendChild(row);
+        targetBody.appendChild(row);
         return;
       }
       var fieldLabel = aiSourceFieldLabel(field.field);
@@ -2217,7 +2234,7 @@
       (field.warnings || []).forEach(function (warning) {
         row.appendChild(el("p", { className: "member-games-help", text: String(warning) }));
       });
-      aiProposalBodyEl.appendChild(row);
+        targetBody.appendChild(row);
     });
 
     if (aiApplyBtnEl) {
@@ -2229,7 +2246,7 @@
       aiApplyBtnEl.hidden = !hasApplyableFields || (!isSourceAction && !isMetadataAction);
       if (!aiApplyBtnEl.hidden) {
         aiApplyBtnEl.textContent = isMetadataAction ? "Apply selected metadata to form" : "Apply selected source links";
-        aiProposalBodyEl.appendChild(aiApplyBtnEl);
+        targetBody.appendChild(aiApplyBtnEl);
       }
     }
   }
@@ -2239,13 +2256,14 @@
     if (aiBusy) return;
     aiBusy = true;
     var action = (opts && opts.action) || "description";
-    var labels = { sources: "Checking source links…", metadata: "Checking verified sources for missing metadata…", description: "Drafting from verified evidence…", polish: "Polishing operator notes…" };
+    var labels = { sources: "Checking source links…", metadata: "Reading supplied context for missing metadata…", description: "Drafting from supplied facts…", polish: "Turning gameplay notes into a draft…" };
+    aiProposalData = { action: action };
     setAiStatus(labels[action] || "Working…");
     try {
       var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
         gameId: currentGameId,
         action: action,
-        notes: (document.getElementById("mg-ai-notes") || {}).value || "",
+        context: (document.getElementById("mg-ai-notes") || {}).value || "",
         operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
@@ -2351,15 +2369,15 @@
 
   function buildReviewScaffolds() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Review game source links first, then use verified pages to suggest missing metadata. Metadata suggestions never overwrite filled values. Select suggestions to copy them into the form, review, and save the game before drafting our description." }));
-    panel.appendChild(el("p", { className: "member-games-help", text: "Source page descriptions are evidence for review; they are not copied into our editable description field." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Paste reference text or rough gameplay notes here. The assistant can use this context for metadata suggestions, description drafts, or to rewrite gameplay notes. It will not copy source wording into our description." }));
     var notes = textareaInput("mg-ai-notes", "");
-    notes.setAttribute("rows", "3");
-    notes.setAttribute("placeholder", "Gameplay fragments to polish when source coverage is thin");
-    panel.appendChild(fieldRow("Operator notes (optional)", notes));
+    notes.setAttribute("rows", "6");
+    notes.setAttribute("maxlength", "15000");
+    notes.setAttribute("placeholder", "Paste useful facts from a reference, machine manual, or your own gameplay notes…");
+    panel.appendChild(fieldRow("Research & gameplay context (optional)", notes));
 
     var actions = el("div", { className: "member-games-form-actions" });
-    actions.appendChild(el("p", { className: "member-games-help", text: "Source links & metadata" }));
+    actions.appendChild(el("p", { className: "member-games-help", text: "Metadata and description" }));
     function addActionButton(id, label, action) {
       var button = el("button", { type: "button", className: "members-sidebar-link", id: id, text: label });
       button.addEventListener("click", function () {
@@ -2371,11 +2389,10 @@
       });
       actions.appendChild(button);
     }
-    addActionButton("mg-ai-sources", "Find or verify source links", "sources");
     addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
-    actions.appendChild(el("p", { className: "member-games-help", text: "Description writing" }));
     addActionButton("mg-ai-description", "Draft our description", "description");
-    addActionButton("mg-ai-polish", "Polish our notes", "polish");
+    addActionButton("mg-ai-polish", "Turn gameplay notes into a draft", "polish");
+    actions.appendChild(el("p", { className: "member-games-help", text: "Turn gameplay notes into a draft rewrites rough play observations as description copy without adding gameplay claims." }));
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
@@ -2383,9 +2400,28 @@
     aiProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-proposal" });
     panel.appendChild(aiStatusEl);
     panel.appendChild(aiProposalBodyEl);
-    reviewScaffoldsEl = wrapCollapsible("Source & metadata assistant", panel, "member-games-review-scaffolds");
+    reviewScaffoldsEl = wrapCollapsible("Metadata & description assistant", panel, "member-games-review-scaffolds");
     aiWrapEl = reviewScaffoldsEl;
     return reviewScaffoldsEl;
+  }
+
+  function buildSourceAssistantScaffold() {
+    var panel = el("section", { className: "member-games-collapsible-panel" });
+    panel.appendChild(el("p", { className: "member-games-help", text: "Suggest likely URLs, open them to confirm the game, then edit and apply the links you want to keep." }));
+    var button = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-sources", text: "Find or verify links" });
+    button.addEventListener("click", function () {
+      if (!currentGameId || mode !== "edit") {
+        if (aiSourceStatusEl) aiSourceStatusEl.textContent = "Select a saved game first.";
+        return;
+      }
+      void runAiPropose({ action: "sources" });
+    });
+    panel.appendChild(button);
+    aiSourceStatusEl = el("p", { className: "member-games-help", id: "mg-ai-source-status" });
+    aiSourceProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-source-proposal" });
+    panel.appendChild(aiSourceStatusEl);
+    panel.appendChild(aiSourceProposalBodyEl);
+    return panel;
   }
 
   function renderStints(stints) {
@@ -2761,6 +2797,7 @@
     suppressDirtyTracking = true;
     document.getElementById("mg-title").value = g.title || "";
     document.getElementById("mg-slug").value = g.slug || "";
+    document.getElementById("mg-slug").readOnly = true;
     document.getElementById("mg-details").value = g.details || "";
     renderGameImages(g.images || []);
     document.getElementById("mg-release").value = (g.releaseDate || "").slice(0, 10);
