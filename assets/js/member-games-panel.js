@@ -268,31 +268,33 @@
         numberInput("mg-players", "")
       )
     );
-    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "OPDB info · imported and read-only" }));
-    metadataPanel.appendChild(
+    var sourceMetadataPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
+    sourceMetadataPanel.appendChild(el("p", { className: "member-games-help", text: "Imported identity and Pinball Map status are shown for reference. Update them through their source integration." }));
+    sourceMetadataPanel.appendChild(el("p", { className: "member-games-help", text: "OPDB · imported and read-only" }));
+    sourceMetadataPanel.appendChild(
       fieldRow(
         "OPDB id",
         el("input", { type: "text", id: "mg-opdb", className: "member-games-input", readOnly: "readonly", "aria-readonly": "true" })
       )
     );
-    metadataPanel.appendChild(
+    sourceMetadataPanel.appendChild(
       fieldRow(
         "OPDB matched via",
         el("input", { type: "text", id: "mg-opdbvia", className: "member-games-input", readOnly: "readonly", "aria-readonly": "true" })
       )
     );
-    metadataPanel.appendChild(
+    sourceMetadataPanel.appendChild(
       fieldRow(
         "OPDB canonical name",
         el("input", { type: "text", id: "mg-opdbcanon", className: "member-games-input", readOnly: "readonly", "aria-readonly": "true" })
       )
     );
 
-    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "PinballMap info" }));
+    sourceMetadataPanel.appendChild(el("p", { className: "member-games-help", text: "Pinball Map status" }));
     var mapRow = el("p", { className: "member-games-meta" });
     mapRow.appendChild(el("strong", { text: "Map at club (read-only): " }));
     mapRow.appendChild(el("span", { id: "mg-map-at", text: "—" }));
-    metadataPanel.appendChild(mapRow);
+    sourceMetadataPanel.appendChild(mapRow);
 
     manualWrapEl = el("div", { className: "member-games-manual" });
     manualWrapEl.appendChild(el("p", { className: "member-games-help", text: "Manual floor override (when Pinball Map is wrong or missing):" }));
@@ -304,7 +306,8 @@
     });
     manualWrapEl.appendChild(fieldRow("Override", manSel));
     manualWrapEl.appendChild(fieldRow("Override note", textInput("mg-manual-note", "")));
-    metadataPanel.appendChild(manualWrapEl);
+    sourceMetadataPanel.appendChild(manualWrapEl);
+    metadataPanel.appendChild(wrapCollapsible("Imported & location data", sourceMetadataPanel));
     formEl.appendChild(wrapCollapsible("Game metadata", metadataPanel));
 
     var linksPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
