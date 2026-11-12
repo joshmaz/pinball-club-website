@@ -5,6 +5,7 @@
 - `data/latest-opdb.json` is a checked-in OPDB export with machine groups, machines, and aliases. The current snapshot contains 1,706 groups, 2,154 machines, and 205 aliases. `scripts/enrich_games_from_opdb.py` joins games by IPDB ID and fills missing values without overwriting existing values.
 - OPDB data is fetched at runtime by the new-game/image helpers, but the repository has no routine downloader or scheduled import for the full catalog. `docs/pintips.md` mentions the OPDB V2 export as an implementation reference; it is not currently a recurring dependency.
 - `data/pinballmap-location-8908-activity.json` is a separate snapshot of 314 submissions for the club's Pinball Map location, dated through April 2026. `scripts/Refresh-PinballMapLocationActivity.ps1` can refresh it in full or incremental mode; `scripts/merge_pinballmap_into_games.py` uses it to maintain our club location stints and related floor history. It is not a global historical game catalog.
+- The refresh script currently sends no API token. Pinball Map announced token requirements for API clients in 2026, so its next refresh should verify current authentication requirements and add the club's token through a secret-backed header if needed.
 - The existing one-off web fetch path is a poor source-ingestion mechanism: it depends on remote pages permitting automated requests, and has already encountered 403/429 responses. Structured bulk/API feeds are a better fit for catalog data.
 
 ## Recommended source roles
