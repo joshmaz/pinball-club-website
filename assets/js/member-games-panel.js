@@ -2205,6 +2205,10 @@
         var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
         heading.appendChild(document.createTextNode(item.provider === "Operator context"
           ? " — supplied by operator"
+          : item.provider === "Kineticist API"
+          ? " — Data provided by Kineticist"
+          : item.provider === "OPDB" && item.verificationMethod === "archive"
+          ? " — exact ID in validated OPDB archive"
           : item.verificationMethod === "operator" || priorOperatorConfirmation
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));

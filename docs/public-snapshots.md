@@ -88,8 +88,9 @@ current data during an outage. Automated refresh is the next mitigation.
   content when no eligible dynamic highlights exist. Gallery ownership/redesign
   should decide whether to replace it with an automated public photo snapshot.
 - `data/resources.json` is authoritative static content, not database redundancy.
-- `data/latest-opdb.json` and Pinball Map activity JSON are maintenance inputs.
-  They are not runtime fallbacks and are excluded from the Netlify publish build.
+- OPDB V2 data is held in a private, timestamped Supabase Storage archive and is
+  not copied into the public catalog or static publish. Pinball Map activity
+  JSON remains a separate maintenance input, not a runtime fallback.
 - Historical Markdown/Facebook import scripts are not snapshot refresh tools.
   Do not use them to overwrite the generated `data/events.json`; export from
   Supabase after intentional import work.

@@ -1,4 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { cachedResource, supabaseCacheStore } from "../_shared/external-api-cache.mjs";
+import { OPDB_ID_PATTERN, ipdbPermalink } from "../_shared/opdb-reference.mjs";
 
 type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
@@ -60,6 +62,17 @@ type EnrichmentRequest = {
     requestId?: string;
     proposalVariant?: number;
   };
+};
+
+type GameReferenceData = {
+  opdbUrl: string | null;
+  opdbEntry: Record<string, unknown> | null;
+  ipdbId: number | null;
+  ipdbUrl: string | null;
+  kineticistUrl: string | null;
+  kineticistPayload: Record<string, unknown> | null;
+  kineticistStale: boolean;
+  warnings: string[];
 };
 
 const MAX_ENRICHMENT_CONTEXT_CHARS = 15_000;
@@ -176,8 +189,10 @@ Deno.serve(async (req) => {
     if (!["legacy", "sources", "metadata", "description"].includes(action)) {
       return json({ ok: false, error: "Unsupported enrichment action" }, 400);
     }
-    const fallbackUsed = { value: false };
     const warnings: string[] = [];
+    const references = await loadGameReferenceData(admin, game);
+    warningsFromReference(references, warnings);
+    const fallbackUsed = { value: false };
     let fields: ProposalField[] = [];
     let evidence: SourceEvidence[] = [];
     let drafts: string[] = [];
@@ -185,13 +200,15 @@ Deno.serve(async (req) => {
     let status: ProposalStatus = "ok";
 
     if (action === "legacy") {
-      const result = await buildDescriptionSuggestion(game, fallbackUsed, warnings);
-      fields = [result, ...buildLinkSuggestions(game)];
+      const result = await buildDescriptionSuggestion(game, references, fallbackUsed, warnings);
+      fields = [result, ...buildLinkSuggestions(game, references)];
+      evidence = referenceEvidence(references);
       modelName = result.sourceType;
       status = warnings.some((warning) => warning.includes("unavailable")) ? "needs_review" : "ok";
     } else if (action === "sources") {
-      fields = buildLinkSuggestions(game);
-      evidence = await collectSourceEvidence(game, true, body.operatorVerifiedSources);
+      fields = buildLinkSuggestions(game, references);
+      evidence = await collectSourceEvidence(game, true, body.operatorVerifiedSources, references);
+      evidence.push(...referenceEvidence(references));
       if (!evidence.some((item) => item.verified)) {
         warnings.push("No linked source page could be verified for this game. Existing URLs were preserved.");
         status = "needs_review";
@@ -199,7 +216,8 @@ Deno.serve(async (req) => {
         warnings.push("You confirmed the linked pages match this game. Some providers block page-text retrieval, so their text is unavailable to metadata suggestions and description drafting.");
       }
     } else if (action === "metadata") {
-      evidence = await collectSourceEvidence(game, false, body.operatorVerifiedSources);
+      evidence = await collectSourceEvidence(game, false, body.operatorVerifiedSources, references);
+      evidence.push(...referenceEvidence(references));
       const operatorContext = enrichmentContext(body);
       if (operatorContext.length >= 40) evidence.push({
         provider: "Operator context",
@@ -255,7 +273,8 @@ Deno.serve(async (req) => {
         }
       }
     } else {
-      evidence = await collectSourceEvidence(game, false, body.operatorVerifiedSources);
+      evidence = await collectSourceEvidence(game, false, body.operatorVerifiedSources, references);
+      evidence.push(...referenceEvidence(references));
       const notes = enrichmentContext(body);
       if (notes.length >= 40) evidence.push({
         provider: "Operator context",
@@ -265,7 +284,8 @@ Deno.serve(async (req) => {
         excerpt: notes,
         reason: "Supplied by the operator for review.",
       });
-      const hasGrounding = evidence.some((item) => item.verified && item.excerpt.length >= 40)
+      const hasGrounding = evidence.some((item) => item.verified && item.excerpt.length >= 40
+        && item.provider !== "OPDB" && item.provider !== "Kineticist API")
         || hasSpecificCatalogDetails(game.details || "");
       if (!hasGrounding) {
         status = "unavailable";
@@ -384,6 +404,161 @@ async function loadGame(admin: ReturnType<typeof createClient>, gameId: string):
   return (res.data as GameRow | null) || null;
 }
 
+async function loadGameReferenceData(
+  admin: ReturnType<typeof createClient>,
+  game: GameRow,
+): Promise<GameReferenceData> {
+  const references: GameReferenceData = {
+    opdbUrl: null,
+    opdbEntry: null,
+    ipdbId: null,
+    ipdbUrl: null,
+    kineticistUrl: null,
+    kineticistPayload: null,
+    kineticistStale: false,
+    warnings: [],
+  };
+  const opdbId = String(game.opdb_id || "").trim();
+  if (!OPDB_ID_PATTERN.test(opdbId)) return references;
+  references.opdbUrl = `https://opdb.org/entries/${encodeURIComponent(opdbId)}`;
+
+  try {
+    const latest = await admin.from("opdb_reference_snapshots")
+      .select("id,fetched_at")
+      .eq("status", "succeeded")
+      .order("fetched_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (latest.error) throw new Error("snapshot lookup failed");
+    if (latest.data?.id) {
+      const entry = await admin.from("opdb_reference_entries")
+        .select("opdb_id,opdb_group,ipdb_id,name,manufacture_date,manufacturer")
+        .eq("snapshot_id", latest.data.id)
+        .eq("opdb_id", opdbId)
+        .maybeSingle();
+      if (entry.error) throw new Error("crosswalk lookup failed");
+      if (entry.data) {
+        references.opdbEntry = entry.data as Record<string, unknown>;
+        references.ipdbId = entry.data.ipdb_id == null ? null : Number(entry.data.ipdb_id);
+        if (!references.ipdbId && opdbId === entry.data.opdb_group) {
+          const groupMappings = await admin.from("opdb_reference_entries")
+            .select("ipdb_id")
+            .eq("snapshot_id", latest.data.id)
+            .eq("opdb_group", opdbId)
+            .not("ipdb_id", "is", null)
+            .limit(1000);
+          if (groupMappings.error) throw new Error("group mapping lookup failed");
+          const ids = [...new Set((groupMappings.data || []).map((row: { ipdb_id: number }) => Number(row.ipdb_id)))];
+          if (ids.length === 1) references.ipdbId = ids[0];
+        }
+        references.ipdbUrl = ipdbPermalink(references.ipdbId);
+      }
+    }
+    if (!references.opdbEntry) references.warnings.push("The game OPDB ID was not found in the latest validated archive. Existing links were left unchanged.");
+  } catch {
+    references.warnings.push("The OPDB reference archive is unavailable. Existing links were left unchanged.");
+  }
+
+  try {
+    const cacheStore = supabaseCacheStore(admin);
+    const cached = await cachedResource({
+      store: cacheStore,
+      provider: "kineticist",
+      resourceType: "game",
+      key: opdbId,
+      fetchPayload: async () => {
+        const response = await fetch(`https://www.kineticist.com/api/v1/games/${encodeURIComponent(opdbId)}`, {
+          redirect: "error",
+          signal: AbortSignal.timeout(5000),
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error("Kineticist game lookup failed");
+        return await response.json();
+      },
+      validate: (payload) => {
+        const record = payload as Record<string, unknown>;
+        const data = record?.data as Record<string, unknown> | undefined;
+        const links = record?.links as Record<string, unknown> | undefined;
+        const permalinkValue = typeof links?.web === "string" ? links.web : "";
+        const permalink = permalinkValue ? new URL(permalinkValue) : null;
+        const authority = /^https:\/\/([^/?#]+)/i.exec(permalinkValue)?.[1];
+        if (record?.object !== "game" || !data || !permalink || permalink.protocol !== "https:"
+          || permalink.hostname !== "www.kineticist.com" || !permalink.pathname.startsWith("/games/pinball/")
+          || permalink.username || permalink.password || permalink.port
+          || authority?.toLowerCase() !== permalink.hostname) {
+          throw new Error("Kineticist returned an invalid game record");
+        }
+      },
+      ttl: () => cacheStore.ttl("kineticist", "game", 86400),
+    });
+    references.kineticistPayload = cached.payload as Record<string, unknown>;
+    references.kineticistStale = cached.cache.stale;
+    const links = references.kineticistPayload.links as Record<string, unknown>;
+    references.kineticistUrl = String(links.web);
+  } catch {
+    references.warnings.push("Kineticist data could not be resolved by OPDB ID. Existing links were left unchanged.");
+  }
+  return references;
+}
+
+function warningsFromReference(references: GameReferenceData, warnings: string[]) {
+  warnings.push(...references.warnings);
+  if (references.kineticistStale) warnings.push("The Kineticist cache is stale; its existing value is shown for review.");
+}
+
+function referenceEvidence(references: GameReferenceData): SourceEvidence[] {
+  const evidence: SourceEvidence[] = [];
+  const entry = references.opdbEntry;
+  if (entry && references.opdbUrl) {
+    const details = [
+      `OPDB ID: ${String(entry.opdb_id)}`,
+      `Name: ${String(entry.name || "unknown")}`,
+      entry.manufacturer ? `Manufacturer: ${String(entry.manufacturer)}` : "",
+      entry.manufacture_date ? `Manufacture date: ${String(entry.manufacture_date)}` : "",
+      references.ipdbId ? `Mapped IPDB ID: ${String(references.ipdbId)}` : "",
+    ].filter(Boolean).join("; ");
+    evidence.push({
+      provider: "OPDB",
+      url: references.opdbUrl,
+      verified: true,
+      verificationMethod: "archive",
+      excerpt: details,
+      reason: "Exact OPDB ID matched in the latest validated archive.",
+    });
+  }
+
+  const payload = references.kineticistPayload;
+  if (payload && references.kineticistUrl) {
+    const data = payload.data as Record<string, unknown>;
+    const manufacturer = data.manufacturer && (data.manufacturer as Record<string, unknown>).name;
+    const editions = Array.isArray(data.editions)
+      ? data.editions.slice(0, 8).map((edition) => {
+        const row = edition as Record<string, unknown>;
+        return String(row.name || row.trim_level || "");
+      }).filter(Boolean)
+      : [];
+    const lines = [
+      "Data provided by Kineticist.",
+      `Game: ${String(data.name || "unknown")}`,
+      data.first_manufacture_year ? `Manufacture year: ${String(data.first_manufacture_year)}` : "",
+      manufacturer ? `Manufacturer: ${String(manufacturer)}` : "",
+      data.game_type ? `Type: ${String(data.game_type)}` : "",
+      data.display_type ? `Display: ${String(data.display_type)}` : "",
+      data.player_count ? `Player count: ${String(data.player_count)}` : "",
+      editions.length ? `Editions: ${editions.join(", ")}` : "",
+    ].filter(Boolean).join("; ");
+    evidence.push({
+      provider: "Kineticist API",
+      url: references.kineticistUrl,
+      verified: true,
+      verificationMethod: "api",
+      excerpt: lines.slice(0, 1400),
+      reason: "Resolved by exact OPDB ID. Data provided by Kineticist; see the linked game page.",
+    });
+  }
+  return evidence;
+}
+
 function sanitizeDescription(text: string): string {
   const cleaned = text
     // Collapse excessive whitespace.
@@ -411,6 +586,7 @@ function metadataConsistencyWarnings(game: GameRow, description: string): string
 
 async function buildDescriptionSuggestion(
   game: GameRow,
+  references: GameReferenceData,
   fallbackUsed: { value: boolean },
   warnings: string[],
 ): Promise<ProposalField> {
@@ -427,7 +603,7 @@ async function buildDescriptionSuggestion(
     confidenceScore = 0.55;
     sourceType = "fallback:deterministic";
   } else {
-    const researchedContext = await buildDescriptionResearchContext(game);
+    const researchedContext = await buildDescriptionResearchContext(game, references);
     const prompt = buildDescriptionPrompt(game, researchedContext);
     const primary = await callOpenAI(primaryModel, prompt, apiKey);
     if (!primary.ok && shouldFallback(primary.status)) {
@@ -545,10 +721,10 @@ function enforceDescriptionBrevity(suggested: string): { text: string; warnings:
 }
 
 type SourceEvidence = {
-  provider: ResearchProvider | "Operator context";
+  provider: ResearchProvider | "OPDB" | "Kineticist API" | "Operator context";
   url: string;
   verified: boolean;
-  verificationMethod?: "fetch" | "operator";
+  verificationMethod?: "fetch" | "operator" | "archive" | "api";
   excerpt: string;
   reason: string;
 };
@@ -563,6 +739,7 @@ async function collectSourceEvidence(
   game: GameRow,
   includeCandidates: boolean,
   operatorVerifiedSources: EnrichmentRequest["operatorVerifiedSources"] = [],
+  references?: GameReferenceData,
 ): Promise<SourceEvidence[]> {
   const refs: Array<{ label: ResearchProvider; url: string | null; existing: boolean }> = [
     { label: "IPDB", url: game.ipdb_url, existing: true },
@@ -571,9 +748,9 @@ async function collectSourceEvidence(
   ];
   if (includeCandidates) {
     const guesses = [
-      { label: "IPDB" as const, url: guessIpdbUrl(game).value },
+      { label: "IPDB" as const, url: guessIpdbUrl(game, references).value },
       { label: "Pinside" as const, url: guessPinsideUrl(game).value },
-      { label: "Kineticist" as const, url: guessKineticistUrl(game).value },
+      { label: "Kineticist" as const, url: guessKineticistUrl(game, references).value },
     ];
     for (const guess of guesses) {
       if (!refs.some((r) => r.label === guess.label && r.url)) refs.push({ ...guess, existing: false });
@@ -644,7 +821,7 @@ async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider,
   finally { clearTimeout(tid); }
 }
 
-async function buildDescriptionResearchContext(game: GameRow): Promise<string> {
+async function buildDescriptionResearchContext(game: GameRow, references: GameReferenceData): Promise<string> {
   const refs: Array<{ label: ResearchProvider; url: string | null }> = [
     { label: "IPDB", url: game.ipdb_url },
     { label: "Pinside", url: game.pinside_url },
@@ -658,7 +835,10 @@ async function buildDescriptionResearchContext(game: GameRow): Promise<string> {
       return `- ${r.label}: ${summary}`;
     }),
   );
-  return snippets.filter(Boolean).join("\n");
+  const structured = referenceEvidence(references)
+    .filter((item) => item.verified)
+    .map((item) => `- ${item.provider} (${item.url}) — ${item.excerpt}`);
+  return [...snippets.filter(Boolean), ...structured].join("\n");
 }
 
 // Match the canonical provider hosts used by the catalog and link generators.
@@ -1006,11 +1186,11 @@ function parseMetadataSuggestions(
   }
 }
 
-function buildLinkSuggestions(game: GameRow): ProposalField[] {
+function buildLinkSuggestions(game: GameRow, references: GameReferenceData): ProposalField[] {
   return [
-    buildLinkField("ipdbUrl", game.ipdb_url, guessIpdbUrl(game)),
+    buildLinkField("ipdbUrl", game.ipdb_url, guessIpdbUrl(game, references)),
     buildLinkField("pinsideUrl", game.pinside_url, guessPinsideUrl(game)),
-    buildLinkField("kineticistUrl", game.kineticist_url, guessKineticistUrl(game)),
+    buildLinkField("kineticistUrl", game.kineticist_url, guessKineticistUrl(game, references)),
   ];
 }
 
@@ -1019,8 +1199,11 @@ function buildLinkField(
   currentValue: string | null,
   guess: { value: string | null; reason: string; sourceUrl: string | null; score: number; warnings: string[] },
 ): ProposalField {
+  const conflict = Boolean(currentValue && guess.value && currentValue !== guess.value);
   const score = currentValue ? 0.99 : guess.score;
-  const warnings = currentValue ? [] : guess.warnings;
+  const warnings = currentValue
+    ? conflict ? ["The exact reference lookup returned a different link. The saved link is preserved; compare both before changing it."] : []
+    : guess.warnings;
   const reviewRequired = score < THRESHOLDS.links || warnings.length > 0;
   return {
     field,
@@ -1028,16 +1211,25 @@ function buildLinkField(
     suggestedValue: currentValue || guess.value,
     confidence: mapConfidence(score),
     confidenceScore: score,
-    reason: currentValue ? "Existing link retained." : `Unverified candidate: ${guess.reason}`,
-    sourceType: currentValue ? "existing" : "resolver",
-    sourceUrl: currentValue || guess.sourceUrl,
+    reason: currentValue
+      ? conflict ? "Existing link retained for review; exact reference lookup found a different candidate." : "Existing link retained."
+      : guess.reason.startsWith("Exact ") ? guess.reason : `Unverified candidate: ${guess.reason}`,
+    sourceType: currentValue ? "existing" : guess.reason.startsWith("Exact ") ? "reference data" : "resolver",
+    sourceUrl: guess.sourceUrl || currentValue,
     warnings,
     reviewRequired,
     applyByDefault: !currentValue && !reviewRequired,
   };
 }
 
-function guessIpdbUrl(game: GameRow) {
+function guessIpdbUrl(game: GameRow, references?: GameReferenceData) {
+  if (references?.ipdbUrl) return {
+    value: references.ipdbUrl,
+    reason: `Exact IPDB ID mapping from OPDB ID ${game.opdb_id}.`,
+    sourceUrl: references.ipdbUrl,
+    score: 0.99,
+    warnings: [],
+  };
   const query = encodeURIComponent(game.title);
   return {
     value: `${FALLBACK_IPDB_SEARCH}${query}`,
@@ -1102,7 +1294,14 @@ function guessPinsideUrl(game: GameRow) {
   };
 }
 
-function guessKineticistUrl(game: GameRow) {
+function guessKineticistUrl(game: GameRow, references?: GameReferenceData) {
+  if (references?.kineticistUrl) return {
+    value: references.kineticistUrl,
+    reason: `Exact Kineticist API lookup by OPDB ID ${game.opdb_id}.`,
+    sourceUrl: references.kineticistUrl,
+    score: references.kineticistStale ? 0.78 : 0.99,
+    warnings: references.kineticistStale ? ["Returned from an expired cache because the provider request failed."] : [],
+  };
   const slug = machineSlugForExternalLinks(game);
   const year = releaseYear(game);
   if (slug) {
