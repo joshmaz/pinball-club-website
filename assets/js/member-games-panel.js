@@ -2139,6 +2139,10 @@
               ? " — operator-confirmed match"
               : item.verified && item.verificationMethod !== "operator" ? " — page fetched; identity matched" : " — not used";
             if (verifyCheckbox.checked) {
+              if (aiProposalData && aiProposalData.action === "sources") {
+                var sourceWarning = aiSourceProposalBodyEl && aiSourceProposalBodyEl.querySelector(".member-games-ai-reason");
+                if (sourceWarning) sourceWarning.textContent = "You confirmed this page matches the game. Its text remains unavailable to the assistant.";
+              }
               setAiStatus("Manual confirmation saved for this editing session. The page text is still unavailable to metadata suggestions and description drafting.");
             }
           });
@@ -2392,7 +2396,7 @@
     addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
     addActionButton("mg-ai-description", "Draft our description", "description");
     addActionButton("mg-ai-polish", "Turn gameplay notes into a draft", "polish");
-    actions.appendChild(el("p", { className: "member-games-help", text: "Turn gameplay notes into a draft rewrites rough play observations as description copy without adding gameplay claims." }));
+    actions.appendChild(el("p", { className: "member-games-help", text: "Rewrites rough play observations as description copy without adding gameplay claims." }));
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
