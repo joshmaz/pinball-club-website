@@ -36,6 +36,8 @@
   var comboboxListboxId = "member-games-combobox-listbox";
   var deleteStatusEl = null;
   var deleteNoteInputEl = null;
+  var deleteWrapEl = null;
+  var moreToolsEl = null;
   var softDeleteBtnEl = null;
   var restoreBtnEl = null;
   var highScoresWrapEl = null;
@@ -322,14 +324,12 @@
 
     stintsEl = el("div", { className: "member-games-stints member-games-collapsible-panel" });
     stintsSectionEl = wrapCollapsible("Location stints", stintsEl);
-    formEl.appendChild(stintsSectionEl);
 
     var salePanel = el("div", { className: "member-games-sale member-games-collapsible-panel" });
     salePanel.appendChild(fieldRow("Status", textInput("mg-sale-status", "draft")));
     salePanel.appendChild(fieldRow("Asking price (cents)", numberInput("mg-sale-cents", "")));
     salePanel.appendChild(fieldRow("Notes", textareaInput("mg-sale-notes", "")));
     saleEl = wrapCollapsible("For sale listing", salePanel);
-    formEl.appendChild(saleEl);
 
     appendPartyGameLinkSection();
 
@@ -349,7 +349,6 @@
     hsAdd.addEventListener("click", onAddHighScore);
     hsPanel.appendChild(hsAdd);
     highScoresWrapEl = wrapCollapsible("High scores (public More Info)", hsPanel);
-    formEl.appendChild(highScoresWrapEl);
 
     var modsPanel = el("div", { className: "member-games-extended member-games-collapsible-panel", id: "mg-mods-wrap" });
     modsPanel.appendChild(el("div", { id: "mg-mods-list", className: "member-games-sublist" }));
@@ -361,7 +360,6 @@
     modAdd.addEventListener("click", onAddMod);
     modsPanel.appendChild(modAdd);
     modsWrapEl = wrapCollapsible("Custom mods (public More Info)", modsPanel);
-    formEl.appendChild(modsWrapEl);
 
     var pingolfPanel = el("div", { className: "member-games-extended member-games-collapsible-panel", id: "mg-pingolf-targets-wrap" });
     pingolfPanel.appendChild(el("p", { className: "member-games-help", id: "mg-pingolf-help", text: "" }));
@@ -391,7 +389,16 @@
       if (label && input) label.setAttribute("for", input.id);
     });
     pingolfTargetsWrapEl = wrapCollapsible("Pingolf Targets", pingolfPanel);
-    formEl.appendChild(pingolfTargetsWrapEl);
+
+    var moreToolsPanel = el("div", { className: "member-games-more-tools" });
+    moreToolsPanel.appendChild(el("p", { className: "member-games-help", text: "Less frequently used tools for this game." }));
+    moreToolsPanel.appendChild(stintsSectionEl);
+    moreToolsPanel.appendChild(saleEl);
+    moreToolsPanel.appendChild(highScoresWrapEl);
+    moreToolsPanel.appendChild(modsWrapEl);
+    moreToolsPanel.appendChild(pingolfTargetsWrapEl);
+    moreToolsEl = wrapCollapsible("More game tools", moreToolsPanel);
+    formEl.appendChild(moreToolsEl);
 
     var saveBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-save" });
     saveBtn.textContent = "Save game";
@@ -399,10 +406,13 @@
     cancelBtn.textContent = "Cancel";
     var actions = el("div", { className: "member-games-form-actions" }, [saveBtn, cancelBtn]);
     formEl.appendChild(actions);
-    formEl.appendChild(deleteStatusEl);
     formEl.appendChild(libraryLink);
-    formEl.appendChild(deleteNoteRow);
-    formEl.appendChild(deleteActions);
+    var deletePanel = el("div", { className: "member-games-delete-panel" });
+    deletePanel.appendChild(deleteStatusEl);
+    deletePanel.appendChild(deleteNoteRow);
+    deletePanel.appendChild(deleteActions);
+    deleteWrapEl = wrapCollapsible("Game administration", deletePanel);
+    formEl.appendChild(deleteWrapEl);
 
     saveBtn.addEventListener("click", onSaveGame);
     cancelBtn.addEventListener("click", function () {
@@ -1102,6 +1112,8 @@
     }
     if (partyLinkWrapEl) partyLinkWrapEl.hidden = mode !== "edit";
     if (stintsSectionEl) stintsSectionEl.hidden = mode !== "edit";
+    if (moreToolsEl) moreToolsEl.hidden = mode !== "edit";
+    if (deleteWrapEl) deleteWrapEl.hidden = mode !== "edit";
     if (deleteStatusEl) deleteStatusEl.hidden = mode !== "edit";
     var deleteNoteRow = deleteNoteInputEl ? deleteNoteInputEl.closest(".member-games-field") : null;
     if (deleteNoteRow) deleteNoteRow.hidden = mode !== "edit";
