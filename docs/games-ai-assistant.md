@@ -7,6 +7,8 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 - [x] Edge Function `ai-game-enrich-propose` (JWT, `games_editor` / `games_admin` / `club_admin`, audit `ai_proposal`)
 - [x] Description proposals: structured fields, existing `details`, IPDB/Pinside/Kineticist **research snippets** (HTML fetch where possible), length guard (~220–320 chars), manufacturer + year in prose when metadata supports it, trim labels like `(Pro)` / `(LE)` in generated copy
 - [x] Link proposals: IPDB search fallback; **Pinside** and **Kineticist** canonical-style URLs from `slug` + title + release year when derivable
+- [x] Metadata proposals: extract only missing manufacturer, manufacturer full name, machine type, display, and player count from verified source excerpts; review and explicitly apply suggestions into blank form fields before normal Save
+- [x] Catalog provenance: OPDB ID, match method, and canonical name are read-only integration data; third-party source URLs are grouped at the end of the metadata block
 - [x] Portal: `SNHMemberPortal.aiGameEnrichPropose`, proposal UI with checkboxes, external link validation, **AI block under core game fields, above stints**
 - [x] Combobox filter **Only at club today** (effective at-club: manual override, then map, then `atClub`)
 - [x] Editor UX: collapsible `<details>` sections (location stints, for sale, owner link, high scores, mods, Pingolf) **collapsed by default**; Save/Cancel remain at bottom of form
@@ -15,7 +17,6 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 ## Not in scope yet (ideas)
 
 - [ ] Optional external-image caching/derivative pipeline after reuse and hotlink policy is established; see `docs/game-images.md`
-- [ ] Structured field proposals (type, display, player count) from AI
 - [ ] Fixture-driven automated tests for every resolver edge case (see `games-ai-fixtures.md`)
 
 ## Operator setup
@@ -63,10 +64,14 @@ the actual request handler and canonical SQL role boundary before protected work
 
 ## Editor workflow (short)
 
-1. Open a game → **Attempt Metadata Enhancement** or **Attempt Description Update**.
-2. Review fields; use **Open in new tab** links to validate URLs.
-3. **Apply selected fields** only for rows you trust. Manage all images in the separate **Images** section through club uploads and deterministic OPDB sync.
-4. Rollback mistakes: `docs/games-ai-rollback-runbook.md`.
+1. Open a saved game and choose **Find or verify source links**. Existing URLs stay in place; generated candidates are shown for operator review and never saved automatically.
+2. Open the evidence details to review which source pages matched the selected title and the excerpts retrieved from them. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it.
+3. Choose **Suggest missing metadata**. Suggestions cover manufacturer names, machine type, display, and player count when verified source excerpts support them. Filled values are never replaced. Select suggestions to copy them into blank form fields, review them, then use **Save game**.
+4. OPDB ID, match method, and canonical name are imported integration data and are read-only in this editor. Third-party source URLs appear at the end of the metadata block.
+5. After metadata review, choose **Draft our description** for two editable options grounded in verified source text or specific existing catalog copy. Source-site descriptions are shown only as evidence and are not stored as our editable description. If evidence is thin, the assistant reports that instead of writing generic copy.
+6. Add gameplay fragments under **Operator notes** and choose **Polish our notes** when source coverage is thin. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
+
+The short card target remains roughly 220–320 characters. Include manufacturer, release year, and a designer only when supported by verified catalog/source evidence. The public Games page is unchanged.
 
 ## Related files
 
