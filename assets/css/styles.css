@@ -2656,6 +2656,25 @@ footer {
   font-weight: 600;
 }
 
+.member-games-ai-context-details {
+  margin-top: 0.45rem;
+}
+
+.member-games-ai-context-text {
+  max-height: 20rem;
+  overflow: auto;
+  margin: 0.45rem 0 0;
+  padding: 0.6rem;
+  border: 1px solid var(--border-divider);
+  border-radius: 6px;
+  background: var(--bg-card-soft);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 0.88rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .member-games-ai-warnings {
   margin: 0.35rem 0 0;
   color: var(--status-warn-text);

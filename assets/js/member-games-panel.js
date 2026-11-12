@@ -1,4 +1,5 @@
 (function () {
+  var MAX_AI_CONTEXT_CHARS = 15000;
   var GAMES_ROLE_CSV =
     (window.SNHMemberPortal && window.SNHMemberPortal.rolesToCsv && window.SNHMemberPortal.rolesToCsv(
       (window.SNHMemberPortal.ROLE_GROUPS && window.SNHMemberPortal.ROLE_GROUPS.GAMES_ACCESS) ||
@@ -2188,7 +2189,19 @@
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));
         row.appendChild(heading);
-        row.appendChild(el("p", { className: "member-games-help", text: String(item.excerpt || item.reason || "") }));
+        if (item.provider === "Operator context") {
+          var suppliedText = String(item.excerpt || "");
+          row.appendChild(el("p", {
+            className: "member-games-help",
+            text: "Full operator context sent to the assistant (" + suppliedText.length.toLocaleString() + " characters).",
+          }));
+          var suppliedDetails = el("details", { className: "member-games-ai-context-details" });
+          suppliedDetails.appendChild(el("summary", { text: "Show supplied context" }));
+          suppliedDetails.appendChild(el("pre", { className: "member-games-ai-context-text", text: suppliedText }));
+          row.appendChild(suppliedDetails);
+        } else {
+          row.appendChild(el("p", { className: "member-games-help", text: String(item.excerpt || item.reason || "") }));
+        }
         if (href && isValidAiSourceUrl(item.field || ({ IPDB: "ipdbUrl", Pinside: "pinsideUrl", Kineticist: "kineticistUrl" })[item.provider], href)) {
           var verifyId = "mg-ai-manual-verify-" + String(item.provider || "").toLowerCase();
           var verifyCheckbox = el("input", { type: "checkbox", id: verifyId });
@@ -2335,6 +2348,11 @@
   async function runAiPropose(opts) {
     if (!currentGameId || !window.SNHMemberPortal || !window.SNHMemberPortal.aiGameEnrichPropose) return;
     if (aiBusy) return;
+    var contextValue = String((document.getElementById("mg-ai-notes") || {}).value || "");
+    if (contextValue.length > MAX_AI_CONTEXT_CHARS) {
+      setAiStatus("Research context exceeds the 15,000-character limit. Shorten it before asking the assistant.");
+      return;
+    }
     aiBusy = true;
     var action = (opts && opts.action) || "description";
     var labels = { sources: "Checking source links…", metadata: "Reading supplied context for missing metadata…", description: "Drafting from supplied facts…" };
@@ -2344,7 +2362,7 @@
       var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
         gameId: currentGameId,
         action: action,
-        context: (document.getElementById("mg-ai-notes") || {}).value || "",
+        context: contextValue,
         operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
@@ -2450,12 +2468,28 @@
 
   function buildReviewScaffolds() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Paste reference text or rough gameplay notes here. Both assistant actions use this context: one proposes values for blank metadata fields, and the other drafts public description options. Review every suggestion before saving." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Paste reference text or rough gameplay notes here (maximum 15,000 characters). Both assistant actions use this context: one proposes values for blank metadata fields, and the other drafts public description options. This text is sent to the AI provider, which is instructed to treat it as untrusted reference material rather than instructions. Review all suggestions. Do not include passwords, API keys, or private member information." }));
     var notes = textareaInput("mg-ai-notes", "");
     notes.setAttribute("rows", "6");
-    notes.setAttribute("maxlength", "15000");
+    notes.setAttribute("maxlength", String(MAX_AI_CONTEXT_CHARS));
     notes.setAttribute("placeholder", "Paste useful facts from a reference, machine manual, or your own gameplay notes…");
+    var contextCount = el("p", { className: "member-games-help", id: "mg-ai-context-count", text: "0 / 15,000 characters (maximum)" });
+    notes.setAttribute("aria-describedby", contextCount.id);
+    function updateContextCount() {
+      contextCount.textContent = notes.value.length.toLocaleString() + " / " + MAX_AI_CONTEXT_CHARS.toLocaleString() + " characters (maximum)";
+    }
+    notes.addEventListener("input", updateContextCount);
+    notes.addEventListener("paste", function (event) {
+      var pastedText = event.clipboardData && event.clipboardData.getData("text/plain");
+      if (typeof pastedText !== "string") return;
+      var selectionLength = Math.max(0, notes.selectionEnd - notes.selectionStart);
+      if (notes.value.length - selectionLength + pastedText.length > MAX_AI_CONTEXT_CHARS) {
+        event.preventDefault();
+        setAiStatus("That paste would exceed the 15,000-character limit. Shorten the text and paste it again.");
+      }
+    });
     panel.appendChild(fieldRow("Research & gameplay context (optional)", notes));
+    panel.appendChild(contextCount);
 
     var actions = el("div", { className: "member-games-form-actions" });
     actions.appendChild(el("p", { className: "member-games-help", text: "Metadata and description" }));
