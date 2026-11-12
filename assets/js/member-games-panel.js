@@ -1905,6 +1905,9 @@
 
   function buildPicker() {
     var wrap = el("div", { className: "member-games-picker" });
+    var addGameHelp = el("details", { className: "member-games-add-help" });
+    addGameHelp.appendChild(el("summary", { text: "About adding games" }));
+    var addGameHelpBody = el("div", { className: "member-games-add-help-body" });
     var pref = el("p", { className: "member-games-help" });
     pref.appendChild(document.createTextNode("Preferred: add new machines through "));
     pref.appendChild(
@@ -1918,19 +1921,21 @@
     pref.appendChild(
       document.createTextNode(" at the SNHPC location. This keeps ingest and lineup history aligned.")
     );
-    wrap.appendChild(pref);
-    wrap.appendChild(
+    addGameHelpBody.appendChild(pref);
+    addGameHelpBody.appendChild(
       el("p", {
         className: "member-games-help",
         text: 'After adding on Pinball Map, wait for the scheduled ingest or run it from the Integrations tab.'
       })
     );
-    wrap.appendChild(
+    addGameHelpBody.appendChild(
       el("p", {
         className: "member-games-help",
         text: 'Use "New Game" here only for entries that Pinball Map does not cover (for example prototypes, private/offline records, or non-standard catalog items).'
       })
     );
+    addGameHelp.appendChild(addGameHelpBody);
+    wrap.appendChild(addGameHelp);
     wrap.appendChild(
       el("p", {
         className: "member-games-help",
