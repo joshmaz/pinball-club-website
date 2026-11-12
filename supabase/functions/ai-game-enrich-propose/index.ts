@@ -51,7 +51,7 @@ type ProposalField = {
 
 type EnrichmentRequest = {
   gameId: string;
-  action?: "sources" | "metadata" | "description" | "polish";
+  action?: "sources" | "metadata" | "description";
   context?: string;
   notes?: string;
   operatorVerifiedSources?: Array<{ provider?: string; url?: string }>;
@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
 
     const runId = crypto.randomUUID();
     const action = body.action || "legacy";
-    if (!["legacy", "sources", "metadata", "description", "polish"].includes(action)) {
+    if (!["legacy", "sources", "metadata", "description"].includes(action)) {
       return json({ ok: false, error: "Unsupported enrichment action" }, 400);
     }
     const fallbackUsed = { value: false };
@@ -253,10 +253,7 @@ Deno.serve(async (req) => {
       });
       const hasGrounding = evidence.some((item) => item.verified && item.excerpt.length >= 40)
         || hasSpecificCatalogDetails(game.details || "");
-      if (action === "polish" && !notes) {
-        status = "unavailable";
-        warnings.push("Add gameplay notes or reference text in Research & gameplay context before choosing Turn gameplay notes into a draft.");
-      } else if (!hasGrounding && !(action === "polish" && notes)) {
+      if (!hasGrounding) {
         status = "unavailable";
         warnings.push("There is not enough game-specific context to draft a description yet. Add source facts or gameplay notes to Research & gameplay context.");
       } else {

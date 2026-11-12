@@ -78,6 +78,8 @@
   var imageUploadBusy = false;
   var gameSaveBusy = false;
   var gameSaveFeedbackTimer = null;
+  var gamesWorkspaceTabButtons = Object.create(null);
+  var gamesWorkspacePanels = Object.create(null);
 
   function el(tag, attrs, children) {
     var n = document.createElement(tag);
@@ -1443,7 +1445,7 @@
     inner.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "Add or edit contacts in Owner parties (section below this form). Saved parties appear in this list for the open game only."
+        text: "Add or edit records in the Owners & lenders tab. Saved parties appear in this list for the open game only."
       })
     );
     var partySel = el("select", { id: "mg-party-link-select", className: "member-games-input" });
@@ -1489,7 +1491,7 @@
     partiesBlockEl.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "Search or + New party to edit directory records (fields open when you pick one). To attach a party to a machine, open that game in the catalog editor above."
+        text: "Search or + New party to edit directory records (fields open when you pick one). To attach a party to a machine, choose the game in the Games tab."
       })
     );
 
@@ -1725,6 +1727,103 @@
     return foot;
   }
 
+  function buildIntegrationsPanel() {
+    var panel = el("div", { className: "member-games-integration-panel" });
+    panel.appendChild(el("h3", { className: "member-games-section-heading", text: "PinballMap" }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "PinballMap supplies location and lineup data. New machines should normally be added at the SNHPC location in PinballMap, then brought into the catalog by ingest." }));
+    panel.appendChild(buildPinballMapFoot());
+    if (hasDeleteAccess()) {
+      var tipsFoot = el("div", { className: "member-games-pinballmap-foot" });
+      tipsFoot.appendChild(el("h3", { className: "member-games-section-heading", text: "PinTips" }));
+      var tipsStatus = el("p", { className: "member-games-meta", text: "PinTips refresh daily. Imported tips are read-only; club content is kept separately." });
+      tipsStatus.setAttribute("role", "status");
+      var tipsRefresh = el("button", { type: "button", className: "members-sidebar-link", text: "Refresh PinTips now" });
+      tipsRefresh.addEventListener("click", async function () {
+        if (!hasDeleteAccess() || tipsRefresh.disabled) return;
+        tipsRefresh.disabled = true;
+        tipsStatus.textContent = "Refreshing PinTips…";
+        try {
+          var result = await window.SNHMemberPortal.pintipsImportInvoke();
+          tipsStatus.textContent = "PinTips refreshed: " + result.tips + " tips, " + result.matched_games + " games matched. " +
+            result.added + " added, " + result.changed + " changed, " + result.removed + " removed. " +
+            result.missing_opdb_games + " games missing OPDB IDs, " + result.invalid_opdb_games + " invalid IDs, " + result.games_without_tips + " games without tips.";
+        } catch (error) { tipsStatus.textContent = error.message || "PinTips refresh failed. Please try again."; }
+        finally { tipsRefresh.disabled = false; }
+      });
+      tipsFoot.appendChild(tipsStatus);
+      tipsFoot.appendChild(tipsRefresh);
+      panel.appendChild(tipsFoot);
+    }
+    return panel;
+  }
+
+  function activateGamesWorkspaceTab(name, moveFocus) {
+    Object.keys(gamesWorkspaceTabButtons).forEach(function (key) {
+      var active = key === name;
+      gamesWorkspaceTabButtons[key].setAttribute("aria-selected", active ? "true" : "false");
+      gamesWorkspaceTabButtons[key].tabIndex = active ? 0 : -1;
+      gamesWorkspacePanels[key].hidden = !active;
+    });
+    if (moveFocus && gamesWorkspaceTabButtons[name]) gamesWorkspaceTabButtons[name].focus();
+  }
+
+  function buildGamesWorkspaceTabs() {
+    var root = el("div", { className: "member-games-workspace" });
+    var tablist = el("div", { className: "member-games-workspace-tabs", role: "tablist", "aria-label": "Games administration sections" });
+    var sections = [
+      { key: "games", label: "Games" },
+      { key: "owners", label: "Owners & lenders" },
+      { key: "integrations", label: "Integrations" },
+    ];
+    var tabIds = sections.map(function (section) { return "member-games-tab-" + section.key; });
+    var panelIds = sections.map(function (section) { return "member-games-workspace-" + section.key; });
+    gamesWorkspaceTabButtons = Object.create(null);
+    gamesWorkspacePanels = Object.create(null);
+    sections.forEach(function (section, index) {
+      var button = el("button", {
+        type: "button",
+        id: tabIds[index],
+        className: "members-sidebar-link member-games-workspace-tab",
+        role: "tab",
+        "aria-selected": index === 0 ? "true" : "false",
+        "aria-controls": panelIds[index],
+        tabindex: index === 0 ? "0" : "-1",
+        text: section.label,
+      });
+      button.addEventListener("click", function () { activateGamesWorkspaceTab(section.key, false); });
+      button.addEventListener("keydown", function (event) {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        var nextIndex = index;
+        if (event.key === "ArrowLeft") nextIndex = (index + sections.length - 1) % sections.length;
+        else if (event.key === "ArrowRight") nextIndex = (index + 1) % sections.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = sections.length - 1;
+        activateGamesWorkspaceTab(sections[nextIndex].key, true);
+      });
+      gamesWorkspaceTabButtons[section.key] = button;
+      tablist.appendChild(button);
+
+      var content = el("div", {
+        id: panelIds[index],
+        className: "member-games-workspace-panel",
+        role: "tabpanel",
+        "aria-labelledby": tabIds[index],
+        tabindex: "0",
+      });
+      content.hidden = index !== 0;
+      gamesWorkspacePanels[section.key] = content;
+    });
+
+    gamesWorkspacePanels.games.appendChild(buildPicker());
+    gamesWorkspacePanels.games.appendChild(buildForm());
+    gamesWorkspacePanels.owners.appendChild(buildPartiesMainStrip());
+    gamesWorkspacePanels.integrations.appendChild(buildIntegrationsPanel());
+    root.appendChild(tablist);
+    sections.forEach(function (section) { root.appendChild(gamesWorkspacePanels[section.key]); });
+    return root;
+  }
+
   async function refreshPinballMapIngestStatus() {
     if (!pinballMapIngestStatusRowEl || !window.SNHMemberPortal || !window.SNHMemberPortal.pinballmapIngestStatus) return;
     pinballMapIngestStatusRowEl.textContent = "Checking last Pinball Map ingest…";
@@ -1807,7 +1906,7 @@
     wrap.appendChild(
       el("p", {
         className: "member-games-help",
-        text: 'After adding on Pinball Map, wait for the scheduled ingest or use "Run Pinball Map ingest now" below.'
+        text: 'After adding on Pinball Map, wait for the scheduled ingest or run it from the Integrations tab.'
       })
     );
     wrap.appendChild(
@@ -1819,7 +1918,7 @@
     wrap.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "Search or pick a game to open the catalog editor directly under this search. Owner parties stay in a separate section farther down; open a game first to link one."
+        text: "Search or pick a game to open its catalog editor. Manage owners in the Owners & lenders tab; open a game first to link one."
       })
     );
     var row = el("div", { className: "member-games-picker-row" });
@@ -1899,28 +1998,6 @@
     toggleRow.appendChild(atClubOnlyToggleEl);
     toggleRow.appendChild(document.createTextNode(" Only at club today"));
     wrap.appendChild(toggleRow);
-    wrap.appendChild(buildPinballMapFoot());
-    if (hasDeleteAccess()) {
-      var tipsFoot = el("div", { className: "member-games-pinballmap-foot" });
-      var tipsStatus = el("p", { className: "member-games-meta", text: "PinTips refresh daily. Imported tips are read-only; club content is kept separately." });
-      tipsStatus.setAttribute("role", "status");
-      var tipsRefresh = el("button", { type: "button", className: "members-sidebar-link", text: "Refresh PinTips now" });
-      tipsRefresh.addEventListener("click", async function () {
-        if (!hasDeleteAccess() || tipsRefresh.disabled) return;
-        tipsRefresh.disabled = true;
-        tipsStatus.textContent = "Refreshing PinTips…";
-        try {
-          var result = await window.SNHMemberPortal.pintipsImportInvoke();
-          tipsStatus.textContent = "PinTips refreshed: " + result.tips + " tips, " + result.matched_games + " games matched. " +
-            result.added + " added, " + result.changed + " changed, " + result.removed + " removed. " +
-            result.missing_opdb_games + " games missing OPDB IDs, " + result.invalid_opdb_games + " invalid IDs, " + result.games_without_tips + " games without tips.";
-        } catch (error) { tipsStatus.textContent = error.message || "PinTips refresh failed. Please try again."; }
-        finally { tipsRefresh.disabled = false; }
-      });
-      tipsFoot.appendChild(tipsStatus);
-      tipsFoot.appendChild(tipsRefresh);
-      wrap.appendChild(tipsFoot);
-    }
     comboboxInputEl.addEventListener("focus", function () {
       if (!catalogLoaded) return;
       setComboboxOpen(true);
@@ -2260,7 +2337,7 @@
     if (aiBusy) return;
     aiBusy = true;
     var action = (opts && opts.action) || "description";
-    var labels = { sources: "Checking source links…", metadata: "Reading supplied context for missing metadata…", description: "Drafting from supplied facts…", polish: "Turning gameplay notes into a draft…" };
+    var labels = { sources: "Checking source links…", metadata: "Reading supplied context for missing metadata…", description: "Drafting from supplied facts…" };
     aiProposalData = { action: action };
     setAiStatus(labels[action] || "Working…");
     try {
@@ -2276,7 +2353,7 @@
       } else if (action === "metadata" && proposal.status === "unavailable") {
         setAiStatus("No metadata suggestions are ready. Review the source evidence and fill any gaps manually if needed.");
       } else {
-        setAiStatus(action === "description" || action === "polish"
+        setAiStatus(action === "description"
           ? (proposal.status === "unavailable" ? "No description draft was created." : "Review the results below.")
           : "Review the results below.");
       }
@@ -2373,7 +2450,7 @@
 
   function buildReviewScaffolds() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Paste reference text or rough gameplay notes here. The assistant can use this context for metadata suggestions, description drafts, or to rewrite gameplay notes. It will not copy source wording into our description." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Paste reference text or rough gameplay notes here. Both assistant actions use this context: one proposes values for blank metadata fields, and the other drafts public description options. Review every suggestion before saving." }));
     var notes = textareaInput("mg-ai-notes", "");
     notes.setAttribute("rows", "6");
     notes.setAttribute("maxlength", "15000");
@@ -2394,7 +2471,9 @@
       actions.appendChild(button);
     }
     addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
+    actions.appendChild(el("p", { className: "member-games-help", text: "Suggests values for supported metadata fields that are blank." }));
     addActionButton("mg-ai-description", "Draft our description", "description");
+    actions.appendChild(el("p", { className: "member-games-help", text: "Creates a short public description from the supplied facts and existing game details." }));
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
@@ -3071,9 +3150,7 @@
       "aria-live": "polite"
     });
     appEl.appendChild(statusEl);
-    appEl.appendChild(buildPicker());
-    appEl.appendChild(buildForm());
-    appEl.appendChild(buildPartiesMainStrip());
+    appEl.appendChild(buildGamesWorkspaceTabs());
     document.addEventListener("click", onMemberGamesDocumentClick);
     syncPartyDirectoryDeleteVisibility();
     setMode("idle");
@@ -3103,6 +3180,7 @@
     if (!window.SNHMemberPortal.memberHasAnyRole(roles || [], GAMES_ROLE_CSV)) return;
 
     lastUserRoles = roles || lastUserRoles;
+    activateGamesWorkspaceTab("games", false);
 
     if (!inited) {
       inited = true;
