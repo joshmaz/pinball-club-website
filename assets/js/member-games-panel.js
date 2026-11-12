@@ -2395,8 +2395,6 @@
     }
     addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
     addActionButton("mg-ai-description", "Draft our description", "description");
-    addActionButton("mg-ai-polish", "Turn gameplay notes into a draft", "polish");
-    actions.appendChild(el("p", { className: "member-games-help", text: "Rewrites rough play observations as description copy without adding gameplay claims." }));
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
