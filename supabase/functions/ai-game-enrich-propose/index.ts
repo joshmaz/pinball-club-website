@@ -821,7 +821,7 @@ async function fetchReferenceEvidence(game: GameRow, provider: ResearchProvider,
   finally { clearTimeout(tid); }
 }
 
-async function buildDescriptionResearchContext(game: GameRow, references: GameReferenceData): Promise<string> {
+async function buildDescriptionResearchContext(game: GameRow, references?: GameReferenceData): Promise<string> {
   const refs: Array<{ label: ResearchProvider; url: string | null }> = [
     { label: "IPDB", url: game.ipdb_url },
     { label: "Pinside", url: game.pinside_url },
@@ -835,7 +835,7 @@ async function buildDescriptionResearchContext(game: GameRow, references: GameRe
       return `- ${r.label}: ${summary}`;
     }),
   );
-  const structured = referenceEvidence(references)
+  const structured = (references ? referenceEvidence(references) : [])
     .filter((item) => item.verified)
     .map((item) => `- ${item.provider} (${item.url}) — ${item.excerpt}`);
   return [...snippets.filter(Boolean), ...structured].join("\n");
