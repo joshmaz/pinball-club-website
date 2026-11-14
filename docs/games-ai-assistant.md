@@ -30,46 +30,35 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 
 3. **Config**: `supabase/config.toml` sets `verify_jwt = true` for this function.
 
-## Reference-fetch security boundary
+## Reference sources and link confirmation
 
-A Games Editor can edit the catalog's provider URLs. The enrichment function treats
-those saved values as untrusted when fetching research snippets, even if they were
-saved through the direct API. Each field permits only its existing canonical HTTPS
-host: IPDB → `www.ipdb.org`, Pinside → `pinside.com`, Kineticist →
-`www.kineticist.com`. These exact hosts match the catalog snapshot and the function's
-link generators; arbitrary subdomains and apex/www aliases are not assumed safe.
+A Games Editor can edit the catalog's provider URLs. Enrichment does not fetch
+HTML pages from IPDB, Pinside, or Kineticist. Link candidates use the validated
+OPDB archive and exact IPDB crosswalk, the Kineticist game API response, and safe
+catalog slug patterns. The evidence panel shows the OPDB and Kineticist records
+that were used; it does not report blocked page reads. Editors can open a proposed
+link and confirm it manually. The confirmation is scoped to the current editing
+session and does not make the page text available to enrichment.
 
-The outbound fetch rejects credentials, explicit ports (including `:443`), HTTP,
-IP addresses, encoded/ambiguous authorities, and other hosts. Redirects are rejected
-rather than followed, including redirects within a provider. Requests carry no
-caller or service credentials. Only HTML/XHTML is read, with a 1 MiB streamed byte
-limit independent of Content-Length and the existing 4.5-second deadline.
-Unsupported, redirected, oversized, blocked, and failed references contribute no
-snippet. Page reads happen only during **Find or verify source links**. Routine
-metadata and description actions use the validated OPDB archive, the cached
-Kineticist game API response (including credits), and operator-supplied context;
-they do not fetch the linked HTML pages. Kineticist description text is stripped
-to plain text, attributed, treated as untrusted evidence, and paraphrased rather
-than copied. Existing catalog URLs and the proposal/apply workflow are unchanged.
+Routine metadata and description actions use the same validated OPDB archive,
+cached Kineticist game API response (including credits), and operator-supplied
+context. Kineticist description text is stripped to plain text, attributed,
+treated as untrusted evidence, and paraphrased rather than copied. Existing
+catalog URLs and the proposal/apply workflow are unchanged.
 
-The fix takes effect only after deploying the updated `ai-game-enrich-propose`
-Edge Function to the intended Supabase project. After staging review, verify the
-linked project and run `supabase functions deploy ai-game-enrich-propose` there;
-repeat through the normal production release. No database migration or new secret
-is required for this fetch restriction. A frontend preview or merge alone does
-not deploy the Edge Function. The earlier member-identity migration is a separate
-rollout prerequisite and is not applied by this deployment.
+The Edge Function must be deployed separately to the intended Supabase project.
+A Netlify preview or Git branch merge alone does not update it. No database
+migration or new secret is required for these source-read changes.
 
-Regression tests: `scripts/ai-reference-fetch.test.mjs` executes the real fetch
-functions with mocked transport, including the current catalog links, private
-addresses, lookalikes, credentials, ports, redirects, MIME types, streaming limits,
-and graceful failures. `scripts/ai-game-enrich-auth.test.mjs` separately exercises
-the actual request handler and canonical SQL role boundary before protected work.
+Regression tests: `scripts/ai-reference-fetch.test.mjs` covers canonical provider
+URL validation, structured source evidence, and safe description context.
+`scripts/ai-game-enrich-auth.test.mjs` separately exercises the actual request
+handler and canonical SQL role boundary before protected work.
 
 ## Editor workflow (short)
 
 1. Open a saved game and choose **Find or verify source links**. Existing URLs stay in place; generated candidates are shown for operator review and never saved automatically.
-2. Open the evidence details to review page matches and structured catalog evidence. OPDB/Kineticist data is resolved by ID; page text is fetched only for this explicit link-check action. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it.
+2. Open the evidence details to review the registered OPDB and Kineticist records. OPDB/Kineticist data is resolved by ID. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it; the site does not fetch provider pages.
 3. Choose **Suggest missing metadata**. Suggestions cover manufacturer names, machine type, display, and player count when OPDB/Kineticist data or operator context supports them. Filled values are never replaced. Select suggestions to copy them into blank form fields, review them, then use **Save game**.
 4. OPDB ID, match method, and canonical name are imported integration data and are read-only in this editor. Third-party source URLs appear at the end of the metadata block.
 5. After metadata review, choose **Draft our description** for two editable options grounded in the attributed Kineticist description/credits when available, operator notes, or specific existing catalog copy. Kineticist text is evidence and is paraphrased; it is not stored verbatim as our editable description. If evidence is thin, the assistant reports that instead of writing generic copy.
