@@ -2187,7 +2187,7 @@
       var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
       var usableCount = evidence.filter(function (item) {
         var confirmed = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider];
-        return item.provider === "Operator context"
+        return item.provider === "Operator context" || item.provider === "Current description"
           || (item.verified && item.verificationMethod !== "operator") || confirmed === item.url;
       }).length;
       var catalogCount = evidence.filter(function (item) {
@@ -2208,6 +2208,8 @@
         var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
         heading.appendChild(document.createTextNode(item.provider === "Operator context"
           ? " — supplied by operator"
+          : item.provider === "Current description"
+          ? " — included as source material"
           : item.provider === "Kineticist API"
           ? " — Data provided by Kineticist"
           : item.provider === "OPDB" && item.verificationMethod === "archive"
@@ -2216,11 +2218,12 @@
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));
         row.appendChild(heading);
-        if (item.provider === "Operator context") {
+        if (item.provider === "Operator context" || item.provider === "Current description") {
           var suppliedText = String(item.excerpt || "");
           row.appendChild(el("p", {
             className: "member-games-help",
-            text: "Full operator context sent to the assistant (" + suppliedText.length.toLocaleString() + " characters).",
+            text: (item.provider === "Current description" ? "Current description sent to the assistant (" : "Full operator context sent to the assistant (")
+              + suppliedText.length.toLocaleString() + " characters).",
           }));
           var suppliedDetails = el("details", { className: "member-games-ai-context-details" });
           suppliedDetails.appendChild(el("summary", { text: "Show supplied context" }));
@@ -2399,10 +2402,15 @@
     aiProposalData = { action: action };
     setAiStatus(labels[action] || "Working…");
     try {
+      var includeCurrentDescriptionEl = document.getElementById("mg-ai-include-current-description");
+      var includeCurrentDescription = action === "description" && (!includeCurrentDescriptionEl || includeCurrentDescriptionEl.checked);
+      var currentDescriptionEl = document.getElementById("mg-details");
       var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
         gameId: currentGameId,
         action: action,
         context: contextValue,
+        includeCurrentDescription: includeCurrentDescription,
+        currentDescription: includeCurrentDescription && currentDescriptionEl ? String(currentDescriptionEl.value || "") : "",
         operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
@@ -2548,6 +2556,19 @@
     actions.appendChild(el("p", { className: "member-games-help", text: "Suggests values for supported metadata fields that are blank." }));
     addActionButton("mg-ai-description", "Draft our description", "description");
     actions.appendChild(el("p", { className: "member-games-help", text: "Creates a short public description from the supplied facts and existing game details." }));
+    var includeCurrentDescriptionRow = el("div", { className: "member-games-checkbox-row" });
+    var includeCurrentDescriptionCheckbox = el("input", { type: "checkbox", id: "mg-ai-include-current-description" });
+    includeCurrentDescriptionCheckbox.checked = true;
+    includeCurrentDescriptionRow.appendChild(includeCurrentDescriptionCheckbox);
+    includeCurrentDescriptionRow.appendChild(el("label", {
+      for: "mg-ai-include-current-description",
+      text: "Include current description as source material",
+    }));
+    actions.appendChild(includeCurrentDescriptionRow);
+    actions.appendChild(el("p", {
+      className: "member-games-help",
+      text: "Checked by default. Uses the text in Description, including unsaved edits; clear it to draft without that text.",
+    }));
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
