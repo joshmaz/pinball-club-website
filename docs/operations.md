@@ -17,6 +17,12 @@ management remains in Member Tools; self-delete remains in My Account.
   Map ingestion now records authorized attempts, completions, committed changes,
   manual actors, safe failures and image warnings. Its configured state reflects
   the required provider token, not a live connectivity test.
+- OPDB reference sync records weekly/manual runs in `operations_job_runs`, stores
+  immutable validated V2 archives in the private `game-reference-archives`
+  bucket, and promotes the crosswalk only after the complete archive is indexed.
+  Its Operations Run Now action is club-admin-only. Kineticist game responses are
+  cached by exact OPDB ID for 24 hours; the evidence panel visibly attributes any
+  displayed data to Kineticist.
 - Cache edits persist in `external_api_cache_policies`. Only known provider/policy
   pairs and integer seconds from 1 to 604800 are accepted. Reset deletes an override.
   The additive migration removes seeded values equal to the original defaults,

@@ -2,7 +2,7 @@
   var allowed = false, initialized = false, busy = false, snapshot, configuration, current = 'overview';
   var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
-  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips' };
+  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', kineticist: 'Kineticist' };
   function el(tag, text, parent) {
     var node = document.createElement(tag);
     if (text != null) node.textContent = String(text);
@@ -179,7 +179,7 @@
       el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
       el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
       card = el('section', null, cards); el('h4', 'Jobs', card);
-      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'membership_snapshot'].forEach(function (key) {
+      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
         el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
       });
@@ -306,7 +306,7 @@
     }
     if (current === 'jobs') {
       el('p','Schedules are managed by the existing scheduler. Import history starts when tracking was enabled.',content);
-      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
+      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'opdb_reference_sync',name:'OPDB reference archive'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
       snapshot.jobs.forEach(function (r) { if (!jobs.some(function (j) { return j.key === r.job; })) jobs.push({key:r.job,name:r.job}); });
       jobs.forEach(function (job) {
         var section = el('section',null,content); section.className='operations-provider'; el('h4',job.name,section);
@@ -323,8 +323,18 @@
             var counts = run.result;
             el('p', counts.tips + ' tips; ' + counts.added + ' added, ' + counts.changed + ' changed, ' + counts.removed + ' removed.', section);
             el('p', counts.matched_games + ' games matched; ' + counts.missing_opdb_games + ' missing OPDB IDs; ' + counts.invalid_opdb_games + ' invalid IDs; ' + counts.games_without_tips + ' games without tips; ' + counts.unmatched_tip_groups + ' tip groups outside the catalog.', section);
+          } else if (job.key === 'opdb_reference_sync' && run.status === 'succeeded') {
+            el('p', (run.result.entry_count || 0) + ' OPDB entries; ' + (run.result.ipdb_mapping_count || 0) + ' IPDB mappings; ' + (run.result.byte_size || 0).toLocaleString() + ' archive bytes.', section);
+            if (run.result.content_sha256) el('p', 'SHA-256: ' + run.result.content_sha256, section);
           } if (run.error) el('p',run.error,section);
           if (run.status==='running') el('p','Completion has not been recorded. The worker may still be running or may have stopped.',section); }
+        if (job.key==='opdb_reference_sync') {
+          var opdb = configuration && configuration.providers && configuration.providers.find(function (p) { return p.provider === 'opdb'; });
+          if (opdb && opdb.configured) button('Run Now',section,function () {
+            mutate(function () { return edge('run_opdb_reference_sync'); },'Download, validate, and archive the current OPDB V2 export? The current good archive stays active if this run fails.');
+          });
+          else el('p','Manual refresh is unavailable until the OPDB scheduler secret is configured.',section);
+        }
         if (job.key==='cache_cleanup') button('Run Now',section,function () { mutate(cleanup,'Run cache cleanup for search resources expired more than seven days ago?'); });
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;

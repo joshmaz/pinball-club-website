@@ -2187,11 +2187,14 @@
       var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
       var usableCount = evidence.filter(function (item) {
         var confirmed = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider];
-        return item.provider === "Operator context"
+        return item.provider === "Operator context" || item.provider === "Current description"
           || (item.verified && item.verificationMethod !== "operator") || confirmed === item.url;
       }).length;
-      var fetchedCount = evidence.filter(function (item) { return item.verified && item.verificationMethod !== "operator"; }).length;
-      var evidenceSummary = el("summary", { text: "Source evidence (" + usableCount + " usable; " + fetchedCount + " fetched)" });
+      var catalogCount = evidence.filter(function (item) {
+        return item.verified && (item.verificationMethod === "archive" || item.verificationMethod === "api");
+      }).length;
+      var pageReadCount = evidence.filter(function (item) { return item.verified && item.verificationMethod === "fetch"; }).length;
+      var evidenceSummary = el("summary", { text: "Source evidence (" + usableCount + " usable; " + catalogCount + " catalog/API; " + pageReadCount + " pages read)" });
       evidenceDetails.appendChild(evidenceSummary);
       evidenceDetails.open = usableCount === 0;
       evidence.forEach(function (item) {
@@ -2205,15 +2208,22 @@
         var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
         heading.appendChild(document.createTextNode(item.provider === "Operator context"
           ? " — supplied by operator"
+          : item.provider === "Current description"
+          ? " — included as source material"
+          : item.provider === "Kineticist API"
+          ? " — Data provided by Kineticist"
+          : item.provider === "OPDB" && item.verificationMethod === "archive"
+          ? " — exact ID in validated OPDB archive"
           : item.verificationMethod === "operator" || priorOperatorConfirmation
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));
         row.appendChild(heading);
-        if (item.provider === "Operator context") {
+        if (item.provider === "Operator context" || item.provider === "Current description") {
           var suppliedText = String(item.excerpt || "");
           row.appendChild(el("p", {
             className: "member-games-help",
-            text: "Full operator context sent to the assistant (" + suppliedText.length.toLocaleString() + " characters).",
+            text: (item.provider === "Current description" ? "Current description sent to the assistant (" : "Full operator context sent to the assistant (")
+              + suppliedText.length.toLocaleString() + " characters).",
           }));
           var suppliedDetails = el("details", { className: "member-games-ai-context-details" });
           suppliedDetails.appendChild(el("summary", { text: "Show supplied context" }));
@@ -2241,8 +2251,11 @@
               return (source.verified && source.verificationMethod !== "operator")
                 || ((aiOperatorVerifiedSourcesByGame[gameKey] || {})[source.provider] === source.url);
             }).length;
-            var fetched = evidence.filter(function (source) { return source.verified && source.verificationMethod !== "operator"; }).length;
-            evidenceSummary.textContent = "Source evidence (" + count + " usable; " + fetched + " fetched)";
+            var catalog = evidence.filter(function (source) {
+              return source.verified && (source.verificationMethod === "archive" || source.verificationMethod === "api");
+            }).length;
+            var pagesRead = evidence.filter(function (source) { return source.verified && source.verificationMethod === "fetch"; }).length;
+            evidenceSummary.textContent = "Source evidence (" + count + " usable; " + catalog + " catalog/API; " + pagesRead + " pages read)";
             heading.lastChild.textContent = item.provider === "Operator context"
               ? " — supplied by operator"
               : operatorUrl === href
@@ -2251,9 +2264,9 @@
             if (verifyCheckbox.checked) {
               if (aiProposalData && aiProposalData.action === "sources") {
                 var sourceWarning = aiSourceProposalBodyEl && aiSourceProposalBodyEl.querySelector(".member-games-ai-reason");
-                if (sourceWarning) sourceWarning.textContent = "You confirmed this page matches the game. Its text remains unavailable to the assistant.";
+                if (sourceWarning) sourceWarning.textContent = "You confirmed this link matches the game. Provider pages are not fetched or sent to enrichment.";
               }
-              setAiStatus("Manual confirmation saved for this editing session. The page text is still unavailable to metadata suggestions and description drafting.");
+              setAiStatus("Manual confirmation saved for this editing session. Provider page text is not fetched or used for enrichment.");
             }
           });
           row.appendChild(verifyCheckbox);
@@ -2328,11 +2341,21 @@
       });
       urlInput.value = String(field.suggestedValue || field.currentValue || "");
       row.appendChild(urlInput);
+      var savedUrl = String(field.currentValue || "").trim();
+      if (savedUrl && savedUrl !== urlInput.value && isValidAiSourceUrl(field.field, savedUrl)) {
+        row.appendChild(el("a", {
+          href: savedUrl,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          className: "member-games-ai-external-link",
+          text: "Open saved URL",
+        }));
+      }
       var openLink = el("a", {
         target: "_blank",
         rel: "noopener noreferrer",
         className: "member-games-ai-external-link",
-        text: "Open current URL",
+        text: "Open proposed URL",
       });
       function updateOpenLink() {
         var value = String(urlInput.value || "").trim();
@@ -2375,19 +2398,24 @@
     }
     aiBusy = true;
     var action = (opts && opts.action) || "description";
-    var labels = { sources: "Checking source links…", metadata: "Reading supplied context for missing metadata…", description: "Drafting from supplied facts…" };
+    var labels = { sources: "Finding link suggestions…", metadata: "Reading supplied context for missing metadata…", description: "Drafting from supplied facts…" };
     aiProposalData = { action: action };
     setAiStatus(labels[action] || "Working…");
     try {
+      var includeCurrentDescriptionEl = document.getElementById("mg-ai-include-current-description");
+      var includeCurrentDescription = action === "description" && (!includeCurrentDescriptionEl || includeCurrentDescriptionEl.checked);
+      var currentDescriptionEl = document.getElementById("mg-details");
       var proposal = await window.SNHMemberPortal.aiGameEnrichPropose({
         gameId: currentGameId,
         action: action,
         context: contextValue,
+        includeCurrentDescription: includeCurrentDescription,
+        currentDescription: includeCurrentDescription && currentDescriptionEl ? String(currentDescriptionEl.value || "") : "",
         operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
       if (action === "sources" && !(proposal.evidence || []).some(function (item) { return item.verified; })) {
-        setAiStatus("No source page was verified. Check the evidence details, correct a URL below, select it, and apply the link before drafting.");
+        setAiStatus("No OPDB or Kineticist record was available. Review the suggested URLs manually, then select and apply the links you confirm.");
       } else if (action === "metadata" && proposal.status === "unavailable") {
         setAiStatus("No metadata suggestions are ready. Review the source evidence and fill any gaps manually if needed.");
       } else {
@@ -2528,6 +2556,19 @@
     actions.appendChild(el("p", { className: "member-games-help", text: "Suggests values for supported metadata fields that are blank." }));
     addActionButton("mg-ai-description", "Draft our description", "description");
     actions.appendChild(el("p", { className: "member-games-help", text: "Creates a short public description from the supplied facts and existing game details." }));
+    var includeCurrentDescriptionRow = el("div", { className: "member-games-checkbox-row" });
+    var includeCurrentDescriptionCheckbox = el("input", { type: "checkbox", id: "mg-ai-include-current-description" });
+    includeCurrentDescriptionCheckbox.checked = true;
+    includeCurrentDescriptionRow.appendChild(includeCurrentDescriptionCheckbox);
+    includeCurrentDescriptionRow.appendChild(el("label", {
+      for: "mg-ai-include-current-description",
+      text: "Include current description as source material",
+    }));
+    actions.appendChild(includeCurrentDescriptionRow);
+    actions.appendChild(el("p", {
+      className: "member-games-help",
+      text: "Checked by default. Uses the text in Description, including unsaved edits; clear it to draft without that text.",
+    }));
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);

@@ -40,8 +40,8 @@ test('metadata fallback is exact and requires manufacturer/year; duplicate candi
   assert.equal(matchNewGameToOpdb(game({opdbId:entry.opdbId,ipdbUrl:'https://www.ipdb.org/machine.cgi?id=42'}),games([entry,dup])).entry,entry,'exact supplied ID disambiguates duplicate IPDB IDs');
 });
 
-test('real checked-in OPDB export resolves representative IPDB, full-ID and group-ID records', async () => {
-  const entries=entriesByOpdbId(JSON.parse(await read('data/latest-opdb.json')));
+test('representative OPDB fixture resolves exact IPDB, full-ID, alias and group hints', async () => {
+  const entries=entriesByOpdbId(JSON.parse(await read('scripts/fixtures/opdb-image-reference.json')));
   const catacomb=[...entries.values()].find(e=>e.name==='Catacomb' && e.ipdbId===469);
   assert.ok(catacomb?.images.length);
   for (const hint of [undefined, catacomb.opdbId, catacomb.opdbId.split('-')[0]]) {
