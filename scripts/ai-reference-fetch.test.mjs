@@ -17,12 +17,31 @@ const html = '<title>Game &amp; history</title><h1>2001</h1><meta name="descript
 function fixture(response = () => new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } })) {
   const calls=[];
   const functions = new Function('Deno', 'createClient', 'fetch', source +
-    '\nreturn {researchUrl,fetchReferenceSummary,buildDescriptionResearchContext,REFERENCE_MAX_BYTES};')(
+    '\nreturn {researchUrl,fetchReferenceSummary,buildDescriptionResearchContext,buildLinkField,REFERENCE_MAX_BYTES};')(
     {serve() {}}, () => { throw new Error('No database calls expected'); }, async (url, init) => {
       calls.push({url,init});return response(url,init);
     });
   return {...functions,calls};
 }
+
+test('an exact IPDB mapping is proposed over a saved search URL without applying it automatically', () => {
+  const f=fixture();
+  const saved='https://www.ipdb.org/search.pl?searchtype=quick&searchstr=Aquarius';
+  const direct='https://www.ipdb.org/machine.cgi?id=79';
+  const field=f.buildLinkField('ipdbUrl',saved,{
+    value:direct,
+    reason:'Exact IPDB ID mapping from OPDB ID GreKP',
+    sourceUrl:direct,
+    score:0.99,
+    warnings:[],
+  });
+  assert.equal(field.currentValue,saved);
+  assert.equal(field.suggestedValue,direct);
+  assert.equal(field.sourceUrl,direct);
+  assert.equal(field.reviewRequired,true);
+  assert.equal(field.applyByDefault,false);
+  assert.match(field.warnings[0],/Saved URL: https:\/\/www\.ipdb\.org\/search\.pl/);
+});
 
 test('the fetch boundary accepts catalog/provider generators and rejects hostile or ambiguous destinations', async () => {
   const f=fixture();

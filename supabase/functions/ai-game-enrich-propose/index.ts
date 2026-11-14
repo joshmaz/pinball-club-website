@@ -1199,22 +1199,26 @@ function buildLinkField(
   currentValue: string | null,
   guess: { value: string | null; reason: string; sourceUrl: string | null; score: number; warnings: string[] },
 ): ProposalField {
+  const exactReference = guess.reason.startsWith("Exact ");
   const conflict = Boolean(currentValue && guess.value && currentValue !== guess.value);
+  const exactConflict = conflict && exactReference;
   const score = currentValue ? 0.99 : guess.score;
   const warnings = currentValue
-    ? conflict ? ["The exact reference lookup returned a different link. The saved link is preserved; compare both before changing it."] : []
+    ? exactConflict
+      ? [`Saved URL: ${currentValue}. The exact reference candidate is shown above; the saved URL will remain unchanged unless you select and apply the candidate.`]
+      : conflict ? ["The exact reference lookup returned a different link. The saved link is preserved; compare both before changing it."] : []
     : guess.warnings;
   const reviewRequired = score < THRESHOLDS.links || warnings.length > 0;
   return {
     field,
     currentValue,
-    suggestedValue: currentValue || guess.value,
+    suggestedValue: exactConflict ? guess.value : currentValue || guess.value,
     confidence: mapConfidence(score),
     confidenceScore: score,
     reason: currentValue
-      ? conflict ? "Existing link retained for review; exact reference lookup found a different candidate." : "Existing link retained."
+      ? exactConflict ? guess.reason : conflict ? "Existing link retained for review; exact reference lookup found a different candidate." : "Existing link retained."
       : guess.reason.startsWith("Exact ") ? guess.reason : `Unverified candidate: ${guess.reason}`,
-    sourceType: currentValue ? "existing" : guess.reason.startsWith("Exact ") ? "reference data" : "resolver",
+    sourceType: exactReference ? "reference data" : currentValue ? "existing" : "resolver",
     sourceUrl: guess.sourceUrl || currentValue,
     warnings,
     reviewRequired,
