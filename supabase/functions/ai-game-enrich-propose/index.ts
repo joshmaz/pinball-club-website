@@ -53,7 +53,7 @@ type ProposalField = {
 
 type EnrichmentRequest = {
   gameId: string;
-  action?: "sources" | "metadata" | "description";
+  action?: "sources" | "metadata" | "metadata_review" | "description";
   context?: string;
   notes?: string;
   includeCurrentDescription?: boolean;
@@ -188,7 +188,7 @@ Deno.serve(async (req) => {
 
     const runId = crypto.randomUUID();
     const action = body.action || "legacy";
-    if (!["legacy", "sources", "metadata", "description"].includes(action)) {
+    if (!["legacy", "sources", "metadata", "metadata_review", "description"].includes(action)) {
       return json({ ok: false, error: "Unsupported enrichment action" }, 400);
     }
     const warnings: string[] = [];
@@ -271,6 +271,24 @@ Deno.serve(async (req) => {
             }
           }
         }
+      }
+    } else if (action === "metadata_review") {
+      evidence = referenceEvidence(references);
+      const review = buildMetadataReviewSuggestions(game, references);
+      fields = review.fields;
+      if (!review.checked) {
+        status = "unavailable";
+        warnings.push("No populated supported metadata fields could be compared with an available OPDB or Kineticist record.");
+      } else if (review.fields.length) {
+        status = "needs_review";
+        warnings.push(`Compared ${review.checked} populated fields: ${review.matched} match the structured records and ${review.fields.length} have reviewable differences.`);
+        warnings.push("Select any proposed values to copy them into the form. Nothing is saved until you review and save the game.");
+      } else {
+        status = "ok";
+        warnings.push(`The ${review.checked} populated fields checked match available structured records; no changes were suggested.`);
+      }
+      if (review.conflicts.length) {
+        warnings.push(`Sources disagreed on ${review.conflicts.join(", ")}; no update was suggested for those fields.`);
       }
     } else {
       evidence = [...referenceEvidence(references), ...operatorConfirmedSourceEvidence(game, body.operatorVerifiedSources)];
@@ -1108,6 +1126,128 @@ function metadataFieldsMissing(game: GameRow): MetadataFieldKey[] {
     ["playerCount", game.player_count],
   ];
   return fields.filter(([, value]) => value === null || String(value).trim() === "").map(([field]) => field);
+}
+
+type MetadataReviewCandidate = {
+  value: string;
+  provider: "OPDB" | "Kineticist API";
+  url: string;
+};
+
+function buildMetadataReviewSuggestions(game: GameRow, references: GameReferenceData): {
+  fields: ProposalField[];
+  checked: number;
+  matched: number;
+  conflicts: string[];
+} {
+  const candidates: Partial<Record<MetadataFieldKey, MetadataReviewCandidate[]>> = {};
+  const add = (field: MetadataFieldKey, raw: unknown, provider: MetadataReviewCandidate["provider"], url: string | null) => {
+    if (!url) return;
+    const value = canonicalMetadataReviewValue(field, raw);
+    if (!value) return;
+    if (!candidates[field]) candidates[field] = [];
+    candidates[field]!.push({ value, provider, url });
+  };
+
+  const opdb = references.opdbEntry;
+  if (opdb) add("manufacturer", opdb.manufacturer, "OPDB", references.opdbUrl);
+
+  const payload = references.kineticistPayload;
+  const data = payload && payload.data && typeof payload.data === "object"
+    ? payload.data as Record<string, unknown>
+    : null;
+  if (data && !references.kineticistStale) {
+    const manufacturer = data.manufacturer && typeof data.manufacturer === "object"
+      ? (data.manufacturer as Record<string, unknown>).name
+      : null;
+    add("manufacturerFullName", manufacturer, "Kineticist API", references.kineticistUrl);
+    add("type", data.game_type, "Kineticist API", references.kineticistUrl);
+    add("display", data.display_type, "Kineticist API", references.kineticistUrl);
+    add("playerCount", data.player_count, "Kineticist API", references.kineticistUrl);
+  }
+
+  const currentValues: Record<MetadataFieldKey, string | number | null> = {
+    manufacturer: game.manufacturer,
+    manufacturerFullName: game.manufacturer_full_name,
+    type: game.machine_type,
+    display: game.display_type,
+    playerCount: game.player_count,
+  };
+  const fields: ProposalField[] = [];
+  const conflicts: string[] = [];
+  let checked = 0;
+  let matched = 0;
+
+  (Object.keys(currentValues) as MetadataFieldKey[]).forEach((field) => {
+    const currentValue = currentValues[field];
+    const current = canonicalMetadataReviewValue(field, currentValue);
+    const fieldCandidates = candidates[field] || [];
+    if (!current || !fieldCandidates.length) return;
+    checked += 1;
+
+    const distinct = new Map<string, MetadataReviewCandidate>();
+    fieldCandidates.forEach((candidate) => {
+      const key = normalizeMetadataReviewComparison(candidate.value);
+      if (!distinct.has(key)) distinct.set(key, candidate);
+    });
+    if (distinct.size > 1) {
+      conflicts.push(aiMetadataFieldLabelForServer(field));
+      return;
+    }
+    const candidate = [...distinct.values()][0];
+    if (normalizeMetadataReviewComparison(current) === normalizeMetadataReviewComparison(candidate.value)) {
+      matched += 1;
+      return;
+    }
+    fields.push({
+      field,
+      currentValue: String(currentValue),
+      suggestedValue: candidate.value,
+      confidence: "medium",
+      confidenceScore: 0.76,
+      reason: `The exact ${candidate.provider} record lists ${candidate.value}; compare it with the current value before replacing it.`,
+      sourceType: candidate.provider,
+      sourceUrl: candidate.url,
+      warnings: [],
+      reviewRequired: true,
+      applyByDefault: false,
+    });
+  });
+
+  return { fields, checked, matched, conflicts };
+}
+
+function canonicalMetadataReviewValue(field: MetadataFieldKey, raw: unknown): string | null {
+  if (field === "playerCount") {
+    const value = Number(raw);
+    return Number.isInteger(value) && value >= 1 && value <= 8 ? String(value) : null;
+  }
+  if (typeof raw !== "string") return null;
+  const value = raw.trim().replace(/\s+/g, " ");
+  if (!value || value.length > 120 || /[<>\u0000-\u001f]/.test(value)) return null;
+  if (["unknown", "n/a", "na", "none", "null", "not known"].includes(value.toLowerCase())) return null;
+  if (field === "type") {
+    const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    if (["em", "electro mechanical", "electromechanical"].includes(normalized)) return "em";
+    if (["ss", "solid state", "solidstate"].includes(normalized)) return "ss";
+    return null;
+  }
+  return value;
+}
+
+function normalizeMetadataReviewComparison(value: string): string {
+  return value.normalize("NFKC").toLocaleLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function aiMetadataFieldLabelForServer(field: MetadataFieldKey): string {
+  const labels: Record<MetadataFieldKey, string> = {
+    manufacturer: "manufacturer",
+    manufacturerFullName: "manufacturer full name",
+    type: "machine type",
+    display: "display",
+    playerCount: "player count",
+  };
+  return labels[field];
 }
 
 function buildMetadataPrompt(game: GameRow, missing: MetadataFieldKey[], evidence: string): string {

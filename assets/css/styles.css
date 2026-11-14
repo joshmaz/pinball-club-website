@@ -2685,6 +2685,12 @@ footer {
   color: var(--text-muted-2);
 }
 
+.member-games-ai-context-count {
+  margin-top: 0.1rem;
+  text-align: right;
+  font-size: 0.78rem;
+}
+
 .member-games-ai-suggested {
   padding: 0.4rem 0.55rem;
   border-left: 3px solid var(--accent-teal);
