@@ -207,13 +207,12 @@ Deno.serve(async (req) => {
       status = warnings.some((warning) => warning.includes("unavailable")) ? "needs_review" : "ok";
     } else if (action === "sources") {
       fields = buildLinkSuggestions(game, references);
-      evidence = await collectSourceEvidence(game, true, body.operatorVerifiedSources, references);
-      evidence.push(...referenceEvidence(references));
+      evidence = collectSourceEvidence(game, body.operatorVerifiedSources, references);
       if (!evidence.some((item) => item.verified)) {
-        warnings.push("No linked source page could be verified for this game. Existing URLs were preserved.");
+        warnings.push("No OPDB or Kineticist record was available for this game. Proposed links still need manual review; existing URLs were preserved.");
         status = "needs_review";
       } else if (evidence.some((item) => item.verificationMethod === "operator")) {
-        warnings.push("You confirmed the linked pages match this game. Some providers block page-text retrieval, so their text is unavailable to metadata suggestions and description drafting.");
+        warnings.push("You confirmed these links match the game. Provider pages are not fetched automatically; link suggestions use the registered OPDB and Kineticist data sources.");
       }
     } else if (action === "metadata") {
       evidence = [...referenceEvidence(references), ...operatorConfirmedSourceEvidence(game, body.operatorVerifiedSources)];
@@ -754,53 +753,17 @@ function enrichmentContext(body: EnrichmentRequest): string {
     .trim();
 }
 
-async function collectSourceEvidence(
+function collectSourceEvidence(
   game: GameRow,
-  includeCandidates: boolean,
   operatorVerifiedSources: EnrichmentRequest["operatorVerifiedSources"] = [],
   references?: GameReferenceData,
-): Promise<SourceEvidence[]> {
-  const refs: Array<{ label: ResearchProvider; url: string | null; existing: boolean }> = [
-    { label: "IPDB", url: game.ipdb_url, existing: true },
-    { label: "Pinside", url: game.pinside_url, existing: true },
-    { label: "Kineticist", url: game.kineticist_url, existing: true },
+): SourceEvidence[] {
+  // URL suggestions are grounded in the registered catalogs. Do not read the
+  // IPDB, Pinside, or Kineticist HTML pages; operators can still confirm links.
+  return [
+    ...(references ? referenceEvidence(references) : []),
+    ...operatorConfirmedSourceEvidence(game, operatorVerifiedSources),
   ];
-  if (includeCandidates) {
-    const guesses = [
-      { label: "IPDB" as const, url: guessIpdbUrl(game, references).value },
-      { label: "Pinside" as const, url: guessPinsideUrl(game).value },
-      { label: "Kineticist" as const, url: guessKineticistUrl(game, references).value },
-    ];
-    for (const guess of guesses) {
-      if (!refs.some((r) => r.label === guess.label && r.url)) refs.push({ ...guess, existing: false });
-    }
-  }
-  const operatorUrls = new Set((operatorVerifiedSources || []).slice(0, 10).flatMap((item) => {
-    const provider = item.provider as ResearchProvider;
-    if (!Object.prototype.hasOwnProperty.call(RESEARCH_HOSTS, provider)) return [];
-    const url = researchUrl(provider, String(item.url || ""));
-    return url ? [`${provider}:${url.href}`] : [];
-  }));
-  const results = await Promise.all(refs.filter((r) => r.url).map(async (ref) => {
-    const url = String(ref.url);
-    const normalizedUrl = researchUrl(ref.label, url)?.href || url;
-    const operatorVerified = operatorUrls.has(`${ref.label}:${normalizedUrl}`);
-    const page = operatorVerified ? null : await fetchReferenceEvidence(game, ref.label, url);
-    const verified = (!!page && page.identityMatches) || operatorVerified;
-    return {
-      provider: ref.label,
-      url,
-      verified,
-      verificationMethod: operatorVerified && !(page && page.identityMatches) ? "operator" as const : verified ? "fetch" as const : undefined,
-      excerpt: page?.identityMatches ? page.excerpt : "",
-      reason: operatorVerified && !(page && page.identityMatches)
-        ? "You confirmed this page matches the game. The provider blocked page-text retrieval, so the text is unavailable to the assistant."
-        : !page ? "The source could not be fetched or did not return usable page text. Open it and confirm the game, then check the manual confirmation below."
-        : page.failureReason || (verified ? (ref.existing ? "Existing link matches the selected game." : "Candidate page matches the selected game.")
-        : "Page identity did not match the selected game; excluded from drafting."),
-    };
-  }));
-  return results;
 }
 
 function hasSpecificCatalogDetails(value: string): boolean {
@@ -872,13 +835,13 @@ function operatorConfirmedSourceEvidence(
       verified: true,
       verificationMethod: "operator" as const,
       excerpt: "",
-      reason: "You confirmed this page matches the game. Its page text is not used during routine enrichment.",
+      reason: "You confirmed this link matches the game. Provider pages are not fetched automatically during enrichment.",
     }];
   });
 }
 
 // Match the canonical provider hosts used by the catalog and link generators.
-// This is an outbound request boundary, independent of frontend/save validation.
+// This is a URL validation boundary, independent of frontend/save validation.
 const RESEARCH_HOSTS = { IPDB: "www.ipdb.org", Pinside: "pinside.com", Kineticist: "www.kineticist.com" } as const;
 type ResearchProvider = keyof typeof RESEARCH_HOSTS;
 const REFERENCE_MAX_BYTES = 1024 * 1024;
