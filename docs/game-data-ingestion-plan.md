@@ -2,8 +2,9 @@
 
 ## Current state
 
-- `data/latest-opdb.json` is a checked-in OPDB export with machine groups, machines, and aliases. The current snapshot contains 1,706 groups, 2,154 machines, and 205 aliases. `scripts/enrich_games_from_opdb.py` joins games by IPDB ID and fills missing values without overwriting existing values.
-- OPDB data is fetched at runtime by the new-game/image helpers, but the repository has no routine downloader or scheduled import for the full catalog. `docs/pintips.md` mentions the OPDB V2 export as an implementation reference; it is not currently a recurring dependency.
+- The tracked V1 OPDB maintenance export has been replaced by the weekly, validated V2 archive flow described in [`game-reference-data.md`](game-reference-data.md). The latest audit found 4,210 V2 entries and 2,225 IPDB mappings. The source bytes are private in Supabase Storage; the normalized exact-ID crosswalk powers IPDB permalinks.
+- Current member catalog audit: 126 games, 124 exact OPDB IDs, 126 IPDB URLs, and 99 Kineticist URLs. All 124 catalog OPDB IDs matched exact V2 entries with IPDB IDs and none of the existing IPDB URL IDs conflicted with those mappings. The two records without OPDB IDs were `Major League` and `Play Boy`; both already have IPDB URLs.
+- Kineticist reads now resolve the exact OPDB ID on demand, cache its JSON response for 24 hours, and use the API's canonical `links.web` value. Returned Kineticist evidence includes visible attribution. Existing club URLs remain unchanged and mismatches are reviewable.
 - `data/pinballmap-location-8908-activity.json` is a separate snapshot of 314 submissions for the club's Pinball Map location, dated through April 2026. `scripts/Refresh-PinballMapLocationActivity.ps1` can refresh it in full or incremental mode; `scripts/merge_pinballmap_into_games.py` uses it to maintain our club location stints and related floor history. It is not a global historical game catalog.
 - The refresh script currently sends no API token. Pinball Map announced token requirements for API clients in 2026, so its next refresh should verify current authentication requirements and add the club's token through a secret-backed header if needed.
 - The existing one-off web fetch path is a poor source-ingestion mechanism: it depends on remote pages permitting automated requests, and has already encountered 403/429 responses. Structured bulk/API feeds are a better fit for catalog data.
@@ -21,7 +22,7 @@ OPDB explicitly recommends its full export for consumers that need the catalog r
 
 ## Proposed ingestion design
 
-1. **Acquire and preserve source snapshots.** Add a scheduled/manual OPDB V2 download job that writes to a temporary file, validates HTTP status, JSON shape, record counts, and required identifiers, then atomically publishes the snapshot with `fetched_at`, source URL, schema/version, and checksum. Retain the prior known-good snapshot on failure. Avoid committing a routinely changing full JSON file into the application bundle; store the snapshot in a durable object store or database staging area.
+1. **Acquire and preserve source snapshots.** The weekly/manual OPDB V2 job stores validated, timestamped snapshots privately and promotes a snapshot only after the complete ID crosswalk is indexed. The prior successful snapshot remains active on failure.
 2. **Normalize into source-owned tables.** Store source records and crosswalks separately from `games`. Keep the original source payload (or a compact raw snapshot) for auditability. Crosswalk by OPDB group/machine/alias IDs and IPDB IDs, then use title/year/manufacturer matching only as a review queue, never as an automatic destructive merge.
 3. **Reconcile into club games with explicit provenance.** Record each candidate value with source, source record ID, fetch time, and status. Classify proposals as `add`, `update`, or `conflict`; show old value and proposed value side by side. Default to filling blanks. Never overwrite club-confirmed values without an operator choice. Distinguish club-owned content (public title/slug/description, notes, floor overrides) from source-owned facts and read-only imported identifiers.
 4. **Use Kineticist selectively.** First resolve a local game through OPDB ID or an explicit verified Kineticist URL/ID. Query its structured game/machine endpoint for missing fields or a meaningful disagreement, cache the response, apply rate limits, and retain attribution/provenance. Don't make public-page scraping or the MCP interface a production ingestion dependency; MCP is helpful for ad hoc exploration, while the REST API is more predictable for the application.
@@ -30,11 +31,10 @@ OPDB explicitly recommends its full export for consumers that need the catalog r
 
 ## Rollout sequence
 
-1. Inventory staging versus production games and current OPDB/IPDB/Pinball Map identifiers. Compare the staging catalog to the known production and historical sources before importing anything; preserve both copies and produce a diff first.
-2. Prototype the OPDB V2 downloader/validator and reconciliation report without writing to the live game table.
-3. Review match quality on a representative sample, including aliases/remakes/editions and older games; then run an approved fill-only import in staging.
-4. Add Kineticist targeted lookups for unresolved or conflicting fields with attribution and cache behavior.
-5. Once reconciliation and rollback are proven, schedule catalog refreshes and surface source freshness/errors in the Integrations area.
+1. Deploy the new migration and Edge Function to staging, configure the scheduler secrets, then use Operations → Jobs → OPDB reference archive → Run Now to create the first known-good snapshot.
+2. Review the Operations counts and checksum, then validate a few exact game records and Kineticist attribution in the Games editor.
+3. Compare staging to production before any future game-table reconciliation. Keep OPDB/IPDB exact links as reviewable proposals and leave ambiguous/unmapped cases for a person.
+4. Consider source-owned metadata proposals only after the snapshot and link resolver are proven in staging. Continue to keep Pinball Map location history separate from global reference data.
 
 ## Games editor usability direction
 

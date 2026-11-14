@@ -2205,6 +2205,10 @@
         var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
         heading.appendChild(document.createTextNode(item.provider === "Operator context"
           ? " — supplied by operator"
+          : item.provider === "Kineticist API"
+          ? " — Data provided by Kineticist"
+          : item.provider === "OPDB" && item.verificationMethod === "archive"
+          ? " — exact ID in validated OPDB archive"
           : item.verificationMethod === "operator" || priorOperatorConfirmation
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));
@@ -2328,11 +2332,21 @@
       });
       urlInput.value = String(field.suggestedValue || field.currentValue || "");
       row.appendChild(urlInput);
+      var savedUrl = String(field.currentValue || "").trim();
+      if (savedUrl && savedUrl !== urlInput.value && isValidAiSourceUrl(field.field, savedUrl)) {
+        row.appendChild(el("a", {
+          href: savedUrl,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          className: "member-games-ai-external-link",
+          text: "Open saved URL",
+        }));
+      }
       var openLink = el("a", {
         target: "_blank",
         rel: "noopener noreferrer",
         className: "member-games-ai-external-link",
-        text: "Open current URL",
+        text: "Open proposed URL",
       });
       function updateOpenLink() {
         var value = String(urlInput.value || "").trim();

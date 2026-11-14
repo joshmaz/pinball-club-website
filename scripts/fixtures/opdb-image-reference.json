@@ -1,0 +1,28 @@
+{
+  "machines": [
+    {
+      "opdbId": "GRoQ6-MLx0X",
+      "isMachine": true,
+      "name": "Catacomb",
+      "ipdbId": 469,
+      "manufactureDate": "1981-01-01",
+      "manufacturer": { "name": "Stern Electronics", "fullName": "Stern Electronics" },
+      "type": "ss",
+      "display": "alphanumeric",
+      "playerCount": 4,
+      "images": [
+        { "group": "play", "type": "playfield", "urls": { "large": "https://img.opdb.org/catacomb-playfield.jpg" } }
+      ]
+    }
+  ],
+  "aliases": [
+    {
+      "opdbId": "GRoQ6-MLx0X-Aalias",
+      "isAlias": true,
+      "name": "Catacomb (Alternate Name)",
+      "ipdbId": 470,
+      "manufacturer": { "name": "Stern Electronics" },
+      "images": []
+    }
+  ]
+}

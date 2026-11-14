@@ -45,7 +45,8 @@ Inputs:
 
 - operator request (manual edit intent) or scheduled quality checks
 - current catalog snapshot: `data/games.json` **or** exported via `scripts/export-games-json-from-supabase.mjs`, or editor/RPC load for structured fields
-- enrichment references (`data/latest-opdb.json`, known provider URL patterns)
+- exact OPDB/IPDB crosswalk and Kineticist reference data through the server-side
+  resolver described in `docs/game-reference-data.md`
 
 Outputs:
 

@@ -29,6 +29,11 @@ Deno.serve(async req => {
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (action === "configuration") return json({
       providers: [
+        { provider: "opdb", configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
+          note: "Weekly validated V2 archive and IPDB crosswalk. Run history and freshness are in Jobs.",
+          scheduler_configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
+        { provider: "kineticist", configured: true, test_supported: false,
+          note: "On-demand game lookup by exact OPDB ID. Game responses are cached for 24 hours." },
         { provider: "pintips", configured: Boolean(Deno.env.get("PINTIPS_IMPORT_SCHEDULER_SECRET")), test_supported: false, note: "Daily export import. Manual refresh is in Games; counts are in Jobs." },
         { provider: "matchplay", configured: Boolean(token), test_supported: true },
         { provider: "ifpa", configured: null, test_supported: false, note: "Adapter not connected" },
@@ -39,6 +44,30 @@ Deno.serve(async req => {
       dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
         mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview" },
     });
+    if (action === "run_opdb_reference_sync") {
+      const schedulerSecret = Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET") || "";
+      const serviceRoleKey = serviceKey();
+      if (!schedulerSecret || !serviceRoleKey) return json({ error: "OPDB reference sync is not configured." }, 409);
+      try {
+        const response = await fetch(`${url.replace(/\/+$/, "")}/functions/v1/opdb-reference-sync`, {
+          method: "POST",
+          redirect: "error",
+          signal: AbortSignal.timeout(290_000),
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": serviceRoleKey,
+            "Authorization": `Bearer ${serviceRoleKey}`,
+            "x-opdb-reference-sync-secret": schedulerSecret,
+          },
+          body: "{}",
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) return json({ error: result.error || "OPDB refresh failed. Check Jobs for its safe error summary." }, response.status);
+        return json(result);
+      } catch {
+        return json({ error: "OPDB refresh timed out or could not be reached. Check Jobs before retrying." }, 503);
+      }
+    }
     if (action === "test_matchplay") {
       if (!token) return json({ error: "Match Play is not configured" }, 409);
       const started = Date.now();
