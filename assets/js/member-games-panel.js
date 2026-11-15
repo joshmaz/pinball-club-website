@@ -182,19 +182,26 @@
   function buildForm() {
     formEl = el("div", { className: "member-games-form", hidden: "hidden", "aria-hidden": "true" });
     formEl.appendChild(
-      el("p", {
-        className: "member-games-mode-note",
-        id: "member-games-mode-note",
-        text: ""
-      })
-    );
-    formEl.appendChild(
       el("h3", {
         className: "member-games-section-heading",
         id: "mg-section-game",
         text: ""
       })
     );
+    var modeNote = el("p", {
+      className: "member-games-mode-note",
+      id: "member-games-mode-note",
+      hidden: "hidden"
+    });
+    modeNote.appendChild(document.createTextNode("Use this form for games Pinball Map doesn’t cover, such as prototypes. Add standard games to the SNHPC location on "));
+    modeNote.appendChild(el("a", {
+      href: "https://pinballmap.com/",
+      target: "_blank",
+      rel: "noopener noreferrer",
+      text: "Pinball Map"
+    }));
+    modeNote.appendChild(document.createTextNode("; they’ll appear after the next ingest. Run one from Integrations to add them sooner."));
+    formEl.appendChild(modeNote);
     var topSaveBtn = el("button", { type: "button", className: "members-sidebar-link", id: "mg-save-top" });
     topSaveBtn.textContent = "Save changes";
     var topActions = el("div", { className: "member-games-sticky-actions" }, [topSaveBtn]);
@@ -1092,12 +1099,7 @@
     formEl.setAttribute("aria-hidden", isIdle ? "true" : "false");
     if (reviewScaffoldsEl) reviewScaffoldsEl.hidden = mode !== "edit";
     var modeNote = document.getElementById("member-games-mode-note");
-    if (modeNote) {
-      modeNote.textContent =
-        mode === "new"
-          ? 'Creating game manually (secondary path). Prefer Pinball Map for standard machine additions.'
-          : "";
-    }
+    if (modeNote) modeNote.hidden = mode !== "new";
     if (manualWrapEl) manualWrapEl.hidden = mode !== "edit";
     if (imagesWrapEl) imagesWrapEl.hidden = mode !== "edit";
     if (saleEl) saleEl.hidden = mode !== "edit";
@@ -1905,37 +1907,6 @@
 
   function buildPicker() {
     var wrap = el("div", { className: "member-games-picker" });
-    var addGameHelp = el("details", { className: "member-games-add-help" });
-    addGameHelp.appendChild(el("summary", { text: "About adding games" }));
-    var addGameHelpBody = el("div", { className: "member-games-add-help-body" });
-    var pref = el("p", { className: "member-games-help" });
-    pref.appendChild(document.createTextNode("Preferred: add new machines through "));
-    pref.appendChild(
-      el("a", {
-        href: "https://pinballmap.com/",
-        target: "_blank",
-        rel: "noopener noreferrer",
-        text: "Pinball Map"
-      })
-    );
-    pref.appendChild(
-      document.createTextNode(" at the SNHPC location. This keeps ingest and lineup history aligned.")
-    );
-    addGameHelpBody.appendChild(pref);
-    addGameHelpBody.appendChild(
-      el("p", {
-        className: "member-games-help",
-        text: 'After adding on Pinball Map, wait for the scheduled ingest or run it from the Integrations tab.'
-      })
-    );
-    addGameHelpBody.appendChild(
-      el("p", {
-        className: "member-games-help",
-        text: 'Use "New Game" here only for entries that Pinball Map does not cover (for example prototypes, private/offline records, or non-standard catalog items).'
-      })
-    );
-    addGameHelp.appendChild(addGameHelpBody);
-    wrap.appendChild(addGameHelp);
     wrap.appendChild(
       el("p", {
         className: "member-games-help",
