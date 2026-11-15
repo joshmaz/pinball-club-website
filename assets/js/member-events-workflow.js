@@ -36,6 +36,15 @@
     return parts.join(" · ");
   }
 
+  async function refreshEventList() {
+    if (typeof window.snhRefreshMemberEventsList === "function") {
+      await window.snhRefreshMemberEventsList();
+      return;
+    }
+    var refresh = document.getElementById("member-events-refresh");
+    if (refresh) refresh.click();
+  }
+
   function requestTournamentReview(tournament) {
     var details = document.querySelector(".member-matchplay-direct-search");
     if (details) details.open = true;
@@ -98,8 +107,7 @@
             });
             approve.textContent = "Added as unpublished event";
             approve.classList.remove("club-button");
-            var refresh = document.getElementById("member-events-refresh");
-            if (refresh) refresh.click();
+            await refreshEventList();
           } catch (error) {
             approve.disabled = false;
             approve.textContent = "Approve and add unpublished event";
@@ -161,8 +169,7 @@
                 change.field === "starts_at" ? { markRescheduled: !!(markRescheduled && markRescheduled.checked), rescheduleNote: rescheduleNote && rescheduleNote.value } : {}
               );
               approve.textContent = "Applied";
-              var refresh = document.getElementById("member-events-refresh");
-              if (refresh) refresh.click();
+              await refreshEventList();
             } catch (error) {
               approve.disabled = false;
               approve.textContent = "Approve field";
