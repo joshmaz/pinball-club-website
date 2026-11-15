@@ -588,8 +588,9 @@
     return result.data;
   }
 
-  async function updateEventFieldForAdmin(eventId, field, value) {
+  async function updateEventFieldForAdmin(eventId, field, value, options) {
     var client = getClient();
+    options = options || {};
     if (!client) throw new Error("Supabase is not available.");
     var allowed = ["title", "starts_at", "location", "description", "matchplay_format", "external_links"];
     if (!eventId || !allowed.includes(field)) throw new Error("Unsupported event update.");
@@ -599,6 +600,20 @@
       patch.external_url = patch.external_links[0]?.url || null;
     } else {
       patch[field] = value == null || value === "" ? null : value;
+    }
+    if (field === "starts_at" && options.markRescheduled) {
+      var current = await client.from("events")
+        .select("starts_at,ends_at,all_day,time_known,lifecycle_status")
+        .eq("id", eventId).single();
+      if (current.error) throw current.error;
+      patch.previous_schedule = {
+        starts_at: current.data.starts_at,
+        ends_at: current.data.ends_at || null,
+        all_day: !!current.data.all_day,
+        time_known: current.data.time_known
+      };
+      patch.reschedule_note = String(options.rescheduleNote || "Updated from Match Play").trim().slice(0, 1000) || null;
+      patch.lifecycle_status = "scheduled";
     }
     var result = await client.from("events").update(patch).eq("id", eventId).select("id").single();
     if (result.error) throw result.error;
