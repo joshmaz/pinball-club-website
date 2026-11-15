@@ -2299,12 +2299,12 @@
         var metadataTarget = aiMetadataFieldTarget(field.field);
         if (!metadataTarget) return;
         var valueId = "mg-ai-value-" + String(field.field || "").replace(/[^a-zA-Z0-9_-]+/g, "-");
-        var isMetadataReview = proposal.action === "metadata_review";
+        var isExistingMetadataUpdate = field.currentValue != null;
         row.appendChild(el("label", {
           for: checkboxId,
-          text: aiMetadataFieldLabel(field.field) + (isMetadataReview ? " · " + String(field.confidence || "review") + " confidence" : " suggestion"),
+          text: aiMetadataFieldLabel(field.field) + (isExistingMetadataUpdate ? " · " + String(field.confidence || "review") + " confidence update" : " suggestion"),
         }));
-        if (isMetadataReview) {
+        if (isExistingMetadataUpdate) {
           row.appendChild(el("p", {
             className: "member-games-help member-games-ai-current",
             text: "Current: " + String(field.currentValue == null ? "—" : field.currentValue) + " → Suggested:",
@@ -2374,14 +2374,11 @@
     var hasApplyableFields = fields.some(function (field) {
       return field && (isAiProposalLinkField(field.field) || !!aiMetadataFieldTarget(field.field));
     });
-    var isMetadataReviewAction = proposal.action === "metadata_review";
     var applyButton = isSourceAction ? aiSourceApplyBtnEl : isMetadataAction ? aiApplyBtnEl : null;
     if (applyButton) {
       applyButton.hidden = !hasApplyableFields;
       if (!applyButton.hidden) {
-        applyButton.textContent = isMetadataReviewAction
-          ? "Apply selected updates to form"
-          : isMetadataAction ? "Apply selected metadata to form" : "Apply selected source links";
+        applyButton.textContent = isMetadataAction ? "Apply selected metadata to form" : "Copy selected links to fields";
         targetBody.appendChild(applyButton);
       }
     }
@@ -2467,7 +2464,6 @@
       return;
     }
     var isMetadataProposal = aiProposalData.action === "metadata" || aiProposalData.action === "metadata_review";
-    var isMetadataReview = aiProposalData.action === "metadata_review";
     if (isMetadataProposal) {
       var skippedFilled = [];
       var copiedCount = 0;
@@ -2481,8 +2477,10 @@
       Object.keys(selected).forEach(function (key) {
         var targetId = aiMetadataFieldTarget(key);
         var target = targetId && document.getElementById(targetId);
+        var proposalField = (aiProposalData.fields || []).find(function (field) { return field && field.field === key; });
+        var isExistingMetadataUpdate = !!(proposalField && proposalField.currentValue != null);
         if (target) {
-          if (!isMetadataReview && String(target.value || "").trim()) {
+          if (!isExistingMetadataUpdate && String(target.value || "").trim()) {
             skippedFilled.push(aiMetadataFieldLabel(key));
             return;
           }
@@ -2492,14 +2490,8 @@
         }
       });
       if (copiedCount) isDirty = true;
-      if (isMetadataReview) {
-        setAiStatus(copiedCount
-          ? "Selected updates copied into the form. Review them and use Save game to keep the changes."
-          : "No form fields were changed.");
-      } else {
-        setAiStatus((skippedFilled.length ? "Kept already filled form values for: " + skippedFilled.join(", ") + ". " : "")
-          + (copiedCount ? "Selected metadata copied into blank fields. Review it and use Save game to keep the changes." : "No blank fields were changed."));
-      }
+      setAiStatus((skippedFilled.length ? "Kept already filled form values for: " + skippedFilled.join(", ") + ". " : "")
+        + (copiedCount ? "Selected metadata copied into the form. Review it and use Save game to keep the changes." : "No metadata fields were changed."));
       return;
     }
     if (selected.ipdbUrl && !isValidAiSourceUrl("ipdbUrl", selected.ipdbUrl)) {
@@ -2514,21 +2506,24 @@
       setAiStatus("Use a valid https://www.kineticist.com URL for Kineticist.");
       return;
     }
-    setAiStatus("Applying selected source links…");
-    try {
-      var keepFormDirty = isDirty;
-      await window.SNHMemberPortal.gamesUpsert(currentGameId, selected);
-      if (Object.prototype.hasOwnProperty.call(selected, "ipdbUrl")) (document.getElementById("mg-ipdb") || {}).value = selected.ipdbUrl || "";
-      if (Object.prototype.hasOwnProperty.call(selected, "pinsideUrl")) (document.getElementById("mg-pinside") || {}).value = selected.pinsideUrl || "";
-      if (Object.prototype.hasOwnProperty.call(selected, "kineticistUrl")) (document.getElementById("mg-kineticist") || {}).value = selected.kineticistUrl || "";
-      var data = await window.SNHMemberPortal.gamesEditorLoad();
-      gamesCache = (data && data.games) || [];
-      populateCombobox();
-      isDirty = keepFormDirty;
-      setAiStatus("Applied selected source links. Existing description edits remain in the editor.");
-    } catch (err) {
-      setAiStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
-    }
+    var sourceInputs = {
+      ipdbUrl: "mg-ipdb",
+      pinsideUrl: "mg-pinside",
+      kineticistUrl: "mg-kineticist",
+    };
+    var copiedLinks = 0;
+    Object.keys(sourceInputs).forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(selected, key)) return;
+      var target = document.getElementById(sourceInputs[key]);
+      if (!target) return;
+      target.value = selected[key] || "";
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+      copiedLinks += 1;
+    });
+    if (copiedLinks) isDirty = true;
+    setAiStatus(copiedLinks
+      ? "Selected source links copied to the fields above. Review them and use Save game to keep the changes."
+      : "No source links were copied into the form.");
   }
 
   function buildReviewScaffolds() {
@@ -2554,6 +2549,15 @@
       }
     });
     panel.appendChild(fieldRow("Description notes (optional)", notes));
+    var includeCurrentDescriptionRow = el("div", { className: "member-games-checkbox-row" });
+    var includeCurrentDescriptionCheckbox = el("input", { type: "checkbox", id: "mg-ai-include-current-description" });
+    includeCurrentDescriptionCheckbox.checked = true;
+    includeCurrentDescriptionRow.appendChild(includeCurrentDescriptionCheckbox);
+    includeCurrentDescriptionRow.appendChild(el("label", {
+      for: "mg-ai-include-current-description",
+      text: "Include current Description text (including unsaved edits)",
+    }));
+    panel.appendChild(includeCurrentDescriptionRow);
     panel.appendChild(contextCount);
 
     var actions = el("div", { className: "member-games-form-actions" });
@@ -2569,15 +2573,6 @@
       actions.appendChild(button);
     }
     addActionButton("mg-ai-description", "Draft our description", "description");
-    var includeCurrentDescriptionRow = el("div", { className: "member-games-checkbox-row" });
-    var includeCurrentDescriptionCheckbox = el("input", { type: "checkbox", id: "mg-ai-include-current-description" });
-    includeCurrentDescriptionCheckbox.checked = true;
-    includeCurrentDescriptionRow.appendChild(includeCurrentDescriptionCheckbox);
-    includeCurrentDescriptionRow.appendChild(el("label", {
-      for: "mg-ai-include-current-description",
-      text: "Include current Description text (including unsaved edits)",
-    }));
-    actions.appendChild(includeCurrentDescriptionRow);
     var draftOptions = el("details", { className: "member-games-draft-options" });
     draftOptions.appendChild(el("summary", { text: "Draft options" }));
     var draftOptionControls = el("div", { className: "member-games-draft-option-controls" });
@@ -2633,8 +2628,7 @@
       });
       actions.appendChild(button);
     }
-    addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
-    addActionButton("mg-ai-metadata-review", "Check existing metadata", "metadata_review");
+    addActionButton("mg-ai-metadata", "Check metadata", "metadata");
     panel.appendChild(actions);
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
@@ -2647,7 +2641,7 @@
 
   function buildSourceAssistantScaffold() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Suggest likely URLs, open them to confirm the game, then edit and apply the links you want to keep." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Suggest likely URLs, open them to confirm the game, then copy selected links into the fields above. Use Save game to keep them." }));
     var button = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-sources", text: "Find or verify links" });
     button.addEventListener("click", function () {
       if (!currentGameId || mode !== "edit") {
@@ -2657,7 +2651,7 @@
       void runAiPropose({ action: "sources" });
     });
     panel.appendChild(button);
-    aiSourceApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-source-apply", text: "Apply selected source links", hidden: "hidden" });
+    aiSourceApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-source-apply", text: "Copy selected links to fields", hidden: "hidden" });
     aiSourceApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     aiSourceStatusEl = el("p", { className: "member-games-help", id: "mg-ai-source-status" });
     aiSourceProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-source-proposal" });
