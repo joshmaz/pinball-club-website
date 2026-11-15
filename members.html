@@ -2047,12 +2047,13 @@
           updateEventEndDefault();
         }
         try {
-          if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+          if (tournament.url) memberEventsLinks.append({ url: tournament.url, label: "Match Play" });
+          if (tournament.series_url) memberEventsLinks.append({ url: tournament.series_url, label: "Match Play series" });
         } catch (error) {
           setEventsStatus(error.message);
           return;
         }
-        setEventsStatus("Editing the existing club event. Its saved fields remain populated; empty fields received Match Play details and its tournament link was added. Review before saving.");
+        setEventsStatus("Editing the existing club event. Its saved fields remain populated; empty fields received Match Play details and available tournament and series links were added. Review before saving.");
       });
     }
 
@@ -2067,7 +2068,8 @@
         if (memberEventsLocation) memberEventsLocation.value = String(tournament.location || "").slice(0, 500);
         if (memberEventsFormat) memberEventsFormat.value = String(tournament.matchplay_format || "").slice(0, 120);
         try {
-          if (tournament.url) memberEventsLinks.append({ url: tournament.url });
+          if (tournament.url) memberEventsLinks.append({ url: tournament.url, label: "Match Play" });
+          if (tournament.series_url) memberEventsLinks.append({ url: tournament.series_url, label: "Match Play series" });
         } catch (error) {
           setEventsStatus(error.message);
           return;
