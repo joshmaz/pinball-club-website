@@ -516,7 +516,7 @@
     if (!client) return null;
     var result = await client
       .from("events")
-      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known,external_links,ends_at,lifecycle_status,previous_schedule,reschedule_note")
+      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known,external_links,ends_at,lifecycle_status,previous_schedule,reschedule_note,matchplay_format")
       .order("starts_at", { ascending: false, nullsFirst: false })
       .limit(500);
     if (result.error) return null;
@@ -560,7 +560,8 @@
       starts_at: eventInput.starts_at || null,
       external_url: eventInput.external_url || null,
       source: eventInput.source || "manual",
-      published: !!eventInput.published
+      published: !!eventInput.published,
+      matchplay_format: eventInput.matchplay_format || null
     };
     if (Array.isArray(eventInput.external_links)) {
       payload.external_links = window.SNHEventLinks.normalize(eventInput.external_links, true);
