@@ -20,7 +20,7 @@
       }).format(date) : String(value);
     }
     if (field === "matchplay_format") {
-      return String(value).replace(/_/g, " ").replace(/\\b\\w/g, function (letter) { return letter.toUpperCase(); });
+      return String(value).replace(/_/g, " ").replace(/\b\w/g, function (letter) { return letter.toUpperCase(); });
     }
     if (field === "external_links" && Array.isArray(value)) {
       return value.map(function (link) { return link && link.label ? link.label + ": " + link.url : (link && link.url) || ""; }).filter(Boolean).join(" · ") || "(no links)";
