@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
         return Number.isFinite(start) && (end >= now || start >= now - 24 * 60 * 60 * 1000);
       });
       const activeEventIds = new Set(localEvents.map(event => String(event.id)));
+      const matchingEvents = allEvents.filter(event => event.lifecycle_status !== "canceled");
       const linkedEventsById = new Map<string, Record<string, unknown>>();
       const activeLinkedIds = new Set<string>();
       for (const event of allEvents) {
@@ -121,14 +122,19 @@ Deno.serve(async (req) => {
       const searchQueries = ["SNHPC", "Southern New Hampshire Pinball Club"];
       const cacheStates: unknown[] = [];
       for (const query of searchQueries) {
-        const { payload, cache } = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=1`);
-        cacheStates.push(cache);
-        for (const item of Array.isArray(payload?.data) ? payload.data : []) {
-          if (!item || typeof item !== "object") continue;
-          const row = item as Record<string, unknown>;
-          const id = positiveId(row.tournamentId);
-          const name = String(row.name || "");
-          if (id && /snhpc|southern new hampshire pinball club/i.test(name)) discovered.set(id, row);
+        for (let page = 1; page <= 50; page += 1) {
+          const { payload, cache } = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=${page}`);
+          cacheStates.push(cache);
+          for (const item of Array.isArray(payload?.data) ? payload.data : []) {
+            if (!item || typeof item !== "object") continue;
+            const row = item as Record<string, unknown>;
+            const id = positiveId(row.tournamentId);
+            const name = String(row.name || "");
+            if (id && /snhpc|southern new hampshire pinball club/i.test(name)) discovered.set(id, row);
+          }
+          const links = payload?.links && typeof payload.links === "object"
+            ? payload.links as Record<string, unknown> : {};
+          if (!links.next) break;
         }
       }
       for (const id of activeLinkedIds) {
@@ -148,16 +154,18 @@ Deno.serve(async (req) => {
         let matchLabel = event ? "Match Play link" : "";
         if (event && !activeEventIds.has(String(event.id))) continue;
         if (!event) {
-          const tournamentStart = tournament.starts_at ? Date.parse(tournament.starts_at) : NaN;
-          if (Number.isFinite(tournamentStart) && tournamentStart < now - 24 * 60 * 60 * 1000) continue;
-          const candidates = rankEventCandidates(tournament, localEvents as Array<Record<string, unknown>>);
+          const candidates = rankEventCandidates(tournament, matchingEvents as Array<Record<string, unknown>>);
           if (candidates.length > 1) {
             possibleMatches.push({ tournament, candidates: candidates.slice(0, 3).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, match: candidate.match })) });
             continue;
           }
           if (candidates.length === 1) {
-            event = localEvents.find(candidate => String(candidate.id) === String(candidates[0].id));
+            event = matchingEvents.find(candidate => String(candidate.id) === String(candidates[0].id));
             matchLabel = candidates[0].match.confidence;
+            if (event && !activeEventIds.has(String(event.id))) {
+              possibleMatches.push({ tournament, candidates: candidates.slice(0, 3).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, match: candidate.match })) });
+              continue;
+            }
           }
         }
         if (!event) { additions.push(tournament); continue; }
