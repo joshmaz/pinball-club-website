@@ -1215,16 +1215,27 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     add("playerCount", data.player_count, "Kineticist API", references.kineticistUrl);
     const releaseMonth = extractExplicitReleaseMonthYear(data.description);
     if (releaseMonth) {
+      const opdbManufactureDate = typeof opdb?.manufacture_date === "string"
+        ? opdb.manufacture_date.slice(0, 10)
+        : null;
+      const opdbTimingDiffers = Boolean(
+        opdbManufactureDate
+        && /^\\d{4}-\\d{2}-\\d{2}$/.test(opdbManufactureDate)
+        && opdbManufactureDate.slice(0, 7) !== releaseMonth.value.slice(0, 7)
+      );
       const dateReason = releaseMonth.kind === "release"
         ? `Kineticist's description explicitly says the game was released in ${releaseMonth.label}.`
-        : `Kineticist's description says the game was produced in ${releaseMonth.label}; production timing can differ from a release date.`;
+        : `Kineticist's description says the game was produced in ${releaseMonth.label}; production timing can differ from release timing.`;
+      const sourceComparison = opdbTimingDiffers
+        ? ` OPDB lists a manufacture date of ${opdbManufactureDate}, so the sources differ on timing.`
+        : "";
       add(
         "releaseDate",
         releaseMonth.value,
         "Kineticist API",
         references.kineticistUrl,
-        `${dateReason} The source gives month and year, not a day; the suggested date uses the first of that month.`,
-        releaseMonth.kind === "release" ? "medium" : "low",
+        `${dateReason}${sourceComparison} The source gives month and year, not a day; the suggested date uses the first of that month.`,
+        releaseMonth.kind === "release" && !opdbTimingDiffers ? "medium" : "low",
       );
     }
   }
