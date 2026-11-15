@@ -1724,7 +1724,7 @@
         tdTitle.textContent = (row.title || "(untitled)") + (row.lifecycle_status && row.lifecycle_status !== "scheduled" ? " · " + row.lifecycle_status : "") + (row.previous_schedule ? " · Rescheduled" : "");
 
         var tdFormat = document.createElement("td");
-        tdFormat.textContent = row.matchplay_format ? String(row.matchplay_format).replace(/_/g, " ").replace(/\\b\\w/g, function (letter) { return letter.toUpperCase(); }) : "—";
+        tdFormat.textContent = row.matchplay_format ? String(row.matchplay_format).replace(/_/g, " ").replace(/\b\w/g, function (letter) { return letter.toUpperCase(); }) : "—";
 
         var tdDate = document.createElement("td");
         tdDate.textContent = row.all_day ? String(row.starts_at || "").slice(0, 10) + " · All day" : window.SNHMemberPortal.formatDate(row.starts_at);
@@ -1996,7 +1996,7 @@
             matchplayReviewCandidates.appendChild(row);
           });
           var sourceFacts = [];
-          if (tournament.matchplay_format) sourceFacts.push("Format: " + String(tournament.matchplay_format).replace(/_/g, " ").replace(/\\b\\w/g, function (letter) { return letter.toUpperCase(); }));
+          if (tournament.matchplay_format) sourceFacts.push("Format: " + String(tournament.matchplay_format).replace(/_/g, " ").replace(/\b\w/g, function (letter) { return letter.toUpperCase(); }));
           if (tournament.status) sourceFacts.push("Match Play status: " + tournament.status);
           if (tournament.organizer_name) sourceFacts.push("Organizer: " + tournament.organizer_name);
           if (tournament.series_name || tournament.series_id) sourceFacts.push("Series: " + (tournament.series_name || tournament.series_id));
