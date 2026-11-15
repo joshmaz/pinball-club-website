@@ -1995,9 +1995,15 @@
             row.append(title, date, match, action);
             matchplayReviewCandidates.appendChild(row);
           });
+          var sourceFacts = [];
+          if (tournament.matchplay_format) sourceFacts.push("Format: " + String(tournament.matchplay_format).replace(/_/g, " ").replace(/\\b\\w/g, function (letter) { return letter.toUpperCase(); }));
+          if (tournament.status) sourceFacts.push("Match Play status: " + tournament.status);
+          if (tournament.organizer_name) sourceFacts.push("Organizer: " + tournament.organizer_name);
+          if (tournament.series_name || tournament.series_id) sourceFacts.push("Series: " + (tournament.series_name || tournament.series_id));
           matchplayReviewSummary.textContent = (tournament.title || "Tournament") + " · " +
             window.SNHMemberPortal.formatDate(tournament.starts_at) +
             (tournament.location ? " · " + tournament.location : "") +
+            (sourceFacts.length ? " · " + sourceFacts.join(" · ") : "") +
             ". " + (candidates.length ? candidates.length + " possible club match(es)." :
               "No nearby club event found. Check the date and location, then prepare a new draft if this is a club event.");
           matchplayReviewResults.hidden = false;
@@ -2033,6 +2039,7 @@
         if (memberEventsLocation && !memberEventsLocation.value.trim()) {
           memberEventsLocation.value = tournament.location || "";
         }
+        if (memberEventsFormat && !memberEventsFormat.value.trim()) memberEventsFormat.value = tournament.matchplay_format || "";
         if (memberEventsStartsAt && !memberEventsStartsAt.value) {
           memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
           updateEventEndDefault();
@@ -2056,6 +2063,7 @@
         if (memberEventsStartsAt) memberEventsStartsAt.value = toLocalDateTimeInputValue(tournament.starts_at);
         updateEventEndDefault();
         if (memberEventsLocation) memberEventsLocation.value = String(tournament.location || "").slice(0, 500);
+        if (memberEventsFormat) memberEventsFormat.value = String(tournament.matchplay_format || "").slice(0, 120);
         try {
           if (tournament.url) memberEventsLinks.append({ url: tournament.url });
         } catch (error) {
