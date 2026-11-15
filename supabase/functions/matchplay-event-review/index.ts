@@ -228,7 +228,7 @@ Deno.serve(async (req) => {
         const eventLinks = Array.isArray(event.external_links) ? event.external_links as Array<Record<string, unknown>> : [];
         const proposedLinks = [...eventLinks];
         const addLink = (url: string, label: string) => {
-          if (url && proposedLinks.length < 7 && !proposedLinks.some(link => link && link.url === url)) {
+          if (url && proposedLinks.length < 5 && !proposedLinks.some(link => link && link.url === url)) {
             proposedLinks.push({ url, label });
           }
         };
