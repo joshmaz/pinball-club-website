@@ -274,11 +274,14 @@ Deno.serve(async (req) => {
         if (review.conflicts.length) {
           warnings.push(`Sources disagreed on ${review.conflicts.join(", ")}; no update was suggested for those fields.`);
         }
+        if (review.missingFields.length) {
+          warnings.push("Kineticist explicitly states the release month and year for a blank release date. The suggested full date uses the first of the month because no day is stated.");
+        }
 
         if (missingFields.length) {
           const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || Deno.env.get("LLM_API_KEY") || "";
           if (!apiKey) {
-            warnings.push("LLM unavailable: missing API key. Existing values were still checked; missing-field suggestions were not generated.");
+            warnings.push("LLM unavailable: missing API key. Existing values and explicit release-date evidence were still checked; suggestions for other blank fields were not generated.");
           } else {
             const evidenceText = JSON.stringify(verifiedEvidence.map((item) => ({
               source: item.provider,
@@ -294,18 +297,18 @@ Deno.serve(async (req) => {
               if (generated.ok) fallbackUsed.value = true;
             }
             if (!generated.ok) {
-              warnings.push(generated.reason || "Missing-field suggestions could not be generated. Existing values were still checked.");
+              warnings.push(generated.reason || "AI suggestions for other blank metadata fields could not be generated. Existing values and explicit release-date evidence were still checked.");
             } else {
               modelName = fallbackUsed.value ? secondaryModel : primaryModel;
               missingSuggestions.push(...parseMetadataSuggestions(generated.text, game, missingFields, verifiedEvidence));
               if (!missingSuggestions.length) {
-                warnings.push("The catalog evidence did not clearly support suggestions for the remaining blank fields.");
+                warnings.push("The catalog evidence did not clearly support additional suggestions for the remaining blank metadata fields.");
               }
             }
           }
         }
 
-        fields = [...review.fields, ...missingSuggestions];
+        fields = [...review.fields, ...review.missingFields, ...missingSuggestions];
         if (fields.length) {
           status = "needs_review";
           warnings.push("Review each proposed update or missing value, select the fields you want, and apply them to the form. Nothing is saved until you use Save game.");
@@ -1173,6 +1176,7 @@ type MetadataReviewCandidate = {
 
 function buildMetadataReviewSuggestions(game: GameRow, references: GameReferenceData): {
   fields: ProposalField[];
+  missingFields: ProposalField[];
   checked: number;
   matched: number;
   conflicts: string[];
@@ -1228,6 +1232,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     releaseDate: game.release_date,
   };
   const fields: ProposalField[] = [];
+  const missingFields: ProposalField[] = [];
   const conflicts: string[] = [];
   let checked = 0;
   let matched = 0;
@@ -1236,8 +1241,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     const currentValue = currentValues[field];
     const current = canonicalMetadataReviewValue(field, currentValue);
     const fieldCandidates = candidates[field] || [];
-    if (!current || !fieldCandidates.length) return;
-    checked += 1;
+    if (!fieldCandidates.length) return;
 
     const distinct = new Map<string, MetadataReviewCandidate>();
     fieldCandidates.forEach((candidate) => {
@@ -1248,7 +1252,29 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
       conflicts.push(aiMetadataFieldLabelForServer(field));
       return;
     }
+
     const candidate = [...distinct.values()][0];
+    if (!current) {
+      if (field === "releaseDate") {
+        missingFields.push({
+          field,
+          currentValue: null,
+          suggestedValue: candidate.value,
+          confidence: "medium",
+          confidenceScore: 0.76,
+          reason: candidate.reason
+            || `The exact ${candidate.provider} record gives an explicit release month and year; the suggested date uses the first of that month because the day is not stated.`,
+          sourceType: candidate.provider,
+          sourceUrl: candidate.url,
+          warnings: [],
+          reviewRequired: true,
+          applyByDefault: false,
+        });
+      }
+      return;
+    }
+
+    checked += 1;
     if (normalizeMetadataReviewComparison(current) === normalizeMetadataReviewComparison(candidate.value)) {
       matched += 1;
       return;
@@ -1269,7 +1295,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     });
   });
 
-  return { fields, checked, matched, conflicts };
+  return { fields, missingFields, checked, matched, conflicts };
 }
 
 function extractExplicitReleaseMonthYear(raw: unknown): { value: string; label: string } | null {
