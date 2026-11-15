@@ -664,7 +664,7 @@ function ensureOperatorRethemeIncluded(
     .replace(/\s+(?:pinball\s+)?machine$/i, "")
     .trim();
   const distinguishingTerms = theme.toLowerCase().match(/[a-z0-9]+/g)?.filter(
-    (word) => word.length > 3 && !["theme", "game", "machine", "pinball"].includes(word),
+    (word) => word.length > 3 && !["theme", "game", "machine", "pinball", "car"].includes(word),
   ) || [];
   if (distinguishingTerms.some((word) => draft.toLowerCase().includes(word))) return draft;
 
