@@ -2400,6 +2400,8 @@
         context: contextValue,
         includeCurrentDescription: includeCurrentDescription,
         currentDescription: includeCurrentDescription && currentDescriptionEl ? String(currentDescriptionEl.value || "") : "",
+        descriptionLength: action === "description" ? ((document.getElementById("mg-ai-description-length") || {}).value || "standard") : undefined,
+        descriptionVoice: action === "description" ? ((document.getElementById("mg-ai-description-voice") || {}).value || "club") : undefined,
         operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
@@ -2561,6 +2563,35 @@
       text: "Include current Description text (including unsaved edits)",
     }));
     actions.appendChild(includeCurrentDescriptionRow);
+    var draftOptions = el("details", { className: "member-games-draft-options" });
+    draftOptions.appendChild(el("summary", { text: "Draft options" }));
+    var draftOptionControls = el("div", { className: "member-games-draft-option-controls" });
+    function addDraftOptionSelect(labelText, id, choices, defaultValue) {
+      var control = el("div", { className: "member-games-draft-option" });
+      control.appendChild(el("label", { for: id, text: labelText }));
+      var select = el("select", { id: id, className: "member-games-input" });
+      choices.forEach(function (choice) {
+        var option = document.createElement("option");
+        option.value = choice.value;
+        option.textContent = choice.label;
+        select.appendChild(option);
+      });
+      select.value = defaultValue;
+      control.appendChild(select);
+      draftOptionControls.appendChild(control);
+    }
+    addDraftOptionSelect("Length", "mg-ai-description-length", [
+      { value: "short", label: "Short (about 180; max 220 characters)" },
+      { value: "standard", label: "Standard (about 270; max 320 characters)" },
+      { value: "expanded", label: "Expanded (about 420; max 500 characters)" },
+    ], "standard");
+    addDraftOptionSelect("Voice", "mg-ai-description-voice", [
+      { value: "club", label: "Club voice (friendly and factual)" },
+      { value: "gentle_wit", label: "Friendly with gentle wit" },
+      { value: "energetic", label: "More energetic" },
+    ], "club");
+    draftOptions.appendChild(draftOptionControls);
+    actions.appendChild(draftOptions);
     aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
     aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
