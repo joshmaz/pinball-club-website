@@ -318,8 +318,8 @@
     manualWrapEl.appendChild(fieldRow("Override", manSel));
     manualWrapEl.appendChild(fieldRow("Override note", textInput("mg-manual-note", "")));
     sourceMetadataPanel.appendChild(manualWrapEl);
-    metadataPanel.appendChild(wrapCollapsible("Imported & location data", sourceMetadataPanel));
     metadataPanel.appendChild(buildMetadataAssistantScaffold());
+    metadataPanel.appendChild(wrapCollapsible("Imported & location data", sourceMetadataPanel));
     formEl.appendChild(wrapCollapsible("Game metadata", metadataPanel));
 
     var linksPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
@@ -2064,7 +2064,8 @@
       manufacturerFullName: "mg-mfrfull",
       type: "mg-type",
       display: "mg-display",
-      playerCount: "mg-players"
+      playerCount: "mg-players",
+      releaseDate: "mg-release"
     }[fieldKey] || "";
   }
 
@@ -2074,7 +2075,8 @@
       manufacturerFullName: "Manufacturer full name",
       type: "Type (EM/SS)",
       display: "Display",
-      playerCount: "Player count"
+      playerCount: "Player count",
+      releaseDate: "Release date"
     }[fieldKey] || String(fieldKey || "Metadata");
   }
 
@@ -2310,7 +2312,7 @@
         }
         var valueInput = field.field === "playerCount"
           ? el("input", { type: "number", min: "1", max: "8", step: "1", id: valueId, className: "member-games-input" })
-          : el("input", { type: "text", id: valueId, className: "member-games-input" });
+          : el("input", { type: field.field === "releaseDate" ? "date" : "text", id: valueId, className: "member-games-input" });
         valueInput.value = String(field.suggestedValue == null ? "" : field.suggestedValue);
         row.appendChild(valueInput);
         if (field.sourceUrl && isValidHttpUrl(field.sourceUrl)) {
