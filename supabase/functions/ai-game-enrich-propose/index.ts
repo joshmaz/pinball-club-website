@@ -32,7 +32,8 @@ type ProposalFieldKey =
   | "manufacturerFullName"
   | "type"
   | "display"
-  | "playerCount";
+  | "playerCount"
+  | "releaseDate";
 
 type ProposalConfidence = "low" | "medium" | "high";
 type ProposalStatus = "ok" | "needs_review" | "unavailable" | "budget_limit_reached";
@@ -1151,7 +1152,8 @@ function shouldFallback(status: number): boolean {
   return status === 0 || status === 408 || status === 429 || status >= 500;
 }
 
-type MetadataFieldKey = Exclude<ProposalFieldKey, "details" | "ipdbUrl" | "pinsideUrl" | "kineticistUrl">;
+type MetadataFieldKey = Exclude<ProposalFieldKey, "details" | "ipdbUrl" | "pinsideUrl" | "kineticistUrl" | "releaseDate">;
+type MetadataReviewFieldKey = MetadataFieldKey | "releaseDate";
 
 function metadataFieldsMissing(game: GameRow): MetadataFieldKey[] {
   const fields: Array<[MetadataFieldKey, string | number | null]> = [
@@ -1168,6 +1170,7 @@ type MetadataReviewCandidate = {
   value: string;
   provider: "OPDB" | "Kineticist API";
   url: string;
+  reason?: string;
 };
 
 function buildMetadataReviewSuggestions(game: GameRow, references: GameReferenceData): {
@@ -1176,13 +1179,19 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
   matched: number;
   conflicts: string[];
 } {
-  const candidates: Partial<Record<MetadataFieldKey, MetadataReviewCandidate[]>> = {};
-  const add = (field: MetadataFieldKey, raw: unknown, provider: MetadataReviewCandidate["provider"], url: string | null) => {
+  const candidates: Partial<Record<MetadataReviewFieldKey, MetadataReviewCandidate[]>> = {};
+  const add = (
+    field: MetadataReviewFieldKey,
+    raw: unknown,
+    provider: MetadataReviewCandidate["provider"],
+    url: string | null,
+    reason?: string,
+  ) => {
     if (!url) return;
     const value = canonicalMetadataReviewValue(field, raw);
     if (!value) return;
     if (!candidates[field]) candidates[field] = [];
-    candidates[field]!.push({ value, provider, url });
+    candidates[field]!.push({ value, provider, url, reason });
   };
 
   const opdb = references.opdbEntry;
@@ -1200,21 +1209,32 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     add("type", data.game_type, "Kineticist API", references.kineticistUrl);
     add("display", data.display_type, "Kineticist API", references.kineticistUrl);
     add("playerCount", data.player_count, "Kineticist API", references.kineticistUrl);
+    const releaseMonth = extractExplicitReleaseMonthYear(data.description);
+    if (releaseMonth) {
+      add(
+        "releaseDate",
+        releaseMonth.value,
+        "Kineticist API",
+        references.kineticistUrl,
+        `Kineticist's description explicitly says the game was released in ${releaseMonth.label}. The source gives month and year, not a day; the suggested date uses the first of that month.`,
+      );
+    }
   }
 
-  const currentValues: Record<MetadataFieldKey, string | number | null> = {
+  const currentValues: Record<MetadataReviewFieldKey, string | number | null> = {
     manufacturer: game.manufacturer,
     manufacturerFullName: game.manufacturer_full_name,
     type: game.machine_type,
     display: game.display_type,
     playerCount: game.player_count,
+    releaseDate: game.release_date,
   };
   const fields: ProposalField[] = [];
   const conflicts: string[] = [];
   let checked = 0;
   let matched = 0;
 
-  (Object.keys(currentValues) as MetadataFieldKey[]).forEach((field) => {
+  (Object.keys(currentValues) as MetadataReviewFieldKey[]).forEach((field) => {
     const currentValue = currentValues[field];
     const current = canonicalMetadataReviewValue(field, currentValue);
     const fieldCandidates = candidates[field] || [];
@@ -1241,7 +1261,8 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
       suggestedValue: candidate.value,
       confidence: "medium",
       confidenceScore: 0.76,
-      reason: `The exact ${candidate.provider} record lists ${candidate.value}; compare it with the current value before replacing it.`,
+      reason: candidate.reason
+        || `The exact ${candidate.provider} record lists ${candidate.value}; compare it with the current value before replacing it.`,
       sourceType: candidate.provider,
       sourceUrl: candidate.url,
       warnings: [],
@@ -1253,7 +1274,40 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
   return { fields, checked, matched, conflicts };
 }
 
-function canonicalMetadataReviewValue(field: MetadataFieldKey, raw: unknown): string | null {
+function extractExplicitReleaseMonthYear(raw: unknown): { value: string; label: string } | null {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  const text = stripHtmlToText(raw).replace(/&nbsp;/gi, " ");
+  const months: Record<string, string> = {
+    jan: "01", january: "01", feb: "02", february: "02", mar: "03", march: "03",
+    apr: "04", april: "04", may: "05", jun: "06", june: "06", jul: "07", july: "07",
+    aug: "08", august: "08", sep: "09", sept: "09", september: "09",
+    oct: "10", october: "10", nov: "11", november: "11", dec: "12", december: "12",
+  };
+  const monthPattern = "(January|February|March|April|May|June|July|August|September|October|November|December|Jan\\.?|Feb\\.?|Mar\\.?|Apr\\.?|Jun\\.?|Jul\\.?|Aug\\.?|Sep\\.?|Sept\\.?|Oct\\.?|Nov\\.?|Dec\\.?)";
+  const patterns = [
+    new RegExp("\\b(?:release(?:d)?|introduced|debuted)\\b[^.!?\\n]{0,120}?\\b(?:in\\s+(?:the\\s+)?)?" + monthPattern + "\\s+(?:of\\s+)?((?:19|20)\\d{2})\\b", "i"),
+    new RegExp("\\b" + monthPattern + "\\s+((?:19|20)\\d{2})\\b[^.!?\\n]{0,80}\\b(?:release|released)\\b", "i"),
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (!match) continue;
+    const monthName = match[1].replace(/\./g, "").toLowerCase();
+    const month = months[monthName];
+    const year = match[2];
+    if (!month || !year) continue;
+    return { value: year + "-" + month + "-01", label: match[1] + " " + year };
+  }
+  return null;
+}
+ 
+function canonicalMetadataReviewValue(field: MetadataReviewFieldKey, raw: unknown): string | null {
+  if (field === "releaseDate") {
+    if (typeof raw !== "string") return null;
+    const value = raw.trim().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value ? null : value;
+  }
   if (field === "playerCount") {
     const value = Number(raw);
     return Number.isInteger(value) && value >= 1 && value <= 8 ? String(value) : null;
@@ -1275,13 +1329,14 @@ function normalizeMetadataReviewComparison(value: string): string {
   return value.normalize("NFKC").toLocaleLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
 }
 
-function aiMetadataFieldLabelForServer(field: MetadataFieldKey): string {
-  const labels: Record<MetadataFieldKey, string> = {
+function aiMetadataFieldLabelForServer(field: MetadataReviewFieldKey): string {
+  const labels: Record<MetadataReviewFieldKey, string> = {
     manufacturer: "manufacturer",
     manufacturerFullName: "manufacturer full name",
     type: "machine type",
     display: "display",
     playerCount: "player count",
+    releaseDate: "release date",
   };
   return labels[field];
 }
