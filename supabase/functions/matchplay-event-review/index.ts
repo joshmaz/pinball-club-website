@@ -97,18 +97,24 @@ Deno.serve(async (req) => {
         .limit(500);
       if (eventsError) throw new Error("Could not read club events");
       const now = Date.now();
-      const localEvents = (storedEvents || []).filter((event) => {
+      const allEvents = storedEvents || [];
+      const localEvents = allEvents.filter((event) => {
         if (event.lifecycle_status === "canceled" || !event.starts_at) return false;
         const start = Date.parse(String(event.starts_at));
         const end = event.ends_at ? Date.parse(String(event.ends_at)) : start;
         return Number.isFinite(start) && (end >= now || start >= now - 24 * 60 * 60 * 1000);
       });
-      const byId = new Map<string, Record<string, unknown>>();
-      for (const event of localEvents) {
+      const activeEventIds = new Set(localEvents.map(event => String(event.id)));
+      const linkedEventsById = new Map<string, Record<string, unknown>>();
+      const activeLinkedIds = new Set<string>();
+      for (const event of allEvents) {
         const links = [event.external_url, ...(Array.isArray(event.external_links) ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
         for (const link of links) {
           const id = tournamentIdFromInput(String(link || ""));
-          if (id) byId.set(id, event);
+          if (id) {
+            linkedEventsById.set(id, event);
+            if (activeEventIds.has(String(event.id))) activeLinkedIds.add(id);
+          }
         }
       }
       const discovered = new Map<string, Record<string, unknown>>();
@@ -125,7 +131,7 @@ Deno.serve(async (req) => {
           if (id && /snhpc|southern new hampshire pinball club/i.test(name)) discovered.set(id, row);
         }
       }
-      for (const id of byId.keys()) {
+      for (const id of activeLinkedIds) {
         if (discovered.has(id)) continue;
         const { payload, cache } = await getCached(`tournaments/${id}?includeLocation=1`);
         cacheStates.push(cache);
@@ -138,9 +144,12 @@ Deno.serve(async (req) => {
       for (const [id, row] of discovered) {
         const tournament = normalizedTournament(row, id);
         if (!tournament.id) continue;
-        let event = byId.get(id);
+        let event = linkedEventsById.get(id);
         let matchLabel = event ? "Match Play link" : "";
+        if (event && !activeEventIds.has(String(event.id))) continue;
         if (!event) {
+          const tournamentStart = tournament.starts_at ? Date.parse(tournament.starts_at) : NaN;
+          if (Number.isFinite(tournamentStart) && tournamentStart < now - 24 * 60 * 60 * 1000) continue;
           const candidates = rankEventCandidates(tournament, localEvents as Array<Record<string, unknown>>);
           if (candidates.length > 1) {
             possibleMatches.push({ tournament, candidates: candidates.slice(0, 3).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, match: candidate.match })) });
