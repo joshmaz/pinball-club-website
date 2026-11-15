@@ -120,10 +120,26 @@ Deno.serve(async (req) => {
       }
       const discovered = new Map<string, Record<string, unknown>>();
       const searchQueries = ["SNHPC", "Southern New Hampshire Pinball Club"];
+      const searchPageLimit = 5;
       const cacheStates: unknown[] = [];
+      const warnings: string[] = [];
+      let rateLimited = false;
       for (const query of searchQueries) {
-        for (let page = 1; page <= 50; page += 1) {
-          const { payload, cache } = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=${page}`);
+        let hasMorePages = false;
+        for (let page = 1; page <= searchPageLimit; page += 1) {
+          let result;
+          try {
+            result = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=${page}`);
+          } catch (error) {
+            const message = error instanceof Error ? error.message : "";
+            if (/\\b429\\b|too many attempts/i.test(message)) {
+              warnings.push("Match Play rate-limited this scan. Some results may be missing; wait a few minutes and try again.");
+              rateLimited = true;
+              break;
+            }
+            throw error;
+          }
+          const { payload, cache } = result;
           cacheStates.push(cache);
           for (const item of Array.isArray(payload?.data) ? payload.data : []) {
             if (!item || typeof item !== "object") continue;
@@ -134,14 +150,30 @@ Deno.serve(async (req) => {
           }
           const links = payload?.links && typeof payload.links === "object"
             ? payload.links as Record<string, unknown> : {};
-          if (!links.next) break;
+          hasMorePages = !!links.next;
+          if (!hasMorePages) break;
         }
+        if (hasMorePages && !rateLimited) {
+          warnings.push("Search stopped after the first 5 pages for a title to avoid excessive Match Play requests.");
+        }
+        if (rateLimited) break;
       }
       for (const id of activeLinkedIds) {
+        if (rateLimited) break;
         if (discovered.has(id)) continue;
-        const { payload, cache } = await getCached(`tournaments/${id}?includeLocation=1`);
-        cacheStates.push(cache);
-        if (payload?.data && typeof payload.data === "object") discovered.set(id, payload.data as Record<string, unknown>);
+        try {
+          const { payload, cache } = await getCached(`tournaments/${id}?includeLocation=1`);
+          cacheStates.push(cache);
+          if (payload?.data && typeof payload.data === "object") discovered.set(id, payload.data as Record<string, unknown>);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "";
+          if (/\\b429\\b|too many attempts/i.test(message)) {
+            warnings.push("Match Play rate-limited this scan. Some linked events may not have been checked; wait a few minutes and try again.");
+            rateLimited = true;
+            break;
+          }
+          throw error;
+        }
       }
       const additions: ReturnType<typeof normalizedTournament>[] = [];
       const updates: Array<Record<string, unknown>> = [];
@@ -198,7 +230,7 @@ Deno.serve(async (req) => {
         if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links, source: event.source, published: event.published, all_day: event.all_day, time_known: event.time_known, ends_at: event.ends_at, previous_schedule: event.previous_schedule, reschedule_note: event.reschedule_note, lifecycle_status: event.lifecycle_status }, match: matchLabel, changes });
         else unchanged += 1;
       }
-      return json({ scanned_at: new Date().toISOString(), cache: cacheStates, additions, updates, possible_matches: possibleMatches, unchanged });
+      return json({ scanned_at: new Date().toISOString(), cache: cacheStates, additions, updates, possible_matches: possibleMatches, unchanged, warnings });
     }
 
     if (body.mode === "discover") {
