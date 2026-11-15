@@ -65,6 +65,7 @@
   var partyFormDirty = false;
   var partyLinkWrapEl = null;
   var aiWrapEl = null;
+  var aiMetadataWrapEl = null;
   var aiStatusEl = null;
   var aiMetadataStatusEl = null;
   var aiSourceStatusEl = null;
@@ -1102,6 +1103,7 @@
     formEl.hidden = isIdle;
     formEl.setAttribute("aria-hidden", isIdle ? "true" : "false");
     if (reviewScaffoldsEl) reviewScaffoldsEl.hidden = mode !== "edit";
+    if (aiMetadataWrapEl) aiMetadataWrapEl.hidden = mode !== "edit";
     var modeNote = document.getElementById("member-games-mode-note");
     if (modeNote) modeNote.hidden = mode !== "new";
     if (manualWrapEl) manualWrapEl.hidden = mode !== "edit";
@@ -2615,6 +2617,7 @@
 
   function buildMetadataAssistantScaffold() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
+    aiMetadataWrapEl = panel;
     panel.appendChild(el("p", { className: "member-games-help", text: "Suggest blank values or check existing metadata against exact OPDB and Kineticist catalog records. Review each result before applying; nothing is saved automatically." }));
     var actions = el("div", { className: "member-games-form-actions" });
     function addActionButton(id, label, action) {
