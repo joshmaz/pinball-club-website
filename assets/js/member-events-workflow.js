@@ -103,7 +103,10 @@
               all_day: false,
               time_known: !!tournament.starts_at,
               lifecycle_status: "scheduled",
-              external_links: [{ url: tournament.url, label: "Match Play" }],
+              external_links: [
+                { url: tournament.url, label: "Match Play" },
+                ...(tournament.series_url ? [{ url: tournament.series_url, label: "Match Play series" }] : [])
+              ],
               source: "matchplay",
               published: false,
               matchplay_format: tournament.matchplay_format || null
