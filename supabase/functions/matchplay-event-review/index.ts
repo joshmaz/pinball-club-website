@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
             result = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=${page}`);
           } catch (error) {
             const message = error instanceof Error ? error.message : "";
-            if (/\\b429\\b|too many attempts/i.test(message)) {
+            if (/429|too many attempts/i.test(message)) {
               warnings.push("Match Play rate-limited this scan. Some results may be missing; wait a few minutes and try again.");
               rateLimited = true;
               break;
@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
           if (payload?.data && typeof payload.data === "object") discovered.set(id, payload.data as Record<string, unknown>);
         } catch (error) {
           const message = error instanceof Error ? error.message : "";
-          if (/\\b429\\b|too many attempts/i.test(message)) {
+          if (/429|too many attempts/i.test(message)) {
             warnings.push("Match Play rate-limited this scan. Some linked events may not have been checked; wait a few minutes and try again.");
             rateLimited = true;
             break;
