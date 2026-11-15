@@ -275,7 +275,10 @@ Deno.serve(async (req) => {
           warnings.push(`Sources disagreed on ${review.conflicts.join(", ")}; no update was suggested for those fields.`);
         }
         if (review.missingFields.length) {
-          warnings.push("Kineticist explicitly states the release month and year for a blank release date. The suggested full date uses the first of the month because no day is stated.");
+          const yearOnlyReleaseDate = review.missingFields.some((field) => /manufacture year .* only/i.test(field.reason));
+          warnings.push(yearOnlyReleaseDate
+            ? "Kineticist gives only a manufacture year for the blank release date. January 1 is a low-confidence placeholder so the year can be entered; no release month or day was supplied."
+            : "Kineticist explicitly states the release month and year for a blank release date. The suggested full date uses the first of the month because no day is stated.");
         }
 
         if (missingFields.length) {
@@ -1220,7 +1223,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
         : null;
       const opdbTimingDiffers = Boolean(
         opdbManufactureDate
-        && /^\\d{4}-\\d{2}-\\d{2}$/.test(opdbManufactureDate)
+        && /^\d{4}-\d{2}-\d{2}$/.test(opdbManufactureDate)
         && opdbManufactureDate.slice(0, 7) !== releaseMonth.value.slice(0, 7)
       );
       const dateReason = releaseMonth.kind === "release"
@@ -1237,6 +1240,26 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
         `${dateReason}${sourceComparison} The source gives month and year, not a day; the suggested date uses the first of that month.`,
         releaseMonth.kind === "release" && !opdbTimingDiffers ? "medium" : "low",
       );
+    } else if (!game.release_date) {
+      const manufactureYear = String(data.first_manufacture_year ?? "").trim();
+      if (/^(?:19|20)\d{2}$/.test(manufactureYear)) {
+        const opdbManufactureDate = typeof opdb?.manufacture_date === "string"
+          ? opdb.manufacture_date.slice(0, 10)
+          : null;
+        const opdbComparison = opdbManufactureDate
+          ? opdbManufactureDate.slice(0, 4) === manufactureYear
+            ? ` OPDB lists manufacture date ${opdbManufactureDate}.`
+            : ` OPDB lists manufacture date ${opdbManufactureDate}, which gives a different year.`
+          : "";
+        add(
+          "releaseDate",
+          `${manufactureYear}-01-01`,
+          "Kineticist API",
+          references.kineticistUrl,
+          `Kineticist lists manufacture year ${manufactureYear} only; no release month or day is supplied. January 1 is a low-confidence placeholder to store the year, not a claimed release date.${opdbComparison}`,
+          "low",
+        );
+      }
     }
   }
 
