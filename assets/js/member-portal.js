@@ -550,6 +550,10 @@
     return matchplayEventRequest({ mode: "discover", scope: scope, value: value, page: page });
   }
 
+  function scanMatchplayEvents() {
+    return matchplayEventRequest({ mode: "scan" });
+  }
+
   async function saveEventForAdmin(eventInput) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1407,6 +1411,7 @@
     listEventsForAdmin: listEventsForAdmin,
     reviewMatchplayTournament: reviewMatchplayTournament,
     discoverMatchplayTournaments: discoverMatchplayTournaments,
+    scanMatchplayEvents: scanMatchplayEvents,
     saveEventForAdmin: saveEventForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
     gamesEditorLoad: gamesEditorLoad,
