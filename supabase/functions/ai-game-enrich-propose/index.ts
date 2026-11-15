@@ -257,68 +257,66 @@ Deno.serve(async (req) => {
       } else if (evidence.some((item) => item.verificationMethod === "operator")) {
         warnings.push("You confirmed these links match the game. Provider pages are not fetched automatically; link suggestions use the registered OPDB and Kineticist data sources.");
       }
-    } else if (action === "metadata") {
+    } else if (action === "metadata" || action === "metadata_review") {
       evidence = referenceEvidence(references);
       const verifiedEvidence = evidence.filter((item) => item.verified && item.excerpt.length >= 40);
+      const review = buildMetadataReviewSuggestions(game, references);
       const missingFields = metadataFieldsMissing(game);
+      const missingSuggestions: ProposalField[] = [];
+
       if (!verifiedEvidence.length) {
         status = "unavailable";
-        warnings.push("No OPDB or Kineticist catalog evidence is available for this game. Refresh its source records or fill the missing fields manually; no metadata was changed.");
-      } else if (!missingFields.length) {
-        status = "unavailable";
-        warnings.push("The supported metadata fields are already filled. No values were changed.");
+        warnings.push("No OPDB or Kineticist catalog evidence is available for this game. Refresh its source records or fill metadata manually; no suggestions were made.");
       } else {
-        const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || Deno.env.get("LLM_API_KEY") || "";
-        if (!apiKey) {
-          status = "unavailable";
-          warnings.push("LLM unavailable: missing API key. No metadata suggestions were generated.");
-        } else {
-          const evidenceText = JSON.stringify(verifiedEvidence.map((item) => ({
-            source: item.provider,
-            url: item.url || null,
-            excerpt: item.excerpt,
-          })));
-          const prompt = buildMetadataPrompt(game, missingFields, evidenceText);
-          const primaryModel = Deno.env.get("LLM_PRIMARY_MODEL") || "gpt-4o-mini";
-          const secondaryModel = Deno.env.get("LLM_SECONDARY_MODEL") || "gpt-4.1-mini";
-          let generated = await callOpenAI(primaryModel, prompt, apiKey);
-          if (!generated.ok && shouldFallback(generated.status)) {
-            generated = await callOpenAI(secondaryModel, prompt, apiKey);
-            if (generated.ok) fallbackUsed.value = true;
-          }
-          if (!generated.ok) {
-            status = "unavailable";
-            warnings.push(generated.reason || "Metadata suggestions could not be generated.");
+        if (review.checked) {
+          warnings.push(`Compared ${review.checked} populated fields: ${review.matched} match the catalog records and ${review.fields.length} have reviewable differences.`);
+        }
+        if (review.conflicts.length) {
+          warnings.push(`Sources disagreed on ${review.conflicts.join(", ")}; no update was suggested for those fields.`);
+        }
+
+        if (missingFields.length) {
+          const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || Deno.env.get("LLM_API_KEY") || "";
+          if (!apiKey) {
+            warnings.push("LLM unavailable: missing API key. Existing values were still checked; missing-field suggestions were not generated.");
           } else {
-            modelName = fallbackUsed.value ? secondaryModel : primaryModel;
-            fields = parseMetadataSuggestions(generated.text, game, missingFields, verifiedEvidence);
-            if (!fields.length) {
-              status = "unavailable";
-              warnings.push("The supplied material did not clearly support values for the missing metadata fields.");
+            const evidenceText = JSON.stringify(verifiedEvidence.map((item) => ({
+              source: item.provider,
+              url: item.url || null,
+              excerpt: item.excerpt,
+            })));
+            const prompt = buildMetadataPrompt(game, missingFields, evidenceText);
+            const primaryModel = Deno.env.get("LLM_PRIMARY_MODEL") || "gpt-4o-mini";
+            const secondaryModel = Deno.env.get("LLM_SECONDARY_MODEL") || "gpt-4.1-mini";
+            let generated = await callOpenAI(primaryModel, prompt, apiKey);
+            if (!generated.ok && shouldFallback(generated.status)) {
+              generated = await callOpenAI(secondaryModel, prompt, apiKey);
+              if (generated.ok) fallbackUsed.value = true;
+            }
+            if (!generated.ok) {
+              warnings.push(generated.reason || "Missing-field suggestions could not be generated. Existing values were still checked.");
             } else {
-              status = "needs_review";
-              warnings.push("Suggestions only fill blank metadata. Review each value and source, then apply selected values to the form and save the game.");
+              modelName = fallbackUsed.value ? secondaryModel : primaryModel;
+              missingSuggestions.push(...parseMetadataSuggestions(generated.text, game, missingFields, verifiedEvidence));
+              if (!missingSuggestions.length) {
+                warnings.push("The catalog evidence did not clearly support suggestions for the remaining blank fields.");
+              }
             }
           }
         }
-      }
-    } else if (action === "metadata_review") {
-      evidence = referenceEvidence(references);
-      const review = buildMetadataReviewSuggestions(game, references);
-      fields = review.fields;
-      if (!review.checked) {
-        status = "unavailable";
-        warnings.push("No populated supported metadata fields could be compared with an available OPDB or Kineticist record.");
-      } else if (review.fields.length) {
-        status = "needs_review";
-        warnings.push(`Compared ${review.checked} populated fields: ${review.matched} match the structured records and ${review.fields.length} have reviewable differences.`);
-        warnings.push("Select any proposed values to copy them into the form. Nothing is saved until you review and save the game.");
-      } else {
-        status = "ok";
-        warnings.push(`The ${review.checked} populated fields checked match available structured records; no changes were suggested.`);
-      }
-      if (review.conflicts.length) {
-        warnings.push(`Sources disagreed on ${review.conflicts.join(", ")}; no update was suggested for those fields.`);
+
+        fields = [...review.fields, ...missingSuggestions];
+        if (fields.length) {
+          status = "needs_review";
+          warnings.push("Review each proposed update or missing value, select the fields you want, and apply them to the form. Nothing is saved until you use Save game.");
+        } else if (review.checked) {
+          status = "ok";
+          warnings.push(`The ${review.checked} populated fields checked match available catalog records; no metadata changes were suggested.`);
+          if (missingFields.length) warnings.push("No missing-field values were confidently supported by the available catalog evidence.");
+        } else {
+          status = "unavailable";
+          warnings.push("No metadata suggestions are ready. Review the source evidence and fill any gaps manually if needed.");
+        }
       }
     } else {
       evidence = [...referenceEvidence(references), ...operatorConfirmedSourceEvidence(game, body.operatorVerifiedSources)];
