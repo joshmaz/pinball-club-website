@@ -2549,6 +2549,7 @@
       }
     });
     panel.appendChild(fieldRow("Description notes (optional)", notes));
+    panel.appendChild(contextCount);
     var includeCurrentDescriptionRow = el("div", { className: "member-games-checkbox-row" });
     var includeCurrentDescriptionCheckbox = el("input", { type: "checkbox", id: "mg-ai-include-current-description" });
     includeCurrentDescriptionCheckbox.checked = true;
@@ -2558,7 +2559,6 @@
       text: "Include current Description text (including unsaved edits)",
     }));
     panel.appendChild(includeCurrentDescriptionRow);
-    panel.appendChild(contextCount);
 
     var actions = el("div", { className: "member-games-form-actions" });
     function addActionButton(id, label, action) {
