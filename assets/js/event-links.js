@@ -1,6 +1,6 @@
 /* Shared link labels, safe presentation, and the repeatable event editor. */
 (function (root) {
-  const MAX_LINKS = 6;
+  const MAX_LINKS = 7;
   const limitMessage = `Events support up to ${MAX_LINKS} external links. Remove a link before adding another.`;
   function safeUrl(value) {
     try {
