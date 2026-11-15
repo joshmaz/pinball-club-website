@@ -1,5 +1,5 @@
 (function () {
-  var MAX_AI_CONTEXT_CHARS = 15000;
+  var MAX_AI_CONTEXT_CHARS = 5000;
   var GAMES_ROLE_CSV =
     (window.SNHMemberPortal && window.SNHMemberPortal.rolesToCsv && window.SNHMemberPortal.rolesToCsv(
       (window.SNHMemberPortal.ROLE_GROUPS && window.SNHMemberPortal.ROLE_GROUPS.GAMES_ACCESS) ||
@@ -66,10 +66,13 @@
   var partyLinkWrapEl = null;
   var aiWrapEl = null;
   var aiStatusEl = null;
+  var aiMetadataStatusEl = null;
   var aiSourceStatusEl = null;
   var aiProposalBodyEl = null;
+  var aiMetadataProposalBodyEl = null;
   var aiSourceProposalBodyEl = null;
   var aiApplyBtnEl = null;
+  var aiSourceApplyBtnEl = null;
   var aiProposalData = null;
   var aiDescriptionRegenCount = 0;
   var aiOperatorVerifiedSourcesByGame = Object.create(null);
@@ -315,6 +318,7 @@
     manualWrapEl.appendChild(fieldRow("Override note", textInput("mg-manual-note", "")));
     sourceMetadataPanel.appendChild(manualWrapEl);
     metadataPanel.appendChild(wrapCollapsible("Imported & location data", sourceMetadataPanel));
+    metadataPanel.appendChild(buildMetadataAssistantScaffold());
     formEl.appendChild(wrapCollapsible("Game metadata", metadataPanel));
 
     var linksPanel = el("div", { className: "member-games-metadata member-games-collapsible-panel" });
@@ -325,12 +329,12 @@
     linksPanel.appendChild(buildSourceAssistantScaffold());
     formEl.appendChild(wrapCollapsible("Third-party links", linksPanel));
 
-    formEl.appendChild(buildReviewScaffolds());
     formEl.appendChild(fieldRow(
       "Brief public description of our machine",
       textareaInput("mg-details", "")
     ));
     formEl.appendChild(el("p", { className: "member-games-help", text: "Shown on the game card and About our machine. Keep it brief, specific, and supported by evidence." }));
+    formEl.appendChild(buildReviewScaffolds());
 
     stintsEl = el("div", { className: "member-games-stints member-games-collapsible-panel" });
     stintsSectionEl = wrapCollapsible("Location stints", stintsEl);
@@ -2117,8 +2121,10 @@
   }
 
   function setAiStatus(msg) {
-    var isSourceAction = aiProposalData && aiProposalData.action === "sources";
-    var target = isSourceAction ? aiSourceStatusEl : aiStatusEl;
+    var action = aiProposalData && aiProposalData.action;
+    var target = action === "sources" ? aiSourceStatusEl
+      : (action === "metadata" || action === "metadata_review") ? aiMetadataStatusEl
+      : aiStatusEl;
     if (target) target.textContent = msg || "";
   }
 
@@ -2128,9 +2134,12 @@
     var notesInput = document.getElementById("mg-ai-notes");
     if (notesInput) notesInput.value = "";
     if (aiProposalBodyEl) aiProposalBodyEl.replaceChildren();
+    if (aiMetadataProposalBodyEl) aiMetadataProposalBodyEl.replaceChildren();
     if (aiSourceProposalBodyEl) aiSourceProposalBodyEl.replaceChildren();
     if (aiApplyBtnEl) aiApplyBtnEl.hidden = true;
+    if (aiSourceApplyBtnEl) aiSourceApplyBtnEl.hidden = true;
     if (aiStatusEl) aiStatusEl.textContent = "";
+    if (aiMetadataStatusEl) aiMetadataStatusEl.textContent = "";
     if (aiSourceStatusEl) aiSourceStatusEl.textContent = "";
   }
 
@@ -2143,7 +2152,10 @@
 
   function renderAiProposal(proposal) {
     var isSourceAction = proposal && proposal.action === "sources";
-    var targetBody = isSourceAction ? aiSourceProposalBodyEl : aiProposalBodyEl;
+    var isMetadataAction = proposal && (proposal.action === "metadata" || proposal.action === "metadata_review");
+    var targetBody = isSourceAction ? aiSourceProposalBodyEl
+      : isMetadataAction ? aiMetadataProposalBodyEl
+      : aiProposalBodyEl;
     if (!targetBody) return;
     targetBody.replaceChildren();
     aiProposalData = proposal || null;
@@ -2355,19 +2367,18 @@
         targetBody.appendChild(row);
     });
 
-    if (aiApplyBtnEl) {
-      var hasApplyableFields = fields.some(function (field) {
-        return field && (isAiProposalLinkField(field.field) || !!aiMetadataFieldTarget(field.field));
-      });
-      var isSourceAction = proposal.action === "sources";
-      var isMetadataAction = proposal.action === "metadata";
-      var isMetadataReviewAction = proposal.action === "metadata_review";
-      aiApplyBtnEl.hidden = !hasApplyableFields || (!isSourceAction && !isMetadataAction && !isMetadataReviewAction);
-      if (!aiApplyBtnEl.hidden) {
-        aiApplyBtnEl.textContent = isMetadataReviewAction
+    var hasApplyableFields = fields.some(function (field) {
+      return field && (isAiProposalLinkField(field.field) || !!aiMetadataFieldTarget(field.field));
+    });
+    var isMetadataReviewAction = proposal.action === "metadata_review";
+    var applyButton = isSourceAction ? aiSourceApplyBtnEl : isMetadataAction ? aiApplyBtnEl : null;
+    if (applyButton) {
+      applyButton.hidden = !hasApplyableFields;
+      if (!applyButton.hidden) {
+        applyButton.textContent = isMetadataReviewAction
           ? "Apply selected updates to form"
           : isMetadataAction ? "Apply selected metadata to form" : "Apply selected source links";
-        targetBody.appendChild(aiApplyBtnEl);
+        targetBody.appendChild(applyButton);
       }
     }
   }
@@ -2375,18 +2386,20 @@
   async function runAiPropose(opts) {
     if (!currentGameId || !window.SNHMemberPortal || !window.SNHMemberPortal.aiGameEnrichPropose) return;
     if (aiBusy) return;
-    var contextValue = String((document.getElementById("mg-ai-notes") || {}).value || "");
+    var action = (opts && opts.action) || "description";
+    var contextValue = action === "description"
+      ? String((document.getElementById("mg-ai-notes") || {}).value || "")
+      : "";
     if (contextValue.length > MAX_AI_CONTEXT_CHARS) {
-      setAiStatus("Additional game information exceeds the 15,000-character limit. Shorten it before asking the assistant.");
+      setAiStatus("Description notes exceed the 5,000-character limit. Shorten them before asking the assistant.");
       return;
     }
     aiBusy = true;
-    var action = (opts && opts.action) || "description";
     var labels = {
       sources: "Finding link suggestions…",
-      metadata: "Reading supplied context for missing metadata…",
+      metadata: "Checking OPDB and Kineticist records for missing metadata…",
       metadata_review: "Checking existing metadata…",
-      description: "Drafting from supplied facts…",
+      description: "Drafting from source records and description notes…",
     };
     aiProposalData = { action: action };
     setAiStatus(labels[action] || "Working…");
@@ -2516,12 +2529,12 @@
 
   function buildReviewScaffolds() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Checks OPDB and Kineticist records to review metadata, suggest missing values, or draft a description. Your notes inform missing-field suggestions and drafts. Review before applying; nothing saves automatically. Notes are sent to the AI provider. Don’t include secrets or private member information." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Use OPDB and Kineticist records to draft a short public description. Optional notes can add game facts or rough copy; review drafts before using them. Notes are sent to the AI provider, so don’t include secrets or private member information." }));
     var notes = textareaInput("mg-ai-notes", "");
     notes.setAttribute("rows", "4");
     notes.setAttribute("maxlength", String(MAX_AI_CONTEXT_CHARS));
-    notes.setAttribute("placeholder", "Game-specific facts, distinctive features, gameplay notes, reference excerpts, or rough description copy…");
-    var contextCount = el("p", { className: "member-games-help member-games-ai-context-count", id: "mg-ai-context-count", text: "0 / 15,000" });
+    notes.setAttribute("placeholder", "Gameplay details, distinctive features, or rough description text…");
+    var contextCount = el("p", { className: "member-games-help member-games-ai-context-count", id: "mg-ai-context-count", text: "0 / 5,000" });
     notes.setAttribute("aria-describedby", contextCount.id);
     function updateContextCount() {
       contextCount.textContent = notes.value.length.toLocaleString() + " / " + MAX_AI_CONTEXT_CHARS.toLocaleString();
@@ -2533,10 +2546,10 @@
       var selectionLength = Math.max(0, notes.selectionEnd - notes.selectionStart);
       if (notes.value.length - selectionLength + pastedText.length > MAX_AI_CONTEXT_CHARS) {
         event.preventDefault();
-        setAiStatus("That paste would exceed the 15,000-character limit. Shorten the information and paste it again.");
+        setAiStatus("That paste would exceed the 5,000-character limit. Shorten the description notes and paste again.");
       }
     });
-    panel.appendChild(fieldRow("Additional game information (optional)", notes));
+    panel.appendChild(fieldRow("Description notes (optional)", notes));
     panel.appendChild(contextCount);
 
     var actions = el("div", { className: "member-games-form-actions" });
@@ -2551,8 +2564,6 @@
       });
       actions.appendChild(button);
     }
-    addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
-    addActionButton("mg-ai-metadata-review", "Check existing metadata", "metadata_review");
     addActionButton("mg-ai-description", "Draft our description", "description");
     var includeCurrentDescriptionRow = el("div", { className: "member-games-checkbox-row" });
     var includeCurrentDescriptionCheckbox = el("input", { type: "checkbox", id: "mg-ai-include-current-description" });
@@ -2592,16 +2603,41 @@
     ], "club");
     draftOptions.appendChild(draftOptionControls);
     actions.appendChild(draftOptions);
-    aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
-    aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     panel.appendChild(actions);
     aiStatusEl = el("p", { className: "member-games-help", id: "mg-ai-status" });
     aiProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-proposal" });
     panel.appendChild(aiStatusEl);
     panel.appendChild(aiProposalBodyEl);
-    reviewScaffoldsEl = wrapCollapsible("Metadata & description assistant", panel, "member-games-review-scaffolds");
+    reviewScaffoldsEl = wrapCollapsible("Description assistant", panel, "member-games-review-scaffolds");
     aiWrapEl = reviewScaffoldsEl;
     return reviewScaffoldsEl;
+  }
+
+  function buildMetadataAssistantScaffold() {
+    var panel = el("section", { className: "member-games-collapsible-panel" });
+    panel.appendChild(el("p", { className: "member-games-help", text: "Suggest blank values or check existing metadata against exact OPDB and Kineticist catalog records. Review each result before applying; nothing is saved automatically." }));
+    var actions = el("div", { className: "member-games-form-actions" });
+    function addActionButton(id, label, action) {
+      var button = el("button", { type: "button", className: "members-sidebar-link", id: id, text: label });
+      button.addEventListener("click", function () {
+        if (!currentGameId || mode !== "edit") {
+          setAiStatus("Select a saved game first.");
+          return;
+        }
+        void runAiPropose({ action: action });
+      });
+      actions.appendChild(button);
+    }
+    addActionButton("mg-ai-metadata", "Suggest missing metadata", "metadata");
+    addActionButton("mg-ai-metadata-review", "Check existing metadata", "metadata_review");
+    panel.appendChild(actions);
+    aiApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-apply", text: "Apply selected suggestions", hidden: "hidden" });
+    aiApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
+    aiMetadataStatusEl = el("p", { className: "member-games-help", id: "mg-ai-metadata-status" });
+    aiMetadataProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-metadata-proposal" });
+    panel.appendChild(aiMetadataStatusEl);
+    panel.appendChild(aiMetadataProposalBodyEl);
+    return panel;
   }
 
   function buildSourceAssistantScaffold() {
@@ -2616,6 +2652,8 @@
       void runAiPropose({ action: "sources" });
     });
     panel.appendChild(button);
+    aiSourceApplyBtnEl = el("button", { type: "button", className: "members-sidebar-link", id: "mg-ai-source-apply", text: "Apply selected source links", hidden: "hidden" });
+    aiSourceApplyBtnEl.addEventListener("click", function () { void onApplyAiSelection(); });
     aiSourceStatusEl = el("p", { className: "member-games-help", id: "mg-ai-source-status" });
     aiSourceProposalBodyEl = el("div", { className: "member-games-ai-proposal", id: "mg-ai-source-proposal" });
     panel.appendChild(aiSourceStatusEl);
