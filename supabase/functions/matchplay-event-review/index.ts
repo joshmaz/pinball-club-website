@@ -164,7 +164,11 @@ Deno.serve(async (req) => {
         compare("location", "Location", tournament.location);
         compare("description", "Description", tournament.description);
         compare("matchplay_format", "Tournament format", tournament.matchplay_format);
-        if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, source: event.source, published: event.published }, match: matchLabel, changes });
+        const eventLinks = Array.isArray(event.external_links) ? event.external_links as Array<Record<string, unknown>> : [];
+        if (!eventLinks.some(link => link && link.url === tournament.url) && eventLinks.length < 5) {
+          changes.push({ field: "external_links", label: "Match Play link", current: eventLinks, proposed: [...eventLinks, { url: tournament.url, label: "Match Play" }] });
+        }
+        if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links, source: event.source, published: event.published }, match: matchLabel, changes });
         else unchanged += 1;
       }
       return json({ scanned_at: new Date().toISOString(), cache: cacheStates, additions, updates, possible_matches: possibleMatches, unchanged });
