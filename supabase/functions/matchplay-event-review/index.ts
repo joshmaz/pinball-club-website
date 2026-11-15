@@ -35,6 +35,7 @@ function normalizedTournament(row: Record<string, unknown>, fallbackId?: string)
   const location = row.location && typeof row.location === "object" ? row.location as Record<string, unknown> : {};
   const organizer = row.organizer && typeof row.organizer === "object" ? row.organizer as Record<string, unknown> : {};
   const series = row.series && typeof row.series === "object" ? row.series as Record<string, unknown> : {};
+  const seriesId = positiveId(row.seriesId) || positiveId(series.seriesId) || positiveId(series.id);
   return {
     id,
     title: String(row.name || "").slice(0, 300),
@@ -46,8 +47,9 @@ function normalizedTournament(row: Record<string, unknown>, fallbackId?: string)
     status: String(row.status || "").slice(0, 40),
     organizer_id: positiveId(row.organizerId),
     organizer_name: String(organizer.name || "").slice(0, 100),
-    series_id: positiveId(row.seriesId),
+    series_id: seriesId,
     series_name: String(series.name || "").slice(0, 120),
+    series_url: seriesId ? `https://app.matchplay.events/series/${seriesId}` : "",
     updated_at: typeof row.updatedAt === "string" ? row.updatedAt : null,
   };
 }
@@ -224,8 +226,16 @@ Deno.serve(async (req) => {
         compare("description", "Description", tournament.description);
         compare("matchplay_format", "Tournament format", tournament.matchplay_format);
         const eventLinks = Array.isArray(event.external_links) ? event.external_links as Array<Record<string, unknown>> : [];
-        if (!eventLinks.some(link => link && link.url === tournament.url) && eventLinks.length < 5) {
-          changes.push({ field: "external_links", label: "Match Play link", current: eventLinks, proposed: [...eventLinks, { url: tournament.url, label: "Match Play" }] });
+        const proposedLinks = [...eventLinks];
+        const addLink = (url: string, label: string) => {
+          if (url && proposedLinks.length < 5 && !proposedLinks.some(link => link && link.url === url)) {
+            proposedLinks.push({ url, label });
+          }
+        };
+        addLink(tournament.url, "Match Play");
+        addLink(tournament.series_url, "Match Play series");
+        if (proposedLinks.length !== eventLinks.length) {
+          changes.push({ field: "external_links", label: "Match Play links", current: eventLinks, proposed: proposedLinks });
         }
         if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links, source: event.source, published: event.published, all_day: event.all_day, time_known: event.time_known, ends_at: event.ends_at, previous_schedule: event.previous_schedule, reschedule_note: event.reschedule_note, lifecycle_status: event.lifecycle_status }, match: matchLabel, changes });
         else unchanged += 1;
@@ -313,8 +323,11 @@ Deno.serve(async (req) => {
       matchplay_format: String(data.type || "").slice(0, 120),
       organizer_id: positiveId(data.organizerId),
       organizer_name: String((data.organizer && typeof data.organizer === "object" ? (data.organizer as Record<string, unknown>).name : "") || "").slice(0, 100),
-      series_id: data.seriesId ?? null,
+      series_id: positiveId(data.seriesId) || positiveId(data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).id : ""),
       series_name: String((data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).name : "") || "").slice(0, 120),
+      series_url: (positiveId(data.seriesId) || positiveId(data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).id : ""))
+        ? `https://app.matchplay.events/series/${positiveId(data.seriesId) || positiveId(data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).id : "")}`
+        : "",
       updated_at: typeof data.updatedAt === "string" ? data.updatedAt : null,
     };
 
