@@ -419,13 +419,6 @@
               </span>
               <button type="submit">List tournaments</button>
             </form>
-            <section class="member-matchplay-scan" aria-labelledby="member-matchplay-scan-title">
-              <h4 id="member-matchplay-scan-title">Find club additions and updates</h4>
-              <p class="member-form-hint">Search Match Play for SNHPC tournaments and check linked upcoming or in-progress events.</p>
-              <button type="button" class="club-button" id="member-matchplay-scan">Find additions and updates</button>
-              <p id="member-matchplay-scan-status" class="members-page-status" role="status" aria-live="polite"></p>
-              <div id="member-matchplay-scan-results" class="member-matchplay-scan-results" hidden></div>
-            </section>
                         <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
             <div id="member-matchplay-discover-results" hidden>
               <div class="members-admin-table-wrap">
@@ -441,6 +434,13 @@
                 <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
               </p>
             </div>
+            <section class="member-matchplay-scan" aria-labelledby="member-matchplay-scan-title">
+              <h4 id="member-matchplay-scan-title">Find club additions and updates</h4>
+              <p class="member-form-hint">Search Match Play for SNHPC tournaments and check linked upcoming or in-progress events.</p>
+              <button type="button" class="club-button" id="member-matchplay-scan">Find additions and updates</button>
+              <p id="member-matchplay-scan-status" class="members-page-status" role="status" aria-live="polite"></p>
+              <div id="member-matchplay-scan-results" class="member-matchplay-scan-results" hidden></div>
+            </section>
             <details class="member-matchplay-direct-search"><summary>I already have a Match Play tournament link or ID</summary>
             <h4>Review a tournament by link or ID</h4>
             <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
@@ -1931,6 +1931,8 @@
       matchplayDiscoverRows.addEventListener("click", function (event) {
         var button = event.target.closest("button[data-matchplay-tournament-id]");
         if (!button) return;
+        var reviewDetails = matchplayReviewForm.closest("details");
+        if (reviewDetails) reviewDetails.open = true;
         matchplayTournamentInput.value = button.getAttribute("data-matchplay-tournament-id");
         matchplayReviewForm.requestSubmit();
         matchplayReviewForm.scrollIntoView({ behavior: "smooth", block: "start" });
