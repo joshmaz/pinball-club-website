@@ -38,6 +38,7 @@
   <script src="assets/js/game-image-delivery.js"></script>
 <script src="assets/js/photo-conversion.js"></script>
 <script src="assets/js/member-portal.js"></script>
+<script src="assets/js/member-events-workflow.js"></script>
 <script src="assets/js/member-account-deletion.js"></script>
 <script src="assets/js/member-membership-trends.js"></script>
   <script src="assets/js/member-role-presentation.js"></script>
@@ -400,6 +401,47 @@
 
           <section id="member-events-import-panel" aria-labelledby="member-events-import-title" hidden>
             <h3 id="member-events-import-title">Import from Match Play</h3>
+            <p class="member-form-hint">Search for a tournament by title, or run a club scan to find new and changed Match Play events.</p>
+            
+
+            <h4>Search Match Play tournaments</h4>
+            <p class="member-form-hint">Search by title, organizer ID, or series ID. You can also search SNHPC tournaments and compare them with the club list.</p>
+            <form id="member-matchplay-discover-form" class="members-profile-form">
+              <label for="member-matchplay-discover-scope">Find by</label>
+              <select id="member-matchplay-discover-scope">
+                <option value="title">Tournament title</option>
+                <option value="owner">Organizer MatchPlay ID</option>
+                <option value="series">Series MatchPlay ID</option>
+              </select>
+              <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label">Title words</label>
+              <span class="members-admin-search-wrap">
+                <input id="member-matchplay-discover-value" type="search" autocomplete="off" required>
+                <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
+              </span>
+              <button type="submit">List tournaments</button>
+            </form>
+            <section class="member-matchplay-scan" aria-labelledby="member-matchplay-scan-title">
+              <h4 id="member-matchplay-scan-title">Find club additions and updates</h4>
+              <p class="member-form-hint">Search Match Play for SNHPC tournaments and check linked upcoming or in-progress events.</p>
+              <button type="button" class="club-button" id="member-matchplay-scan">Find additions and updates</button>
+              <p id="member-matchplay-scan-status" class="members-page-status" role="status" aria-live="polite"></p>
+              <div id="member-matchplay-scan-results" class="member-matchplay-scan-results" hidden></div>
+            </section>
+                        <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
+            <div id="member-matchplay-discover-results" hidden>
+              <div class="members-admin-table-wrap">
+                <table class="members-admin-table">
+                  <caption>MatchPlay tournaments</caption>
+                  <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+                  <tbody id="member-matchplay-discover-rows"></tbody>
+                </table>
+              </div>
+              <p class="members-admin-toolbar">
+                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
+                <span id="member-matchplay-discover-page"></span>
+                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
+              </p>
+            </div>
             <details class="member-matchplay-direct-search"><summary>I already have a Match Play tournament link or ID</summary>
             <h4>Review a tournament by link or ID</h4>
             <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
@@ -427,38 +469,6 @@
             </div>
 
             </details>
-
-            <h4>Search Match Play tournaments</h4>
-            <p class="member-form-hint">Search by title, organizer ID, or series ID. You can also search SNHPC tournaments and compare them with the club list.</p>
-            <form id="member-matchplay-discover-form" class="members-profile-form">
-              <label for="member-matchplay-discover-scope">Find by</label>
-              <select id="member-matchplay-discover-scope">
-                <option value="title">Tournament title</option>
-                <option value="owner">Organizer MatchPlay ID</option>
-                <option value="series">Series MatchPlay ID</option>
-              </select>
-              <label for="member-matchplay-discover-value" id="member-matchplay-discover-value-label">Title words</label>
-              <span class="members-admin-search-wrap">
-                <input id="member-matchplay-discover-value" type="search" autocomplete="off" required>
-                <button type="button" id="member-matchplay-discover-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear tournament title search" hidden>×</button>
-              </span>
-              <button type="submit">List tournaments</button>
-            </form>
-            <p id="member-matchplay-discover-status" class="members-page-status" role="status" aria-live="polite"></p>
-            <div id="member-matchplay-discover-results" hidden>
-              <div class="members-admin-table-wrap">
-                <table class="members-admin-table">
-                  <caption>MatchPlay tournaments</caption>
-                  <thead><tr><th scope="col">Tournament</th><th scope="col">Date</th><th scope="col">Organizer</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
-                  <tbody id="member-matchplay-discover-rows"></tbody>
-                </table>
-              </div>
-              <p class="members-admin-toolbar">
-                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-previous">Previous</button>
-                <span id="member-matchplay-discover-page"></span>
-                <button type="button" class="members-sidebar-link" id="member-matchplay-discover-next">Next</button>
-              </p>
-            </div>
           </section>
 
           <section id="member-events-editor" aria-labelledby="member-events-editor-title" hidden>
