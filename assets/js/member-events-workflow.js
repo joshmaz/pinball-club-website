@@ -63,6 +63,9 @@
     status.textContent = "Checked Match Play at " + (Number.isFinite(date.getTime())
       ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
       : "the latest available time") + ".";
+    if (Array.isArray(data.warnings) && data.warnings.length) {
+      status.textContent += " " + data.warnings.join(" ");
+    }
 
     var counts = node("p", "member-matchplay-scan-summary");
     counts.textContent = data.additions.length + " possible additions · " + data.updates.length +
