@@ -1713,6 +1713,9 @@
         var tdTitle = document.createElement("td");
         tdTitle.textContent = (row.title || "(untitled)") + (row.lifecycle_status && row.lifecycle_status !== "scheduled" ? " · " + row.lifecycle_status : "") + (row.previous_schedule ? " · Rescheduled" : "");
 
+        var tdFormat = document.createElement("td");
+        tdFormat.textContent = row.matchplay_format ? String(row.matchplay_format).replace(/_/g, " ").replace(/\\b\\w/g, function (letter) { return letter.toUpperCase(); }) : "—";
+
         var tdDate = document.createElement("td");
         tdDate.textContent = row.all_day ? String(row.starts_at || "").slice(0, 10) + " · All day" : window.SNHMemberPortal.formatDate(row.starts_at);
 
@@ -1754,6 +1757,7 @@
         }
 
         tr.appendChild(tdTitle);
+        tr.appendChild(tdFormat);
         tr.appendChild(tdDate);
         tr.appendChild(tdLoc);
         tr.appendChild(tdSource);
@@ -1763,9 +1767,28 @@
       }
     }
 
+    function getFilteredEventsRows() {
+      var query = trimOrEmpty(memberEventsListSearch && memberEventsListSearch.value).toLowerCase();
+      var scope = memberEventsListScope ? memberEventsListScope.value : "upcoming";
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      return memberEventsAllRows.filter(function (row) {
+        var text = [row.title, row.location, row.matchplay_format].join(" ").toLowerCase();
+        if (query && !text.includes(query)) return false;
+        var start = row.starts_at ? new Date(row.starts_at) : null;
+        var end = row.ends_at ? new Date(row.ends_at) : start;
+        var isPast = !!(start && Number.isFinite(start.getTime()) && end && Number.isFinite(end.getTime()) && end < today);
+        return scope === "past" ? isPast : scope === "all" ? true : !isPast;
+      }).sort(function (a, b) {
+        var at = Date.parse(a.starts_at || ""); var bt = Date.parse(b.starts_at || "");
+        if (scope === "past") return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
+        return (Number.isFinite(at) ? at : Number.MAX_SAFE_INTEGER) - (Number.isFinite(bt) ? bt : Number.MAX_SAFE_INTEGER);
+      });
+    }
+
     function getEventsTotalPages() {
-      if (!memberEventsAllRows.length) return 1;
-      return Math.max(1, Math.ceil(memberEventsAllRows.length / memberEventsPageSize));
+      var rows = getFilteredEventsRows();
+      if (!rows.length) return 1;
+      return Math.max(1, Math.ceil(rows.length / memberEventsPageSize));
     }
 
     function renderEventsPaginationMeta() {
@@ -1785,7 +1808,7 @@
       if (memberEventsPage < 1) memberEventsPage = 1;
       var start = (memberEventsPage - 1) * memberEventsPageSize;
       var end = start + memberEventsPageSize;
-      var pageRows = memberEventsAllRows.slice(start, end);
+      var pageRows = getFilteredEventsRows().slice(start, end);
       renderEventsRows(pageRows);
       renderEventsPaginationMeta();
     }
@@ -2182,6 +2205,8 @@
         memberEventsPage = 1;
         renderEventsPage();
       });
+      if (memberEventsListSearch) memberEventsListSearch.addEventListener("input", function () { memberEventsPage = 1; renderEventsPage(); });
+      if (memberEventsListScope) memberEventsListScope.addEventListener("change", function () { memberEventsPage = 1; renderEventsPage(); });
     }
 
     if (memberEventsForm) {
