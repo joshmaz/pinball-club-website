@@ -93,14 +93,15 @@ Deno.serve(async (req) => {
     const getCached = createMatchplayCache(admin, token);
     if (body.mode === "scan") {
       const { data: storedEvents, error: eventsError } = await admin.from("events")
-        .select("id,title,description,location,starts_at,ends_at,external_url,external_links,source,published,lifecycle_status,matchplay_format")
+        .select("id,title,description,location,starts_at,ends_at,all_day,time_known,previous_schedule,reschedule_note,external_url,external_links,source,published,lifecycle_status,matchplay_format")
         .limit(500);
       if (eventsError) throw new Error("Could not read club events");
       const now = Date.now();
       const localEvents = (storedEvents || []).filter((event) => {
         if (event.lifecycle_status === "canceled" || !event.starts_at) return false;
-        const end = event.ends_at ? Date.parse(String(event.ends_at)) : Date.parse(String(event.starts_at));
-        return Number.isFinite(end) && end >= now;
+        const start = Date.parse(String(event.starts_at));
+        const end = event.ends_at ? Date.parse(String(event.ends_at)) : start;
+        return Number.isFinite(start) && (end >= now || start >= now - 24 * 60 * 60 * 1000);
       });
       const byId = new Map<string, Record<string, unknown>>();
       for (const event of localEvents) {
@@ -168,7 +169,7 @@ Deno.serve(async (req) => {
         if (!eventLinks.some(link => link && link.url === tournament.url) && eventLinks.length < 5) {
           changes.push({ field: "external_links", label: "Match Play link", current: eventLinks, proposed: [...eventLinks, { url: tournament.url, label: "Match Play" }] });
         }
-        if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links, source: event.source, published: event.published }, match: matchLabel, changes });
+        if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links, source: event.source, published: event.published, all_day: event.all_day, time_known: event.time_known, ends_at: event.ends_at, previous_schedule: event.previous_schedule, reschedule_note: event.reschedule_note, lifecycle_status: event.lifecycle_status }, match: matchLabel, changes });
         else unchanged += 1;
       }
       return json({ scanned_at: new Date().toISOString(), cache: cacheStates, additions, updates, possible_matches: possibleMatches, unchanged });
