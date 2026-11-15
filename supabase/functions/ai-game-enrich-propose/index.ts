@@ -274,12 +274,6 @@ Deno.serve(async (req) => {
         if (review.conflicts.length) {
           warnings.push(`Sources disagreed on ${review.conflicts.join(", ")}; no update was suggested for those fields.`);
         }
-        if (review.missingFields.length) {
-          const yearOnlyReleaseDate = review.missingFields.some((field) => /manufacture year .* only/i.test(field.reason));
-          warnings.push(yearOnlyReleaseDate
-            ? "Kineticist gives only a manufacture year for the blank release date. January 1 is a low-confidence placeholder so the year can be entered; no release month or day was supplied."
-            : "Kineticist explicitly states the release month and year for a blank release date. The suggested full date uses the first of the month because no day is stated.");
-        }
 
         if (missingFields.length) {
           const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || Deno.env.get("LLM_API_KEY") || "";
@@ -303,7 +297,7 @@ Deno.serve(async (req) => {
               warnings.push(generated.reason || "AI suggestions for other blank metadata fields could not be generated. Existing values and explicit release-date evidence were still checked.");
             } else {
               modelName = fallbackUsed.value ? secondaryModel : primaryModel;
-              missingSuggestions.push(...parseMetadataSuggestions(generated.text, game, missingFields, verifiedEvidence));
+              missingSuggestions.push(...parseMetadataSuggestions(generated.text, game, missingFields, verifiedEvidence, references));
               if (!missingSuggestions.length) {
                 warnings.push("The catalog evidence did not clearly support additional suggestions for the remaining blank metadata fields.");
               }
@@ -1443,6 +1437,7 @@ function parseMetadataSuggestions(
   game: GameRow,
   missing: MetadataFieldKey[],
   evidence: SourceEvidence[],
+  references: GameReferenceData,
 ): ProposalField[] {
   const jsonText = raw.match(/\{[\s\S]*\}/)?.[0];
   if (!jsonText) return [];
@@ -1473,6 +1468,13 @@ function parseMetadataSuggestions(
           }
         }
         if (field === "display") suggestedValue = suggestedValue.toLowerCase();
+        if (field === "manufacturer" || field === "manufacturerFullName") {
+          const canonicalName = exactManufacturerSuggestion(field, references);
+          if (canonicalName
+            && normalizeMetadataReviewComparison(canonicalName) === normalizeMetadataReviewComparison(suggestedValue)) {
+            suggestedValue = canonicalName;
+          }
+        }
       }
       seen.add(field);
       return [{
@@ -1492,6 +1494,20 @@ function parseMetadataSuggestions(
   } catch {
     return [];
   }
+}
+
+function exactManufacturerSuggestion(field: "manufacturer" | "manufacturerFullName", references: GameReferenceData): string | null {
+  if (field === "manufacturer") {
+    return canonicalMetadataReviewValue("manufacturer", references.opdbEntry?.manufacturer);
+  }
+  const payload = references.kineticistPayload;
+  const data = payload && payload.data && typeof payload.data === "object"
+    ? payload.data as Record<string, unknown>
+    : null;
+  const manufacturer = data?.manufacturer && typeof data.manufacturer === "object"
+    ? (data.manufacturer as Record<string, unknown>).name
+    : null;
+  return canonicalMetadataReviewValue("manufacturerFullName", manufacturer);
 }
 
 function buildLinkSuggestions(game: GameRow, references: GameReferenceData): ProposalField[] {
