@@ -43,14 +43,16 @@ session and does not make the page text available to enrichment.
 Metadata suggestions use only the validated OPDB archive and cached Kineticist
 game API response (including credits). Operator notes are only used for
 description drafts and are limited to 5,000 characters. Existing metadata review
-compares supported fields with exact-ID OPDB/Kineticist records; release date
-checks and fills a missing release date when Kineticist description text
-explicitly states a release month and year. A production month can also be
-shown as a lower-confidence candidate, clearly labeled as production timing
-because that may differ from release timing. If its month conflicts with
-OPDB's manufacture date, the OPDB date is included in the review reason and
-confidence is lowered. The date field uses the first of the stated month
-because a day is not supplied.
+compares supported fields with exact-ID OPDB/Kineticist records. For a
+blank release date, an explicit release month and year can produce a
+review-only suggestion. A production month can also be shown as a
+lower-confidence candidate, clearly labeled as production timing because
+that may differ from release timing. If its month conflicts with OPDB's
+manufacture date, the OPDB date is included in the review reason and
+confidence is lowered. When Kineticist supplies only a manufacture year, the
+assistant can offer a low-confidence January 1 placeholder for review, with
+an explanation that no release month or day is known and January 1 does not
+represent a confirmed release date.
 Stale Kineticist data is excluded. A difference is a
 review suggestion, not an assertion that the catalog value is wrong. Other
 conflicting metadata sources are surfaced without choosing a value. Kineticist description text is stripped to plain text,
