@@ -47,11 +47,13 @@ compares supported fields with exact-ID OPDB/Kineticist records; release date
 checks and fills a missing release date when Kineticist description text
 explicitly states a release month and year. A production month can also be
 shown as a lower-confidence candidate, clearly labeled as production timing
-because that may differ from release timing. The date field uses the first of
-the stated month because a day is not supplied.
+because that may differ from release timing. If its month conflicts with
+OPDB's manufacture date, the OPDB date is included in the review reason and
+confidence is lowered. The date field uses the first of the stated month
+because a day is not supplied.
 Stale Kineticist data is excluded. A difference is a
-review suggestion, not an assertion that the catalog value is wrong. Conflicting
-sources are surfaced without choosing a value. Kineticist description text is stripped to plain text,
+review suggestion, not an assertion that the catalog value is wrong. Other
+conflicting metadata sources are surfaced without choosing a value. Kineticist description text is stripped to plain text,
 attributed, treated as untrusted evidence, and paraphrased rather than copied.
 No enrichment suggestion is saved automatically.
 
