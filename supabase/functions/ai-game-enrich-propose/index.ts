@@ -1172,6 +1172,7 @@ type MetadataReviewCandidate = {
   provider: "OPDB" | "Kineticist API";
   url: string;
   reason?: string;
+  confidence?: ProposalConfidence;
 };
 
 function buildMetadataReviewSuggestions(game: GameRow, references: GameReferenceData): {
@@ -1188,12 +1189,13 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     provider: MetadataReviewCandidate["provider"],
     url: string | null,
     reason?: string,
+    confidence: ProposalConfidence = "medium",
   ) => {
     if (!url) return;
     const value = canonicalMetadataReviewValue(field, raw);
     if (!value) return;
     if (!candidates[field]) candidates[field] = [];
-    candidates[field]!.push({ value, provider, url, reason });
+    candidates[field]!.push({ value, provider, url, reason, confidence });
   };
 
   const opdb = references.opdbEntry;
@@ -1213,12 +1215,16 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     add("playerCount", data.player_count, "Kineticist API", references.kineticistUrl);
     const releaseMonth = extractExplicitReleaseMonthYear(data.description);
     if (releaseMonth) {
+      const dateReason = releaseMonth.kind === "release"
+        ? `Kineticist's description explicitly says the game was released in ${releaseMonth.label}.`
+        : `Kineticist's description says the game was produced in ${releaseMonth.label}; production timing can differ from a release date.`;
       add(
         "releaseDate",
         releaseMonth.value,
         "Kineticist API",
         references.kineticistUrl,
-        `Kineticist's description explicitly says the game was released in ${releaseMonth.label}. The source gives month and year, not a day; the suggested date uses the first of that month.`,
+        `${dateReason} The source gives month and year, not a day; the suggested date uses the first of that month.`,
+        releaseMonth.kind === "release" ? "medium" : "low",
       );
     }
   }
@@ -1260,8 +1266,8 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
           field,
           currentValue: null,
           suggestedValue: candidate.value,
-          confidence: "medium",
-          confidenceScore: 0.76,
+          confidence: candidate.confidence || "medium",
+          confidenceScore: candidate.confidence === "low" ? 0.58 : 0.76,
           reason: candidate.reason
             || `The exact ${candidate.provider} record gives an explicit release month and year; the suggested date uses the first of that month because the day is not stated.`,
           sourceType: candidate.provider,
@@ -1283,8 +1289,8 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
       field,
       currentValue: String(currentValue),
       suggestedValue: candidate.value,
-      confidence: "medium",
-      confidenceScore: 0.76,
+      confidence: candidate.confidence || "medium",
+      confidenceScore: candidate.confidence === "low" ? 0.58 : 0.76,
       reason: candidate.reason
         || `The exact ${candidate.provider} record lists ${candidate.value}; compare it with the current value before replacing it.`,
       sourceType: candidate.provider,
@@ -1298,7 +1304,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
   return { fields, missingFields, checked, matched, conflicts };
 }
 
-function extractExplicitReleaseMonthYear(raw: unknown): { value: string; label: string } | null {
+function extractExplicitReleaseMonthYear(raw: unknown): { value: string; label: string; kind: "release" | "production" } | null {
   if (typeof raw !== "string" || !raw.trim()) return null;
   const text = stripHtmlToText(raw).replace(/&nbsp;/gi, " ");
   const months: Record<string, string> = {
@@ -1308,22 +1314,32 @@ function extractExplicitReleaseMonthYear(raw: unknown): { value: string; label: 
     oct: "10", october: "10", nov: "11", november: "11", dec: "12", december: "12",
   };
   const monthPattern = "(January|February|March|April|May|June|July|August|September|October|November|December|Jan\\.?|Feb\\.?|Mar\\.?|Apr\\.?|Jun\\.?|Jul\\.?|Aug\\.?|Sep\\.?|Sept\\.?|Oct\\.?|Nov\\.?|Dec\\.?)";
-  const patterns = [
-    new RegExp("\\b(?:release(?:d)?|introduced|debuted)\\b[^.!?\\n]{0,120}?\\b(?:in\\s+(?:the\\s+)?)?" + monthPattern + "\\s+(?:of\\s+)?((?:19|20)\\d{2})\\b", "i"),
-    new RegExp("\\b" + monthPattern + "\\s+((?:19|20)\\d{2})\\b[^.!?\\n]{0,80}\\b(?:release|released)\\b", "i"),
+  const yearPattern = "((?:19|20)\\d{2})";
+  const patterns: Array<{ regex: RegExp; kind: "release" | "production" }> = [
+    {
+      regex: new RegExp("\\b(?:release(?:d)?|introduced|debuted)\\b[^.!?\\n]{0,120}?\\b(?:in\\s+(?:the\\s+)?)?" + monthPattern + "\\s+(?:of\\s+)?" + yearPattern + "\\b", "i"),
+      kind: "release",
+    },
+    {
+      regex: new RegExp("\\b" + monthPattern + "\\s+" + yearPattern + "\\b[^.!?\\n]{0,80}\\b(?:release|released)\\b", "i"),
+      kind: "release",
+    },
+    {
+      regex: new RegExp("\\b(?:produced|manufactured)\\b[^.!?\\n]{0,120}?\\b(?:in\\s+(?:the\\s+)?)?" + monthPattern + "\\s+(?:of\\s+)?" + yearPattern + "\\b", "i"),
+      kind: "production",
+    },
   ];
-  for (const pattern of patterns) {
-    const match = text.match(pattern);
+  for (const { regex, kind } of patterns) {
+    const match = text.match(regex);
     if (!match) continue;
     const monthName = match[1].replace(/\./g, "").toLowerCase();
     const month = months[monthName];
     const year = match[2];
     if (!month || !year) continue;
-    return { value: year + "-" + month + "-01", label: match[1] + " " + year };
+    return { value: year + "-" + month + "-01", label: match[1] + " " + year, kind };
   }
   return null;
 }
- 
 function canonicalMetadataReviewValue(field: MetadataReviewFieldKey, raw: unknown): string | null {
   if (field === "releaseDate") {
     if (typeof raw !== "string") return null;
