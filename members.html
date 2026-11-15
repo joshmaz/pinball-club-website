@@ -1790,7 +1790,7 @@
         return scope === "past" ? isPast : scope === "all" ? true : !isPast;
       }).sort(function (a, b) {
         var at = Date.parse(a.starts_at || ""); var bt = Date.parse(b.starts_at || "");
-        if (scope === "past") return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
+        if (scope === "past" || scope === "all") return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
         return (Number.isFinite(at) ? at : Number.MAX_SAFE_INTEGER) - (Number.isFinite(bt) ? bt : Number.MAX_SAFE_INTEGER);
       });
     }
