@@ -388,8 +388,8 @@
         </div>
 
         <div id="member-panel-events" class="member-panel" role="region" aria-labelledby="member-nav-events" tabindex="-1" aria-hidden="true">
-          <h2>Events</h2>
-          <p id="member-events-intro" class="member-panel-intro">Manage the club calendar. Import a Match Play tournament, add an event manually, or edit an event from the list. Published events appear on the public Events page.</p>
+          <h2>Event Management</h2>
+          <p id="member-events-intro" class="member-panel-intro">Manage the club calendar, find Match Play tournaments, and edit event listings. Published events appear on the public Events page.</p>
           <p id="member-events-access" class="member-panel-access-note" hidden></p>
           <p id="member-events-status" class="members-page-status" aria-live="polite"></p>
           <p class="members-admin-toolbar">
@@ -400,6 +400,7 @@
 
           <section id="member-events-import-panel" aria-labelledby="member-events-import-title" hidden>
             <h3 id="member-events-import-title">Import from Match Play</h3>
+            <details class="member-matchplay-direct-search"><summary>I already have a Match Play tournament link or ID</summary>
             <h4>Review a tournament by link or ID</h4>
             <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
             <form id="member-matchplay-review-form" class="members-profile-form">
@@ -425,8 +426,10 @@
               </p>
             </div>
 
-            <h4>Find Match Play tournaments</h4>
-            <p class="member-form-hint">Search by tournament title, organizer ID, or series ID. Try SNHPC to find club tournaments.</p>
+            </details>
+
+            <h4>Search Match Play tournaments</h4>
+            <p class="member-form-hint">Search by title, organizer ID, or series ID. You can also search SNHPC tournaments and compare them with the club list.</p>
             <form id="member-matchplay-discover-form" class="members-profile-form">
               <label for="member-matchplay-discover-scope">Find by</label>
               <select id="member-matchplay-discover-scope">
@@ -482,6 +485,10 @@
               <label for="member-events-location">Location</label>
               <input id="member-events-location" type="text" maxlength="500" placeholder="Location">
 
+              <label for="member-events-matchplay-format">Tournament format</label>
+              <input id="member-events-matchplay-format" type="text" maxlength="120" placeholder="e.g. Group matchplay, best game">
+              <p class="member-form-hint">For Match Play events, this follows the tournament format. Leave blank when it does not apply.</p>
+
               <fieldset class="event-links-editor">
                 <legend>External links</legend>
                 <small id="member-events-links-help">Up to 5 links</small>
@@ -517,12 +524,19 @@
           </section>
 
           <h3 id="member-events-list-title" tabindex="-1">Complete Event List</h3>
+          <p class="members-admin-toolbar members-events-list-tools">
+            <label for="member-events-list-search">Find an event</label>
+            <input id="member-events-list-search" type="search" placeholder="Search titles, locations, or formats">
+            <label for="member-events-list-scope">Show</label>
+            <select id="member-events-list-scope"><option value="upcoming">Upcoming and current</option><option value="past">Past</option><option value="all">All events</option></select>
+          </p>
           <div class="members-admin-table-wrap">
             <table class="members-admin-table">
               <caption class="visually-hidden">Events management table</caption>
               <thead>
                 <tr>
                   <th scope="col">Title</th>
+                  <th scope="col">Format</th>
                   <th scope="col">Starts</th>
                   <th scope="col">Location</th>
                   <th scope="col">Source</th>
@@ -656,6 +670,9 @@
     var memberEventsRescheduleNote = document.getElementById("member-events-reschedule-note");
     var memberEventsStartsAt = document.getElementById("member-events-starts-at");
     var memberEventsLocation = document.getElementById("member-events-location");
+    var memberEventsFormat = document.getElementById("member-events-matchplay-format");
+    var memberEventsListSearch = document.getElementById("member-events-list-search");
+    var memberEventsListScope = document.getElementById("member-events-list-scope");
     var memberEventsLinks = window.SNHEventLinks.createEditor(document.getElementById("member-events-links"), document.getElementById("member-events-add-link"));
     var memberEventsSource = document.getElementById("member-events-source");
     var memberEventsDescription = document.getElementById("member-events-description");
@@ -1632,6 +1649,7 @@
         memberEventsOriginalSchedule = { value: memberEventsStartsAt.value, all_day: !!row.all_day, time_known: row.time_known };
       }
       if (memberEventsLocation) memberEventsLocation.value = row.location || "";
+      if (memberEventsFormat) memberEventsFormat.value = row.matchplay_format || "";
       memberEventsLinks.set(window.SNHEventLinks.fromEvent(row));
       if (memberEventsSource) memberEventsSource.value = row.source || "";
       if (memberEventsDescription) memberEventsDescription.value = row.description || "";
@@ -2192,6 +2210,7 @@
           previous_schedule: memberEventsOriginalRow ? memberEventsOriginalRow.previous_schedule || null : null,
           reschedule_note: memberEventsOriginalRow ? memberEventsOriginalRow.reschedule_note || null : null,
           location: trimOrEmpty(memberEventsLocation ? memberEventsLocation.value : ""),
+          matchplay_format: trimOrEmpty(memberEventsFormat ? memberEventsFormat.value : "" ) || null,
           external_links: externalLinks,
           source: trimOrEmpty(memberEventsSource ? memberEventsSource.value : "") || "manual",
           description: trimOrEmpty(memberEventsDescription ? memberEventsDescription.value : ""),
