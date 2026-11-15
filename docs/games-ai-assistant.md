@@ -7,7 +7,7 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 - [x] Edge Function `ai-game-enrich-propose` (JWT, `games_editor` / `games_admin` / `club_admin`, audit `ai_proposal`)
 - [x] Description proposals: structured fields, existing `details`, OPDB archive facts, and Kineticist API description, tags, and credits when available; length guard (~220–320 chars), manufacturer + year in prose when metadata supports it, trim labels like `(Pro)` / `(LE)` in generated copy
 - [x] Link proposals: IPDB search fallback; **Pinside** and **Kineticist** canonical-style URLs from `slug` + title + release year when derivable
-- [x] Metadata proposals: suggest only missing manufacturer, manufacturer full name, machine type, display, and player count from available structured evidence and operator context; explicitly apply into blank form fields before normal Save
+- [x] Metadata proposals: suggest only missing manufacturer, manufacturer full name, machine type, display, and player count from OPDB/Kineticist structured evidence; explicitly apply into blank form fields before normal Save
 - [x] Existing metadata review: compare populated supported fields against exact-ID OPDB/Kineticist records; show direct-source differences for review, never auto-replace or save
 - [x] Catalog provenance: OPDB ID, match method, and canonical name are read-only integration data; third-party source URLs are grouped at the end of the metadata block
 - [x] Portal: `SNHMemberPortal.aiGameEnrichPropose`, proposal UI with checkboxes, external link validation, **AI block under core game fields, above stints**
@@ -41,9 +41,9 @@ that were used; it does not report blocked page reads. Editors can open a propos
 link and confirm it manually. The confirmation is scoped to the current editing
 session and does not make the page text available to enrichment.
 
-Routine metadata and description actions use the same validated OPDB archive,
-cached Kineticist game API response (including credits), and operator-supplied
-context. Existing metadata review compares populated supported fields directly
+Metadata suggestions and checks use only the validated OPDB archive and cached
+Kineticist game API response (including credits). Operator notes are only used
+for description drafts and are limited to 5,000 characters. Existing metadata review compares populated supported fields directly
 with structured values from exact-ID OPDB/Kineticist game records; stale
 Kineticist data is excluded. A difference is a review suggestion, not an
 assertion that the catalog value is wrong. Conflicting sources are surfaced
@@ -64,11 +64,11 @@ handler and canonical SQL role boundary before protected work.
 
 1. Open a saved game and choose **Find or verify source links**. Existing URLs stay in place; generated candidates are shown for operator review and never saved automatically.
 2. Open the evidence details to review the registered OPDB and Kineticist records. OPDB/Kineticist data is resolved by ID. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it; the site does not fetch provider pages.
-3. Choose **Suggest missing metadata** to fill blank supported fields using OPDB/Kineticist data and the supplied information. Existing values are left alone.
-4. Choose **Check existing metadata** to compare populated supported fields with structured OPDB/Kineticist values. Review any current-versus-suggested differences, select only the updates you want, then apply them to the form. Both actions require a separate **Save game** to persist changes.
+3. In **Game metadata**, choose **Suggest missing metadata** to fill blank supported fields from the OPDB/Kineticist catalog records. Operator notes are not used for metadata. Existing values are left alone.
+4. In **Game metadata**, choose **Check existing metadata** to compare populated supported fields with structured OPDB/Kineticist values. Review any current-versus-suggested differences, select only the updates you want, then apply them to the form. Both actions require a separate **Save game** to persist changes.
 5. OPDB ID, match method, and canonical name are imported integration data and are read-only in this editor. Third-party source URLs appear at the end of the metadata block.
 6. Choose **Draft our description** for two editable options grounded in the attributed Kineticist description/credits when available, operator notes, or specific existing catalog copy. **Include current Description text (including unsaved edits)** is checked by default. The collapsed **Draft options** controls select Short, Standard (default), or Expanded length and Club voice (default), Friendly with gentle wit, or More energetic voice. The server enforces the selected maximum; evidence and factuality rules stay the same. Clear the description checkbox to draft without that text. Kineticist text is evidence and is paraphrased; it is not stored verbatim as our editable description. If evidence is thin, the assistant reports that instead of writing generic copy.
-7. Add gameplay fragments to **Additional game information** and choose **Draft our description** when source coverage is thin. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
+7. Add gameplay fragments or rough copy to **Description notes** (up to 5,000 characters) when source coverage is thin, then choose **Draft our description**. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
 
 The short card target remains roughly 220–320 characters. Include manufacturer, release year, and a designer only when supported by verified catalog/source evidence. The public Games page is unchanged.
 
