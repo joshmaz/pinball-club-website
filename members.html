@@ -2096,6 +2096,13 @@
       setEventsStatus("Loaded " + rows.length + " events.");
     };
 
+    // Import actions can await this so the list is current before the operator continues.
+    window.snhRefreshMemberEventsList = async function () {
+      if (!onEventsPanelShown) return false;
+      await onEventsPanelShown();
+      return true;
+    };
+
     window.snhNavigateToMemberEventEditor = async function (eventId) {
       if (!eventId) return;
       var eventRoles =
