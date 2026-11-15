@@ -158,7 +158,16 @@ Deno.serve(async (req) => {
           const current = (event as Record<string, unknown>)[field];
           const oldValue = current == null ? "" : String(current).trim();
           const newValue = String(incoming).trim();
-          if (oldValue !== newValue) changes.push({ field, label, current: current ?? "", proposed: incoming });
+          let same = oldValue === newValue;
+          if (field === "starts_at" && current != null) {
+            const currentMs = Date.parse(oldValue);
+            const proposedMs = Date.parse(newValue);
+            if (Number.isFinite(currentMs) && Number.isFinite(proposedMs)) {
+              // The review displays event times to the minute; ignore hidden seconds.
+              same = Math.floor(currentMs / 60000) === Math.floor(proposedMs / 60000);
+            }
+          }
+          if (!same) changes.push({ field, label, current: current ?? "", proposed: incoming });
         };
         compare("title", "Title", tournament.title);
         compare("starts_at", "Date and time", tournament.starts_at);
