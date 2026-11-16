@@ -253,14 +253,29 @@
           link.target = "_blank";
           link.rel = "noopener noreferrer";
           item.appendChild(link);
-          var review = node("button", "members-sidebar-link", "Review link in event editor");
-          review.type = "button";
-          review.addEventListener("click", function () {
-            document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
-              detail: { event_id: event.id, tournament: candidate }
-            }));
+          var clubMatches = Array.isArray(candidate.club_event_matches) ? candidate.club_event_matches : [];
+          if (!clubMatches.some(function (match) { return String(match.id) === String(event.id); })) {
+            clubMatches.unshift({ id: event.id, title: event.title, starts_at: event.starts_at, published: event.published });
+          }
+          var choices = node("div", "member-matchplay-backfill-choices");
+          if (clubMatches.length > 1) {
+            choices.appendChild(node("p", "member-form-hint",
+              "This result could match several club records. Choose the event it belongs to; tournament and finals may be separate events."));
+          }
+          clubMatches.forEach(function (match) {
+            var review = node("button", "members-sidebar-link",
+              "Review for “" + (match.title || "Untitled event") + "”" +
+              (match.starts_at ? " · " + formatValue("starts_at", match.starts_at) : "") +
+              (match.published === false ? " · Unpublished" : " · Published"));
+            review.type = "button";
+            review.addEventListener("click", function () {
+              document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
+                detail: { event_id: match.id, tournament: candidate }
+              }));
+            });
+            choices.appendChild(review);
           });
-          item.appendChild(review);
+          item.appendChild(choices);
           card.appendChild(item);
         });
       }
