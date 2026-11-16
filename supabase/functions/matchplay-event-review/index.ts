@@ -108,14 +108,16 @@ Deno.serve(async (req) => {
       });
       const activeEventIds = new Set(localEvents.map(event => String(event.id)));
       const matchingEvents = allEvents.filter(event => event.lifecycle_status !== "canceled");
-      const linkedEventsById = new Map<string, Record<string, unknown>>();
+      const linkedEventsById = new Map<string, Array<Record<string, unknown>>>();
       const activeLinkedIds = new Set<string>();
       for (const event of allEvents) {
         const links = [event.external_url, ...(Array.isArray(event.external_links) ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
         for (const link of links) {
           const id = tournamentIdFromInput(String(link || ""));
           if (id) {
-            linkedEventsById.set(id, event);
+            const linked = linkedEventsById.get(id) || [];
+            if (!linked.some(row => String(row.id) === String(event.id))) linked.push(event);
+            linkedEventsById.set(id, linked);
             if (activeEventIds.has(String(event.id))) activeLinkedIds.add(id);
           }
         }
@@ -182,9 +184,22 @@ Deno.serve(async (req) => {
       for (const [id, row] of discovered) {
         const tournament = normalizedTournament(row, id);
         if (!tournament.id) continue;
-        let event = linkedEventsById.get(id);
+        const linkedRecords = linkedEventsById.get(id) || [];
+        const activeLinkedRecords = linkedRecords.filter(row => activeEventIds.has(String(row.id)));
+        if (linkedRecords.length && activeLinkedRecords.length === 0) continue;
+        if (activeLinkedRecords.length > 1) {
+          possibleMatches.push({
+            tournament,
+            candidates: activeLinkedRecords.slice(0, 5).map(candidate => ({
+              id: candidate.id, title: candidate.title, starts_at: candidate.starts_at,
+              published: candidate.published,
+              match: { confidence: "linked URL", title_overlap: true },
+            })),
+          });
+          continue;
+        }
+        let event = activeLinkedRecords[0];
         let matchLabel = event ? "Match Play link" : "";
-        if (event && !activeEventIds.has(String(event.id))) continue;
         if (!event) {
           const candidates = rankEventCandidates(tournament, matchingEvents as Array<Record<string, unknown>>);
           // A date-only match is never enough to auto-blend data. Keep it in review,
