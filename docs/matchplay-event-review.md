@@ -31,6 +31,10 @@ Each MatchPlay record is compared with all club event records. Existing
 MatchPlay links are checked first. For unlinked records, the candidate matcher
 uses local date and start-time proximity to narrow matches, then title
 similarity to distinguish likely matches from ambiguous same-date candidates.
+Full dates embedded in both titles must agree; contradictory title dates are
+sent to manual review even when the provider's start times are identical.
+Existing exact links with conflicting title dates or dates more than 30 hours
+apart are also sent to review instead of being treated as a confirmed match.
 Potential field and link changes are displayed for one-field-at-a-time human
 approval. Ambiguous matches open the existing tournament review flow. Records
 with no local match are counted and left untouched. Matched records with no
