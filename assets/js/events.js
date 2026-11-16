@@ -232,6 +232,16 @@ function createEventCard(event, options = {}) {
   locP.appendChild(document.createTextNode(String(event.location || 'TBD')));
   body.appendChild(locP);
 
+  if (event.matchplay_format != null && String(event.matchplay_format).trim() !== '') {
+    const formatP = document.createElement('p');
+    formatP.className = 'event-card-format';
+    const formatStrong = document.createElement('strong');
+    formatStrong.textContent = 'Tournament format: ';
+    formatP.appendChild(formatStrong);
+    formatP.appendChild(document.createTextNode(String(event.matchplay_format).replace(/_/g, ' ').replace(/\\b\\w/g, letter => letter.toUpperCase())));
+    body.appendChild(formatP);
+  }
+
   if (event.description != null && String(event.description).trim() !== '') {
     const descP = document.createElement('p');
     descP.className = 'event-card-description';
