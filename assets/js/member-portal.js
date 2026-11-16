@@ -554,8 +554,8 @@
     return matchplayEventRequest({ mode: "scan" });
   }
 
-  function findHistoricalMatchplayLinks(offset) {
-    return matchplayEventRequest({ mode: "historical-backfill", offset: offset });
+  function findHistoricalMatchplayLinks(cursor) {
+    return matchplayEventRequest({ mode: "historical-backfill", cursor: cursor || null });
   }
 
   async function saveEventForAdmin(eventInput) {
