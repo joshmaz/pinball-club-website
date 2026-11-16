@@ -403,3 +403,19 @@
   .member-event-preview { padding: .8rem; }
   .member-event-preview__header { align-items: flex-start; flex-direction: column; }
 }
+
+
+/* Door code: make the physical entry method clear at a glance. */
+.club-account .door-access-card { display: grid; justify-items: start; gap: .75rem; }
+.club-account .door-access-card > :is(h3,p) { margin: 0; }
+.club-account .door-access-eyebrow { color: var(--club-teal); font: 700 .7rem/1.4 var(--club-display); letter-spacing: .08em; text-transform: uppercase; }
+.club-account .door-access-card h3 { font-size: 1.2rem; letter-spacing: -.02em; }
+.club-account .door-access-intro { max-width: 62ch; color: var(--club-muted); line-height: 1.65; }
+.club-account #door-code-reveal { min-height: 44px; }
+.club-account .door-code-value:not(:empty) { margin: .25rem 0; padding: .65rem .85rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); color: var(--club-ink); font: 700 1.35rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .12em; overflow-wrap: anywhere; }
+.club-account .door-code-reminder { max-width: 68ch; }
+.club-account .door-lock-update { max-width: 68ch; padding-top: .75rem; border-top: 1px solid var(--club-line); color: var(--club-muted); font-size: .85rem; line-height: 1.6; }
+.club-account .door-code-admin { max-width: 34rem; padding: 1.1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.club-account .door-code-admin > h3 { margin: 0; font-size: 1.1rem; }
+.club-account .door-code-admin > .member-panel-helper { margin: -.5rem 0 .1rem; }
+.club-account .door-code-admin > p[role="status"]:empty { display: none; }
