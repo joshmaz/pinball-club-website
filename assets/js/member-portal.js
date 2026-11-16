@@ -554,6 +554,10 @@
     return matchplayEventRequest({ mode: "scan" });
   }
 
+  function findHistoricalMatchplayLinks(offset) {
+    return matchplayEventRequest({ mode: "historical-backfill", offset: offset });
+  }
+
   async function saveEventForAdmin(eventInput) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -1444,6 +1448,7 @@
     reviewMatchplayTournament: reviewMatchplayTournament,
     discoverMatchplayTournaments: discoverMatchplayTournaments,
     scanMatchplayEvents: scanMatchplayEvents,
+    findHistoricalMatchplayLinks: findHistoricalMatchplayLinks,
     saveEventForAdmin: saveEventForAdmin,
     updateEventFieldForAdmin: updateEventFieldForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
