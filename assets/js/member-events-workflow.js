@@ -60,16 +60,30 @@
     container.replaceChildren();
     container.hidden = false;
     var date = new Date(data.scanned_at);
-    status.textContent = "Checked Match Play at " + (Number.isFinite(date.getTime())
-      ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
-      : "the latest available time") + ".";
-    if (Array.isArray(data.warnings) && data.warnings.length) {
-      status.textContent += " " + data.warnings.join(" ");
+    if (data.reconciliation) {
+      status.textContent = (data.complete ? "MatchPlay inventory completed" : "MatchPlay inventory stopped before all pages were read") +
+        " at " + (Number.isFinite(date.getTime())
+          ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
+          : "the latest available time") + ".";
+    } else {
+      status.textContent = "Checked Match Play at " + (Number.isFinite(date.getTime())
+        ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
+        : "the latest available time") + ".";
     }
+    if (Array.isArray(data.warnings) && data.warnings.length) status.textContent += " " + data.warnings.join(" ");
 
     var counts = node("p", "member-matchplay-scan-summary");
-    counts.textContent = data.additions.length + " possible additions · " + data.updates.length +
-      " events with changes · " + data.possible_matches.length + " possible matches · " + data.unchanged + " unchanged.";
+    if (data.reconciliation && data.counts) {
+      counts.textContent = data.source_records + " MatchPlay records in scope · " +
+        data.counts.linked + " already linked · " + data.counts.changed + " with proposed changes · " +
+        data.counts.ambiguous + " ambiguous · " + data.counts.unchanged + " matched with no changes · " +
+        data.counts.no_match + " with no club match.";
+      container.appendChild(node("p", "member-form-hint", "Search scope: " + data.scope.searches.join("; ") +
+        " · " + data.scope.pagination + "."));
+    } else {
+      counts.textContent = data.additions.length + " possible additions · " + data.updates.length +
+        " events with changes · " + data.possible_matches.length + " possible matches · " + data.unchanged + " unchanged.";
+    }
     container.appendChild(counts);
 
     if (data.additions.length) {
@@ -211,77 +225,10 @@
     }
 
     if (!data.additions.length && !data.updates.length && !data.possible_matches.length) {
-      container.appendChild(node("p", null, "No new or changed Match Play events were found."));
+      container.appendChild(node("p", null, data.reconciliation
+        ? "No changes or ambiguous matches need review. Unmatched records were counted above and were not added."
+        : "No new or changed Match Play events were found."));
     }
-  }
-
-  function renderHistoricalBackfill(data, results, status) {
-    results.replaceChildren();
-    results.hidden = false;
-    var scanned = Array.isArray(data.events) ? data.events : [];
-    status.textContent = "Loaded " + scanned.length +
-      " past events without MatchPlay links for review. Search results are suggestions; save each link from the event editor.";
-    (data.warnings || []).forEach(function (warning) { status.textContent += " " + warning; });
-    if (!scanned.length) {
-      results.appendChild(node("p", null, data.has_next
-        ? "No events were returned for this batch. Try again or refresh the event list."
-        : "Every past event already has a MatchPlay link, or there are no past events to review."));
-      return;
-    }
-    scanned.forEach(function (event) {
-      var card = node("article", "member-matchplay-scan-card");
-      var title = (event.title || "Untitled event") + (event.starts_at ? " · " + formatValue("starts_at", event.starts_at) : "");
-      card.appendChild(node("h5", null, title));
-      var candidates = Array.isArray(event.candidates) ? event.candidates : [];
-      if (!candidates.length) {
-        var emptyMessage = event.search_status === "rate-limited"
-          ? "Not checked because Match Play rate-limited the search. Try this batch again later."
-          : event.search_status === "error"
-            ? "The MatchPlay title search failed. Check the status above."
-            : event.search_status === "title-too-short"
-              ? "The title is too short to search."
-              : "No likely MatchPlay result found in the title search.";
-        card.appendChild(node("p", "member-form-hint", emptyMessage));
-      } else {
-        candidates.forEach(function (candidate) {
-          var item = node("div", "member-matchplay-backfill-candidate");
-          item.appendChild(node("p", null, (candidate.title || "Untitled tournament") +
-            (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "") +
-            " · " + ((candidate.match && candidate.match.confidence) || "Possible match")));
-          var link = node("a", null, "View on Match Play ↗");
-          link.href = candidate.url;
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
-          item.appendChild(link);
-          var clubMatches = Array.isArray(candidate.club_event_matches) ? candidate.club_event_matches : [];
-          if (!clubMatches.some(function (match) { return String(match.id) === String(event.id); })) {
-            clubMatches.unshift({ id: event.id, title: event.title, starts_at: event.starts_at, published: event.published });
-          }
-          var choices = node("div", "member-matchplay-backfill-choices");
-          if (clubMatches.length > 1) {
-            choices.appendChild(node("p", "member-form-hint",
-              "This result could match several club records. Choose the event it belongs to; tournament and finals may be separate events."));
-          }
-          clubMatches.forEach(function (match) {
-            var review = node("button", "members-sidebar-link",
-              "Review for “" + (match.title || "Untitled event") + "”" +
-              (match.starts_at ? " · " + formatValue("starts_at", match.starts_at) : "") +
-              (match.published === false ? " · Unpublished" : " · Published") +
-              (match.has_matchplay_link ? " · Already has a MatchPlay link" : ""));
-            review.type = "button";
-            review.addEventListener("click", function () {
-              document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
-                detail: { event_id: match.id, tournament: candidate }
-              }));
-            });
-            choices.appendChild(review);
-          });
-          item.appendChild(choices);
-          card.appendChild(item);
-        });
-      }
-      results.appendChild(card);
-    });
   }
 
   onReady(function () {
@@ -307,48 +254,22 @@
     var historyButton = document.getElementById("member-matchplay-backfill");
     var historyStatus = document.getElementById("member-matchplay-backfill-status");
     var historyResults = document.getElementById("member-matchplay-backfill-results");
-    var historyPrevious = document.getElementById("member-matchplay-backfill-previous");
-    var historyNext = document.getElementById("member-matchplay-backfill-next");
-    var historyPage = document.getElementById("member-matchplay-backfill-page");
-    var historyCursor = null;
-    var historyBackStack = [];
-    var historyData = null;
-    async function loadHistoricalBackfill(cursor) {
-      if (!historyButton || !historyStatus || !historyResults) return;
-      historyButton.disabled = true;
-      historyPrevious.disabled = true;
-      historyNext.disabled = true;
-      historyStatus.textContent = "Searching Match Play for historical events…";
-      try {
-        historyData = await window.SNHMemberPortal.findHistoricalMatchplayLinks(cursor || null);
-        historyCursor = cursor || null;
-        renderHistoricalBackfill(historyData, historyResults, historyStatus);
-        historyPage.textContent = (historyData.events || []).length + " event(s) in this batch" +
-          (historyData.has_next ? " · more remain" : " · end of list");
-        historyPrevious.disabled = historyBackStack.length === 0;
-        historyNext.disabled = !historyData.has_next;
-        historyResults.hidden = false;
-      } catch (error) {
-        historyStatus.textContent = "Could not search historical Match Play links: " +
-          (error && error.message ? error.message : "Please try again.");
-        historyPrevious.disabled = historyBackStack.length === 0;
-      } finally {
-        historyButton.disabled = false;
-      }
-    }
-    if (historyButton && historyStatus && historyResults && historyPrevious && historyNext && historyPage) {
-      historyButton.addEventListener("click", function () {
-        historyBackStack = [];
-        void loadHistoricalBackfill(null);
-      });
-      historyPrevious.addEventListener("click", function () {
-        if (!historyBackStack.length) return;
-        void loadHistoricalBackfill(historyBackStack.pop());
-      });
-      historyNext.addEventListener("click", function () {
-        if (!historyData || !historyData.has_next) return;
-        historyBackStack.push(historyCursor);
-        void loadHistoricalBackfill(historyData.next_cursor);
+    if (historyButton && historyStatus && historyResults) {
+      historyButton.addEventListener("click", async function () {
+        historyButton.disabled = true;
+        historyButton.textContent = "Scanning MatchPlay history…";
+        historyStatus.textContent = "";
+        historyResults.hidden = true;
+        try {
+          var data = await window.SNHMemberPortal.reconcileMatchplayEvents();
+          renderScan(data, historyResults, historyStatus);
+        } catch (error) {
+          historyStatus.textContent = "Could not reconcile MatchPlay history: " +
+            (error && error.message ? error.message : "Please try again.");
+        } finally {
+          historyButton.disabled = false;
+          historyButton.textContent = "Scan MatchPlay history";
+        }
       });
     }
   });
