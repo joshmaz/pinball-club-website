@@ -19,12 +19,13 @@ imported or assumed to be club-hosted.
 
 ## Historical reconciliation
 
-The Events dashboard has an operator-triggered, source-first reconciliation
-for the MatchPlay search scope `SNHPC`, `Southern NH Pinball Club`, and
-`Southern New Hampshire Pinball Club`. It reads every available page for each
-search (up to a defensive 1,000-page ceiling) and deduplicates records by
-tournament ID. This is complete for the reported title-search scope; it does
-not claim to enumerate every MatchPlay tournament on the service.
+The Events dashboard has an operator-triggered, source-first reconciliation.
+It reads every available page (up to a defensive 1,000-page ceiling) of the
+configured MatchPlay token owner's tournament inventory and the club-name
+searches `SNHPC`, `Southern NH Pinball Club`, and `Southern New Hampshire
+Pinball Club`, then deduplicates records by tournament ID. The report names the
+token owner and title-search scope. It is complete for those sources; it does
+not claim to enumerate tournaments owned by unrelated MatchPlay accounts.
 
 Each MatchPlay record is compared with all club event records. Existing
 MatchPlay links are checked first. For unlinked records, the candidate matcher
@@ -36,7 +37,7 @@ with no local match are counted and left untouched. Matched records with no
 proposed changes are counted as unchanged. Nothing is automatically added or
 written by starting the scan.
 
-The summary reports source records, already-linked records, proposed changes,
+The summary reports source records, the token-owner organizer inventory, already-linked records, proposed changes,
 ambiguous matches, unchanged matches, and records with no club match. A
 rate-limit, search failure, or page ceiling is reported as an incomplete
 inventory, so no-match counts from that run should not be treated as final.
