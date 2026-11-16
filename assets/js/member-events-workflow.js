@@ -290,7 +290,7 @@
     var historyNext = document.getElementById("member-matchplay-backfill-next");
     var historyPage = document.getElementById("member-matchplay-backfill-page");
     var historyOffset = 0;
-    var historyBatchSize = 5;
+    var historyBatchSize = 3;
     var historyData = null;
     async function loadHistoricalBackfill(offset) {
       if (!historyButton || !historyStatus || !historyResults) return;
