@@ -46,6 +46,7 @@ management remains in Member Tools; self-delete remains in My Account.
   provider idempotency key, and enqueue-time recipient authorization. A second concurrent retry
   fails because the first changes the state. Expired exhausted leases become failed
   rather than permanently stuck in sending. Old messages are never re-created.
+- AI usage records estimated OpenAI token usage by feature without storing prompts or generated text. The AI Edge Function reserves estimated request cost before each call; a service-role-only database ledger serializes reservations against the club's monthly cap. The club-admin-only Operations card shows current spend, the 80% warning level, feature/model breakdowns, and pauses new paid AI calls once the cap is reached. Model rates are estimates and the edge pricing map must be reviewed whenever configured models or provider prices change.
 - Jobs uses a generic `operations_job_runs` ledger. The dispatcher records start,
   completion, counts and a fixed safe failure summary in every delivery mode.
   Cleanup records both successful and failed runs. A nested transaction rolls back
@@ -70,25 +71,15 @@ Raw cache data, credentials, dispatch secrets and message bodies are not exposed
 
 ## Deployment and migration safety
 
-Baseline: main at `1c8c6b8` (caching PR #111). Linked migration history was inspected
-and matched local migrations through `20260928150000`. No historical migration is
-rewritten. This change adds `20260928160000_operations.sql`.
+The AI usage feature adds one additive migration and changes the existing `ai-game-enrich-propose` and `operations` Edge Functions. No provider credentials or notification settings change.
 
-1. Recheck `supabase migration list --linked` from the target checkout before deploy.
-2. Apply the new migration using the normal reviewed migration workflow.
-3. Deploy `notification-dispatch`, `matchplay-event-review` (shared cache policy
-   change), and the new `operations` Edge Function. Deploy the migration first:
-   the updated dispatcher deliberately refuses to send if recording its run fails.
-4. Deploy the frontend. The Netlify PR preview includes frontend changes only;
-   it cannot exercise the new RPCs before the migration/functions are deployed.
-5. Verify an ordinary member cannot access any Operations endpoint, a club admin
-   can load sections, and policy save/reset appears in Audit Log. Use preview mode
-   or a staging queue to verify Run Now without delivering real messages.
+1. Recheck linked migration history from the staging checkout.
+2. Apply the new `ai_usage_budget` migration to staging.
+3. Deploy `ai-game-enrich-propose` and `operations` to staging. The AI function blocks paid requests if the budget reservation or usage settlement cannot be recorded.
+4. Deploy the frontend and verify the club-admin Operations card, an ordinary member's denied access, the $4 warning, cap enforcement, and monthly reset behavior.
+5. Follow the normal review and merge path before applying the migration and deploying the functions to production.
 
-No hosted migration, function deployment, scheduler change or production mutation
-is performed by the PR build. Existing scheduling continues invoking the dispatcher
-and `cleanup_external_api_search_cache()` as before. Scheduler configuration and
-next-run times are not inferred from run history.
+PR previews contain the frontend only; they cannot exercise migration-backed usage controls until the migration and Edge Functions have been deployed to staging. Outbound notifications remain deferred until the notification feature is mature.
 
 ## Deliberately deferred
 

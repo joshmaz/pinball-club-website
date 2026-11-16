@@ -576,3 +576,10 @@
   .club-account .member-club-issues-card { padding: .85rem; }
   .club-account .member-club-issues-form { padding: .8rem; }
 }
+
+.operations-ai-usage-state { font-weight: 700; border-left: .25rem solid currentColor; padding: .5rem .75rem; }
+.operations-ai-usage-state.is-warning { color: #805500; background: rgba(255, 191, 0, .12); }
+.operations-ai-usage-state.is-paused { color: #9a2828; background: rgba(190, 40, 40, .1); }
+.operations-ai-usage-state.is-ok { color: #236b43; }
+.operations-ai-usage input[type="number"] { max-width: 9rem; margin: .25rem .5rem; }
+.operations-ai-usage progress { width: 100%; max-width: 28rem; }

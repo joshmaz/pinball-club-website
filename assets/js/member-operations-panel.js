@@ -1,5 +1,5 @@
 (function () {
-  var allowed = false, initialized = false, busy = false, snapshot, configuration, current = 'overview';
+  var allowed = false, initialized = false, busy = false, snapshot, configuration, aiUsage = null, current = 'overview';
   var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
   var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', kineticist: 'Kineticist' };
@@ -47,8 +47,8 @@
     if (result.error) throw new Error(result.error.message || 'Request failed');
     return result.data;
   }
-  async function edge(action) {
-    var result = await window.snhSupabase.functions.invoke('operations', { body: { action: action } });
+  async function edge(action, extra) {
+    var result = await window.snhSupabase.functions.invoke('operations', { body: Object.assign({ action: action }, extra || {}) });
     if (result.error || result.data.error) throw new Error('Operations service unavailable. Check deployment and your session.');
     return result.data;
   }
@@ -161,6 +161,54 @@
         (run.result.already_captured ? ' (existing daily snapshot)' : ''), section);
     } else if (run.error) el('p', run.error, section);
   }
+  function money(value) { return "$" + Number(value || 0).toFixed(2); }
+  function renderAiUsageCard(cards) {
+    var card = el('section', null, cards); card.className = 'operations-ai-usage';
+    el('h4', 'AI usage', card);
+    if (!aiUsage) {
+      var unavailable = el('p', 'Usage details are unavailable. AI requests are blocked when the budget check cannot run.', card);
+      unavailable.setAttribute('role', 'alert');
+      return card;
+    }
+    var used = Number(aiUsage.used_usd || 0), limit = Number(aiUsage.monthly_limit_usd || 0);
+    var warningAt = Number(aiUsage.warning_limit_usd || 0);
+    var paused = aiUsage.status === 'paused';
+    var warning = aiUsage.status === 'warning';
+    var state = el('p', paused ? 'Paused at the monthly limit' : warning ? 'Spending is near the limit' : 'On track', card);
+    state.className = paused ? 'operations-ai-usage-state is-paused' : warning ? 'operations-ai-usage-state is-warning' : 'operations-ai-usage-state is-ok';
+    if (paused || warning) state.setAttribute('role', 'alert');
+    el('p', money(used) + ' / ' + money(limit) + ' estimated this month', card);
+    var progress = el('progress', null, card); progress.max = Math.max(limit, 0.01); progress.value = Math.min(used, limit);
+    progress.setAttribute('aria-label', 'Estimated AI spending against monthly limit');
+    el('p', 'Warning at ' + money(warningAt) + ' | Resets ' + date(aiUsage.reset_at), card);
+    var details = el('details', null, card); el('summary', 'Usage by feature', details);
+    var rows = aiUsage.features || [];
+    if (!rows.length) el('p', 'No AI requests recorded this month.', details);
+    else {
+      var body = table(['Feature', 'Model', 'Requests', 'Tokens in / out', 'Estimated cost'], details);
+      rows.forEach(function (item) {
+        var row = el('tr', null, body);
+        cell(row, item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature);
+        cell(row, item.models || 'Unknown model');
+        cell(row, item.request_count);
+        cell(row, Number(item.input_tokens || 0).toLocaleString() + ' / ' + Number(item.output_tokens || 0).toLocaleString());
+        cell(row, money(item.cost_usd));
+      });
+    }
+    var settings = el('details', null, card); el('summary', 'Monthly spending limit', settings);
+    var current = el('p', 'The site warns at 80% and pauses all AI requests at the limit. The limit resets monthly.', settings);
+    current.className = 'muted';
+    var label = el('label', 'Monthly cap in USD ', settings);
+    var input = el('input', null, label); input.type = 'number'; input.min = '0'; input.max = '100'; input.step = '0.50'; input.value = limit.toFixed(2);
+    input.setAttribute('aria-label', 'Monthly AI spending cap in US dollars');
+    button('Save limit', settings, function () {
+      var next = Number(input.value);
+      if (!Number.isFinite(next) || next < 0 || next > 100) { status.textContent = 'Choose a limit from $0 to $100.'; return; }
+      mutate(function () { return edge('set_ai_usage_budget', { monthlyLimitUsd: next }); });
+    });
+    return card;
+  }
+
   function render() {
     content.replaceChildren();
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.section === current ? 'true' : 'false'); });
@@ -187,6 +235,7 @@
       button((snapshot.messages.failed || 0) + ' failed messages', cards.children[1], function () { selectSection('messaging', 'failed'); });
       button('View cache', cards.children[2], function () { selectSection('cache'); });
       button('View jobs', cards.children[3], function () { selectSection('jobs'); });
+      renderAiUsageCard(cards);
       var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
       if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
       else el('p','Discord queue unavailable. Check publishing access and deployment, then refresh.',publishingCard);
@@ -362,6 +411,7 @@
   async function refresh() {
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); return; }
     snapshot = await rpc('snh_operations_snapshot');
+    try { aiUsage = await rpc('snh_ai_usage_snapshot'); } catch { aiUsage = null; }
     try {var deliveries=await rpc('snh_publishing_discord_status');publishingDeliveries=Array.isArray(deliveries)?deliveries:null;} catch {publishingDeliveries=null;}
     try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
     catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }

@@ -25,7 +25,8 @@ Deno.serve(async req => {
     const roles = await db.from("members").select("id,member_roles!inner(role_slug)")
       .eq("user_id", auth.user.id).eq("member_roles.role_slug", "club_admin").limit(1);
     if (roles.error || !roles.data?.length) return json({ error: "Club administrator access required" }, 403);
-    const { action } = await req.json();
+    const body = await req.json();
+    const { action } = body;
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (action === "configuration") return json({
       providers: [
@@ -44,6 +45,19 @@ Deno.serve(async req => {
       dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
         mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview" },
     });
+    if (action === "set_ai_usage_budget") {
+      const monthlyLimitUsd = Number(body.monthlyLimitUsd);
+      if (!Number.isFinite(monthlyLimitUsd) || monthlyLimitUsd < 0 || monthlyLimitUsd > 100) {
+        return json({ error: "Choose a monthly AI limit from $0 to $100." }, 400);
+      }
+      const userDb = createClient(url, serviceKey(), {
+        global: { headers: { Authorization: bearer } },
+        auth: { persistSession: false },
+      });
+      const { error: budgetError } = await userDb.rpc("snh_ai_usage_set_budget", { p_limit_usd: monthlyLimitUsd });
+      if (budgetError) return json({ error: "Could not update the AI spending limit." }, 503);
+      return json({ ok: true, message: "Monthly AI spending limit updated." });
+    }
     if (action === "run_opdb_reference_sync") {
       const schedulerSecret = Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET") || "";
       const serviceRoleKey = serviceKey();
