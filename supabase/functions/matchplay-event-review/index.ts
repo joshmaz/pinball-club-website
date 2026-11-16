@@ -279,6 +279,7 @@ Deno.serve(async (req) => {
       for (const event of batch) {
         const title = String(event.title || "").trim();
         const candidates: Array<Record<string, unknown>> = [];
+        let searchStatus = title.length >= 3 ? "searched" : "title-too-short";
         if (title.length >= 3) {
           try {
             const found = new Set<string>();
@@ -309,9 +310,11 @@ Deno.serve(async (req) => {
             const message = error instanceof Error ? error.message : "";
             if (/429|too many attempts/i.test(message)) {
               warnings.push("Match Play rate-limited the historical search. Some events on this page were not checked; try again later.");
+              searchStatus = "rate-limited";
               rateLimited = true;
             } else {
               warnings.push("Could not search Match Play for “" + title.slice(0, 80) + "”.");
+              searchStatus = "error";
             }
           }
         }
@@ -327,6 +330,7 @@ Deno.serve(async (req) => {
           starts_at: event.starts_at,
           published: event.published,
           candidates,
+          search_status: searchStatus,
         });
         if (rateLimited) break;
       }
