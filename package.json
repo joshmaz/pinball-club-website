@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.8",
+    "@electric-sql/pglite": "^0.5.16",
     "@supabase/supabase-js": "2.56.1",
     "supabase": "^2.118.0",
     "typescript": "5.9.3"
