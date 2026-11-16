@@ -2125,7 +2125,10 @@
       });
     }
 
-    onEventsPanelShown = async function () {
+    onEventsPanelShown = async function (options) {
+      options = options || {};
+      var requestedPage = memberEventsPage;
+      var preservePage = options.preservePage === true;
       if (!window.SNHMemberPortal || !window.SNHMemberPortal.listEventsForAdmin) return;
       setEventsPanelIntro(userRoles);
       setEventsStatus("Loading events…");
@@ -2133,12 +2136,12 @@
       if (rows == null) {
         setEventsStatus("Could not load events. Verify events table access and RLS policies.");
         memberEventsAllRows = [];
-        memberEventsPage = 1;
+        memberEventsPage = preservePage ? requestedPage : 1;
         renderEventsPage();
         return;
       }
       memberEventsAllRows = rows;
-      memberEventsPage = 1;
+      memberEventsPage = preservePage ? requestedPage : 1;
       renderEventsPage();
       setEventsStatus("Loaded " + rows.length + " events.");
     };
@@ -2362,7 +2365,7 @@
               description: row.description || "",
               published: !row.published
             });
-            if (onEventsPanelShown) await onEventsPanelShown();
+            if (onEventsPanelShown) await onEventsPanelShown({ preservePage: true });
             setEventsStatus("Publish state updated.");
           } catch (errToggle) {
             setEventsStatus("Could not update publish state: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(errToggle));
