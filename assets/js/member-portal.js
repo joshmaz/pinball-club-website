@@ -554,8 +554,8 @@
     return matchplayEventRequest({ mode: "scan" });
   }
 
-  function findHistoricalMatchplayLinks(cursor) {
-    return matchplayEventRequest({ mode: "historical-backfill", cursor: cursor || null });
+  function reconcileMatchplayEvents() {
+    return matchplayEventRequest({ mode: "reconcile" });
   }
 
   async function saveEventForAdmin(eventInput) {
@@ -1448,7 +1448,7 @@
     reviewMatchplayTournament: reviewMatchplayTournament,
     discoverMatchplayTournaments: discoverMatchplayTournaments,
     scanMatchplayEvents: scanMatchplayEvents,
-    findHistoricalMatchplayLinks: findHistoricalMatchplayLinks,
+    reconcileMatchplayEvents: reconcileMatchplayEvents,
     saveEventForAdmin: saveEventForAdmin,
     updateEventFieldForAdmin: updateEventFieldForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
