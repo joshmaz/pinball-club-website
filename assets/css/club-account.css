@@ -368,3 +368,38 @@
     min-width: 0;
   }
 }
+
+
+/* Event preview opened from the Manage Events list. */
+.member-event-preview {
+  width: min(760px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: min(88dvh, 900px);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+  box-shadow: 0 1rem 4rem rgb(0 0 0 / .3);
+}
+.member-event-preview::backdrop { background: rgb(11 20 24 / .68); }
+.member-event-preview__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.member-event-preview__header h2 { margin: .2rem 0 0; }
+.member-event-preview__visibility {
+  margin: 0;
+  color: var(--club-muted);
+  font-size: .85rem;
+  line-height: 1.5;
+}
+.member-event-preview__content { min-width: 0; }
+.member-event-preview__content .event-card { margin: 0; }
+@media (max-width: 520px) {
+  .member-event-preview { padding: .8rem; }
+  .member-event-preview__header { align-items: flex-start; flex-direction: column; }
+}
