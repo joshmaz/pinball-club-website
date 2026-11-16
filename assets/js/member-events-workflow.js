@@ -211,14 +211,34 @@
       data.possible_matches.forEach(function (item) {
         var card = node("article", "member-matchplay-scan-card");
         card.appendChild(node("h6", null, item.tournament.title || "Untitled tournament"));
-        var candidates = (item.candidates || []).map(function (candidate) {
-          return candidate.title + (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "");
-        });
-        card.appendChild(node("p", "member-form-hint", candidates.length ? "Possible club matches: " + candidates.join("; ") : "Could match an existing club event."));
-        var review = node("button", "members-sidebar-link", "Review tournament");
-        review.type = "button";
-        review.addEventListener("click", function () { requestTournamentReview(item.tournament); });
-        card.appendChild(review);
+        var candidates = item.candidates || [];
+        if (data.reconciliation && candidates.length) {
+          card.appendChild(node("p", "member-form-hint",
+            "Compare the dates and event details, then choose the club record this MatchPlay tournament belongs to. Review and save the event form to apply links or fill missing details."));
+          candidates.forEach(function (candidate) {
+            var reviewCandidate = node("button", "members-sidebar-link",
+              "Review for “" + (candidate.title || "Untitled event") + "”" +
+              (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "") +
+              (candidate.published === false ? " · Unpublished" : " · Published") +
+              (candidate.has_matchplay_link ? " · Already linked" : ""));
+            reviewCandidate.type = "button";
+            reviewCandidate.addEventListener("click", function () {
+              document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
+                detail: { event_id: candidate.id, tournament: item.tournament }
+              }));
+            });
+            card.appendChild(reviewCandidate);
+          });
+        } else {
+          var names = candidates.map(function (candidate) {
+            return candidate.title + (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "");
+          });
+          card.appendChild(node("p", "member-form-hint", names.length ? "Possible club matches: " + names.join("; ") : "Could match an existing club event."));
+          var review = node("button", "members-sidebar-link", "Review tournament");
+          review.type = "button";
+          review.addEventListener("click", function () { requestTournamentReview(item.tournament); });
+          card.appendChild(review);
+        }
         matchSection.appendChild(card);
       });
       container.appendChild(matchSection);
