@@ -216,8 +216,12 @@
         card.appendChild(node("h6", null, item.tournament.title || "Untitled tournament"));
         var candidates = item.candidates || [];
         if (data.reconciliation && candidates.length) {
-          card.appendChild(node("p", "member-form-hint",
-            "Compare the dates and event details, then choose the club record this MatchPlay tournament belongs to. Review and save the event form to apply links or fill missing details."));
+          var dateConflict = candidates.some(function (candidate) {
+            return candidate.match && (candidate.match.date_conflict || candidate.match.title_date_conflict);
+          });
+          card.appendChild(node("p", "member-form-hint", dateConflict
+            ? "The dates conflict. Compare the title dates and event details carefully; do not link these records unless you confirm they are the same event."
+            : "Compare the dates and event details, then choose the club record this MatchPlay tournament belongs to. Review and save the event form to apply links or fill missing details."));
           candidates.forEach(function (candidate) {
             var reviewCandidate = node("button", "members-sidebar-link",
               "Review for “" + (candidate.title || "Untitled event") + "”" +
