@@ -2050,7 +2050,16 @@
       try {
         if (candidate.url) memberEventsLinks.append({ url: candidate.url, label: "Match Play" });
         if (candidate.series_url) memberEventsLinks.append({ url: candidate.series_url, label: "Match Play series" });
-        setEventsStatus("MatchPlay link(s) added to the unsaved event form. Review them, then save the event to apply.");
+        if (!String(memberEventsDescription.value || "").trim() && candidate.description) {
+          memberEventsDescription.value = candidate.description;
+        }
+        if (!String(memberEventsLocation.value || "").trim() && candidate.location) {
+          memberEventsLocation.value = candidate.location;
+        }
+        if (!String(memberEventsFormat.value || "").trim() && candidate.matchplay_format) {
+          memberEventsFormat.value = candidate.matchplay_format;
+        }
+        setEventsStatus("MatchPlay links and missing details were added to the unsaved event form. Existing details were kept. Review, then save to apply.");
       } catch (error) {
         setEventsStatus(error.message);
       }
