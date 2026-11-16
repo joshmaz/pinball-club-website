@@ -3,6 +3,7 @@
 create table public.ai_usage_budget (
   singleton boolean primary key default true check (singleton),
   monthly_limit_usd numeric(10,2) not null default 5.00 check (monthly_limit_usd between 0 and 100),
+  tracking_started_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   updated_by uuid references auth.users(id) on delete set null
 );
@@ -87,6 +88,7 @@ create function public.snh_ai_usage_snapshot() returns jsonb
 language plpgsql stable security definer set search_path = '' as $$
 declare
   v_limit numeric(10,2);
+  v_tracking_started_at timestamptz;
   v_used numeric(14,8);
   v_calls bigint;
   v_input bigint;
@@ -95,11 +97,11 @@ declare
   v_features jsonb;
 begin
   perform private.snh_require_operations_admin();
-  select monthly_limit_usd into v_limit from public.ai_usage_budget where singleton;
+  select monthly_limit_usd,tracking_started_at into v_limit,v_tracking_started_at from public.ai_usage_budget where singleton;
   select coalesce(sum(case when status='reserved' then reserved_usd else cost_usd end),0),
     count(*),coalesce(sum(input_tokens),0),coalesce(sum(output_tokens),0)
     into v_used,v_calls,v_input,v_output
-    from public.ai_usage_calls where created_at >= v_month;
+    from public.ai_usage_calls where created_at >= greatest(v_month,v_tracking_started_at);
   select coalesce(jsonb_agg(jsonb_build_object(
     'feature',feature,'models',models,'request_count',request_count,'cost_usd',round(cost_usd,8),
     'input_tokens',input_tokens,'output_tokens',output_tokens
@@ -108,12 +110,13 @@ begin
     select feature,string_agg(distinct model, ', ' order by model) models,count(*) request_count,
       sum(case when status='reserved' then reserved_usd else cost_usd end) cost_usd,
       sum(input_tokens) input_tokens,sum(output_tokens) output_tokens
-    from public.ai_usage_calls where created_at >= v_month group by feature
+    from public.ai_usage_calls where created_at >= greatest(v_month,v_tracking_started_at) group by feature
   ) f;
   return jsonb_build_object(
     'provider','OpenAI API',
     'period','UTC calendar month',
     'month_start',v_month,
+    'tracking_started_at',v_tracking_started_at,
     'reset_at',v_month + interval '1 month',
     'monthly_limit_usd',v_limit,
     'warning_limit_usd',round(v_limit * 0.8,2),

@@ -177,7 +177,8 @@
     var state = el('p', paused ? 'Paused at the monthly limit' : warning ? 'Spending is near the limit' : 'On track', card);
     state.className = paused ? 'operations-ai-usage-state is-paused' : warning ? 'operations-ai-usage-state is-warning' : 'operations-ai-usage-state is-ok';
     if (paused || warning) state.setAttribute('role', 'alert');
-    el('p', money(used) + ' / ' + money(limit) + ' estimated this month', card);
+    el('p', money(used) + ' / ' + money(limit) + ' estimated tracked this month', card);
+    el('p', 'Tracking started ' + date(aiUsage.tracking_started_at) + '. Earlier API usage is not included.', card);
     var progress = el('progress', null, card); progress.max = Math.max(limit, 0.01); progress.value = Math.min(used, limit);
     progress.setAttribute('aria-label', 'Estimated AI spending against monthly limit');
     el('p', 'Warning at ' + money(warningAt) + ' | Resets ' + date(aiUsage.reset_at), card);

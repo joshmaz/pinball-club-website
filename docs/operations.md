@@ -71,7 +71,7 @@ Raw cache data, credentials, dispatch secrets and message bodies are not exposed
 
 ## Deployment and migration safety
 
-The AI usage feature adds one additive migration and changes the existing `ai-game-enrich-propose` and `operations` Edge Functions. No provider credentials or notification settings change.
+The AI usage feature adds one additive migration and changes the existing `ai-game-enrich-propose` and `operations` Edge Functions. Tracking begins when the migration is applied; earlier OpenAI usage is not backfilled. No provider credentials or notification settings change.
 
 1. Recheck linked migration history from the staging checkout.
 2. Apply the new `ai_usage_budget` migration to staging.
