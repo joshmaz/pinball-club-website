@@ -374,6 +374,7 @@ Deno.serve(async (req) => {
       const searchPageLimit = 5;
       const cacheStates: unknown[] = [];
       const warnings: string[] = [];
+      let rateLimited = false;
       for (const query of searchQueries) {
         let hasMorePages = false;
         for (let page = 1; page <= searchPageLimit; page += 1) {
@@ -384,6 +385,7 @@ Deno.serve(async (req) => {
             const message = error instanceof Error ? error.message : "";
             if (/429|too many attempts/i.test(message)) {
               warnings.push("Match Play rate-limited this scan. Some results may be missing; wait a few minutes and try again.");
+              rateLimited = true;
               break;
             }
             throw error;
