@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 import { createMatchplayCache } from "./cache.mjs";
-import { rankEventCandidates, tournamentIdFromInput } from "./match.mjs";
+import { hasConflictingMatchDates, rankEventCandidates, tournamentIdFromInput } from "./match.mjs";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -235,8 +235,19 @@ Deno.serve(async (req) => {
         }
         if (exactMatches.length === 1) {
           event = exactMatches[0];
-          matchLabel = "linked URL";
           linked += 1;
+          if (hasConflictingMatchDates(tournament, event)) {
+            possibleMatches.push({
+              tournament,
+              candidates: [{
+                id: event.id, title: event.title, starts_at: event.starts_at, published: event.published,
+                has_matchplay_link: true,
+                match: { confidence: "linked URL with conflicting dates", title_overlap: false, date_conflict: true },
+              }],
+            });
+            continue;
+          }
+          matchLabel = "linked URL";
         } else {
           const candidates = rankEventCandidates(tournament, allEvents);
           if (candidates.length > 1 || candidates.some(candidate => !candidate.match.title_overlap)) {
@@ -427,6 +438,17 @@ Deno.serve(async (req) => {
               published: candidate.published,
               match: { confidence: "linked URL", title_overlap: true },
             })),
+          });
+          continue;
+        }
+        if (activeLinkedRecords.length === 1 && hasConflictingMatchDates(tournament, activeLinkedRecords[0])) {
+          const candidate = activeLinkedRecords[0];
+          possibleMatches.push({
+            tournament,
+            candidates: [{
+              id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, published: candidate.published,
+              match: { confidence: "linked URL with conflicting dates", title_overlap: false, title_date_conflict: true },
+            }],
           });
           continue;
         }
