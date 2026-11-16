@@ -219,11 +219,11 @@
     results.replaceChildren();
     results.hidden = false;
     var scanned = Array.isArray(data.events) ? data.events : [];
-    status.textContent = "Reviewed " + scanned.length + " of " + data.total +
-      " historical events without MatchPlay links. Search results are suggestions; save each link from the event editor.";
+    status.textContent = "Loaded " + scanned.length +
+      " past events without MatchPlay links for review. Search results are suggestions; save each link from the event editor.";
     (data.warnings || []).forEach(function (warning) { status.textContent += " " + warning; });
     if (!scanned.length) {
-      results.appendChild(node("p", null, data.total
+      results.appendChild(node("p", null, data.has_next
         ? "No events were returned for this batch. Try again or refresh the event list."
         : "Every past event already has a MatchPlay link, or there are no past events to review."));
       return;
@@ -294,39 +294,45 @@
     var historyPrevious = document.getElementById("member-matchplay-backfill-previous");
     var historyNext = document.getElementById("member-matchplay-backfill-next");
     var historyPage = document.getElementById("member-matchplay-backfill-page");
-    var historyOffset = 0;
-    var historyBatchSize = 3;
+    var historyCursor = null;
+    var historyBackStack = [];
     var historyData = null;
-    async function loadHistoricalBackfill(offset) {
+    async function loadHistoricalBackfill(cursor) {
       if (!historyButton || !historyStatus || !historyResults) return;
       historyButton.disabled = true;
       historyPrevious.disabled = true;
       historyNext.disabled = true;
       historyStatus.textContent = "Searching Match Play for historical events…";
       try {
-        historyData = await window.SNHMemberPortal.findHistoricalMatchplayLinks(offset);
-        historyOffset = historyData.offset || 0;
+        historyData = await window.SNHMemberPortal.findHistoricalMatchplayLinks(cursor || null);
+        historyCursor = cursor || null;
         renderHistoricalBackfill(historyData, historyResults, historyStatus);
-        historyPage.textContent = historyData.total
-          ? "Events " + (historyOffset + 1) + "–" + (historyOffset + (historyData.events || []).length) + " of " + historyData.total
-          : "";
-        historyPrevious.disabled = historyOffset <= 0;
+        historyPage.textContent = (historyData.events || []).length + " event(s) in this batch" +
+          (historyData.has_next ? " · more remain" : " · end of list");
+        historyPrevious.disabled = historyBackStack.length === 0;
         historyNext.disabled = !historyData.has_next;
         historyResults.hidden = false;
       } catch (error) {
         historyStatus.textContent = "Could not search historical Match Play links: " +
           (error && error.message ? error.message : "Please try again.");
+        historyPrevious.disabled = historyBackStack.length === 0;
       } finally {
         historyButton.disabled = false;
       }
     }
     if (historyButton && historyStatus && historyResults && historyPrevious && historyNext && historyPage) {
-      historyButton.addEventListener("click", function () { void loadHistoricalBackfill(0); });
+      historyButton.addEventListener("click", function () {
+        historyBackStack = [];
+        void loadHistoricalBackfill(null);
+      });
       historyPrevious.addEventListener("click", function () {
-        if (historyOffset > 0) void loadHistoricalBackfill(Math.max(0, historyOffset - historyBatchSize));
+        if (!historyBackStack.length) return;
+        void loadHistoricalBackfill(historyBackStack.pop());
       });
       historyNext.addEventListener("click", function () {
-        if (historyData && historyData.has_next) void loadHistoricalBackfill(historyData.next_offset);
+        if (!historyData || !historyData.has_next) return;
+        historyBackStack.push(historyCursor);
+        void loadHistoricalBackfill(historyData.next_cursor);
       });
     }
   });
