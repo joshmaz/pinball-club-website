@@ -38,7 +38,7 @@ declare
   v_month timestamptz := date_trunc('month', now() at time zone 'UTC') at time zone 'UTC';
   v_id uuid;
 begin
-  if p_feature not in ('game_metadata','game_description')
+  if p_feature is null or p_feature not in ('game_metadata','game_description')
      or p_model is null or length(p_model) < 1 or length(p_model) > 100
      or p_reserved_usd is null or p_reserved_usd <= 0 or p_reserved_usd > 100 then
     raise exception 'Invalid AI usage reservation' using errcode='22023';

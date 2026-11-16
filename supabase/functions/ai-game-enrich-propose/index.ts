@@ -1139,13 +1139,24 @@ const AI_MODEL_PRICES_USD_PER_MILLION: Record<string, { input: number; output: n
 };
 class AiSpendLimitError extends Error {
   constructor() {
-    super("This request would exceed the club's monthly AI spending limit. AI features resume after the monthly reset or when a club administrator raises the limit.");
+    super("This AI request would exceed the club's remaining monthly budget, so it was blocked. Try after the monthly reset or ask an administrator to raise the limit.");
     this.name = "AiSpendLimitError";
   }
 }
 function aiModelPrice(model: string) {
   const key = Object.keys(AI_MODEL_PRICES_USD_PER_MILLION).find((candidate) => model === candidate || model.startsWith(candidate + "-"));
   return key ? AI_MODEL_PRICES_USD_PER_MILLION[key] : null;
+}
+function openAIErrorReason(status: number, code = "", type = ""): string {
+  const marker = `${code} ${type}`.toLowerCase();
+  if (status === 401 || status === 403) return "OpenAI authentication failed; check OPENAI_PLATFORM_KEY.";
+  if (status === 429 && /insufficient_quota|quota|billing/.test(marker)) return "OpenAI quota or billing limit reached.";
+  if (status === 429) return "OpenAI rate limit reached; try again shortly.";
+  if (status === 404 || marker.includes("model_not_found")) return "OpenAI model unavailable or not enabled for this account.";
+  if (status === 408) return "OpenAI request timed out.";
+  if (status >= 500) return "OpenAI service is temporarily unavailable.";
+  if (status === 0) return "Could not reach OpenAI.";
+  return `OpenAI request rejected (HTTP ${status}).`;
 }
 function estimateAiCost(model: string, inputTokens: number, outputTokens: number): number {
   const prices = aiModelPrice(model);

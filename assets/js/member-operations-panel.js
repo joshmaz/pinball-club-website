@@ -161,7 +161,7 @@
         (run.result.already_captured ? ' (existing daily snapshot)' : ''), section);
     } else if (run.error) el('p', run.error, section);
   }
-  function money(value) { return "$" + Number(value || 0).toFixed(2); }
+  function money(value) { var amount = Number(value || 0); return "$" + amount.toFixed(amount > 0 && amount < 1 ? 4 : 2); }
   function renderAiUsageCard(cards) {
     var card = el('section', null, cards); card.className = 'operations-ai-usage';
     el('h4', 'AI usage', card);
