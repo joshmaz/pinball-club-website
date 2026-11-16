@@ -216,6 +216,7 @@ Deno.serve(async (req) => {
       let linked = 0;
       let unchanged = 0;
       let noMatch = 0;
+      const unmatched: Array<ReturnType<typeof normalizedTournament>> = [];
       for (const [id, row] of discovered) {
         const tournament = normalizedTournament(row, id);
         if (!tournament.id) continue;
@@ -272,6 +273,7 @@ Deno.serve(async (req) => {
         }
         if (!event) {
           noMatch += 1;
+          if (unmatched.length < 100) unmatched.push(tournament);
           continue;
         }
         const changes: Array<{ field: string; label: string; current: unknown; proposed: unknown }> = [];
@@ -332,6 +334,8 @@ Deno.serve(async (req) => {
         additions: [],
         updates,
         possible_matches: possibleMatches,
+        unmatched,
+        unmatched_truncated: noMatch > unmatched.length,
         warnings,
       });
     }
