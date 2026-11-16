@@ -441,6 +441,18 @@
               <p id="member-matchplay-scan-status" class="members-page-status" role="status" aria-live="polite"></p>
               <div id="member-matchplay-scan-results" class="member-matchplay-scan-results" hidden></div>
             </section>
+            <section class="member-matchplay-scan" aria-labelledby="member-matchplay-backfill-title">
+              <h4 id="member-matchplay-backfill-title">Review historical MatchPlay links</h4>
+              <p class="member-form-hint">Search past club events without a MatchPlay tournament link. This only suggests candidates; nothing changes until you review and save an event.</p>
+              <button type="button" class="club-button" id="member-matchplay-backfill">Find historical links</button>
+              <p id="member-matchplay-backfill-status" class="members-page-status" role="status" aria-live="polite"></p>
+              <p class="members-admin-toolbar">
+                <button type="button" class="members-sidebar-link" id="member-matchplay-backfill-previous" disabled>Previous batch</button>
+                <span id="member-matchplay-backfill-page"></span>
+                <button type="button" class="members-sidebar-link" id="member-matchplay-backfill-next" disabled>Next batch</button>
+              </p>
+              <div id="member-matchplay-backfill-results" class="member-matchplay-scan-results" hidden></div>
+            </section>
             <details class="member-matchplay-direct-search"><summary>I already have a Match Play tournament link or ID</summary>
             <h4>Review a tournament by link or ID</h4>
             <p class="member-form-hint">Compare a Match Play tournament with club events, then open a match or prepare an unpublished draft. Review and save the form to keep your changes.</p>
@@ -2022,6 +2034,26 @@
         }
       });
     }
+
+    document.addEventListener("snh:historical-matchplay-review", function (event) {
+      var detail = event && event.detail || {};
+      var candidate = detail.tournament || {};
+      var savedEvent = memberEventsAllRows.find(function (row) {
+        return String(row.id) === String(detail.event_id);
+      });
+      if (!savedEvent) {
+        setEventsStatus("Refresh the events list before reviewing this historical match.");
+        return;
+      }
+      selectEventForEdit(savedEvent);
+      try {
+        if (candidate.url) memberEventsLinks.append({ url: candidate.url, label: "Match Play" });
+        if (candidate.series_url) memberEventsLinks.append({ url: candidate.series_url, label: "Match Play series" });
+        setEventsStatus("MatchPlay link(s) added to the unsaved event form. Review them, then save the event to apply.");
+      } catch (error) {
+        setEventsStatus(error.message);
+      }
+    });
 
     if (matchplayReviewCandidates) {
       matchplayReviewCandidates.addEventListener("click", function (event) {
