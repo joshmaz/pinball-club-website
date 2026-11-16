@@ -187,8 +187,10 @@ Deno.serve(async (req) => {
         if (event && !activeEventIds.has(String(event.id))) continue;
         if (!event) {
           const candidates = rankEventCandidates(tournament, matchingEvents as Array<Record<string, unknown>>);
-          if (candidates.length > 1) {
-            possibleMatches.push({ tournament, candidates: candidates.slice(0, 3).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, match: candidate.match })) });
+          // A date-only match is never enough to auto-blend data. Keep it in review,
+          // even when it is the only local event on that date.
+          if (candidates.length > 1 || candidates.some(candidate => !candidate.match.title_overlap)) {
+            possibleMatches.push({ tournament, candidates: candidates.slice(0, 5).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, published: candidate.published, match: candidate.match })) });
             continue;
           }
           if (candidates.length === 1) {
@@ -301,13 +303,32 @@ Deno.serve(async (req) => {
                 const match = rankEventCandidates(tournament, [event as Record<string, unknown>])[0];
                 if (!match) continue;
                 found.add(tournament.id);
+                const clubMatches = rankEventCandidates(tournament, allEvents as Array<Record<string, unknown>>)
+                  .filter(item => item.match?.title_overlap || String(item.id) === String(event.id))
+                  .slice(0, 8)
+                  .map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    starts_at: item.starts_at,
+                    published: item.published,
+                    has_matchplay_link: (() => {
+                      const links = [item.external_url, ...(Array.isArray(item.external_links)
+                        ? (item.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
+                      return links.some(link => tournamentIdFromInput(String(link || "")) !== "");
+                    })(),
+                    match: item.match,
+                  }));
                 candidates.push({
                   id: tournament.id,
                   title: tournament.title,
                   starts_at: tournament.starts_at,
+                  location: tournament.location,
+                  description: tournament.description,
+                  matchplay_format: tournament.matchplay_format,
                   url: tournament.url,
                   series_url: tournament.series_url,
                   match: match.match,
+                  club_event_matches: clubMatches,
                 });
               }
               const links = payload?.links && typeof payload.links === "object"
