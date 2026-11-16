@@ -234,9 +234,14 @@
       card.appendChild(node("h5", null, title));
       var candidates = Array.isArray(event.candidates) ? event.candidates : [];
       if (!candidates.length) {
-        card.appendChild(node("p", "member-form-hint", event.search_status === "rate-limited"
-          ? "Not checked because Match Play rate-limited the search. This event needs another attempt."
-          : "No likely MatchPlay result found in the title search."));
+        var emptyMessage = event.search_status === "rate-limited"
+          ? "Not checked because Match Play rate-limited the search. Try this batch again later."
+          : event.search_status === "error"
+            ? "The MatchPlay title search failed. Check the status above."
+            : event.search_status === "title-too-short"
+              ? "The title is too short to search."
+              : "No likely MatchPlay result found in the title search.";
+        card.appendChild(node("p", "member-form-hint", emptyMessage));
       } else {
         candidates.forEach(function (candidate) {
           var item = node("div", "member-matchplay-backfill-candidate");
