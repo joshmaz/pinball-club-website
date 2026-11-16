@@ -93,6 +93,180 @@ Deno.serve(async (req) => {
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (!token) return json({ error: "MatchPlay API token is not configured" }, 503);
     const getCached = createMatchplayCache(admin, token);
+    if (body.mode === "reconcile") {
+      const pageSize = 500;
+      const allEvents: Array<Record<string, unknown>> = [];
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error } = await admin.from("events")
+          .select("id,title,description,location,starts_at,ends_at,all_day,time_known,previous_schedule,reschedule_note,external_url,external_links,source,published,lifecycle_status,matchplay_format")
+          .range(offset, offset + pageSize - 1);
+        if (error) throw new Error("Could not read club events");
+        const page = (data || []) as Array<Record<string, unknown>>;
+        allEvents.push(...page);
+        if (page.length < pageSize) break;
+      }
+
+      const linkedEventsById = new Map<string, Array<Record<string, unknown>>>();
+      for (const event of allEvents) {
+        const links = [event.external_url, ...(Array.isArray(event.external_links)
+          ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
+        for (const link of links) {
+          const id = tournamentIdFromInput(String(link || ""));
+          if (!id) continue;
+          const linked = linkedEventsById.get(id) || [];
+          if (!linked.some(row => String(row.id) === String(event.id))) linked.push(event);
+          linkedEventsById.set(id, linked);
+        }
+      }
+
+      const searchQueries = ["SNHPC", "Southern NH Pinball Club", "Southern New Hampshire Pinball Club"];
+      const discovered = new Map<string, Record<string, unknown>>();
+      const cacheStates: unknown[] = [];
+      const warnings: string[] = [];
+      let complete = true;
+      for (const query of searchQueries) {
+        let page = 1;
+        for (;;) {
+          try {
+            const { payload, cache } = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=${page}`);
+            cacheStates.push(cache);
+            for (const item of Array.isArray(payload?.data) ? payload.data : []) {
+              if (!item || typeof item !== "object") continue;
+              const row = item as Record<string, unknown>;
+              const id = positiveId(row.tournamentId);
+              const name = String(row.name || "");
+              if (id && /snhpc|southern\s+(?:new\s+hampshire|nh)\s+pinball\s+club/i.test(name)) discovered.set(id, row);
+            }
+            const links = payload?.links && typeof payload.links === "object"
+              ? payload.links as Record<string, unknown> : {};
+            if (!links.next) break;
+            page += 1;
+            if (page > 1000) {
+              complete = false;
+              warnings.push("A MatchPlay title search exceeded 1,000 pages, so the inventory stopped before the end.");
+              break;
+            }
+          } catch (error) {
+            const message = error instanceof Error ? error.message : "";
+            complete = false;
+            warnings.push(/429|too many attempts/i.test(message)
+              ? "MatchPlay rate-limited the inventory. The counts cover only records fetched before the limit; run it again later."
+              : "A MatchPlay title search failed before all pages were read.");
+            break;
+          }
+        }
+        if (!complete) break;
+      }
+
+      const updates: Array<Record<string, unknown>> = [];
+      const possibleMatches: Array<Record<string, unknown>> = [];
+      let linked = 0;
+      let unchanged = 0;
+      let noMatch = 0;
+      for (const [id, row] of discovered) {
+        const tournament = normalizedTournament(row, id);
+        if (!tournament.id) continue;
+        const exactMatches = linkedEventsById.get(id) || [];
+        let event: Record<string, unknown> | undefined;
+        let matchLabel = "";
+        if (exactMatches.length > 1) {
+          possibleMatches.push({
+            tournament,
+            candidates: exactMatches.slice(0, 8).map(candidate => ({
+              id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, published: candidate.published,
+              has_matchplay_link: true, match: { confidence: "linked URL", title_overlap: true },
+            })),
+          });
+          linked += 1;
+          continue;
+        }
+        if (exactMatches.length === 1) {
+          event = exactMatches[0];
+          matchLabel = "linked URL";
+          linked += 1;
+        } else {
+          const candidates = rankEventCandidates(tournament, allEvents);
+          if (candidates.length > 1 || candidates.some(candidate => !candidate.match.title_overlap)) {
+            possibleMatches.push({
+              tournament,
+              candidates: candidates.slice(0, 8).map(candidate => ({
+                id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, published: candidate.published,
+                has_matchplay_link: (() => {
+                  const links = [candidate.external_url, ...(Array.isArray(candidate.external_links)
+                    ? (candidate.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
+                  return links.some(link => tournamentIdFromInput(String(link || "")) !== "");
+                })(),
+                match: candidate.match,
+              })),
+            });
+            continue;
+          }
+          if (candidates.length === 1) {
+            event = allEvents.find(candidate => String(candidate.id) === String(candidates[0].id));
+            matchLabel = candidates[0].match.confidence;
+          }
+        }
+        if (!event) {
+          noMatch += 1;
+          continue;
+        }
+        const changes: Array<{ field: string; label: string; current: unknown; proposed: unknown }> = [];
+        const compare = (field: string, label: string, incoming: unknown) => {
+          if (incoming == null || String(incoming).trim() === "") return;
+          const current = event![field];
+          const oldValue = current == null ? "" : String(current).trim();
+          const newValue = String(incoming).trim();
+          let same = oldValue === newValue;
+          if (field === "starts_at" && current != null) {
+            const currentMs = Date.parse(oldValue);
+            const proposedMs = Date.parse(newValue);
+            if (Number.isFinite(currentMs) && Number.isFinite(proposedMs)) same = Math.floor(currentMs / 60000) === Math.floor(proposedMs / 60000);
+          }
+          if (!same) changes.push({ field, label, current: current ?? "", proposed: incoming });
+        };
+        compare("title", "Title", tournament.title);
+        compare("starts_at", "Date and time", tournament.starts_at);
+        compare("location", "Location", tournament.location);
+        compare("description", "Description", tournament.description);
+        compare("matchplay_format", "Tournament format", tournament.matchplay_format);
+        const eventLinks = Array.isArray(event.external_links) ? event.external_links as Array<Record<string, unknown>> : [];
+        const proposedLinks = [...eventLinks];
+        const addLink = (url: string, label: string) => {
+          if (url && proposedLinks.length < 5 && !proposedLinks.some(link => link && link.url === url)) proposedLinks.push({ url, label });
+        };
+        addLink(tournament.url, "Match Play");
+        addLink(tournament.series_url, "Match Play series");
+        if (proposedLinks.length !== eventLinks.length) changes.push({ field: "external_links", label: "Match Play links", current: eventLinks, proposed: proposedLinks });
+        if (changes.length) {
+          updates.push({
+            tournament,
+            event: {
+              id: event.id, title: event.title, starts_at: event.starts_at, location: event.location,
+              description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links,
+              source: event.source, published: event.published, all_day: event.all_day, time_known: event.time_known,
+              ends_at: event.ends_at, previous_schedule: event.previous_schedule, reschedule_note: event.reschedule_note,
+              lifecycle_status: event.lifecycle_status,
+            },
+            match: matchLabel,
+            changes,
+          });
+        } else unchanged += 1;
+      }
+      return json({
+        reconciliation: true,
+        scanned_at: new Date().toISOString(),
+        scope: { searches: searchQueries, pagination: "all available pages" },
+        complete,
+        source_records: discovered.size,
+        counts: { linked, changed: updates.length, ambiguous: possibleMatches.length, unchanged, no_match: noMatch },
+        cache: cacheStates,
+        additions: [],
+        updates,
+        possible_matches: possibleMatches,
+        warnings,
+      });
+    }
+
     if (body.mode === "scan") {
       const { data: storedEvents, error: eventsError } = await admin.from("events")
         .select("id,title,description,location,starts_at,ends_at,all_day,time_known,previous_schedule,reschedule_note,external_url,external_links,source,published,lifecycle_status,matchplay_format")
