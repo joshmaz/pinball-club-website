@@ -45,6 +45,10 @@ verify_jwt = true
 # Handler verifies its dedicated scheduler secret or a user JWT + Games Admin capability.
 verify_jwt = false
 
+[functions.opdb-reference-sync]
+# Weekly archive worker is authorized by its dedicated Vault-backed scheduler secret.
+verify_jwt = false
+
 [functions.photo-finalize]
 verify_jwt = true
 

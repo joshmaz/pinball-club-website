@@ -516,7 +516,7 @@
     if (!client) return null;
     var result = await client
       .from("events")
-      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known,external_links,ends_at,lifecycle_status,previous_schedule,reschedule_note")
+      .select("id,title,description,location,starts_at,external_url,source,published,updated_at,all_day,time_known,external_links,ends_at,lifecycle_status,previous_schedule,reschedule_note,matchplay_format")
       .order("starts_at", { ascending: false, nullsFirst: false })
       .limit(500);
     if (result.error) return null;
@@ -550,6 +550,10 @@
     return matchplayEventRequest({ mode: "discover", scope: scope, value: value, page: page });
   }
 
+  function scanMatchplayEvents() {
+    return matchplayEventRequest({ mode: "scan" });
+  }
+
   async function saveEventForAdmin(eventInput) {
     var client = getClient();
     if (!client) throw new Error("Supabase is not available.");
@@ -560,7 +564,8 @@
       starts_at: eventInput.starts_at || null,
       external_url: eventInput.external_url || null,
       source: eventInput.source || "manual",
-      published: !!eventInput.published
+      published: !!eventInput.published,
+      matchplay_format: eventInput.matchplay_format || null
     };
     if (Array.isArray(eventInput.external_links)) {
       payload.external_links = window.SNHEventLinks.normalize(eventInput.external_links, true);
@@ -579,6 +584,38 @@
       .upsert(payload, { onConflict: "id" })
       .select("id")
       .single();
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function updateEventFieldForAdmin(eventId, field, value, options) {
+    var client = getClient();
+    options = options || {};
+    if (!client) throw new Error("Supabase is not available.");
+    var allowed = ["title", "starts_at", "location", "description", "matchplay_format", "external_links"];
+    if (!eventId || !allowed.includes(field)) throw new Error("Unsupported event update.");
+    var patch = {};
+    if (field === "external_links") {
+      patch.external_links = window.SNHEventLinks.normalize(value, true);
+      patch.external_url = patch.external_links[0]?.url || null;
+    } else {
+      patch[field] = value == null || value === "" ? null : value;
+    }
+    if (field === "starts_at" && options.markRescheduled) {
+      var current = await client.from("events")
+        .select("starts_at,ends_at,all_day,time_known,lifecycle_status")
+        .eq("id", eventId).single();
+      if (current.error) throw current.error;
+      patch.previous_schedule = {
+        starts_at: current.data.starts_at,
+        ends_at: current.data.ends_at || null,
+        all_day: !!current.data.all_day,
+        time_known: current.data.time_known
+      };
+      patch.reschedule_note = String(options.rescheduleNote || "Updated from Match Play").trim().slice(0, 1000) || null;
+      patch.lifecycle_status = "scheduled";
+    }
+    var result = await client.from("events").update(patch).eq("id", eventId).select("id").single();
     if (result.error) throw result.error;
     return result.data;
   }
@@ -1406,7 +1443,9 @@
     listEventsForAdmin: listEventsForAdmin,
     reviewMatchplayTournament: reviewMatchplayTournament,
     discoverMatchplayTournaments: discoverMatchplayTournaments,
+    scanMatchplayEvents: scanMatchplayEvents,
     saveEventForAdmin: saveEventForAdmin,
+    updateEventFieldForAdmin: updateEventFieldForAdmin,
     deleteEventForAdmin: deleteEventForAdmin,
     gamesEditorLoad: gamesEditorLoad,
     pinballmapIngestStatus: pinballmapIngestStatus,

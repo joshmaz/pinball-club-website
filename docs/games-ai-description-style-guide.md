@@ -10,14 +10,21 @@ House style targets for **`games.details`** when using the enrichment assistant 
 
 ## Length and shape
 
-- **Target** about **270 characters**, generally **220–320** after server-side trimming.
-- Roughly **2–4 sentences**, plain text (no bullets in the stored string).
+The collapsed **Draft options** controls offer three presets:
+
+- **Short:** target about 180 characters; maximum 220.
+- **Standard (default):** target about 270 characters; maximum 320.
+- **Expanded:** target about 420 characters; maximum 500.
+
+All presets remain roughly **2–4 sentences**, plain text (no bullets in the stored string). The selected maximum is enforced server-side. A shorter draft is acceptable when the evidence does not support more detail; the assistant must not pad it with generic copy.
 
 ## Voice
 
-- Friendly, community-oriented, mechanically informative.
-- Avoid hype (`best ever`, `ultimate`, `must-play`, empty “dynamic gameplay” filler).
-- Prefer present tense.
+- **Club voice (default):** friendly, community-oriented, mechanically informative; prefer present tense.
+- **Friendly with gentle wit:** allow a light turn of phrase when it fits; never force a joke.
+- **More energetic:** use livelier, action-focused wording while remaining factual and avoiding hype.
+
+Voice affects phrasing only. It does not relax evidence or accuracy requirements. All voices avoid unsupported hype (`best ever`, `ultimate`, `must-play`) and empty “dynamic gameplay” filler.
 
 ## Manufacturer and year in prose
 

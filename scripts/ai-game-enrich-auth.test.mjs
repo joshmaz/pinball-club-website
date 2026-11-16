@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 import { createClient } from '@supabase/supabase-js';
 import { PGlite } from '@electric-sql/pglite';
+import { cachedResource, supabaseCacheStore } from '../supabase/functions/_shared/external-api-cache.mjs';
+import { OPDB_ID_PATTERN, ipdbPermalink } from '../supabase/functions/_shared/opdb-reference.mjs';
 import { validateAiProposalResponse } from './ai-enrichment-contract.mjs';
 
 const source = ts.transpileModule(
@@ -63,7 +65,7 @@ function fixture(db, options = {}) {
     }
     throw new Error(`Unexpected fetch: ${url}`); // catches obsolete member/role queries
   };
-  new Function('Deno', 'createClient', 'fetch', 'crypto', source)(
+  new Function('Deno', 'createClient', 'fetch', 'crypto', 'cachedResource', 'supabaseCacheStore', 'OPDB_ID_PATTERN', 'ipdbPermalink', source)(
     { env: { get: key => env[key] }, serve: fn => { handler = fn; } },
     (url, key, opts) => {
       clients.push({ key, opts });
@@ -75,7 +77,7 @@ function fixture(db, options = {}) {
         client.auth.getUser = async () => { throw new Error(options.authenticationRejects); };
       }
       return client;
-    }, fakeFetch, { randomUUID: () => uid(30) },
+    }, fakeFetch, { randomUUID: () => uid(30) }, cachedResource, supabaseCacheStore, OPDB_ID_PATTERN, ipdbPermalink,
   );
   return { calls, clients, request: (body = { gameId: game.id }, headers = { Authorization: 'Bearer caller-jwt' }, method = 'POST') =>
     handler(new Request('https://edge.test', { method, headers, ...(method === 'POST' ? { body: JSON.stringify(body) } : {}) })) };
@@ -106,7 +108,7 @@ test('AI proposal authorization uses caller JWT and canonical SQL before protect
         if (role) await db.query('insert into member_roles values ($1,$2)', [uid(1), role]);
         const f = fixture(db);
         const response = await f.request();
-        assert.equal(response.status, allowed ? 200 : 403);
+        assert.equal(response.status, allowed ? 200 : 403, await response.clone().text());
         assert.equal(response.headers.get('Access-Control-Allow-Origin'), '*');
         const body = await response.json();
         if (!allowed) {

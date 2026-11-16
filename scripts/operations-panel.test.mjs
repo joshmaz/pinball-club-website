@@ -58,10 +58,10 @@ test('Pinball Map shows overdue, latest meaningful changes, manual attribution a
  info.schedule.enabled=false;await f.click('Refresh');assert.doesNotMatch(texts(f.nodes.get('operations-content')),/may be overdue/);
 });
 
-test('overview failure link filters messages and Audit loads existing history',async()=>{
+test('overview failure link filters messages and Audit log loads existing history',async()=>{
  const f=fixture();f.panel.init(['club_admin']);await f.panel.load();
  await f.click('2 failed messages');assert.equal(f.calls.find(c=>c.name==='snh_operations_messages').args.p_status,'failed');
- await f.click('Audit');assert.equal(f.nodes.get('operations-audit').hidden,false);
+ await f.click('Audit log');assert.equal(f.nodes.get('operations-audit').hidden,false);
  assert.ok(f.calls.some(c=>c.name==='audit'));
  await f.click('Overview');assert.equal(f.nodes.get('operations-audit').hidden,true);
 });

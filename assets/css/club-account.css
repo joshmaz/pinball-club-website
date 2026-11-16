@@ -276,3 +276,95 @@
 .club-account .member-club-issues-scope[hidden] { display: none; }
 .club-account .member-club-issues-clear-scope { min-height: 44px; padding: .5rem .8rem; font: inherit; font-weight: 650; background: var(--club-surface); color: var(--club-teal); border: 1px solid var(--club-control-line); border-radius: 3px; cursor: pointer; }
 .club-account .member-club-issues-clear-scope:focus-visible { outline: 2px solid var(--club-teal); outline-offset: 3px; }
+
+
+/* Event Management: keep list controls grouped and review proposals scannable. */
+.members-events-list-tools {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: .65rem .9rem;
+}
+.members-events-list-tools input[type="search"] {
+  flex: 1 1 15rem;
+  min-width: 12rem;
+  max-width: 30rem;
+}
+.members-events-list-tools label {
+  margin-bottom: .35rem;
+}
+.member-matchplay-direct-search {
+  margin-block: 1rem;
+  padding: .85rem 1rem;
+  border: 1px solid var(--club-border, #c8c5bc);
+  border-radius: .65rem;
+  background: var(--club-surface-soft, rgba(0, 0, 0, .025));
+}
+.member-matchplay-direct-search summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.member-matchplay-scan {
+  margin-block: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--club-border, #c8c5bc);
+  border-radius: .75rem;
+  background: var(--club-surface-soft, rgba(0, 0, 0, .025));
+}
+.member-matchplay-scan h4,
+.member-matchplay-scan-group h5 {
+  margin-top: 0;
+}
+.member-matchplay-scan-summary {
+  font-weight: 600;
+}
+.member-matchplay-scan-group {
+  display: grid;
+  gap: .8rem;
+  margin-block: 1.25rem;
+}
+.member-matchplay-scan-card {
+  display: grid;
+  gap: .55rem;
+  padding: 1rem;
+  border: 1px solid var(--club-border, #c8c5bc);
+  border-radius: .6rem;
+  background: var(--club-surface, #fff);
+}
+.member-matchplay-scan-card h6,
+.member-matchplay-scan-card p {
+  margin: 0;
+}
+.member-matchplay-scan-description {
+  white-space: pre-wrap;
+}
+.member-matchplay-change {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--club-border, #c8c5bc);
+}
+.member-matchplay-change-copy p {
+  margin: .2rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.member-matchplay-change-controls {
+  display: grid;
+  justify-items: start;
+  gap: .5rem;
+  min-width: 12rem;
+}
+.member-matchplay-change-controls input[type="text"] {
+  max-width: 20rem;
+}
+@media (max-width: 42rem) {
+  .member-matchplay-change {
+    display: grid;
+  }
+  .member-matchplay-change-controls {
+    min-width: 0;
+  }
+}

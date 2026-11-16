@@ -22,6 +22,28 @@ from the member signed in to the club website. Choosing "Review match" opens
 the date/time review flow. Search results are not automatically imported or
 assumed to be club-hosted.
 
+## Event Management scan and approval
+
+The Event Management page can scan linked upcoming or in-progress club events and
+search Match Play titles for `SNHPC` and `Southern New Hampshire Pinball Club`.
+It uses the existing server-side cache and reports when the cached Match Play
+data was last fetched. The scan is operator-triggered; it does not run on every
+page load or write changes by itself.
+
+The results separate possible additions, field changes, possible matches, and
+unchanged linked events. Editors approve proposed changes one field at a time.
+A date/time change can optionally be recorded as a reschedule. A new event can
+be added with one approval as an unpublished draft. Match Play's description is
+treated as text and rendered safely.
+
+The Match Play tournament format is stored in the optional
+`events.matchplay_format` field and shown publicly when present. Format,
+title, date/time, location, description, and source link can be reviewed as
+individual changes. Match Play organizer, series, and status are shown as
+source context only; status does not change the club event's lifecycle. Scores,
+standings, registration windows, player capacity, and waitlists are not
+imported.
+
 ## Deployment
 
 The API requires a bearer token. The club has no dedicated MatchPlay account,

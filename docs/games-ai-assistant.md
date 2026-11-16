@@ -5,9 +5,9 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 ## Delivery status (done)
 
 - [x] Edge Function `ai-game-enrich-propose` (JWT, `games_editor` / `games_admin` / `club_admin`, audit `ai_proposal`)
-- [x] Description proposals: structured fields, existing `details`, IPDB/Pinside/Kineticist **research snippets** (HTML fetch where possible), length guard (~220–320 chars), manufacturer + year in prose when metadata supports it, trim labels like `(Pro)` / `(LE)` in generated copy
+- [x] Description proposals: structured fields, existing `details`, OPDB archive facts, and Kineticist API description, tags, and credits when available; length guard (~220–320 chars), manufacturer + year in prose when metadata supports it, trim labels like `(Pro)` / `(LE)` in generated copy
 - [x] Link proposals: IPDB search fallback; **Pinside** and **Kineticist** canonical-style URLs from `slug` + title + release year when derivable
-- [x] Metadata proposals: extract only missing manufacturer, manufacturer full name, machine type, display, and player count from verified source excerpts; review and explicitly apply suggestions into blank form fields before normal Save
+- [x] Metadata check: one action suggests missing manufacturer, manufacturer full name, machine type, display, and player count, and suggests a missing release date when Kineticist explicitly states its month and year; it also compares populated supported fields with exact-ID OPDB/Kineticist records; apply reviewed values into the form before normal Save
 - [x] Catalog provenance: OPDB ID, match method, and canonical name are read-only integration data; third-party source URLs are grouped at the end of the metadata block
 - [x] Portal: `SNHMemberPortal.aiGameEnrichPropose`, proposal UI with checkboxes, external link validation, **AI block under core game fields, above stints**
 - [x] Combobox filter **Only at club today** (effective at-club: manual override, then map, then `atClub`)
@@ -30,46 +30,52 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 
 3. **Config**: `supabase/config.toml` sets `verify_jwt = true` for this function.
 
-## Reference-fetch security boundary
+## Reference sources and link confirmation
 
-A Games Editor can edit the catalog's provider URLs. The enrichment function treats
-those saved values as untrusted when fetching research snippets, even if they were
-saved through the direct API. Each field permits only its existing canonical HTTPS
-host: IPDB → `www.ipdb.org`, Pinside → `pinside.com`, Kineticist →
-`www.kineticist.com`. These exact hosts match the catalog snapshot and the function's
-link generators; arbitrary subdomains and apex/www aliases are not assumed safe.
+A Games Editor can edit the catalog's provider URLs. Enrichment does not fetch
+HTML pages from IPDB, Pinside, or Kineticist. Link candidates use the validated
+OPDB archive and exact IPDB crosswalk, the Kineticist game API response, and safe
+catalog slug patterns. The evidence panel shows the OPDB and Kineticist records
+that were used; it does not report blocked page reads. Editors can open a proposed
+link and confirm it manually. The confirmation is scoped to the current editing
+session and does not make the page text available to enrichment.
 
-The outbound fetch rejects credentials, explicit ports (including `:443`), HTTP,
-IP addresses, encoded/ambiguous authorities, and other hosts. Redirects are rejected
-rather than followed, including redirects within a provider. Requests carry no
-caller or service credentials. Only HTML/XHTML is read, with a 1 MiB streamed byte
-limit independent of Content-Length and the existing 4.5-second deadline.
-Unsupported, redirected, oversized, blocked, and failed references contribute no
-snippet; description generation can continue from the structured game fields.
-Saved catalog URLs and the proposal/apply workflow are unchanged.
+Metadata suggestions use only the validated OPDB archive and cached Kineticist
+game API response (including credits). Operator notes are only used for
+description drafts and are limited to 5,000 characters. Existing metadata review
+compares supported fields with exact-ID OPDB/Kineticist records. For a
+blank release date, an explicit release month and year can produce a
+review-only suggestion. A production month can also be shown as a
+lower-confidence candidate, clearly labeled as production timing because
+that may differ from release timing. If its month conflicts with OPDB's
+manufacture date, the OPDB date is included in the review reason and
+confidence is lowered. When Kineticist supplies only a manufacture year, the
+assistant can offer a low-confidence January 1 placeholder for review, with
+an explanation that no release month or day is known and January 1 does not
+represent a confirmed release date.
+Stale Kineticist data is excluded. A difference is a
+review suggestion, not an assertion that the catalog value is wrong. Other
+conflicting metadata sources are surfaced without choosing a value. Kineticist description text is stripped to plain text,
+attributed, treated as untrusted evidence, and paraphrased rather than copied.
+No enrichment suggestion is saved automatically.
 
-The fix takes effect only after deploying the updated `ai-game-enrich-propose`
-Edge Function to the intended Supabase project. After staging review, verify the
-linked project and run `supabase functions deploy ai-game-enrich-propose` there;
-repeat through the normal production release. No database migration or new secret
-is required for this fetch restriction. A frontend preview or merge alone does
-not deploy the Edge Function. The earlier member-identity migration is a separate
-rollout prerequisite and is not applied by this deployment.
+The Edge Function must be deployed separately to the intended Supabase project.
+A Netlify preview or Git branch merge alone does not update it. No database
+migration or new secret is required for these source-read changes.
 
-Regression tests: `scripts/ai-reference-fetch.test.mjs` executes the real fetch
-functions with mocked transport, including the current catalog links, private
-addresses, lookalikes, credentials, ports, redirects, MIME types, streaming limits,
-and graceful failures. `scripts/ai-game-enrich-auth.test.mjs` separately exercises
-the actual request handler and canonical SQL role boundary before protected work.
+Regression tests: `scripts/ai-reference-fetch.test.mjs` covers canonical provider
+URL validation, structured source evidence, and safe description context.
+`scripts/ai-game-enrich-auth.test.mjs` separately exercises the actual request
+handler and canonical SQL role boundary before protected work.
 
 ## Editor workflow (short)
 
-1. Open a saved game and choose **Find or verify source links**. Existing URLs stay in place; generated candidates are shown for operator review and never saved automatically.
-2. Open the evidence details to review which source pages matched the selected title and the excerpts retrieved from them. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it.
-3. Choose **Suggest missing metadata**. Suggestions cover manufacturer names, machine type, display, and player count when verified source excerpts support them. Filled values are never replaced. Select suggestions to copy them into blank form fields, review them, then use **Save game**.
-4. OPDB ID, match method, and canonical name are imported integration data and are read-only in this editor. Third-party source URLs appear at the end of the metadata block.
-5. After metadata review, choose **Draft our description** for two editable options grounded in verified source text or specific existing catalog copy. Source-site descriptions are shown only as evidence and are not stored as our editable description. If evidence is thin, the assistant reports that instead of writing generic copy.
-6. Add gameplay fragments under **Operator notes** and choose **Polish our notes** when source coverage is thin. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
+1. Open a saved game and choose **Find or verify source links**. Existing URLs stay in place; generated candidates are shown for operator review. **Copy selected links to fields** places them in the URL fields above; use **Save game** to persist them.
+2. Open the evidence details to review the registered OPDB and Kineticist records. OPDB/Kineticist data is resolved by ID. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it; the site does not fetch provider pages.
+3. In **Game metadata**, choose **Check metadata** to check existing values against OPDB/Kineticist records and suggest supported values for blank fields in the same result. An explicit release month and year in the exact Kineticist description can produce a suggestion when the release date is blank, or a review recommendation when it differs from an existing date. A production month is shown as a lower-confidence candidate with a note that production timing may differ from release timing. Because the editor stores a full date, the first of that month is proposed and the unspecified day is explained. Select the updates or missing values you want, apply them to the form, then use **Save game** to persist changes. Operator notes are not used for metadata.
+5. OPDB ID, match method, and canonical name are imported integration data and are read-only in this editor. Third-party source URLs appear at the end of the metadata block.
+6. Choose **Draft our description** for two editable options grounded in the attributed Kineticist description/credits when available, operator notes, or specific existing catalog copy. Catalog records provide the original game's identity and history; operator notes are primary evidence about the club's specific unit, including installed upgrades, added features, modifications, condition, and observed gameplay. Both drafts are revised in a final coverage pass so they include relevant operator facts while keeping local details scoped to the club's machine. **Include current Description text (including unsaved edits)** is checked by default. The collapsed **Draft options** controls select Short, Standard (default), or Expanded length and Club voice (default), Friendly with gentle wit, or More energetic voice. The server enforces the selected maximum; evidence and factuality rules stay the same. Clear the description checkbox to draft without that text. Kineticist text is evidence and is paraphrased; it is not stored verbatim as our editable description. If evidence is thin, the assistant reports that instead of writing generic copy.
+7. Add gameplay fragments or rough copy to **Description notes** (up to 5,000 characters) when source coverage is thin, then choose **Draft our description**. **Use this draft** copies an option into the regular description field; review it there and use **Save game** to persist it.
 
 The short card target remains roughly 220–320 characters. Include manufacturer, release year, and a designer only when supported by verified catalog/source evidence. The public Games page is unchanged.
 

@@ -30,6 +30,30 @@ function positiveId(value: unknown): string {
   return /^[1-9]\d{0,9}$/.test(text) ? text : "";
 }
 
+function normalizedTournament(row: Record<string, unknown>, fallbackId?: string) {
+  const id = positiveId(row.tournamentId) || positiveId(fallbackId);
+  const location = row.location && typeof row.location === "object" ? row.location as Record<string, unknown> : {};
+  const organizer = row.organizer && typeof row.organizer === "object" ? row.organizer as Record<string, unknown> : {};
+  const series = row.series && typeof row.series === "object" ? row.series as Record<string, unknown> : {};
+  const seriesId = positiveId(row.seriesId) || positiveId(series.seriesId) || positiveId(series.id);
+  return {
+    id,
+    title: String(row.name || "").slice(0, 300),
+    starts_at: typeof row.startUtc === "string" && Number.isFinite(Date.parse(row.startUtc)) ? new Date(row.startUtc).toISOString() : null,
+    location: String(location.name || "").slice(0, 300),
+    description: typeof row.description === "string" ? row.description.slice(0, 4000) : "",
+    matchplay_format: String(row.type || "").slice(0, 120),
+    url: id ? `https://app.matchplay.events/tournaments/${id}` : "",
+    status: String(row.status || "").slice(0, 40),
+    organizer_id: positiveId(row.organizerId),
+    organizer_name: String(organizer.name || "").slice(0, 100),
+    series_id: seriesId,
+    series_name: String(series.name || "").slice(0, 120),
+    series_url: seriesId ? `https://app.matchplay.events/series/${seriesId}` : "",
+    updated_at: typeof row.updatedAt === "string" ? row.updatedAt : null,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -69,6 +93,156 @@ Deno.serve(async (req) => {
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
     if (!token) return json({ error: "MatchPlay API token is not configured" }, 503);
     const getCached = createMatchplayCache(admin, token);
+    if (body.mode === "scan") {
+      const { data: storedEvents, error: eventsError } = await admin.from("events")
+        .select("id,title,description,location,starts_at,ends_at,all_day,time_known,previous_schedule,reschedule_note,external_url,external_links,source,published,lifecycle_status,matchplay_format")
+        .limit(500);
+      if (eventsError) throw new Error("Could not read club events");
+      const now = Date.now();
+      const allEvents = storedEvents || [];
+      const localEvents = allEvents.filter((event) => {
+        if (event.lifecycle_status === "canceled" || !event.starts_at) return false;
+        const start = Date.parse(String(event.starts_at));
+        const end = event.ends_at ? Date.parse(String(event.ends_at)) : start;
+        return Number.isFinite(start) && (end >= now || start >= now - 24 * 60 * 60 * 1000);
+      });
+      const activeEventIds = new Set(localEvents.map(event => String(event.id)));
+      const matchingEvents = allEvents.filter(event => event.lifecycle_status !== "canceled");
+      const linkedEventsById = new Map<string, Record<string, unknown>>();
+      const activeLinkedIds = new Set<string>();
+      for (const event of allEvents) {
+        const links = [event.external_url, ...(Array.isArray(event.external_links) ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
+        for (const link of links) {
+          const id = tournamentIdFromInput(String(link || ""));
+          if (id) {
+            linkedEventsById.set(id, event);
+            if (activeEventIds.has(String(event.id))) activeLinkedIds.add(id);
+          }
+        }
+      }
+      const discovered = new Map<string, Record<string, unknown>>();
+      const searchQueries = ["SNHPC", "Southern New Hampshire Pinball Club"];
+      const searchPageLimit = 5;
+      const cacheStates: unknown[] = [];
+      const warnings: string[] = [];
+      let rateLimited = false;
+      for (const query of searchQueries) {
+        let hasMorePages = false;
+        for (let page = 1; page <= searchPageLimit; page += 1) {
+          let result;
+          try {
+            result = await getCached(`search?query=${encodeURIComponent(query)}&type=tournaments&page=${page}`);
+          } catch (error) {
+            const message = error instanceof Error ? error.message : "";
+            if (/429|too many attempts/i.test(message)) {
+              warnings.push("Match Play rate-limited this scan. Some results may be missing; wait a few minutes and try again.");
+              rateLimited = true;
+              break;
+            }
+            throw error;
+          }
+          const { payload, cache } = result;
+          cacheStates.push(cache);
+          for (const item of Array.isArray(payload?.data) ? payload.data : []) {
+            if (!item || typeof item !== "object") continue;
+            const row = item as Record<string, unknown>;
+            const id = positiveId(row.tournamentId);
+            const name = String(row.name || "");
+            if (id && /snhpc|southern new hampshire pinball club/i.test(name)) discovered.set(id, row);
+          }
+          const links = payload?.links && typeof payload.links === "object"
+            ? payload.links as Record<string, unknown> : {};
+          hasMorePages = !!links.next;
+          if (!hasMorePages) break;
+        }
+        if (hasMorePages && !rateLimited) {
+          warnings.push("Search stopped after the first 5 pages for a title to avoid excessive Match Play requests.");
+        }
+        if (rateLimited) break;
+      }
+      for (const id of activeLinkedIds) {
+        if (rateLimited) break;
+        if (discovered.has(id)) continue;
+        try {
+          const { payload, cache } = await getCached(`tournaments/${id}?includeLocation=1`);
+          cacheStates.push(cache);
+          if (payload?.data && typeof payload.data === "object") discovered.set(id, payload.data as Record<string, unknown>);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "";
+          if (/429|too many attempts/i.test(message)) {
+            warnings.push("Match Play rate-limited this scan. Some linked events may not have been checked; wait a few minutes and try again.");
+            rateLimited = true;
+            break;
+          }
+          throw error;
+        }
+      }
+      const additions: ReturnType<typeof normalizedTournament>[] = [];
+      const updates: Array<Record<string, unknown>> = [];
+      const possibleMatches: Array<Record<string, unknown>> = [];
+      let unchanged = 0;
+      for (const [id, row] of discovered) {
+        const tournament = normalizedTournament(row, id);
+        if (!tournament.id) continue;
+        let event = linkedEventsById.get(id);
+        let matchLabel = event ? "Match Play link" : "";
+        if (event && !activeEventIds.has(String(event.id))) continue;
+        if (!event) {
+          const candidates = rankEventCandidates(tournament, matchingEvents as Array<Record<string, unknown>>);
+          if (candidates.length > 1) {
+            possibleMatches.push({ tournament, candidates: candidates.slice(0, 3).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, match: candidate.match })) });
+            continue;
+          }
+          if (candidates.length === 1) {
+            event = matchingEvents.find(candidate => String(candidate.id) === String(candidates[0].id));
+            matchLabel = candidates[0].match.confidence;
+            if (event && !activeEventIds.has(String(event.id))) {
+              possibleMatches.push({ tournament, candidates: candidates.slice(0, 3).map(candidate => ({ id: candidate.id, title: candidate.title, starts_at: candidate.starts_at, match: candidate.match })) });
+              continue;
+            }
+          }
+        }
+        if (!event) { additions.push(tournament); continue; }
+        const changes: Array<{ field: string; label: string; current: unknown; proposed: unknown }> = [];
+        const compare = (field: string, label: string, incoming: unknown) => {
+          if (incoming == null || String(incoming).trim() === "") return;
+          const current = (event as Record<string, unknown>)[field];
+          const oldValue = current == null ? "" : String(current).trim();
+          const newValue = String(incoming).trim();
+          let same = oldValue === newValue;
+          if (field === "starts_at" && current != null) {
+            const currentMs = Date.parse(oldValue);
+            const proposedMs = Date.parse(newValue);
+            if (Number.isFinite(currentMs) && Number.isFinite(proposedMs)) {
+              // The review displays event times to the minute; ignore hidden seconds.
+              same = Math.floor(currentMs / 60000) === Math.floor(proposedMs / 60000);
+            }
+          }
+          if (!same) changes.push({ field, label, current: current ?? "", proposed: incoming });
+        };
+        compare("title", "Title", tournament.title);
+        compare("starts_at", "Date and time", tournament.starts_at);
+        compare("location", "Location", tournament.location);
+        compare("description", "Description", tournament.description);
+        compare("matchplay_format", "Tournament format", tournament.matchplay_format);
+        const eventLinks = Array.isArray(event.external_links) ? event.external_links as Array<Record<string, unknown>> : [];
+        const proposedLinks = [...eventLinks];
+        const addLink = (url: string, label: string) => {
+          if (url && proposedLinks.length < 5 && !proposedLinks.some(link => link && link.url === url)) {
+            proposedLinks.push({ url, label });
+          }
+        };
+        addLink(tournament.url, "Match Play");
+        addLink(tournament.series_url, "Match Play series");
+        if (proposedLinks.length !== eventLinks.length) {
+          changes.push({ field: "external_links", label: "Match Play links", current: eventLinks, proposed: proposedLinks });
+        }
+        if (changes.length) updates.push({ tournament, event: { id: event.id, title: event.title, starts_at: event.starts_at, location: event.location, description: event.description, matchplay_format: event.matchplay_format, external_links: event.external_links, source: event.source, published: event.published, all_day: event.all_day, time_known: event.time_known, ends_at: event.ends_at, previous_schedule: event.previous_schedule, reschedule_note: event.reschedule_note, lifecycle_status: event.lifecycle_status }, match: matchLabel, changes });
+        else unchanged += 1;
+      }
+      return json({ scanned_at: new Date().toISOString(), cache: cacheStates, additions, updates, possible_matches: possibleMatches, unchanged, warnings });
+    }
+
     if (body.mode === "discover") {
       const scope = String(body.scope || "");
       const value = String(body.value || "").trim();
@@ -146,7 +320,15 @@ Deno.serve(async (req) => {
       description: typeof data.description === "string" ? data.description.slice(0, 5000) : "",
       url: `https://app.matchplay.events/tournaments/${tournamentId}`,
       status: String(data.status || ""),
-      series_id: data.seriesId ?? null,
+      matchplay_format: String(data.type || "").slice(0, 120),
+      organizer_id: positiveId(data.organizerId),
+      organizer_name: String((data.organizer && typeof data.organizer === "object" ? (data.organizer as Record<string, unknown>).name : "") || "").slice(0, 100),
+      series_id: positiveId(data.seriesId) || positiveId(data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).id : ""),
+      series_name: String((data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).name : "") || "").slice(0, 120),
+      series_url: (positiveId(data.seriesId) || positiveId(data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).id : ""))
+        ? `https://app.matchplay.events/series/${positiveId(data.seriesId) || positiveId(data.series && typeof data.series === "object" ? (data.series as Record<string, unknown>).id : "")}`
+        : "",
+      updated_at: typeof data.updatedAt === "string" ? data.updatedAt : null,
     };
 
     const seen = new Map<string, Record<string, unknown>>();
