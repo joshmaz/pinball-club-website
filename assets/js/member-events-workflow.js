@@ -78,8 +78,11 @@
         data.counts.linked + " already linked · " + data.counts.changed + " with proposed changes · " +
         data.counts.ambiguous + " ambiguous · " + data.counts.unchanged + " matched with no changes · " +
         data.counts.no_match + " with no club match.";
-      container.appendChild(node("p", "member-form-hint", "Search scope: " + data.scope.searches.join("; ") +
-        " · " + data.scope.pagination + "."));
+      var organizer = data.scope.organizer;
+      var scopeText = organizer
+        ? "Organizer inventory: " + organizer.name + " (MatchPlay ID " + organizer.id + "), plus title searches: " + data.scope.searches.join("; ")
+        : "Title searches: " + data.scope.searches.join("; ") + " (organizer inventory unavailable)";
+      container.appendChild(node("p", "member-form-hint", "Scope: " + scopeText + " · " + data.scope.pagination + "."));
     } else {
       counts.textContent = data.additions.length + " possible additions · " + data.updates.length +
         " events with changes · " + data.possible_matches.length + " possible matches · " + data.unchanged + " unchanged.";
