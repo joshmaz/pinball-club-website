@@ -12,7 +12,7 @@
     <link rel="manifest" href="assets/pwa/manifest.webmanifest">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
   <meta name="description" content="SNHPC member dashboard: your profile, membership status, and the tools members use to help keep the club running.">
-  <title>SNHPC - My Account</title>
+  <title>SNHPC - My account</title>
   <script src="assets/js/theme.js"></script>
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/clubhouse.css">
@@ -82,7 +82,7 @@
 
 <main id="account-main">
   <section class="club-page-heading club-page-heading--quiet" aria-labelledby="members-dashboard-title">
-    <div><p class="club-eyebrow">Your club account</p><h1 id="members-dashboard-title">My Account</h1><p class="club-lead">Your profile, membership, and the tools you use to keep the club running.</p><p id="auth-status" class="auth-status" aria-live="polite"></p></div>
+    <div><p class="club-eyebrow">Your club account</p><h1 id="members-dashboard-title">My account</h1><p class="club-lead">Your profile, membership, and the tools you use to keep the club running.</p><p id="auth-status" class="auth-status" aria-live="polite"></p></div>
   </section>
   <section class="content members-dashboard">
     <div class="members-layout">
@@ -107,7 +107,7 @@
           <ul class="members-sidebar-list" aria-labelledby="member-volunteer-nav-title">
             <li data-member-rbac-nav data-rbac-roles="membership_editor,membership_admin,club_admin">
               <button type="button" class="members-sidebar-link" data-member-panel="member-admin" id="member-nav-member-admin" aria-controls="member-panel-member-admin">
-                Manage members
+                Member management
               </button>
             </li>
             <li data-member-rbac-nav data-rbac-roles="events_editor,events_admin,club_admin">
@@ -207,7 +207,7 @@
               </div>
             </fieldset>
           <section class="member-role-profile" aria-labelledby="member-role-profile-title">
-            <h3 id="member-role-profile-title">Roles &amp; Permissions</h3>
+            <h3 id="member-role-profile-title">Roles &amp; permissions</h3>
             <div id="member-role-profile-content" aria-live="polite"><p>Loading website roles…</p></div>
           </section>
 
@@ -298,7 +298,7 @@
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
-          <h2>Manage members</h2>
+          <h2>Member management</h2>
           <p id="member-admin-intro" class="member-panel-intro">Look up members, review website responsibilities, and update membership status.</p>
           <p id="member-admin-access" class="member-panel-access-note" hidden></p>
           <p id="member-admin-status" class="members-page-status" aria-live="polite"></p>
@@ -359,7 +359,7 @@
           <div id="operations-content"></div>
           <div id="operations-audit" hidden>
           <section id="member-audit-section" hidden aria-labelledby="member-audit-title">
-            <h3 id="member-audit-title">Audit Log</h3>
+            <h3 id="member-audit-title">Audit log</h3>
             <p class="member-form-hint">Club admins can review changes to Operations, publishing, events, members, games, and photos.</p>
             <p class="members-admin-toolbar">
               <label for="member-audit-module">Area</label>
@@ -532,7 +532,7 @@
             </form>
           </section>
 
-          <h3 id="member-events-list-title" tabindex="-1">Complete Event List</h3>
+          <h3 id="member-events-list-title" tabindex="-1">Complete event list</h3>
           <p class="members-admin-toolbar members-events-list-tools">
             <label for="member-events-list-search">Find an event</label>
             <input id="member-events-list-search" type="search" placeholder="Search titles, locations, or formats">
@@ -1040,7 +1040,7 @@
           window.SNHMemberPortal.ROLE_GROUPS &&
           window.SNHMemberPortal.ROLE_GROUPS.MEMBERSHIP_MANAGE_ACCESS) ||
         ["membership_editor", "membership_admin", "club_admin"];
-      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Manage members");
+      setPanelAccessNote("member-admin-access", userRolesList, allowedRoles, "Member management");
     }
 
     function setPhotosPanelIntro(userRolesList) {
