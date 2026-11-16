@@ -27,6 +27,24 @@ function titleWords(value) {
   ));
 }
 
+function embeddedCalendarDate(title) {
+  const match = String(title || "").match(/\b((?:19|20)\d{2})-(\d{2})-(\d{2})\b/);
+  if (!match) return "";
+  const value = match[1] + "-" + match[2] + "-" + match[3];
+  const date = new Date(value + "T00:00:00Z");
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value ? value : "";
+}
+
+export function hasConflictingMatchDates(tournament, event) {
+  const tournamentTitleDate = embeddedCalendarDate(tournament?.title);
+  const eventTitleDate = embeddedCalendarDate(event?.title);
+  if (tournamentTitleDate && eventTitleDate && tournamentTitleDate !== eventTitleDate) return true;
+  const tournamentStart = Date.parse(tournament?.starts_at || "");
+  const eventStart = Date.parse(event?.starts_at || "");
+  return Number.isFinite(tournamentStart) && Number.isFinite(eventStart) &&
+    Math.abs(tournamentStart - eventStart) > 30 * 60 * 60 * 1000;
+}
+
 function titleOverlap(a, b) {
   const left = titleWords(a);
   const right = titleWords(b);
@@ -47,14 +65,16 @@ export function rankEventCandidates(tournament, events) {
       ? Math.abs(start - eventStart) / 3600000 : null;
     const sameDay = Number.isFinite(start) && Number.isFinite(eventStart) &&
       clubDate(tournament.starts_at) === clubDate(event.starts_at);
-    const similarTitle = titleOverlap(tournament.title, event.title);
+    const titleDateConflict = !!(embeddedCalendarDate(tournament.title) && embeddedCalendarDate(event.title) &&
+      embeddedCalendarDate(tournament.title) !== embeddedCalendarDate(event.title));
+    const similarTitle = !titleDateConflict && titleOverlap(tournament.title, event.title);
     let confidence = "";
     if (exactUrl) confidence = "linked URL";
     else if (sameDay && hours <= 4) confidence = "likely";
     else if (sameDay) confidence = "same day";
     else if (hours !== null && hours <= DAY_MS / 3600000 + 6 && similarTitle) confidence = "possible";
     if (!confidence) continue;
-    ranked.push({ ...event, match: { confidence, hours_apart: hours, title_overlap: similarTitle } });
+    ranked.push({ ...event, match: { confidence, hours_apart: hours, title_overlap: similarTitle, title_date_conflict: titleDateConflict } });
   }
   const order = { "linked URL": 0, likely: 1, "same day": 2, possible: 3 };
   ranked.sort((a, b) => order[a.match.confidence] - order[b.match.confidence] ||
