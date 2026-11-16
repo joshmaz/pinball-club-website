@@ -577,9 +577,19 @@
   .club-account .member-club-issues-form { padding: .8rem; }
 }
 
+.operations-ai-usage { grid-column: 1 / -1; min-width: 0; }
 .operations-ai-usage-state { font-weight: 700; border-left: .25rem solid currentColor; padding: .5rem .75rem; }
 .operations-ai-usage-state.is-warning { color: #805500; background: rgba(255, 191, 0, .12); }
 .operations-ai-usage-state.is-paused { color: #9a2828; background: rgba(190, 40, 40, .1); }
 .operations-ai-usage-state.is-ok { color: #236b43; }
 .operations-ai-usage input[type="number"] { max-width: 9rem; margin: .25rem .5rem; }
 .operations-ai-usage progress { width: 100%; max-width: 28rem; }
+.operations-ai-feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: .75rem; margin-top: .75rem; }
+.operations-ai-feature { min-width: 0; padding: .85rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.operations-ai-feature-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .35rem .75rem; }
+.operations-ai-feature-heading h5 { margin: 0; font-size: .95rem; }
+.operations-ai-feature-cost { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.operations-ai-feature-model { margin: .4rem 0 .75rem; color: var(--club-muted); font-size: .82rem; overflow-wrap: anywhere; }
+.operations-ai-feature-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .25rem .65rem; margin: 0; padding-top: .65rem; border-top: 1px solid var(--club-line); }
+.operations-ai-feature-stats dt { color: var(--club-muted); font-size: .72rem; line-height: 1.4; }
+.operations-ai-feature-stats dd { margin: .15rem 0 0; font-size: .88rem; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
