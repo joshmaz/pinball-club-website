@@ -36,13 +36,15 @@ sent to manual review even when the provider's start times are identical.
 Existing exact links with conflicting title dates or dates more than 30 hours
 apart are also sent to review instead of being treated as a confirmed match.
 Potential field and link changes are displayed for one-field-at-a-time human
-approval. Ambiguous matches open the existing tournament review flow. Records
-with no local match are counted and left untouched. Matched records with no
-proposed changes are counted as unchanged. Nothing is automatically added or
-written by starting the scan.
+approval. Ambiguous matches open the existing tournament review flow. Records with no local match are counted and shown in a collapsed, optional
+inspection list with a link to the source and a manual review action. They are
+not added automatically. Matched records with no proposed changes are counted
+as unchanged. Nothing is automatically added or written by starting the scan.
 
-The summary reports source records, the token-owner organizer inventory, already-linked records, proposed changes,
-ambiguous matches, unchanged matches, and records with no club match. A
+The summary shows matched and unmatched counts as disjoint groups that add up
+to the source total. The already-linked count is a subset of matched records,
+so it is not another disjoint bucket. It also reports the token-owner organizer
+inventory, proposed changes, ambiguous matches, and unchanged matches. A
 rate-limit, search failure, or page ceiling is reported as an incomplete
 inventory, so no-match counts from that run should not be treated as final.
 The operator can run the reconciliation again after the source is available.
