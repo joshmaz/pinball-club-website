@@ -330,8 +330,12 @@
     linksPanel.appendChild(buildSourceAssistantScaffold());
     formEl.appendChild(wrapCollapsible("Third-party links", linksPanel));
 
+    formEl.appendChild(el("h3", {
+      className: "member-games-section-heading",
+      text: "Brief public description"
+    }));
     formEl.appendChild(fieldRow(
-      "Brief public description of our machine",
+      "Description",
       textareaInput("mg-details", "")
     ));
     formEl.appendChild(el("p", { className: "member-games-help", text: "Shown on the game card and About our machine. Keep it brief, specific, and supported by evidence." }));
@@ -1795,7 +1799,7 @@
     var root = el("div", { className: "member-games-workspace" });
     var tablist = el("div", { className: "member-games-workspace-tabs", role: "tablist", "aria-label": "Games administration sections" });
     var sections = [
-      { key: "games", label: "Games" },
+      { key: "games", label: "Catalog" },
       { key: "owners", label: "Owners & lenders" },
       { key: "integrations", label: "Integrations" },
     ];

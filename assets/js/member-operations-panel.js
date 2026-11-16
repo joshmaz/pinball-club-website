@@ -384,7 +384,8 @@
     initialized=true; content=document.getElementById('operations-content'); status=document.getElementById('operations-status');
     tabs=document.getElementById('operations-sections');
     ['overview','integrations','cache','messaging','jobs','audit'].forEach(function (section) {
-      var b=button(section.charAt(0).toUpperCase()+section.slice(1),tabs,async function () {
+      var label = section === 'audit' ? 'Audit log' : section.charAt(0).toUpperCase()+section.slice(1);
+      var b=button(label,tabs,async function () {
         await selectSection(section);
       }); b.dataset.section=section; b.setAttribute('aria-controls','operations-content');
     });
