@@ -283,18 +283,22 @@
 
         <div id="member-panel-door" class="member-panel" role="region" aria-labelledby="member-nav-door" tabindex="-1" aria-hidden="true">
           <h2>Door code</h2>
-          <div class="membership-card">
-            <p>Full Access Members can reveal the current code here.</p>
-            <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal Door Code</button>
-            <p id="door-code-value" role="status" aria-live="polite"></p>
-            <p id="door-code-reminder" class="membership-card-note" hidden>Our club runs on trust and the honor system. Please keep the door code private and do not share it, post it online, or let others use your access. Each Full Access Member should retrieve the code through their own account. Help keep the club secure by making sure the door closes and locks behind you.</p>
+          <div class="membership-card door-access-card">
+            <p class="door-access-eyebrow">Club entry</p>
+            <h3>Key lockbox</h3>
+            <p class="door-access-intro">Full Access Members can reveal the code for the key lockbox mounted beside the club entrance. The code opens the box, not the door itself.</p>
+            <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal lockbox code</button>
+            <p id="door-code-value" class="door-code-value" role="status" aria-live="polite"></p>
+            <p id="door-code-reminder" class="membership-card-note door-code-reminder">Please keep this code private. Don’t share it, post it online, or let others use your access. Make sure the entrance closes and locks behind you.</p>
+            <p class="door-lock-update">We’re working on a digitally enabled door lock. We’ll share an update when we have news.</p>
           </div>
-          <form id="door-code-admin" class="members-profile-form" hidden>
-            <h4>Update door code</h4>
-            <label for="door-code-new">Current access code</label>
-            <input id="door-code-new" type="text" autocomplete="off" maxlength="100" required>
-            <button type="submit">Save door code</button>
-            <p id="door-code-admin-status" role="status"></p>
+          <form id="door-code-admin" class="members-profile-form door-code-admin" hidden>
+            <h3>Update lockbox code</h3>
+            <p class="member-panel-helper">Use this when the key lockbox combination changes.</p>
+            <label for="door-code-new">New lockbox code</label>
+            <input id="door-code-new" type="password" autocomplete="new-password" maxlength="100" required>
+            <button type="submit">Save new code</button>
+            <p id="door-code-admin-status" role="status" aria-live="polite"></p>
           </form>
         </div>
 
@@ -2653,7 +2657,7 @@
       if (doorCodeVisible) {
         doorValue.textContent = "";
         doorCodeVisible = false;
-        doorReveal.textContent = "Reveal Door Code";
+        doorReveal.textContent = "Reveal lockbox code";
         doorReveal.setAttribute("aria-expanded", "false");
         return;
       }
@@ -2663,7 +2667,7 @@
         doorValue.textContent = code || "No code is set yet.";
         if (code) {
           doorCodeVisible = true;
-          doorReveal.textContent = "Hide Door Code";
+          doorReveal.textContent = "Hide lockbox code";
           doorReveal.setAttribute("aria-expanded", "true");
           doorReminder.hidden = false;
         }
