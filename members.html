@@ -2035,7 +2035,8 @@
       });
     }
 
-    document.addEventListener("snh:historical-matchplay-review", function (event) {
+    if (typeof document !== "undefined") {
+      document.addEventListener("snh:historical-matchplay-review", function (event) {
       var detail = event && event.detail || {};
       var candidate = detail.tournament || {};
       var savedEvent = memberEventsAllRows.find(function (row) {
@@ -2053,7 +2054,8 @@
       } catch (error) {
         setEventsStatus(error.message);
       }
-    });
+      });
+    }
 
     if (matchplayReviewCandidates) {
       matchplayReviewCandidates.addEventListener("click", function (event) {
