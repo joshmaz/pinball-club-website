@@ -237,18 +237,9 @@
     metadataPanel.appendChild(el("p", { className: "member-games-help", text: "Game information" }));
     metadataPanel.appendChild(fieldRow("Page URL slug", textInput("mg-slug", "")));
     metadataPanel.appendChild(el("p", { className: "member-games-help", text: "This identifies the game’s public page URL. New games use the title when this is blank; existing slugs are read-only." }));
-    metadataPanel.appendChild(
-      fieldRow(
-        "Release date",
-        dateInput("mg-release", "")
-      )
-    );
-    metadataPanel.appendChild(
-      fieldRow(
-        "Manufacture date",
-        dateInput("mg-mfg", "")
-      )
-    );
+    metadataPanel.appendChild(fieldRow("Release year", numberInput("mg-release", "")));
+    metadataPanel.appendChild(el("p", { className: "member-games-help", text: "Manufacture year (optional, if known). This is separate from the release year." }));
+    metadataPanel.appendChild(fieldRow("Manufacture year", numberInput("mg-mfg", "")));
     metadataPanel.appendChild(
       fieldRow(
         "Manufacturer",
@@ -2069,7 +2060,8 @@
       type: "mg-type",
       display: "mg-display",
       playerCount: "mg-players",
-      releaseDate: "mg-release"
+      releaseDate: "mg-release",
+      manufactureDate: "mg-mfg"
     }[fieldKey] || "";
   }
 
@@ -2080,7 +2072,8 @@
       type: "Type (EM/SS)",
       display: "Display",
       playerCount: "Player count",
-      releaseDate: "Release date"
+      releaseDate: "Release year",
+      manufactureDate: "Manufacture year"
     }[fieldKey] || String(fieldKey || "Metadata");
   }
 
@@ -2316,8 +2309,9 @@
         }
         var valueInput = field.field === "playerCount"
           ? el("input", { type: "number", min: "1", max: "8", step: "1", id: valueId, className: "member-games-input" })
-          : el("input", { type: field.field === "releaseDate" ? "date" : "text", id: valueId, className: "member-games-input" });
+          : el("input", { type: "text", id: valueId, className: "member-games-input" });
         valueInput.value = String(field.suggestedValue == null ? "" : field.suggestedValue);
+        if (field.field === "releaseDate" || field.field === "manufactureDate") valueInput.placeholder = "YYYY";
         row.appendChild(valueInput);
         if (field.sourceUrl && isValidHttpUrl(field.sourceUrl)) {
           row.appendChild(el("a", { href: field.sourceUrl, target: "_blank", rel: "noopener noreferrer", className: "member-games-ai-external-link", text: "Open supporting " + String(field.sourceType || "source") + " page" }));
@@ -2488,7 +2482,11 @@
             skippedFilled.push(aiMetadataFieldLabel(key));
             return;
           }
-          target.value = selected[key] == null ? "" : String(selected[key]);
+          if (key === "releaseDate" || key === "manufactureDate") {
+            target.value = String(selected[key] || "").slice(0, 4);
+          } else {
+            target.value = selected[key] == null ? "" : String(selected[key]);
+          }
           target.dispatchEvent(new Event("input", { bubbles: true }));
           copiedCount += 1;
         }
@@ -3040,8 +3038,8 @@
     document.getElementById("mg-slug").readOnly = true;
     document.getElementById("mg-details").value = g.details || "";
     renderGameImages(g.images || []);
-    document.getElementById("mg-release").value = (g.releaseDate || "").slice(0, 10);
-    document.getElementById("mg-mfg").value = (g.manufactureDate || "").slice(0, 10);
+    document.getElementById("mg-release").value = (g.releaseDate || "").slice(0, 4);
+    document.getElementById("mg-mfg").value = (g.manufactureDate || "").slice(0, 4);
     document.getElementById("mg-mfr").value = g.manufacturer || "";
     document.getElementById("mg-mfrfull").value = g.manufacturerFullName || "";
     document.getElementById("mg-type").value = g.type || "";
@@ -3118,14 +3116,14 @@
     setGameSaveButtonsState("busy");
     setStatus("Saving…");
     try {
-      var rd = getVal("mg-release");
-      var md = getVal("mg-mfg");
+      var releaseYear = getVal("mg-release");
+      var manufactureYear = getVal("mg-mfg");
       var fields = {
         title: getVal("mg-title"),
         slug: getVal("mg-slug") || undefined,
         details: getVal("mg-details"),
-        releaseDate: rd ? rd : null,
-        manufactureDate: md ? md : null,
+        releaseDate: /^\d{4}$/.test(releaseYear) ? releaseYear + "-01-01" : null,
+        manufactureDate: /^\d{4}$/.test(manufactureYear) ? manufactureYear + "-01-01" : null,
         manufacturer: getVal("mg-mfr") || null,
         manufacturerFullName: getVal("mg-mfrfull") || null,
         type: getVal("mg-type") || null,

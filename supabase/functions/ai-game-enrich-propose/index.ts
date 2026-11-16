@@ -33,7 +33,8 @@ type ProposalFieldKey =
   | "type"
   | "display"
   | "playerCount"
-  | "releaseDate";
+  | "releaseDate"
+  | "manufactureDate";
 
 type ProposalConfidence = "low" | "medium" | "high";
 type ProposalStatus = "ok" | "needs_review" | "unavailable" | "budget_limit_reached";
@@ -1217,8 +1218,8 @@ function shouldFallback(status: number): boolean {
   return status === 0 || status === 408 || status === 429 || status >= 500;
 }
 
-type MetadataFieldKey = Exclude<ProposalFieldKey, "details" | "ipdbUrl" | "pinsideUrl" | "kineticistUrl" | "releaseDate">;
-type MetadataReviewFieldKey = MetadataFieldKey | "releaseDate";
+type MetadataFieldKey = Exclude<ProposalFieldKey, "details" | "ipdbUrl" | "pinsideUrl" | "kineticistUrl" | "releaseDate" | "manufactureDate">;
+type MetadataReviewFieldKey = MetadataFieldKey | "releaseDate" | "manufactureDate";
 
 function metadataFieldsMissing(game: GameRow): MetadataFieldKey[] {
   const fields: Array<[MetadataFieldKey, string | number | null]> = [
@@ -1263,7 +1264,13 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
   };
 
   const opdb = references.opdbEntry;
-  if (opdb) add("manufacturer", opdb.manufacturer, "OPDB", references.opdbUrl);
+  if (opdb) {
+    add("manufacturer", opdb.manufacturer, "OPDB", references.opdbUrl);
+    if (opdb.manufacture_date) {
+      add("manufactureDate", opdb.manufacture_date, "OPDB", references.opdbUrl,
+        "OPDB lists manufacture timing; this is kept separate from release timing.");
+    }
+  }
 
   const payload = references.kineticistPayload;
   const data = payload && payload.data && typeof payload.data === "object"
@@ -1279,48 +1286,28 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     add("playerCount", data.player_count, "Kineticist API", references.kineticistUrl);
     const releaseMonth = extractExplicitReleaseMonthYear(data.description);
     if (releaseMonth) {
-      const opdbManufactureDate = typeof opdb?.manufacture_date === "string"
-        ? opdb.manufacture_date.slice(0, 10)
-        : null;
-      const opdbTimingDiffers = Boolean(
-        opdbManufactureDate
-        && /^\d{4}-\d{2}-\d{2}$/.test(opdbManufactureDate)
-        && opdbManufactureDate.slice(0, 7) !== releaseMonth.value.slice(0, 7)
-      );
       const dateReason = releaseMonth.kind === "release"
         ? `Kineticist's description explicitly says the game was released in ${releaseMonth.label}.`
-        : `Kineticist's description says the game was produced in ${releaseMonth.label}; production timing can differ from release timing.`;
-      const sourceComparison = opdbTimingDiffers
-        ? ` OPDB lists a manufacture date of ${opdbManufactureDate}, so the sources differ on timing.`
-        : "";
+        : `Kineticist's description says the game was produced in ${releaseMonth.label}; production timing is kept separate from release timing.`;
       add(
-        "releaseDate",
+        releaseMonth.kind === "release" ? "releaseDate" : "manufactureDate",
         releaseMonth.value,
         "Kineticist API",
         references.kineticistUrl,
-        `${dateReason}${sourceComparison} The source gives month and year, not a day; the suggested date uses the first of that month.`,
-        releaseMonth.kind === "release" && !opdbTimingDiffers ? "medium" : "low",
+        `${dateReason} The catalog tracks the year only.`,
+        releaseMonth.kind === "release" ? "medium" : "low",
       );
-    } else if (!game.release_date) {
-      const manufactureYear = String(data.first_manufacture_year ?? "").trim();
-      if (/^(?:19|20)\d{2}$/.test(manufactureYear)) {
-        const opdbManufactureDate = typeof opdb?.manufacture_date === "string"
-          ? opdb.manufacture_date.slice(0, 10)
-          : null;
-        const opdbComparison = opdbManufactureDate
-          ? opdbManufactureDate.slice(0, 4) === manufactureYear
-            ? ` OPDB lists manufacture date ${opdbManufactureDate}.`
-            : ` OPDB lists manufacture date ${opdbManufactureDate}, which gives a different year.`
-          : "";
-        add(
-          "releaseDate",
-          `${manufactureYear}-01-01`,
-          "Kineticist API",
-          references.kineticistUrl,
-          `Kineticist lists manufacture year ${manufactureYear} only; no release month or day is supplied. January 1 is a low-confidence placeholder to store the year, not a claimed release date.${opdbComparison}`,
-          "low",
-        );
-      }
+    }
+    const manufactureYear = String(data.first_manufacture_year ?? "").trim();
+    if (!game.manufacture_date && /^(?:19|20)\d{2}$/.test(manufactureYear)) {
+      add(
+        "manufactureDate",
+        `${manufactureYear}-01-01`,
+        "Kineticist API",
+        references.kineticistUrl,
+        `Kineticist lists manufacture year ${manufactureYear}.`,
+        "low",
+      );
     }
   }
 
@@ -1330,7 +1317,8 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
     type: game.machine_type,
     display: game.display_type,
     playerCount: game.player_count,
-    releaseDate: game.release_date,
+    releaseDate: game.release_date ? game.release_date.slice(0, 4) : null,
+    manufactureDate: game.manufacture_date ? game.manufacture_date.slice(0, 4) : null,
   };
   const fields: ProposalField[] = [];
   const missingFields: ProposalField[] = [];
@@ -1356,7 +1344,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
 
     const candidate = [...distinct.values()][0];
     if (!current) {
-      if (field === "releaseDate") {
+      if (field === "releaseDate" || field === "manufactureDate") {
         missingFields.push({
           field,
           currentValue: null,
@@ -1364,7 +1352,7 @@ function buildMetadataReviewSuggestions(game: GameRow, references: GameReference
           confidence: candidate.confidence || "medium",
           confidenceScore: candidate.confidence === "low" ? 0.58 : 0.76,
           reason: candidate.reason
-            || `The exact ${candidate.provider} record gives an explicit release month and year; the suggested date uses the first of that month because the day is not stated.`,
+            || `The exact ${candidate.provider} record provides a ${field === "releaseDate" ? "release" : "manufacture"} year.`,
           sourceType: candidate.provider,
           sourceUrl: candidate.url,
           warnings: [],
@@ -1436,12 +1424,13 @@ function extractExplicitReleaseMonthYear(raw: unknown): { value: string; label: 
   return null;
 }
 function canonicalMetadataReviewValue(field: MetadataReviewFieldKey, raw: unknown): string | null {
-  if (field === "releaseDate") {
+  if (field === "releaseDate" || field === "manufactureDate") {
     if (typeof raw !== "string") return null;
-    const value = raw.trim().slice(0, 10);
+    const value = raw.trim();
+    if (/^\d{4}$/.test(value)) return value;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
     const date = new Date(`${value}T00:00:00.000Z`);
-    return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value ? null : value;
+    return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value ? null : value.slice(0, 4);
   }
   if (field === "playerCount") {
     const value = Number(raw);
@@ -1472,6 +1461,7 @@ function aiMetadataFieldLabelForServer(field: MetadataReviewFieldKey): string {
     display: "display",
     playerCount: "player count",
     releaseDate: "release date",
+    manufactureDate: "manufacture date",
   };
   return labels[field];
 }
