@@ -2,54 +2,75 @@
 
 The Events dashboard can review one MatchPlay tournament at a time. An editor
 enters its tournament URL or numeric ID. The server-side Edge Function reads
-MatchPlay tournament details and suggests existing club events using the same
-MatchPlay URL, local event date, start-time proximity, and title. A same-day
-suggestion is **not** treated as a confirmed duplicate.
+MatchPlay tournament details and suggests existing club events using an exact
+MatchPlay link, local event date and start-time proximity, and title similarity.
+A same-day suggestion is never treated as a confirmed duplicate.
 
 The editor can choose an existing club event to open in the event form. Its
-saved fields remain populated; empty description, location, date, and external
-URL fields can be filled from MatchPlay. If there is no matching club event,
-the editor can prepare a new unpublished draft with MatchPlay details. The
-review and draft preparation do not write to the database. The editor confirms
-that it is a club event and saves manually. This lets a club event be enriched
-without duplicating it and avoids automatically publishing off-site finals.
+saved fields remain populated; MatchPlay links and missing details can be
+prepared in the unsaved form. If there is no matching club event, the editor
+can prepare an unpublished draft. The review and draft preparation do not write
+to the database. The editor confirms and saves manually.
 
 Editors can list tournaments owned by the MatchPlay API token account, list by
 another organizer's numeric MatchPlay user ID, list a series by ID, or search
-tournament titles (for example, `SNHPC`). Results are paginated. The token
-account is the MatchPlay account that supplied the server secret; it may differ
-from the member signed in to the club website. Choosing "Review match" opens
-the date/time review flow. Search results are not automatically imported or
-assumed to be club-hosted.
+tournament titles. Results are paginated. Search results are not automatically
+imported or assumed to be club-hosted.
+
+## Historical reconciliation
+
+The Events dashboard has an operator-triggered, source-first reconciliation.
+It reads every available page (up to a defensive 1,000-page ceiling) of the
+configured MatchPlay token owner's tournament inventory and the club-name
+searches `SNHPC`, `Southern NH Pinball Club`, and `Southern New Hampshire
+Pinball Club`, then deduplicates records by tournament ID. The report names the
+token owner and title-search scope. It is complete for those sources; it does
+not claim to enumerate tournaments owned by unrelated MatchPlay accounts.
+
+Each MatchPlay record is compared with all club event records. Existing
+MatchPlay links are checked first. For unlinked records, the candidate matcher
+uses local date and start-time proximity to narrow matches, then title
+similarity to distinguish likely matches from ambiguous same-date candidates.
+Full dates embedded in both titles must agree; contradictory title dates are
+sent to manual review even when the provider's start times are identical.
+Existing exact links with conflicting title dates or dates more than 30 hours
+apart are also sent to review instead of being treated as a confirmed match.
+Potential field and link changes are displayed for one-field-at-a-time human
+approval. Ambiguous matches open the existing tournament review flow. Records with no local match are counted and shown in a collapsed, optional
+inspection list with a link to the source and a manual review action. They are
+not added automatically. Matched records with no proposed changes are counted
+as unchanged. Nothing is automatically added or written by starting the scan.
+
+The summary shows matched and unmatched counts as disjoint groups that add up
+to the source total. The already-linked count is a subset of matched records,
+so it is not another disjoint bucket. It also reports the token-owner organizer
+inventory, proposed changes, ambiguous matches, and unchanged matches. A
+rate-limit, search failure, or page ceiling is reported as an incomplete
+inventory, so no-match counts from that run should not be treated as final.
+The operator can run the reconciliation again after the source is available.
 
 ## Event Management scan and approval
 
-The Event Management page can scan linked upcoming or in-progress club events and
-search Match Play titles for `SNHPC` and `Southern New Hampshire Pinball Club`.
-It uses the existing server-side cache and reports when the cached Match Play
-data was last fetched. The scan is operator-triggered; it does not run on every
-page load or write changes by itself.
+The separate routine scan checks linked upcoming or in-progress club events
+and searches MatchPlay titles for current additions and updates. It uses the
+server-side cache and runs only when an editor asks for it. Its results may
+include possible additions, field changes, possible matches, and unchanged
+linked events. Editors approve proposed changes one field at a time. A
+date/time change can optionally be recorded as a reschedule. Any new event is
+created as an unpublished draft only after an explicit approval.
 
-The results separate possible additions, field changes, possible matches, and
-unchanged linked events. Editors approve proposed changes one field at a time.
-A date/time change can optionally be recorded as a reschedule. A new event can
-be added with one approval as an unpublished draft. Match Play's description is
-treated as text and rendered safely.
-
-The Match Play tournament format is stored in the optional
+The MatchPlay tournament format is stored in the optional
 `events.matchplay_format` field and shown publicly when present. Format,
 title, date/time, location, description, and source link can be reviewed as
-individual changes. Match Play organizer, series, and status are shown as
+individual changes. MatchPlay organizer, series, and status are shown as
 source context only; status does not change the club event's lifecycle. Scores,
 standings, registration windows, player capacity, and waitlists are not
 imported.
 
 ## Deployment
 
-The API requires a bearer token. The club has no dedicated MatchPlay account,
-so an authorized organizer or site admin must create a token under their
-MatchPlay account settings and keep ownership of that credential documented.
-Store the token only in Supabase Edge Function secrets:
+The API requires a bearer token. Keep the token only in Supabase Edge Function
+secrets:
 
 ```bash
 supabase secrets set MATCHPLAY_API_TOKEN=<token>
@@ -62,25 +83,19 @@ calling MatchPlay. It uses a fixed MatchPlay API host and accepts only numeric
 tournament IDs, so an arbitrary URL cannot be fetched.
 
 Redeploy the function after changing its code. Updating the Netlify preview
-alone does not update a Supabase Edge Function.
-
-The Netlify preview uses the same Supabase project as production. The UI will
-show a configuration or function error until the secret is set and the Edge
-Function is deployed. Review calls are read-only. Saving a club event still
-uses the existing Events editor and database permissions.
+alone does not update a Supabase Edge Function. Review calls are read-only;
+saving a club event still uses the existing Events editor and database
+permissions.
 
 ## Follow-up
 
-- Review NEPL/NPC series 6497 and 6028 and the president's separately owned
-  tournaments through the new discovery controls.
-- Store external identities and multiple source links per club event before
-  replacing a Facebook or other existing `external_url` with a MatchPlay link.
-- Store reviewed source links and explicit duplicate decisions, then consider
-  periodic sync. Keep off-site finals out of the public club calendar unless
-  an editor explicitly chooses to publish them.
+- Review NEPL/NPC series 6497 and 6028 and separately owned tournaments through
+  the discovery controls.
+- If a future integration needs durable cross-source identity mapping or a
+  periodic sync, introduce source-neutral link/run records after this one-time
+  MatchPlay cleanup proves the review flow.
 
 MatchPlay API reference: https://app.matchplay.events/api-docs/
-
 ## Single-tournament lookup regression (September 2026)
 
 A direct unauthenticated probe of tournament `228825` returned HTTP 200 from

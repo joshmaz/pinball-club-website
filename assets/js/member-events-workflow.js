@@ -60,16 +60,38 @@
     container.replaceChildren();
     container.hidden = false;
     var date = new Date(data.scanned_at);
-    status.textContent = "Checked Match Play at " + (Number.isFinite(date.getTime())
-      ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
-      : "the latest available time") + ".";
-    if (Array.isArray(data.warnings) && data.warnings.length) {
-      status.textContent += " " + data.warnings.join(" ");
+    if (data.reconciliation) {
+      status.textContent = (data.complete ? "MatchPlay inventory completed" : "MatchPlay inventory stopped before all pages were read") +
+        " at " + (Number.isFinite(date.getTime())
+          ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
+          : "the latest available time") + ".";
+    } else {
+      status.textContent = "Checked Match Play at " + (Number.isFinite(date.getTime())
+        ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date)
+        : "the latest available time") + ".";
     }
+    if (Array.isArray(data.warnings) && data.warnings.length) status.textContent += " " + data.warnings.join(" ");
 
     var counts = node("p", "member-matchplay-scan-summary");
-    counts.textContent = data.additions.length + " possible additions · " + data.updates.length +
-      " events with changes · " + data.possible_matches.length + " possible matches · " + data.unchanged + " unchanged.";
+    if (data.reconciliation && data.counts) {
+      var matchedCount = data.updates.length + data.possible_matches.length + data.counts.unchanged;
+      var matchedWithoutSavedLink = Math.max(0, matchedCount - data.counts.linked);
+      counts.textContent = data.source_records + " MatchPlay records · " + matchedCount +
+        " matched to club events (" + data.counts.linked + " already linked; " + matchedWithoutSavedLink +
+        " matched without a saved link) · " + data.counts.changed + " with proposed changes · " +
+        data.counts.ambiguous + " ambiguous · " + data.counts.unchanged + " unchanged · " +
+        data.counts.no_match + " with no club match.";
+      container.appendChild(node("p", "member-form-hint",
+        "Matched plus no club match equals the source total. “Already linked” is a subset of matched records."));
+      var organizer = data.scope.organizer;
+      var scopeText = organizer
+        ? "Organizer inventory: " + organizer.name + " (MatchPlay ID " + organizer.id + "), plus title searches: " + data.scope.searches.join("; ")
+        : "Title searches: " + data.scope.searches.join("; ") + " (organizer inventory unavailable)";
+      container.appendChild(node("p", "member-form-hint", "Scope: " + scopeText + " · " + data.scope.pagination + "."));
+    } else {
+      counts.textContent = data.additions.length + " possible additions · " + data.updates.length +
+        " events with changes · " + data.possible_matches.length + " possible matches · " + data.unchanged + " unchanged.";
+    }
     container.appendChild(counts);
 
     if (data.additions.length) {
@@ -197,21 +219,78 @@
       data.possible_matches.forEach(function (item) {
         var card = node("article", "member-matchplay-scan-card");
         card.appendChild(node("h6", null, item.tournament.title || "Untitled tournament"));
-        var candidates = (item.candidates || []).map(function (candidate) {
-          return candidate.title + (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "");
-        });
-        card.appendChild(node("p", "member-form-hint", candidates.length ? "Possible club matches: " + candidates.join("; ") : "Could match an existing club event."));
-        var review = node("button", "members-sidebar-link", "Review tournament");
-        review.type = "button";
-        review.addEventListener("click", function () { requestTournamentReview(item.tournament); });
-        card.appendChild(review);
+        var candidates = item.candidates || [];
+        if (data.reconciliation && candidates.length) {
+          var dateConflict = candidates.some(function (candidate) {
+            return candidate.match && (candidate.match.date_conflict || candidate.match.title_date_conflict);
+          });
+          card.appendChild(node("p", "member-form-hint", dateConflict
+            ? "The dates conflict. Compare the title dates and event details carefully; do not link these records unless you confirm they are the same event."
+            : "Compare the dates and event details, then choose the club record this MatchPlay tournament belongs to. Review and save the event form to apply links or fill missing details."));
+          candidates.forEach(function (candidate) {
+            var reviewCandidate = node("button", "members-sidebar-link",
+              "Review for “" + (candidate.title || "Untitled event") + "”" +
+              (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "") +
+              (candidate.published === false ? " · Unpublished" : " · Published") +
+              (candidate.has_matchplay_link ? " · Already linked" : ""));
+            reviewCandidate.type = "button";
+            reviewCandidate.addEventListener("click", function () {
+              document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
+                detail: { event_id: candidate.id, tournament: item.tournament }
+              }));
+            });
+            card.appendChild(reviewCandidate);
+          });
+        } else {
+          var names = candidates.map(function (candidate) {
+            return candidate.title + (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "");
+          });
+          card.appendChild(node("p", "member-form-hint", names.length ? "Possible club matches: " + names.join("; ") : "Could match an existing club event."));
+          var review = node("button", "members-sidebar-link", "Review tournament");
+          review.type = "button";
+          review.addEventListener("click", function () { requestTournamentReview(item.tournament); });
+          card.appendChild(review);
+        }
         matchSection.appendChild(card);
       });
       container.appendChild(matchSection);
     }
 
+    if (data.reconciliation && Array.isArray(data.unmatched) && data.unmatched.length) {
+      var unmatchedSection = node("details", "member-matchplay-scan-group");
+      unmatchedSection.appendChild(node("summary", null, data.counts.no_match +
+        " MatchPlay records with no club match"));
+      unmatchedSection.appendChild(node("p", "member-form-hint",
+        "These records were not added. Inspect one manually if you think an event is missing or the automatic comparison missed a match."));
+      data.unmatched.forEach(function (tournament) {
+        var card = node("article", "member-matchplay-scan-card");
+        card.appendChild(node("h6", null, tournament.title || "Untitled tournament"));
+        var facts = [formatValue("starts_at", tournament.starts_at), tournament.location].filter(Boolean);
+        var source = sourceSummary(tournament);
+        if (source) facts.push(source);
+        if (facts.length) card.appendChild(node("p", "member-form-hint", facts.join(" · ")));
+        var link = node("a", null, "View on Match Play ↗");
+        link.href = tournament.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        card.appendChild(link);
+        var review = node("button", "members-sidebar-link", "Review tournament");
+        review.type = "button";
+        review.addEventListener("click", function () { requestTournamentReview(tournament); });
+        card.appendChild(review);
+        unmatchedSection.appendChild(card);
+      });
+      if (data.unmatched_truncated) {
+        unmatchedSection.appendChild(node("p", "member-form-hint", "Showing the first " + data.unmatched.length +
+          " unmatched records; " + (data.counts.no_match - data.unmatched.length) + " more are not shown."));
+      }
+      container.appendChild(unmatchedSection);
+    }
+
     if (!data.additions.length && !data.updates.length && !data.possible_matches.length) {
-      container.appendChild(node("p", null, "No new or changed Match Play events were found."));
+      container.appendChild(node("p", null, data.reconciliation
+        ? "No proposed changes or ambiguous matches need review. Unmatched records are listed separately; nothing was added."
+        : "No new or changed Match Play events were found."));
     }
   }
 
@@ -235,5 +314,26 @@
         button.textContent = "Find additions and updates";
       }
     });
+    var historyButton = document.getElementById("member-matchplay-backfill");
+    var historyStatus = document.getElementById("member-matchplay-backfill-status");
+    var historyResults = document.getElementById("member-matchplay-backfill-results");
+    if (historyButton && historyStatus && historyResults) {
+      historyButton.addEventListener("click", async function () {
+        historyButton.disabled = true;
+        historyButton.textContent = "Scanning MatchPlay history…";
+        historyStatus.textContent = "";
+        historyResults.hidden = true;
+        try {
+          var data = await window.SNHMemberPortal.reconcileMatchplayEvents();
+          renderScan(data, historyResults, historyStatus);
+        } catch (error) {
+          historyStatus.textContent = "Could not reconcile MatchPlay history: " +
+            (error && error.message ? error.message : "Please try again.");
+        } finally {
+          historyButton.disabled = false;
+          historyButton.textContent = "Scan MatchPlay history";
+        }
+      });
+    }
   });
 })();

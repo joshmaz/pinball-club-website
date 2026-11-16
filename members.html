@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/clubhouse.css">
   <link rel="stylesheet" href="assets/css/club-account.css">
+  <link rel="stylesheet" href="assets/css/club-events.css">
   <script src="assets/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -99,7 +100,7 @@
             <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">Profile</button>
           </li>
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Club &amp; machine notes</button>
+            <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Notes</button>
           </li>
         </ul>
         <div class="members-sidebar-group" id="member-volunteer-nav" hidden>
@@ -282,18 +283,22 @@
 
         <div id="member-panel-door" class="member-panel" role="region" aria-labelledby="member-nav-door" tabindex="-1" aria-hidden="true">
           <h2>Door code</h2>
-          <div class="membership-card">
-            <p>Full Access Members can reveal the current code here.</p>
-            <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal Door Code</button>
-            <p id="door-code-value" role="status" aria-live="polite"></p>
-            <p id="door-code-reminder" class="membership-card-note" hidden>Our club runs on trust and the honor system. Please keep the door code private and do not share it, post it online, or let others use your access. Each Full Access Member should retrieve the code through their own account. Help keep the club secure by making sure the door closes and locks behind you.</p>
+          <div class="membership-card door-access-card">
+            <p class="door-access-eyebrow">Club entry</p>
+            <h3>Key lockbox</h3>
+            <p class="door-access-intro">Full Access Members can reveal the code for the key lockbox mounted beside the club entrance. The code opens the box, not the door itself.</p>
+            <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal lockbox code</button>
+            <p id="door-code-value" class="door-code-value" role="status" aria-live="polite"></p>
+            <p id="door-code-reminder" class="membership-card-note door-code-reminder">Please keep this code private. Don’t share it, post it online, or let others use your access. Make sure the entrance closes and locks behind you.</p>
+            <p class="door-lock-update">We’re working on a digitally enabled door lock. We’ll share an update when we have news.</p>
           </div>
-          <form id="door-code-admin" class="members-profile-form" hidden>
-            <h4>Update door code</h4>
-            <label for="door-code-new">Current access code</label>
-            <input id="door-code-new" type="text" autocomplete="off" maxlength="100" required>
-            <button type="submit">Save door code</button>
-            <p id="door-code-admin-status" role="status"></p>
+          <form id="door-code-admin" class="members-profile-form door-code-admin" hidden>
+            <h3>Update lockbox code</h3>
+            <p class="member-panel-helper">Use this when the key lockbox combination changes.</p>
+            <label for="door-code-new">New lockbox code</label>
+            <input id="door-code-new" type="password" autocomplete="new-password" maxlength="100" required>
+            <button type="submit">Save new code</button>
+            <p id="door-code-admin-status" role="status" aria-live="polite"></p>
           </form>
         </div>
 
@@ -351,7 +356,7 @@
         </div>
 
         <div id="member-panel-operations" class="member-panel" role="region" aria-labelledby="member-nav-operations" tabindex="-1" aria-hidden="true">
-          <h2>Operations</h2>
+          <h2>Operations Overview</h2>
           <p>Integration health, cache policies, messaging, and background jobs.</p>
           <div id="operations-refresh"></div>
           <p id="operations-status" role="status" aria-live="polite"></p>
@@ -440,6 +445,13 @@
               <button type="button" class="club-button" id="member-matchplay-scan">Find additions and updates</button>
               <p id="member-matchplay-scan-status" class="members-page-status" role="status" aria-live="polite"></p>
               <div id="member-matchplay-scan-results" class="member-matchplay-scan-results" hidden></div>
+            </section>
+            <section class="member-matchplay-scan" aria-labelledby="member-matchplay-backfill-title">
+              <h4 id="member-matchplay-backfill-title">Reconcile historical MatchPlay events</h4>
+              <p class="member-form-hint">Start with every tournament owned by the configured MatchPlay token account, plus results from the club-name searches (SNHPC, Southern NH Pinball Club, and Southern New Hampshire Pinball Club). The scan reads every available page, compares dates first, then checks titles and existing links. It reports unmatched records without adding them. Review and approve any proposed changes or ambiguous matches.</p>
+              <button type="button" class="club-button" id="member-matchplay-backfill">Scan MatchPlay history</button>
+              <p id="member-matchplay-backfill-status" class="members-page-status" role="status" aria-live="polite"></p>
+              <div id="member-matchplay-backfill-results" class="member-matchplay-scan-results" hidden></div>
             </section>
             <details class="member-matchplay-direct-search"><summary>I already have a Match Play tournament link or ID</summary>
             <h4>Review a tournament by link or ID</h4>
@@ -537,7 +549,7 @@
             <label for="member-events-list-search">Find an event</label>
             <input id="member-events-list-search" type="search" placeholder="Search titles, locations, or formats">
             <label for="member-events-list-scope">Show</label>
-            <select id="member-events-list-scope"><option value="upcoming">Upcoming and current</option><option value="past">Past</option><option value="all">All events</option></select>
+            <select id="member-events-list-scope"><option value="upcoming">Upcoming and current</option><option value="past">Past</option><option value="unpublished">Unpublished events</option><option value="all">All events</option></select>
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
           <div class="members-admin-table-wrap">
@@ -557,6 +569,18 @@
               <tbody id="member-events-table-body"></tbody>
             </table>
           </div>
+          <dialog id="member-event-preview" class="member-event-preview" aria-labelledby="member-event-preview-title">
+            <div class="member-event-preview__header">
+              <div>
+                <p id="member-event-preview-visibility" class="member-event-preview__visibility"></p>
+                <h2 id="member-event-preview-title">Event preview</h2>
+              </div>
+              <button type="button" class="members-sidebar-link" id="member-event-preview-close">Close preview</button>
+            </div>
+            <div id="events-container" class="member-event-preview__content">
+              <article id="member-event-preview-card" class="event-card"></article>
+            </div>
+          </dialog>
           <p class="members-admin-toolbar">
             <label for="member-events-page-size">Rows per page</label>
             <select id="member-events-page-size" class="members-page-size-select">
@@ -572,7 +596,7 @@
         </div>
 
         <div id="member-panel-photos" class="member-panel" role="region" aria-labelledby="member-nav-photos" tabindex="-1" aria-hidden="true">
-          <h2>Photos</h2>
+          <h2>Photo Management</h2>
           <p id="member-photos-intro" class="member-panel-intro">Organize albums, add photos, choose covers, and publish to the public gallery. New photos are resized in your browser; existing originals are retained.</p>
           <p id="member-photos-access" class="member-panel-access-note" hidden></p>
           <p id="member-photos-status" class="members-page-status" aria-live="polite"></p>
@@ -580,7 +604,7 @@
         </div>
 
         <div id="member-panel-publishing" class="member-panel" role="region" aria-labelledby="member-nav-publishing" tabindex="-1" aria-hidden="true">
-          <h2>Publishing</h2>
+          <h2>Website Publishing</h2>
           <p>Manage What's New announcements and What's Happening featured activities. Drafts stay private until published.</p>
           <p id="publishing-status" role="status"></p>
           <nav class="publishing-sections" aria-label="Publishing sections">
@@ -591,15 +615,15 @@
           <div id="member-publishing-app" class="publishing-editor"></div>
         </div>
         <div id="member-panel-games" class="member-panel" role="region" aria-labelledby="member-nav-games" tabindex="-1" aria-hidden="true">
-          <h2>Games</h2>
+          <h2>Games Management</h2>
           <p id="member-games-intro" class="member-panel-intro">Keep the club's game list current: add a machine when it lands on the floor, update floor information and machine descriptions, link owner parties, and make sure the catalog reflects what members will actually see at the club.</p>
           <p id="member-games-access" class="member-panel-access-note" hidden></p>
           <div id="member-games-app" class="member-games-app" aria-live="polite"></div>
         </div>
 
         <div id="member-panel-club-issues" class="member-panel" role="region" aria-labelledby="member-nav-club-issues" tabindex="-1" aria-hidden="true">
-          <h2>Club &amp; machine notes</h2>
-          <p class="member-panel-intro">A shared place to track machine issues, floor notes, and club tasks so other helpers know what needs attention. Some machine-condition notes arrive from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a> submissions; others are filed here in the portal. Every signed-in member can read the list and add a note. Each note shows who or what submitted it when that is known. Members with a portal helper role (events, photos, games, or membership) can edit existing notes and move status between Incoming, In progress, and Resolved.</p>
+          <h2>Notes</h2>
+          <p class="member-panel-intro">Report a machine issue or club task, then follow updates through to resolution. Signed-in members can read and add notes; volunteers with assigned website roles can update notes and statuses. Some machine reports also come from <a href="https://pinballmap.com/" target="_blank" rel="noopener noreferrer">Pinball Map</a>.</p>
           <div id="member-club-issues-app" class="member-club-issues-app" aria-live="polite"></div>
         </div>
       </div>
@@ -689,6 +713,11 @@
     var memberEventsPublished = document.getElementById("member-events-published");
     var memberEventsReset = document.getElementById("member-events-reset");
     var memberEventsTableBody = document.getElementById("member-events-table-body");
+    var memberEventPreview = document.getElementById("member-event-preview");
+    var memberEventPreviewTitle = document.getElementById("member-event-preview-title");
+    var memberEventPreviewVisibility = document.getElementById("member-event-preview-visibility");
+    var memberEventPreviewCard = document.getElementById("member-event-preview-card");
+    var memberEventPreviewClose = document.getElementById("member-event-preview-close");
     var memberEventsPrevPage = document.getElementById("member-events-prev-page");
     var memberEventsNextPage = document.getElementById("member-events-next-page");
     var memberEventsPageMeta = document.getElementById("member-events-page-meta");
@@ -1709,6 +1738,139 @@
       }, 1800);
     }
 
+    function showEventPreview(eventRow) {
+      if (!memberEventPreview || !memberEventPreviewCard || !eventRow) return;
+      var row = eventRow;
+      var card = memberEventPreviewCard;
+      card.replaceChildren();
+      var start = row.starts_at ? new Date(row.starts_at) : null;
+      var validStart = start && Number.isFinite(start.getTime());
+      var inferredTime = !!(validStart && (start.getUTCHours() || start.getUTCMinutes() || start.getUTCSeconds() || start.getUTCMilliseconds()));
+      var hasKnownTime = !!validStart && !row.all_day && (typeof row.time_known === "boolean" ? row.time_known : inferredTime);
+      var eventTimeZone = hasKnownTime ? "America/New_York" : "UTC";
+      var dateText = validStart
+        ? new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: eventTimeZone }).format(start)
+        : "Date to be announced";
+      var timeText = row.all_day
+        ? "All day"
+        : hasKnownTime
+          ? new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }).format(start) + " ET"
+          : "Time not listed";
+      var todayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+      var eventKey = validStart
+        ? new Intl.DateTimeFormat("en-CA", { timeZone: eventTimeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(start)
+        : "";
+      var badgeText = row.lifecycle_status === "canceled" ? "Canceled"
+        : row.lifecycle_status === "postponed" ? "Postponed"
+          : row.previous_schedule ? "Rescheduled"
+            : !eventKey || eventKey >= todayKey ? "Upcoming" : "Past event";
+      card.className = "event-card " + (eventKey && eventKey < todayKey ? "event-card--past" : "event-card--upcoming");
+
+      var dateBlock = document.createElement("div");
+      dateBlock.className = "event-date-block";
+      dateBlock.setAttribute("aria-hidden", "true");
+      [[ "event-date-month", validStart ? new Intl.DateTimeFormat("en-US", { month: "short", timeZone: eventTimeZone }).format(start) : "Date" ],
+       [ "event-date-day", validStart ? new Intl.DateTimeFormat("en-US", { day: "2-digit", timeZone: eventTimeZone }).format(start) : "TBD" ],
+       [ "event-date-year", validStart ? new Intl.DateTimeFormat("en-US", { year: "numeric", timeZone: eventTimeZone }).format(start) : "To come" ]]
+        .forEach(function (part) {
+          var span = document.createElement("span");
+          span.className = part[0];
+          span.textContent = part[1];
+          dateBlock.appendChild(span);
+        });
+      card.appendChild(dateBlock);
+
+      var body = document.createElement("div");
+      body.className = "event-card-body";
+      card.appendChild(body);
+      var badge = document.createElement("p");
+      badge.className = "event-card-badge";
+      badge.textContent = badgeText;
+      body.appendChild(badge);
+      var heading = document.createElement("h3");
+      heading.textContent = row.title || "Untitled Event";
+      body.appendChild(heading);
+
+      var meta = document.createElement("p");
+      meta.className = "event-card-meta";
+      var time = document.createElement("time");
+      if (validStart) time.dateTime = start.toISOString();
+      time.textContent = dateText + " · " + timeText;
+      meta.appendChild(time);
+      if (validStart && hasKnownTime && row.ends_at) {
+        var end = new Date(row.ends_at);
+        if (Number.isFinite(end.getTime()) && end > start) {
+          meta.appendChild(document.createTextNode(" – " + new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+          }).format(end) + " ET"));
+        }
+      }
+      body.appendChild(meta);
+
+      if (row.previous_schedule) {
+        var previous = document.createElement("p");
+        previous.className = "event-card-meta";
+        var previousStart = row.previous_schedule.starts_at ? new Date(row.previous_schedule.starts_at) : null;
+        previous.textContent = "Previously: " + (previousStart && Number.isFinite(previousStart.getTime())
+          ? new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/New_York" }).format(previousStart)
+          : "Date not listed") + (row.reschedule_note ? " · " + row.reschedule_note : "");
+        body.appendChild(previous);
+      }
+
+      var location = document.createElement("p");
+      location.className = "event-card-location";
+      var locationLabel = document.createElement("strong");
+      locationLabel.textContent = "Location: ";
+      location.appendChild(locationLabel);
+      location.appendChild(document.createTextNode(String(row.location || "TBD")));
+      body.appendChild(location);
+
+      if (row.matchplay_format) {
+        var format = document.createElement("p");
+        format.className = "event-card-format";
+        var formatLabel = document.createElement("strong");
+        formatLabel.textContent = "Tournament format: ";
+        format.appendChild(formatLabel);
+        format.appendChild(document.createTextNode(String(row.matchplay_format).replace(/_/g, " ").replace(/\b\w/g, function (letter) { return letter.toUpperCase(); })));
+        body.appendChild(format);
+      }
+      if (row.description && String(row.description).trim()) {
+        var description = document.createElement("p");
+        description.className = "event-card-description";
+        description.textContent = String(row.description);
+        body.appendChild(description);
+      }
+      var links = window.SNHEventLinks && typeof window.SNHEventLinks.presentation === "function"
+        ? window.SNHEventLinks.presentation(row) : [];
+      if (links.length) {
+        var linkList = document.createElement("p");
+        linkList.className = "event-external-links";
+        links.forEach(function (item) {
+          var link = document.createElement("a");
+          link.href = item.url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = item.label + " ↗";
+          linkList.appendChild(link);
+        });
+        body.appendChild(linkList);
+      }
+      if (memberEventPreviewTitle) memberEventPreviewTitle.textContent = row.title || "Untitled Event";
+      if (memberEventPreviewVisibility) {
+        memberEventPreviewVisibility.textContent = row.published
+          ? "Published event preview · Public calendar presentation"
+          : "Unpublished event preview · Only visible to event editors";
+      }
+      if (memberEventPreviewClose && memberEventPreview) {
+        memberEventPreviewClose.onclick = function () {
+          if (typeof memberEventPreview.close === "function") memberEventPreview.close();
+          else memberEventPreview.removeAttribute("open");
+        };
+      }
+      if (typeof memberEventPreview.showModal === "function") memberEventPreview.showModal();
+      else memberEventPreview.setAttribute("open", "");
+    }
+
     function renderEventsRows(rows) {
       if (!memberEventsTableBody) return;
       memberEventsTableBody.innerHTML = "";
@@ -1747,6 +1909,14 @@
         editBtn.setAttribute("data-event-action", "edit");
         editBtn.setAttribute("data-event-id", String(row.id));
         tdActions.appendChild(editBtn);
+
+        var previewBtn = document.createElement("button");
+        previewBtn.type = "button";
+        previewBtn.className = "members-admin-revoke";
+        previewBtn.textContent = "Preview";
+        previewBtn.setAttribute("data-event-action", "preview");
+        previewBtn.setAttribute("data-event-id", String(row.id));
+        tdActions.appendChild(previewBtn);
 
         var publishBtn = document.createElement("button");
         publishBtn.type = "button";
@@ -1787,7 +1957,7 @@
         var start = row.starts_at ? new Date(row.starts_at) : null;
         var end = row.ends_at ? new Date(row.ends_at) : start;
         var isPast = !!(start && Number.isFinite(start.getTime()) && end && Number.isFinite(end.getTime()) && end < today);
-        return scope === "past" ? isPast : scope === "all" ? true : !isPast;
+        return scope === "unpublished" ? !row.published : scope === "past" ? isPast : scope === "all" ? true : !isPast;
       }).sort(function (a, b) {
         var at = Date.parse(a.starts_at || ""); var bt = Date.parse(b.starts_at || "");
         if (scope === "past" || scope === "all") return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
@@ -2023,6 +2193,37 @@
       });
     }
 
+    if (typeof document !== "undefined") {
+      document.addEventListener("snh:historical-matchplay-review", function (event) {
+      var detail = event && event.detail || {};
+      var candidate = detail.tournament || {};
+      var savedEvent = memberEventsAllRows.find(function (row) {
+        return String(row.id) === String(detail.event_id);
+      });
+      if (!savedEvent) {
+        setEventsStatus("Refresh the events list before reviewing this historical match.");
+        return;
+      }
+      selectEventForEdit(savedEvent);
+      try {
+        if (candidate.url) memberEventsLinks.append({ url: candidate.url, label: "Match Play" });
+        if (candidate.series_url) memberEventsLinks.append({ url: candidate.series_url, label: "Match Play series" });
+        if (!String(memberEventsDescription.value || "").trim() && candidate.description) {
+          memberEventsDescription.value = candidate.description;
+        }
+        if (!String(memberEventsLocation.value || "").trim() && candidate.location) {
+          memberEventsLocation.value = candidate.location;
+        }
+        if (!String(memberEventsFormat.value || "").trim() && candidate.matchplay_format) {
+          memberEventsFormat.value = candidate.matchplay_format;
+        }
+        setEventsStatus("MatchPlay links and missing details were added to the unsaved event form. Existing details were kept. Review, then save to apply.");
+      } catch (error) {
+        setEventsStatus(error.message);
+      }
+      });
+    }
+
     if (matchplayReviewCandidates) {
       matchplayReviewCandidates.addEventListener("click", function (event) {
         var button = event.target.closest("button[data-matchplay-event-id]");
@@ -2082,7 +2283,10 @@
       });
     }
 
-    onEventsPanelShown = async function () {
+    onEventsPanelShown = async function (options) {
+      options = options || {};
+      var requestedPage = memberEventsPage;
+      var preservePage = options.preservePage === true;
       if (!window.SNHMemberPortal || !window.SNHMemberPortal.listEventsForAdmin) return;
       setEventsPanelIntro(userRoles);
       setEventsStatus("Loading events…");
@@ -2090,12 +2294,12 @@
       if (rows == null) {
         setEventsStatus("Could not load events. Verify events table access and RLS policies.");
         memberEventsAllRows = [];
-        memberEventsPage = 1;
+        memberEventsPage = preservePage ? requestedPage : 1;
         renderEventsPage();
         return;
       }
       memberEventsAllRows = rows;
-      memberEventsPage = 1;
+      memberEventsPage = preservePage ? requestedPage : 1;
       renderEventsPage();
       setEventsStatus("Loaded " + rows.length + " events.");
     };
@@ -2299,6 +2503,11 @@
         var row = memberEventsCache[String(eventId)];
         if (!row) return;
 
+        if (action === "preview") {
+          showEventPreview(row);
+          return;
+        }
+
         if (action === "edit") {
           selectEventForEdit(row);
           return;
@@ -2319,7 +2528,7 @@
               description: row.description || "",
               published: !row.published
             });
-            if (onEventsPanelShown) await onEventsPanelShown();
+            if (onEventsPanelShown) await onEventsPanelShown({ preservePage: true });
             setEventsStatus("Publish state updated.");
           } catch (errToggle) {
             setEventsStatus("Could not update publish state: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(errToggle));
@@ -2448,7 +2657,7 @@
       if (doorCodeVisible) {
         doorValue.textContent = "";
         doorCodeVisible = false;
-        doorReveal.textContent = "Reveal Door Code";
+        doorReveal.textContent = "Reveal lockbox code";
         doorReveal.setAttribute("aria-expanded", "false");
         return;
       }
@@ -2458,7 +2667,7 @@
         doorValue.textContent = code || "No code is set yet.";
         if (code) {
           doorCodeVisible = true;
-          doorReveal.textContent = "Hide Door Code";
+          doorReveal.textContent = "Hide lockbox code";
           doorReveal.setAttribute("aria-expanded", "true");
           doorReminder.hidden = false;
         }

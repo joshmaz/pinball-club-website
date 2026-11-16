@@ -24,7 +24,7 @@ function fixture(pinballmap=null, jobs=[]) {
 test('non-admin never loads Operations data',async()=>{const f=fixture();f.panel.init(['membership_admin']);await f.panel.load();assert.equal(f.calls.length,0);});
 test('sections render, policy save/reset and retry require correct actions and confirmations',async()=>{
  const f=fixture();f.panel.init(['club_admin']);await f.panel.load();
- assert.equal(f.buttons().length,11);
+ assert.equal(f.buttons().length,13);
  const text=node=>[node.textContent,...node.children.flatMap(text)].join(' ');
  assert.match(text(f.nodes.get('operations-content')),/1 queued \(includes scheduled\) \| 0 sending \| 1 failed \| 1 need a channel check/);
  await f.click('Cache');

@@ -3,6 +3,7 @@
   var statusEl = null;
   var listEl = null;
   var formWrap = null;
+  var formToggleEl = null;
   var filterEl = null;
   var scopeEl = null;
   var editingBaseline = null;
@@ -22,16 +23,45 @@
     });
   }
 
-  function showAllNotes() {
+  function formHasUnsavedChanges() {
     var values = formValues();
-    var dirty = editingId ? JSON.stringify(values) !== editingBaseline : !!(values[0].trim() || values[1].trim() || values[4].trim());
-    if (dirty && !window.confirm('Discard unsaved changes to this note and show all notes?')) return;
+    return editingId
+      ? JSON.stringify(values) !== editingBaseline
+      : !!(values[0].trim() || values[1].trim() || values[4].trim());
+  }
+
+  function setFormExpanded(expanded, focusForm) {
+    if (!formWrap || !formToggleEl) return;
+    formWrap.hidden = !expanded;
+    formToggleEl.setAttribute('aria-expanded', String(expanded));
+    formToggleEl.textContent = expanded ? 'Close note form' : 'Add a note';
+    if (expanded && focusForm) {
+      formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var title = document.getElementById('ci-title');
+      if (title) title.focus({ preventScroll: true });
+    }
+  }
+
+  function toggleForm() {
+    if (!formWrap) return;
+    if (formWrap.hidden) {
+      setFormExpanded(true, true);
+      return;
+    }
+    if (formHasUnsavedChanges() && !window.confirm('Discard unsaved changes to this note?')) return;
+    resetForm();
+    setFormExpanded(false, false);
+  }
+
+  function showAllNotes() {
+    if (formHasUnsavedChanges() && !window.confirm('Discard unsaved changes to this note and show all notes?')) return;
     contextGameId = '';
     var url = new URL(window.location.href);
     url.searchParams.delete('issueGame');
     window.history.replaceState(null, '', url.pathname + url.search + url.hash);
     hasManualFilterChoice = true;
     resetForm();
+    setFormExpanded(false, false);
     renderContextScope();
     selectFilter('all');
     setStatus('Showing all ' + lastRows.length + ' notes across all games and the club.');
@@ -212,16 +242,21 @@
     });
     filterEl = buildFilterBar();
     listEl = el("div", { className: "member-club-issues-list" });
-    formWrap = el("div", { className: "member-club-issues-form member-games-form" });
+    formWrap = el("div", { className: "member-club-issues-form member-games-form", id: "member-club-issues-form" });
+    formWrap.hidden = true;
     formWrap.appendChild(el("h4", { id: "ci-form-title", text: "Add a note" }));
     formWrap.appendChild(
       el("p", {
         className: "member-games-help",
-        text: "Signed-in members can read the title and details you enter here. Volunteers with note-editing access can update existing notes and their status."
+        text: "Visible to signed-in members. Leave out private or sensitive information."
       })
     );
-    formWrap.appendChild(fieldRow("Title", textInput("ci-title", "")));
-    formWrap.appendChild(fieldRow("Details", textareaInput("ci-body", "")));
+    var titleInput = textInput("ci-title", "");
+    titleInput.placeholder = "e.g. Left flipper weak";
+    formWrap.appendChild(fieldRow("Title", titleInput));
+    var detailsInput = textareaInput("ci-body", "");
+    detailsInput.placeholder = "What did you notice, and when?";
+    formWrap.appendChild(fieldRow("Details", detailsInput));
     var publicInput = textareaInput('ci-public-summary', '');
     publicInput.maxLength = 280;
     publicInput.setAttribute('aria-describedby', 'ci-public-summary-help');
@@ -233,9 +268,9 @@
 
     var gameSel = el("select", { id: "ci-game-select", className: "member-games-input" });
     var blankOpt = el("option", { value: "" });
-    blankOpt.textContent = "Not linked to a catalog game";
+    blankOpt.textContent = "Club or facility note";
     gameSel.appendChild(blankOpt);
-    formWrap.appendChild(fieldRow("On-site catalog game", gameSel));
+    formWrap.appendChild(fieldRow("Related machine (optional)", gameSel));
 
     var sel = el("select", { id: "ci-status", className: "member-games-input" });
     ["open", "in_progress", "resolved"].forEach(function (v) {
@@ -255,15 +290,27 @@
       resetForm();
       setStatus("Form cleared.");
     });
-    formWrap.appendChild(el("div", { className: "member-games-form-actions" }, [sub, clr]));
+    var close = el("button", { type: "button", className: "members-sidebar-link", id: "ci-close-form", text: "Close form" });
+    close.addEventListener("click", toggleForm);
+    formWrap.appendChild(el("div", { className: "member-games-form-actions" }, [sub, clr, close]));
 
     appEl.appendChild(statusEl);
     scopeEl = el('div', { className: 'member-club-issues-scope', role: 'group', 'aria-label': 'Game filter' });
     appEl.appendChild(scopeEl);
     renderContextScope();
     appEl.appendChild(filterEl);
-    appEl.appendChild(listEl);
+    formToggleEl = el("button", {
+      type: "button",
+      className: "member-club-issues-add-toggle",
+      id: "ci-add-note",
+      "aria-controls": "member-club-issues-form",
+      "aria-expanded": "false",
+      text: "Add a note"
+    });
+    formToggleEl.addEventListener("click", toggleForm);
+    appEl.appendChild(formToggleEl);
     appEl.appendChild(formWrap);
+    appEl.appendChild(listEl);
     syncHelperOnlyFormBits();
   }
 
@@ -294,6 +341,7 @@
       await window.SNHMemberPortal.clubIssuesUpsert(editingId, fields);
       resetForm();
       await loadList();
+      setFormExpanded(false, false);
       setStatus("Saved.");
     } catch (err) {
       setStatus(window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
@@ -364,17 +412,17 @@
     }
     return el("span", {
       className: "member-club-issues-unlinked",
-      text: "Not linked to catalog"
+      text: "Club or facility note"
     });
   }
 
   function appendQuickActions(card, row) {
     if (!hasClubIssuesHelperAccess() || !row.id) return;
     var st = String(row.status || "open").toLowerCase();
-    var actions = el("div", { className: "member-club-issues-quick-actions" });
+    var actions = el("div", { className: "member-club-issues-actions" });
 
     function mk(label, next) {
-      var b = el("button", { type: "button", className: "members-sidebar-link member-club-issues-quick-btn" });
+      var b = el("button", { type: "button", className: "members-sidebar-link member-club-issues-action" });
       b.textContent = label;
       b.addEventListener("click", function () {
         quickStatus(row, next);
@@ -392,7 +440,10 @@
       mk("Mark incoming", "open");
     }
 
-    if (actions.childNodes.length) card.appendChild(actions);
+    var edit = el("button", { type: "button", className: "members-sidebar-link member-club-issues-action", text: "Edit note" });
+    edit.addEventListener("click", function () { startEdit(row); });
+    actions.appendChild(edit);
+    card.appendChild(actions);
   }
 
   async function quickStatus(row, nextStatus) {
@@ -429,17 +480,31 @@
     }
     filtered.forEach(function (row) {
       var card = el("article", { className: "member-club-issues-card" });
-      card.appendChild(el("h4", { text: row.title || "(untitled)" }));
-      var meta = el("p", { className: "member-club-issues-meta" });
+      var heading = el("div", { className: "member-club-issues-card-heading" });
+      heading.appendChild(el("h4", { text: row.title || "(untitled)" }));
+      heading.appendChild(el("span", {
+        className: "member-club-issues-status",
+        "data-status": noteStatus(row),
+        text: formatIssueStatusLabel(row.status)
+      }));
+      card.appendChild(heading);
+
       var submittedIso = row.submittedAt || row.createdAt;
       var metaParts = [];
       if (submittedIso) metaParts.push("Submitted " + formatIssueDate(submittedIso));
       var byLabel = row.submittedByLabel || row.submitted_by_label;
       if (byLabel) metaParts.push("By " + byLabel);
-      metaParts.push(formatIssueStatusLabel(row.status));
-      meta.appendChild(document.createTextNode(metaParts.join(" · ") + " · "));
-      meta.appendChild(gameSummaryLine(row));
-      card.appendChild(meta);
+      if (metaParts.length) card.appendChild(el("p", {
+        className: "member-club-issues-meta",
+        text: metaParts.join(" · ")
+      }));
+
+      var related = gameSummaryLine(row);
+      card.appendChild(el("p", {
+        className: "member-club-issues-meta member-club-issues-related",
+        "aria-label": "Related machine or area"
+      }, [document.createTextNode("Related: "), related]));
+
       var subForCmp = row.submittedAt || row.createdAt;
       if (row.updatedAt && subForCmp && String(row.updatedAt) !== String(subForCmp)) {
         card.appendChild(
@@ -452,16 +517,11 @@
       if (row.body) {
         card.appendChild(el("p", { className: "member-club-issues-body", text: row.body }));
       }
-      if (row.publicSummary) card.appendChild(el('p', { className: 'member-games-help', text: 'Public summary: ' + row.publicSummary }));
+      if (row.publicSummary) card.appendChild(el("p", {
+        className: "member-club-issues-public-summary",
+        text: "Public game summary: " + row.publicSummary
+      }));
       appendQuickActions(card, row);
-      if (hasClubIssuesHelperAccess() && row.id) {
-        var edit = el("button", { type: "button", className: "members-sidebar-link" });
-        edit.textContent = "Edit";
-        edit.addEventListener("click", function () {
-          startEdit(row);
-        });
-        card.appendChild(edit);
-      }
       listEl.appendChild(card);
     });
   }
@@ -487,6 +547,7 @@
     var cancel = document.getElementById('ci-clear');
     if (cancel) cancel.textContent = 'Cancel editing';
     editingBaseline = JSON.stringify(formValues());
+    setFormExpanded(true, false);
     setStatus("Editing this note. Change fields below and save, or clear the form to cancel.");
     if (formWrap) {
       formWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });

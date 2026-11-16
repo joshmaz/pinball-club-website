@@ -368,3 +368,230 @@
     min-width: 0;
   }
 }
+
+
+/* Event preview opened from the Manage Events list. */
+.member-event-preview {
+  width: min(760px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: min(88dvh, 900px);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+  box-shadow: 0 1rem 4rem rgb(0 0 0 / .3);
+}
+.member-event-preview::backdrop { background: rgb(11 20 24 / .68); }
+.member-event-preview__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.member-event-preview__header h2 { margin: .2rem 0 0; }
+.member-event-preview__visibility {
+  margin: 0;
+  color: var(--club-muted);
+  font-size: .85rem;
+  line-height: 1.5;
+}
+.member-event-preview__content { min-width: 0; }
+.member-event-preview__content .event-card { margin: 0; }
+@media (max-width: 520px) {
+  .member-event-preview { padding: .8rem; }
+  .member-event-preview__header { align-items: flex-start; flex-direction: column; }
+}
+
+
+/* Door code: make the physical entry method clear at a glance. */
+.club-account .door-access-card { display: grid; justify-items: start; gap: .75rem; }
+.club-account .door-access-card > :is(h3,p) { margin: 0; }
+.club-account .door-access-eyebrow { color: var(--club-teal); font: 700 .7rem/1.4 var(--club-display); letter-spacing: .08em; text-transform: uppercase; }
+.club-account .door-access-card h3 { font-size: 1.2rem; letter-spacing: -.02em; }
+.club-account .door-access-intro { max-width: 62ch; color: var(--club-muted); line-height: 1.65; }
+.club-account #door-code-reveal { min-height: 44px; }
+.club-account .door-code-value:not(:empty) { margin: .25rem 0; padding: .65rem .85rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-soft); color: var(--club-ink); font: 700 1.35rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .12em; overflow-wrap: anywhere; }
+.club-account .door-code-reminder { max-width: 68ch; }
+.club-account .door-lock-update { max-width: 68ch; padding-top: .75rem; border-top: 1px solid var(--club-line); color: var(--club-muted); font-size: .85rem; line-height: 1.6; }
+.club-account .door-code-admin { max-width: 34rem; padding: 1.1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.club-account .door-code-admin > h3 { margin: 0; font-size: 1.1rem; }
+.club-account .door-code-admin > .member-panel-helper { margin: -.5rem 0 .1rem; }
+.club-account .door-code-admin > p[role="status"]:empty { display: none; }
+
+/* Notes: prioritize a readable status list and a compact, optional entry form. */
+.club-account .member-club-issues-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: .85rem 0 1rem;
+  padding: 0;
+  border: 0;
+}
+.club-account .member-club-issues-filter-label {
+  margin-right: .2rem;
+  color: var(--club-muted);
+  font-size: .8rem;
+  font-weight: 650;
+}
+.club-account .member-club-issues-filter-btn {
+  min-height: 40px;
+  padding: .45rem .75rem;
+  border: 1px solid var(--club-line);
+  border-radius: 999px;
+  background: var(--club-surface);
+  color: var(--club-ink);
+  font: 600 .82rem/1.25 var(--club-display);
+  cursor: pointer;
+}
+.club-account .member-club-issues-filter-btn[aria-pressed="true"] {
+  border-color: var(--club-teal);
+  background: var(--club-teal);
+  color: var(--club-surface);
+  text-decoration: none;
+}
+.club-account .member-club-issues-filter-btn:hover { border-color: var(--club-teal); }
+.club-account .member-club-issues-filter-btn:focus-visible,
+.club-account .member-club-issues-add-toggle:focus-visible,
+.club-account .member-club-issues-action:focus-visible {
+  outline: 2px solid var(--club-teal);
+  outline-offset: 3px;
+}
+.club-account .member-club-issues-add-toggle {
+  min-height: 44px;
+  margin: 0 0 .9rem;
+  padding: .6rem 1rem;
+  border: 1px solid var(--club-teal);
+  border-radius: var(--club-radius);
+  background: var(--club-teal);
+  color: var(--club-surface);
+  font: 700 .9rem/1.3 var(--club-display);
+  cursor: pointer;
+}
+.club-account .member-club-issues-add-toggle:hover { filter: brightness(.94); }
+.club-account #member-club-issues-form { margin: 0 0 1.25rem; }
+.club-account #member-club-issues-form[hidden] { display: none; }
+.club-account .member-club-issues-list {
+  display: grid;
+  gap: .7rem;
+  margin: 0 0 1rem;
+}
+.club-account .member-club-issues-card {
+  display: grid;
+  gap: .35rem;
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+}
+.club-account .member-club-issues-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .45rem .75rem;
+}
+.club-account .member-club-issues-card-heading h4 {
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.club-account .member-club-issues-status {
+  flex: 0 0 auto;
+  padding: .2rem .55rem;
+  border: 1px solid var(--club-line);
+  border-radius: 999px;
+  background: var(--club-soft);
+  color: var(--club-ink);
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.club-account .member-club-issues-status[data-status="in_progress"] {
+  border-color: var(--club-teal);
+  color: var(--club-teal);
+}
+.club-account .member-club-issues-status[data-status="resolved"] { color: var(--club-muted); }
+.club-account .member-club-issues-meta,
+.club-account .member-club-issues-updated {
+  margin: 0;
+  color: var(--club-muted);
+  font-size: .78rem;
+  line-height: 1.5;
+}
+.club-account .member-club-issues-related { overflow-wrap: anywhere; }
+.club-account .member-club-issues-body {
+  margin: .25rem 0 0;
+  color: var(--club-ink);
+  font-size: .9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.club-account .member-club-issues-public-summary {
+  margin: .35rem 0 0;
+  padding: .6rem .75rem;
+  border-left: 3px solid var(--club-teal);
+  background: var(--club-soft);
+  color: var(--club-ink);
+  font-size: .82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.club-account .member-club-issues-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .5rem;
+  padding-top: .6rem;
+  border-top: 1px solid var(--club-line);
+}
+.club-account .member-club-issues-action {
+  min-height: 40px;
+  padding: .45rem .7rem;
+  border: 1px solid var(--club-control-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-teal);
+  font-size: .8rem;
+}
+.club-account .member-club-issues-action:hover { background: var(--club-soft); }
+.club-account .member-club-issues-scope { margin-bottom: .8rem; }
+.club-account .member-club-issues-form {
+  padding: 1rem;
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+@media (max-width: 480px) {
+  .club-account .member-club-issues-filter { gap: .4rem; }
+  .club-account .member-club-issues-filter-label { flex-basis: 100%; }
+  .club-account .member-club-issues-filter-btn { min-height: 44px; padding-inline: .65rem; }
+  .club-account .member-club-issues-card { padding: .85rem; }
+  .club-account .member-club-issues-form { padding: .8rem; }
+}
+
+.operations-ai-summary { min-width: 0; }
+.operations-ai-summary progress { width: 100%; }
+.operations-ai-usage { min-width: 0; margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.operations-ai-usage-state { font-weight: 700; border-left: .25rem solid currentColor; padding: .5rem .75rem; }
+.operations-ai-usage-state.is-warning { color: #805500; background: rgba(255, 191, 0, .12); }
+.operations-ai-usage-state.is-paused { color: #9a2828; background: rgba(190, 40, 40, .1); }
+.operations-ai-usage-state.is-ok { color: #236b43; }
+.operations-ai-usage input[type="number"] { max-width: 9rem; margin: .25rem .5rem; }
+.operations-ai-usage progress { width: 100%; max-width: 28rem; }
+.operations-ai-feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: .75rem; margin-top: .75rem; }
+.operations-ai-feature { min-width: 0; padding: .85rem; border: 1px solid var(--club-line); border-radius: var(--club-radius); background: var(--club-surface); }
+.operations-ai-feature-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .35rem .75rem; }
+.operations-ai-feature-heading h5 { margin: 0; font-size: .95rem; }
+.operations-ai-feature-cost { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.operations-ai-feature-model { margin: .4rem 0 .75rem; color: var(--club-muted); font-size: .82rem; overflow-wrap: anywhere; }
+.operations-ai-feature-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .25rem .65rem; margin: 0; padding-top: .65rem; border-top: 1px solid var(--club-line); }
+.operations-ai-feature-stats dt { color: var(--club-muted); font-size: .72rem; line-height: 1.4; }
+.operations-ai-feature-stats dd { margin: .15rem 0 0; font-size: .88rem; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
