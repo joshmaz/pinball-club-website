@@ -20,7 +20,7 @@ jobs:
       SITE_ENV: ${{ github.ref_name == 'staging' && 'staging' || 'production' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Detect clean URL function changes
       id: clean-url
