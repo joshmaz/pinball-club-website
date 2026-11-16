@@ -186,14 +186,18 @@
     var rows = aiUsage.features || [];
     if (!rows.length) el('p', 'No AI requests recorded this month.', details);
     else {
-      var body = table(['Feature', 'Model', 'Requests', 'Tokens in / out', 'Estimated cost'], details);
+      var featureGrid = el('div', null, details); featureGrid.className = 'operations-ai-feature-grid';
       rows.forEach(function (item) {
-        var row = el('tr', null, body);
-        cell(row, item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature);
-        cell(row, item.models || 'Unknown model');
-        cell(row, item.request_count);
-        cell(row, Number(item.input_tokens || 0).toLocaleString() + ' / ' + Number(item.output_tokens || 0).toLocaleString());
-        cell(row, money(item.cost_usd));
+        var feature = el('div', null, featureGrid); feature.className = 'operations-ai-feature';
+        var heading = el('div', null, feature); heading.className = 'operations-ai-feature-heading';
+        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature, heading);
+        var cost = el('strong', money(item.cost_usd), heading); cost.className = 'operations-ai-feature-cost';
+        el('p', item.models || 'Unknown model', feature).className = 'operations-ai-feature-model';
+        var stats = el('dl', null, feature); stats.className = 'operations-ai-feature-stats';
+        [['Requests', Number(item.request_count || 0).toLocaleString()],
+          ['Input tokens', Number(item.input_tokens || 0).toLocaleString()],
+          ['Output tokens', Number(item.output_tokens || 0).toLocaleString()]]
+          .forEach(function (pair) { el('dt', pair[0], stats); el('dd', pair[1], stats); });
       });
     }
     var settings = el('details', null, card); el('summary', 'Monthly spending limit', settings);
