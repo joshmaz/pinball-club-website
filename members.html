@@ -538,7 +538,7 @@
             <label for="member-events-list-search">Find an event</label>
             <input id="member-events-list-search" type="search" placeholder="Search titles, locations, or formats">
             <label for="member-events-list-scope">Show</label>
-            <select id="member-events-list-scope"><option value="upcoming">Upcoming and current</option><option value="past">Past</option><option value="all">All events</option></select>
+            <select id="member-events-list-scope"><option value="upcoming">Upcoming and current</option><option value="past">Past</option><option value="unpublished">Unpublished events</option><option value="all">All events</option></select>
             <button type="button" class="members-sidebar-link" id="member-events-refresh">Refresh events</button>
           </p>
           <div class="members-admin-table-wrap">
@@ -1946,7 +1946,7 @@
         var start = row.starts_at ? new Date(row.starts_at) : null;
         var end = row.ends_at ? new Date(row.ends_at) : start;
         var isPast = !!(start && Number.isFinite(start.getTime()) && end && Number.isFinite(end.getTime()) && end < today);
-        return scope === "past" ? isPast : scope === "all" ? true : !isPast;
+        return scope === "unpublished" ? !row.published : scope === "past" ? isPast : scope === "all" ? true : !isPast;
       }).sort(function (a, b) {
         var at = Date.parse(a.starts_at || ""); var bt = Date.parse(b.starts_at || "");
         if (scope === "past" || scope === "all") return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
