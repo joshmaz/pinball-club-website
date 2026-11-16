@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     const jwt = bearer.startsWith("Bearer ") ? bearer.slice(7) : "";
     if (!jwt) return json({ error: "Sign in to review MatchPlay events" }, 401);
     const body = await req.json() as {
-      tournament?: string; mode?: string; scope?: string; value?: string; page?: number;
+      tournament?: string; mode?: string; scope?: string; value?: string; page?: number; offset?: number;
     };
 
     const url = (Deno.env.get("SUPABASE_URL") || "").trim();
@@ -241,6 +241,97 @@ Deno.serve(async (req) => {
         else unchanged += 1;
       }
       return json({ scanned_at: new Date().toISOString(), cache: cacheStates, additions, updates, possible_matches: possibleMatches, unchanged, warnings });
+    }
+
+    if (body.mode === "historical-backfill") {
+      const offset = Number.isInteger(body.offset) && Number(body.offset) >= 0 && Number(body.offset) <= 500
+        ? Number(body.offset) : 0;
+      const batchSize = 5;
+      const { data: storedEvents, error: eventsError, count: totalEvents } = await admin.from("events")
+        .select("id,title,description,location,starts_at,ends_at,all_day,time_known,external_url,external_links,source,published,lifecycle_status,matchplay_format", { count: "exact" })
+        .limit(500);
+      if (eventsError) throw new Error("Could not read club events");
+      const allEvents = storedEvents || [];
+      const linkedTournamentIds = new Set<string>();
+      for (const event of allEvents) {
+        const links = [event.external_url, ...(Array.isArray(event.external_links)
+          ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
+        for (const link of links) {
+          const id = tournamentIdFromInput(String(link || ""));
+          if (id) linkedTournamentIds.add(id);
+        }
+      }
+      const now = Date.now();
+      const targets = allEvents.filter(event => {
+        const start = Date.parse(String(event.starts_at || ""));
+        if (!Number.isFinite(start) || start >= now) return false;
+        const links = [event.external_url, ...(Array.isArray(event.external_links)
+          ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
+        return !links.some(link => tournamentIdFromInput(String(link || "")));
+      }).sort((a, b) => Date.parse(String(b.starts_at || "")) - Date.parse(String(a.starts_at || "")));
+      const batch = targets.slice(offset, offset + batchSize);
+      const warnings: string[] = [];
+      if ((totalEvents || 0) > 500) {
+        warnings.push("The scan is limited to the first 500 club event records; a larger event table needs a paginated pass.");
+      }
+      const events = [];
+      let rateLimited = false;
+      for (const event of batch) {
+        const title = String(event.title || "").trim();
+        const candidates: Array<Record<string, unknown>> = [];
+        if (title.length >= 3) {
+          try {
+            const { payload } = await getCached(`search?query=${encodeURIComponent(title)}&type=tournaments&page=1`);
+            for (const item of Array.isArray(payload?.data) ? payload.data : []) {
+              if (!item || typeof item !== "object") continue;
+              const tournament = normalizedTournament(item as Record<string, unknown>);
+              if (!tournament.id || linkedTournamentIds.has(tournament.id)) continue;
+              const match = rankEventCandidates(tournament, [event as Record<string, unknown>])[0];
+              if (!match) continue;
+              candidates.push({
+                id: tournament.id,
+                title: tournament.title,
+                starts_at: tournament.starts_at,
+                url: tournament.url,
+                series_url: tournament.series_url,
+                match: match.match,
+              });
+            }
+          } catch (error) {
+            const message = error instanceof Error ? error.message : "";
+            if (/429|too many attempts/i.test(message)) {
+              warnings.push("Match Play rate-limited the historical search. Some events on this page were not checked; try again later.");
+              rateLimited = true;
+            } else {
+              warnings.push("Could not search Match Play for “" + title.slice(0, 80) + "”.");
+            }
+          }
+        }
+        candidates.sort((a, b) => {
+          const order: Record<string, number> = { likely: 0, "same day": 1, possible: 2 };
+          const ac = String((a.match as Record<string, unknown>)?.confidence || "");
+          const bc = String((b.match as Record<string, unknown>)?.confidence || "");
+          return (order[ac] ?? 9) - (order[bc] ?? 9);
+        });
+        events.push({
+          id: event.id,
+          title: event.title,
+          starts_at: event.starts_at,
+          published: event.published,
+          candidates,
+        });
+        if (rateLimited) break;
+      }
+      return json({
+        scanned_at: new Date().toISOString(),
+        offset,
+        batch_size: batchSize,
+        total: targets.length,
+        next_offset: Math.min(offset + events.length, targets.length),
+        has_next: offset + events.length < targets.length,
+        events,
+        warnings,
+      });
     }
 
     if (body.mode === "discover") {
