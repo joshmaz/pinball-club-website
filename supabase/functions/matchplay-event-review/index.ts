@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     const jwt = bearer.startsWith("Bearer ") ? bearer.slice(7) : "";
     if (!jwt) return json({ error: "Sign in to review MatchPlay events" }, 401);
     const body = await req.json() as {
-      tournament?: string; mode?: string; scope?: string; value?: string; page?: number; offset?: number;
+      tournament?: string; mode?: string; scope?: string; value?: string; page?: number; cursor?: { starts_at?: string; id?: string } | null;
     };
 
     const url = (Deno.env.get("SUPABASE_URL") || "").trim();
@@ -125,7 +125,6 @@ Deno.serve(async (req) => {
       const searchPageLimit = 5;
       const cacheStates: unknown[] = [];
       const warnings: string[] = [];
-      let rateLimited = false;
       for (const query of searchQueries) {
         let hasMorePages = false;
         for (let page = 1; page <= searchPageLimit; page += 1) {
@@ -136,7 +135,6 @@ Deno.serve(async (req) => {
             const message = error instanceof Error ? error.message : "";
             if (/429|too many attempts/i.test(message)) {
               warnings.push("Match Play rate-limited this scan. Some results may be missing; wait a few minutes and try again.");
-              rateLimited = true;
               break;
             }
             throw error;
@@ -244,8 +242,9 @@ Deno.serve(async (req) => {
     }
 
     if (body.mode === "historical-backfill") {
-      const offset = Number.isInteger(body.offset) && Number(body.offset) >= 0 && Number(body.offset) <= 500
-        ? Number(body.offset) : 0;
+      const cursorStart = typeof body.cursor?.starts_at === "string" && Number.isFinite(Date.parse(body.cursor.starts_at))
+        ? Date.parse(body.cursor.starts_at) : null;
+      const cursorId = String(body.cursor?.id || "");
       const batchSize = 3;
       const { data: storedEvents, error: eventsError, count: totalEvents } = await admin.from("events")
         .select("id,title,description,location,starts_at,ends_at,all_day,time_known,external_url,external_links,source,published,lifecycle_status,matchplay_format", { count: "exact" })
@@ -267,15 +266,20 @@ Deno.serve(async (req) => {
         if (!Number.isFinite(start) || start >= now) return false;
         const links = [event.external_url, ...(Array.isArray(event.external_links)
           ? (event.external_links as Array<Record<string, unknown>>).map(link => link?.url) : [])];
-        return !links.some(link => tournamentIdFromInput(String(link || "")));
-      }).sort((a, b) => Date.parse(String(b.starts_at || "")) - Date.parse(String(a.starts_at || "")));
-      const batch = targets.slice(offset, offset + batchSize);
+        if (links.some(link => tournamentIdFromInput(String(link || "")))) return false;
+        if (cursorStart === null) return true;
+        return start < cursorStart || (start === cursorStart && String(event.id) > cursorId);
+      }).sort((a, b) => Date.parse(String(b.starts_at || "")) - Date.parse(String(a.starts_at || "")) ||
+        String(a.id).localeCompare(String(b.id)));
+      const batch = targets.slice(0, batchSize);
       const warnings: string[] = [];
       if ((totalEvents || 0) > 500) {
         warnings.push("The scan is limited to the first 500 club event records; a larger event table needs a paginated pass.");
       }
       const events = [];
       let rateLimited = false;
+      let stopAfterCurrent = false;
+      let lastCompleted: Record<string, unknown> | null = null;
       for (const event of batch) {
         const title = String(event.title || "").trim();
         const candidates: Array<Record<string, unknown>> = [];
@@ -312,9 +316,11 @@ Deno.serve(async (req) => {
               warnings.push("Match Play rate-limited the historical search. Some events on this page were not checked; try again later.");
               searchStatus = "rate-limited";
               rateLimited = true;
+              stopAfterCurrent = true;
             } else {
               warnings.push("Could not search Match Play for “" + title.slice(0, 80) + "”.");
               searchStatus = "error";
+              stopAfterCurrent = true;
             }
           }
         }
@@ -332,15 +338,18 @@ Deno.serve(async (req) => {
           candidates,
           search_status: searchStatus,
         });
-        if (rateLimited) break;
+        if (stopAfterCurrent) break;
+        lastCompleted = event as Record<string, unknown>;
       }
+      const hasNext = stopAfterCurrent || targets.length > batch.length;
       return json({
         scanned_at: new Date().toISOString(),
-        offset,
         batch_size: batchSize,
-        total: targets.length,
-        next_offset: Math.min(offset + events.length, targets.length),
-        has_next: offset + events.length < targets.length,
+        remaining_after_batch: Math.max(0, targets.length - (stopAfterCurrent ? events.length - 1 : batch.length)),
+        next_cursor: hasNext
+          ? (lastCompleted ? { starts_at: lastCompleted.starts_at, id: lastCompleted.id } : (body.cursor || null))
+          : null,
+        has_next: hasNext,
         events,
         warnings,
       });
