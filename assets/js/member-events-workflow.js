@@ -215,6 +215,54 @@
     }
   }
 
+  function renderHistoricalBackfill(data, results, status) {
+    results.replaceChildren();
+    results.hidden = false;
+    var scanned = Array.isArray(data.events) ? data.events : [];
+    status.textContent = "Reviewed " + scanned.length + " of " + data.total +
+      " historical events without MatchPlay links. Search results are suggestions; save each link from the event editor.";
+    (data.warnings || []).forEach(function (warning) { status.textContent += " " + warning; });
+    if (!scanned.length) {
+      results.appendChild(node("p", null, data.total
+        ? "No events were returned for this batch. Try again or refresh the event list."
+        : "Every past event already has a MatchPlay link, or there are no past events to review."));
+      return;
+    }
+    scanned.forEach(function (event) {
+      var card = node("article", "member-matchplay-scan-card");
+      var title = (event.title || "Untitled event") + (event.starts_at ? " · " + formatValue("starts_at", event.starts_at) : "");
+      card.appendChild(node("h5", null, title));
+      var candidates = Array.isArray(event.candidates) ? event.candidates : [];
+      if (!candidates.length) {
+        card.appendChild(node("p", "member-form-hint", event.search_status === "rate-limited"
+          ? "Not checked because Match Play rate-limited the search. This event needs another attempt."
+          : "No likely MatchPlay result found in the title search."));
+      } else {
+        candidates.forEach(function (candidate) {
+          var item = node("div", "member-matchplay-backfill-candidate");
+          item.appendChild(node("p", null, (candidate.title || "Untitled tournament") +
+            (candidate.starts_at ? " · " + formatValue("starts_at", candidate.starts_at) : "") +
+            " · " + ((candidate.match && candidate.match.confidence) || "Possible match")));
+          var link = node("a", null, "View on Match Play ↗");
+          link.href = candidate.url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          item.appendChild(link);
+          var review = node("button", "members-sidebar-link", "Review link in event editor");
+          review.type = "button";
+          review.addEventListener("click", function () {
+            document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
+              detail: { event_id: event.id, tournament: candidate }
+            }));
+          });
+          item.appendChild(review);
+          card.appendChild(item);
+        });
+      }
+      results.appendChild(card);
+    });
+  }
+
   onReady(function () {
     var button = document.getElementById("member-matchplay-scan");
     var status = document.getElementById("member-matchplay-scan-status");
@@ -235,5 +283,46 @@
         button.textContent = "Find additions and updates";
       }
     });
+    var historyButton = document.getElementById("member-matchplay-backfill");
+    var historyStatus = document.getElementById("member-matchplay-backfill-status");
+    var historyResults = document.getElementById("member-matchplay-backfill-results");
+    var historyPrevious = document.getElementById("member-matchplay-backfill-previous");
+    var historyNext = document.getElementById("member-matchplay-backfill-next");
+    var historyPage = document.getElementById("member-matchplay-backfill-page");
+    var historyOffset = 0;
+    var historyBatchSize = 5;
+    var historyData = null;
+    async function loadHistoricalBackfill(offset) {
+      if (!historyButton || !historyStatus || !historyResults) return;
+      historyButton.disabled = true;
+      historyPrevious.disabled = true;
+      historyNext.disabled = true;
+      historyStatus.textContent = "Searching Match Play for historical events…";
+      try {
+        historyData = await window.SNHMemberPortal.findHistoricalMatchplayLinks(offset);
+        historyOffset = historyData.offset || 0;
+        renderHistoricalBackfill(historyData, historyResults, historyStatus);
+        historyPage.textContent = historyData.total
+          ? "Events " + (historyOffset + 1) + "–" + (historyOffset + (historyData.events || []).length) + " of " + historyData.total
+          : "";
+        historyPrevious.disabled = historyOffset <= 0;
+        historyNext.disabled = !historyData.has_next;
+        historyResults.hidden = false;
+      } catch (error) {
+        historyStatus.textContent = "Could not search historical Match Play links: " +
+          (error && error.message ? error.message : "Please try again.");
+      } finally {
+        historyButton.disabled = false;
+      }
+    }
+    if (historyButton && historyStatus && historyResults && historyPrevious && historyNext && historyPage) {
+      historyButton.addEventListener("click", function () { void loadHistoricalBackfill(0); });
+      historyPrevious.addEventListener("click", function () {
+        if (historyOffset > 0) void loadHistoricalBackfill(Math.max(0, historyOffset - historyBatchSize));
+      });
+      historyNext.addEventListener("click", function () {
+        if (historyData && historyData.has_next) void loadHistoricalBackfill(historyData.next_offset);
+      });
+    }
   });
 })();
