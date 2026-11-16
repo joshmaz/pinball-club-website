@@ -124,6 +124,57 @@ Deno.serve(async (req) => {
       const cacheStates: unknown[] = [];
       const warnings: string[] = [];
       let complete = true;
+      let ownerScope: { id: string; name: string } | null = null;
+      let ownerListingComplete = true;
+      try {
+        const { payload: profile, cache } = await getCached("users/profile");
+        cacheStates.push(cache);
+        const ownerId = positiveId(profile?.userId);
+        if (!ownerId) {
+          complete = false;
+          ownerListingComplete = false;
+          warnings.push("The MatchPlay token owner could not be identified, so the organizer inventory was not available.");
+        } else {
+          ownerScope = { id: ownerId, name: String(profile.name || "MatchPlay token owner").slice(0, 100) };
+          let page = 1;
+          for (;;) {
+            try {
+              const { payload: listing, cache: listingCache } = await getCached(`tournaments?owner=${ownerId}&page=${page}`);
+              cacheStates.push(listingCache);
+              for (const item of Array.isArray(listing?.data) ? listing.data : []) {
+                if (!item || typeof item !== "object") continue;
+                const row = item as Record<string, unknown>;
+                const id = positiveId(row.tournamentId);
+                if (id) discovered.set(id, row);
+              }
+              const links = listing?.links && typeof listing.links === "object"
+                ? listing.links as Record<string, unknown> : {};
+              if (!links.next) break;
+              page += 1;
+              if (page > 1000) {
+                complete = false;
+                ownerListingComplete = false;
+                warnings.push("The MatchPlay token owner's organizer inventory exceeded 1,000 pages.");
+                break;
+              }
+            } catch (error) {
+              const message = error instanceof Error ? error.message : "";
+              complete = false;
+              ownerListingComplete = false;
+              warnings.push(/429|too many attempts/i.test(message)
+                ? "MatchPlay rate-limited the organizer inventory. The counts cover only records fetched before the limit; run it again later."
+                : "The MatchPlay token owner's organizer inventory failed before all pages were read.");
+              break;
+            }
+          }
+        }
+      } catch {
+        complete = false;
+        ownerListingComplete = false;
+        warnings.push("The MatchPlay token owner could not be read, so the organizer inventory was not available.");
+      }
+
+      let titleSearchComplete = true;
       for (const query of searchQueries) {
         let page = 1;
         for (;;) {
@@ -143,19 +194,21 @@ Deno.serve(async (req) => {
             page += 1;
             if (page > 1000) {
               complete = false;
+              titleSearchComplete = false;
               warnings.push("A MatchPlay title search exceeded 1,000 pages, so the inventory stopped before the end.");
               break;
             }
           } catch (error) {
             const message = error instanceof Error ? error.message : "";
             complete = false;
+            titleSearchComplete = false;
             warnings.push(/429|too many attempts/i.test(message)
-              ? "MatchPlay rate-limited the inventory. The counts cover only records fetched before the limit; run it again later."
+              ? "MatchPlay rate-limited the title searches. The counts cover only records fetched before the limit; run it again later."
               : "A MatchPlay title search failed before all pages were read.");
             break;
           }
         }
-        if (!complete) break;
+        if (!titleSearchComplete) break;
       }
 
       const updates: Array<Record<string, unknown>> = [];
@@ -255,7 +308,12 @@ Deno.serve(async (req) => {
       return json({
         reconciliation: true,
         scanned_at: new Date().toISOString(),
-        scope: { searches: searchQueries, pagination: "all available pages" },
+        scope: {
+          organizer: ownerScope,
+          organizer_inventory_complete: ownerListingComplete,
+          searches: searchQueries,
+          pagination: "all available pages",
+        },
         complete,
         source_records: discovered.size,
         counts: { linked, changed: updates.length, ambiguous: possibleMatches.length, unchanged, no_match: noMatch },
