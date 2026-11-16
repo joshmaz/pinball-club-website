@@ -269,8 +269,13 @@ Deno.serve(async (req) => {
         if (links.some(link => tournamentIdFromInput(String(link || "")))) return false;
         if (cursorStart === null) return true;
         return start < cursorStart || (start === cursorStart && String(event.id) > cursorId);
-      }).sort((a, b) => Date.parse(String(b.starts_at || "")) - Date.parse(String(a.starts_at || "")) ||
-        String(a.id).localeCompare(String(b.id)));
+      }).sort((a, b) => {
+        const dateOrder = Date.parse(String(b.starts_at || "")) - Date.parse(String(a.starts_at || ""));
+        if (dateOrder) return dateOrder;
+        const leftId = String(a.id);
+        const rightId = String(b.id);
+        return leftId < rightId ? -1 : leftId > rightId ? 1 : 0;
+      });
       const batch = targets.slice(0, batchSize);
       const warnings: string[] = [];
       if ((totalEvents || 0) > 500) {
