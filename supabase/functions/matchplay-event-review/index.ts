@@ -304,6 +304,7 @@ Deno.serve(async (req) => {
                 if (!match) continue;
                 found.add(tournament.id);
                 const clubMatches = rankEventCandidates(tournament, allEvents as Array<Record<string, unknown>>)
+                  .filter(item => item.lifecycle_status !== "canceled")
                   .filter(item => item.match?.title_overlap || String(item.id) === String(event.id))
                   .slice(0, 8)
                   .map(item => ({
