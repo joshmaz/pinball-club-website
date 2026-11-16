@@ -246,7 +246,7 @@ Deno.serve(async (req) => {
     if (body.mode === "historical-backfill") {
       const offset = Number.isInteger(body.offset) && Number(body.offset) >= 0 && Number(body.offset) <= 500
         ? Number(body.offset) : 0;
-      const batchSize = 5;
+      const batchSize = 3;
       const { data: storedEvents, error: eventsError, count: totalEvents } = await admin.from("events")
         .select("id,title,description,location,starts_at,ends_at,all_day,time_known,external_url,external_links,source,published,lifecycle_status,matchplay_format", { count: "exact" })
         .limit(500);
@@ -281,21 +281,29 @@ Deno.serve(async (req) => {
         const candidates: Array<Record<string, unknown>> = [];
         if (title.length >= 3) {
           try {
-            const { payload } = await getCached(`search?query=${encodeURIComponent(title)}&type=tournaments&page=1`);
-            for (const item of Array.isArray(payload?.data) ? payload.data : []) {
-              if (!item || typeof item !== "object") continue;
-              const tournament = normalizedTournament(item as Record<string, unknown>);
-              if (!tournament.id || linkedTournamentIds.has(tournament.id)) continue;
-              const match = rankEventCandidates(tournament, [event as Record<string, unknown>])[0];
-              if (!match) continue;
-              candidates.push({
-                id: tournament.id,
-                title: tournament.title,
-                starts_at: tournament.starts_at,
-                url: tournament.url,
-                series_url: tournament.series_url,
-                match: match.match,
-              });
+            const found = new Set<string>();
+            for (let page = 1; page <= 3; page += 1) {
+              const { payload } = await getCached(`search?query=${encodeURIComponent(title)}&type=tournaments&page=${page}`);
+              for (const item of Array.isArray(payload?.data) ? payload.data : []) {
+                if (!item || typeof item !== "object") continue;
+                const tournament = normalizedTournament(item as Record<string, unknown>);
+                if (!tournament.id || linkedTournamentIds.has(tournament.id) || found.has(tournament.id)) continue;
+                const match = rankEventCandidates(tournament, [event as Record<string, unknown>])[0];
+                if (!match) continue;
+                found.add(tournament.id);
+                candidates.push({
+                  id: tournament.id,
+                  title: tournament.title,
+                  starts_at: tournament.starts_at,
+                  url: tournament.url,
+                  series_url: tournament.series_url,
+                  match: match.match,
+                });
+              }
+              const links = payload?.links && typeof payload.links === "object"
+                ? payload.links as Record<string, unknown> : {};
+              if (!links.next) break;
+              if (page === 3) warnings.push("Some title results may remain beyond page 3 for “" + title.slice(0, 80) + "”.");
             }
           } catch (error) {
             const message = error instanceof Error ? error.message : "";
