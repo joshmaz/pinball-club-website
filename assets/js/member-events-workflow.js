@@ -266,7 +266,8 @@
             var review = node("button", "members-sidebar-link",
               "Review for “" + (match.title || "Untitled event") + "”" +
               (match.starts_at ? " · " + formatValue("starts_at", match.starts_at) : "") +
-              (match.published === false ? " · Unpublished" : " · Published"));
+              (match.published === false ? " · Unpublished" : " · Published") +
+              (match.has_matchplay_link ? " · Already has a MatchPlay link" : ""));
             review.type = "button";
             review.addEventListener("click", function () {
               document.dispatchEvent(new CustomEvent("snh:historical-matchplay-review", {
