@@ -1850,6 +1850,12 @@
           ? "Published event preview · Public calendar presentation"
           : "Unpublished event preview · Only visible to event editors";
       }
+      if (memberEventPreviewClose && memberEventPreview) {
+        memberEventPreviewClose.onclick = function () {
+          if (typeof memberEventPreview.close === "function") memberEventPreview.close();
+          else memberEventPreview.removeAttribute("open");
+        };
+      }
       if (typeof memberEventPreview.showModal === "function") memberEventPreview.showModal();
       else memberEventPreview.setAttribute("open", "");
     }
@@ -2439,13 +2445,6 @@
         } catch (err) {
           setEventsStatus("Could not save event: " + window.SNHMemberPortal.getFriendlyAuthErrorMessage(err));
         }
-      });
-    }
-
-    if (memberEventPreviewClose && memberEventPreview) {
-      memberEventPreviewClose.addEventListener("click", function () {
-        if (typeof memberEventPreview.close === "function") memberEventPreview.close();
-        else memberEventPreview.removeAttribute("open");
       });
     }
 
