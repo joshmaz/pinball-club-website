@@ -1,5 +1,5 @@
 (function () {
-  var allowed = false, initialized = false, busy = false, snapshot, configuration, current = 'overview';
+  var allowed = false, initialized = false, busy = false, snapshot, configuration, aiUsage = null, current = 'overview';
   var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
   var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', kineticist: 'Kineticist' };
@@ -47,8 +47,8 @@
     if (result.error) throw new Error(result.error.message || 'Request failed');
     return result.data;
   }
-  async function edge(action) {
-    var result = await window.snhSupabase.functions.invoke('operations', { body: { action: action } });
+  async function edge(action, extra) {
+    var result = await window.snhSupabase.functions.invoke('operations', { body: Object.assign({ action: action }, extra || {}) });
     if (result.error || result.data.error) throw new Error('Operations service unavailable. Check deployment and your session.');
     return result.data;
   }
@@ -161,6 +161,79 @@
         (run.result.already_captured ? ' (existing daily snapshot)' : ''), section);
     } else if (run.error) el('p', run.error, section);
   }
+  function money(value) { var amount = Number(value || 0); return "$" + amount.toFixed(amount > 0 && amount < 1 ? 4 : 2); }
+  function renderAiUsageSummary(cards) {
+    var card = el('section', null, cards); card.className = 'operations-ai-summary';
+    el('h4', 'AI usage', card);
+    if (!aiUsage) {
+      var unavailable = el('p', 'Usage details unavailable. AI requests are blocked if the budget check cannot run.', card);
+      unavailable.setAttribute('role', 'alert');
+      button('View AI usage', card, function () { selectSection('ai-usage'); });
+      return card;
+    }
+    var used = Number(aiUsage.used_usd || 0), limit = Number(aiUsage.monthly_limit_usd || 0);
+    var paused = aiUsage.status === 'paused', warning = aiUsage.status === 'warning';
+    var state = el('p', paused ? 'Paused at monthly limit' : warning ? 'Spending is near the limit' : 'On track', card);
+    state.className = paused ? 'operations-ai-usage-state is-paused' : warning ? 'operations-ai-usage-state is-warning' : 'operations-ai-usage-state is-ok';
+    if (paused || warning) state.setAttribute('role', 'alert');
+    el('p', money(used) + ' of ' + money(limit) + ' tracked this month', card);
+    var progress = el('progress', null, card); progress.max = Math.max(limit, 0.01); progress.value = Math.min(used, limit);
+    progress.setAttribute('aria-label', 'Estimated AI spending against monthly limit');
+    button('View AI usage', card, function () { selectSection('ai-usage'); });
+    return card;
+  }
+
+  function renderAiUsageSection(parent) {
+    var card = el('section', null, parent); card.className = 'operations-ai-usage';
+    if (!aiUsage) {
+      var unavailable = el('p', 'Usage details are unavailable. AI requests are blocked when the budget check cannot run.', card);
+      unavailable.setAttribute('role', 'alert');
+      return card;
+    }
+    var used = Number(aiUsage.used_usd || 0), limit = Number(aiUsage.monthly_limit_usd || 0);
+    var warningAt = Number(aiUsage.warning_limit_usd || 0);
+    var paused = aiUsage.status === 'paused', warning = aiUsage.status === 'warning';
+    var state = el('p', paused ? 'Paused at the monthly limit' : warning ? 'Spending is near the limit' : 'On track', card);
+    state.className = paused ? 'operations-ai-usage-state is-paused' : warning ? 'operations-ai-usage-state is-warning' : 'operations-ai-usage-state is-ok';
+    if (paused || warning) state.setAttribute('role', 'alert');
+    el('p', money(used) + ' / ' + money(limit) + ' estimated tracked this month', card);
+    el('p', 'Tracking started ' + date(aiUsage.tracking_started_at) + '. Earlier API usage is not included.', card);
+    var progress = el('progress', null, card); progress.max = Math.max(limit, 0.01); progress.value = Math.min(used, limit);
+    progress.setAttribute('aria-label', 'Estimated AI spending against monthly limit');
+    el('p', 'Warning at ' + money(warningAt) + ' · Resets ' + (aiUsage.reset_at ? new Date(aiUsage.reset_at).toLocaleDateString() : 'next month'), card);
+
+    el('h4', 'Usage by feature', card);
+    var rows = aiUsage.features || [];
+    if (!rows.length) el('p', 'No AI requests recorded this month.', card);
+    else {
+      var featureGrid = el('div', null, card); featureGrid.className = 'operations-ai-feature-grid';
+      rows.forEach(function (item) {
+        var feature = el('div', null, featureGrid); feature.className = 'operations-ai-feature';
+        var heading = el('div', null, feature); heading.className = 'operations-ai-feature-heading';
+        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature, heading);
+        var cost = el('strong', money(item.cost_usd), heading); cost.className = 'operations-ai-feature-cost';
+        el('p', item.models || 'Unknown model', feature).className = 'operations-ai-feature-model';
+        var stats = el('dl', null, feature); stats.className = 'operations-ai-feature-stats';
+        [['Requests', Number(item.request_count || 0).toLocaleString()],
+          ['Input tokens', Number(item.input_tokens || 0).toLocaleString()],
+          ['Output tokens', Number(item.output_tokens || 0).toLocaleString()]]
+          .forEach(function (pair) { el('dt', pair[0], stats); el('dd', pair[1], stats); });
+      });
+    }
+    var settings = el('details', null, card); el('summary', 'Monthly spending limit', settings);
+    var current = el('p', 'The site warns at 80% and pauses all AI requests at the limit. The limit resets monthly.', settings);
+    current.className = 'muted';
+    var label = el('label', 'Monthly cap in USD ', settings);
+    var input = el('input', null, label); input.type = 'number'; input.min = '0'; input.max = '100'; input.step = '0.50'; input.value = limit.toFixed(2);
+    input.setAttribute('aria-label', 'Monthly AI spending cap in US dollars');
+    button('Save limit', settings, function () {
+      var next = Number(input.value);
+      if (!Number.isFinite(next) || next < 0 || next > 100) { status.textContent = 'Choose a limit from $0 to $100.'; return; }
+      mutate(function () { return edge('set_ai_usage_budget', { monthlyLimitUsd: next }); });
+    });
+    return card;
+  }
+
   function render() {
     content.replaceChildren();
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.section === current ? 'true' : 'false'); });
@@ -168,7 +241,8 @@
     content.hidden = current === 'audit';
     if (current === 'audit') return;
     if (!snapshot) return;
-    el('h3', current.charAt(0).toUpperCase() + current.slice(1), content);
+    var sectionTitles = { 'ai-usage': 'AI Usage' };
+    el('h3', sectionTitles[current] || current.charAt(0).toUpperCase() + current.slice(1), content);
     if (current === 'overview') {
       var cards = el('div', null, content); cards.className = 'operations-cards';
       var card = el('section', null, cards); el('h4', 'Integrations', card);
@@ -187,6 +261,7 @@
       button((snapshot.messages.failed || 0) + ' failed messages', cards.children[1], function () { selectSection('messaging', 'failed'); });
       button('View cache', cards.children[2], function () { selectSection('cache'); });
       button('View jobs', cards.children[3], function () { selectSection('jobs'); });
+      renderAiUsageSummary(cards);
       var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
       if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
       else el('p','Discord queue unavailable. Check publishing access and deployment, then refresh.',publishingCard);
@@ -226,6 +301,9 @@
       fourthwallLink.target = '_blank'; fourthwallLink.rel = 'noopener noreferrer';
       el('p', 'Store status is not monitored here.', storeCard);
       el('p', 'Health reflects the latest recorded requests, not continuous monitoring.', content);
+    }
+    if (current === 'ai-usage') {
+      renderAiUsageSection(content);
     }
     if (current === 'integrations') {
       if (!configuration) el('p', 'Configuration status unavailable. Deploy the Operations service and refresh.', content);
@@ -362,6 +440,7 @@
   async function refresh() {
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); return; }
     snapshot = await rpc('snh_operations_snapshot');
+    try { aiUsage = await rpc('snh_ai_usage_snapshot'); } catch { aiUsage = null; }
     try {var deliveries=await rpc('snh_publishing_discord_status');publishingDeliveries=Array.isArray(deliveries)?deliveries:null;} catch {publishingDeliveries=null;}
     try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
     catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }
@@ -383,8 +462,8 @@
     if (window.location) { var candidate = new URLSearchParams(window.location.search).get('messageStatus'); if (['pending','sending','sent','failed','canceled'].indexOf(candidate) !== -1) filter=candidate; }
     initialized=true; content=document.getElementById('operations-content'); status=document.getElementById('operations-status');
     tabs=document.getElementById('operations-sections');
-    ['overview','integrations','cache','messaging','jobs','audit'].forEach(function (section) {
-      var label = section === 'audit' ? 'Audit log' : section.charAt(0).toUpperCase()+section.slice(1);
+    ['overview','integrations','ai-usage','cache','messaging','jobs','audit'].forEach(function (section) {
+      var label = section === 'audit' ? 'Audit log' : section === 'ai-usage' ? 'AI Usage' : section.charAt(0).toUpperCase()+section.slice(1);
       var b=button(label,tabs,async function () {
         await selectSection(section);
       }); b.dataset.section=section; b.setAttribute('aria-controls','operations-content');

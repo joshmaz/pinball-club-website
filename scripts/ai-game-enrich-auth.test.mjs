@@ -54,6 +54,23 @@ function fixture(db, options = {}) {
       assert.equal(url.searchParams.get('id'), `eq.${game.id}`);
       return Response.json(game);
     }
+    if (url.pathname === '/rest/v1/rpc/snh_ai_usage_reserve') {
+      assert.equal(headers.get('Authorization'), 'Bearer service-key');
+      assert.equal(headers.get('apikey'), 'service-key');
+      const reservation = JSON.parse(init.body || '{}');
+      assert.equal(reservation.p_feature, 'game_description');
+      assert.equal(reservation.p_model, 'gpt-4o-mini');
+      return Response.json({ allowed: true, id: uid(31), used_usd: 0, limit_usd: 5,
+        warning_limit_usd: 4, reset_at: '2026-02-01T00:00:00Z' });
+    }
+    if (url.pathname === '/rest/v1/rpc/snh_ai_usage_settle') {
+      assert.equal(headers.get('Authorization'), 'Bearer service-key');
+      assert.equal(headers.get('apikey'), 'service-key');
+      const settlement = JSON.parse(init.body || '{}');
+      assert.equal(settlement.p_call_id, uid(31));
+      assert.equal(settlement.p_succeeded, true);
+      return new Response(null, { status: 204 });
+    }
     if (url.href === 'https://api.openai.com/v1/chat/completions') {
       assert.equal(headers.get('Authorization'), 'Bearer provider-key');
       assert.equal(JSON.parse(init.body).model, 'gpt-4o-mini');
@@ -125,7 +142,8 @@ test('AI proposal authorization uses caller JWT and canonical SQL before protect
         assert.deepEqual(body.model, { provider: 'openai', model: 'openai:gpt-4o-mini', fallbackUsed: false });
         assert.deepEqual(body.regenerationLimits, { descriptionRemaining: 2 });
         assert.deepEqual(f.calls.map(c => c.path), ['/auth/v1/user', '/rest/v1/rpc/snh_member_has_games_access',
-          '/rest/v1/games', '/v1/chat/completions', '/rest/v1/audit_log']);
+          '/rest/v1/games', '/rest/v1/rpc/snh_ai_usage_reserve', '/v1/chat/completions',
+          '/rest/v1/rpc/snh_ai_usage_settle', '/rest/v1/audit_log']);
         const audit = JSON.parse(f.calls.at(-1).init.body);
         assert.equal(audit.actor_user_id, uid(101));
         assert.equal(audit.action, 'ai_proposal');
