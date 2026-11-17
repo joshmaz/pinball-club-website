@@ -47,7 +47,8 @@ Deno.serve(async req => {
       ],
       dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
         mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview",
-        live_per_run_limit: 10, live_rolling_24h_limit: 10 },
+        live_per_run_limit: 10, live_rolling_24h_limit: 10,
+        is_staging: new URL(url).hostname === "eptbdrwmcwogxcjleudv.supabase.co" },
     });
     if (action === "set_ai_usage_budget") {
       const monthlyLimitUsd = Number(body.monthlyLimitUsd);
@@ -124,6 +125,18 @@ Deno.serve(async req => {
         ...(ok ? { last_success_at: completed } : { last_error_at: completed, last_error: "Connection test failed" }) });
       if (status.error) return json({ error: "Could not record connection test result" }, 503);
       return json({ ok, message: ok ? "Connection successful" : "Connection test failed. Check provider configuration." });
+    }
+    if (action === "clear_staging_notification_queue") {
+      if (new URL(url).hostname !== "eptbdrwmcwogxcjleudv.supabase.co") {
+        return json({ error: "Queue clearing is available only in staging." }, 409);
+      }
+      const cleared = await db.rpc("snh_operations_clear_staging_notifications", {
+        p_actor_user_id: auth.user.id,
+      });
+      if (cleared.error) return json({ error: "Could not clear staging notification queue." }, 503);
+      const count = Number(cleared.data);
+      if (!Number.isSafeInteger(count) || count < 0) return json({ error: "Invalid queue cleanup result." }, 503);
+      return json({ ok: true, count, message: "Canceled " + count + " pending staging notification" + (count === 1 ? "." : "s.") });
     }
     if (action === "dispatch") {
       const secret = Deno.env.get("NOTIFICATION_DISPATCH_SECRET");
