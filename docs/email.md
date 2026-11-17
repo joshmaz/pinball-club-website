@@ -89,6 +89,10 @@ retries; delivery beyond that window is held for manual review.
 
 Operations → Messaging can expand **Preview message** to show the queued text and recipient. This content can include member names and email addresses, so it is available only to Club Administrators. Pending messages can be canceled individually. In staging, **Clear staging pending queue** cancels all pending messages in that project; it does not send them or affect messages already being sent. These actions leave canceled records visible in history and write an Operations audit entry.
 
+Club Administrators can also send a copy of a pending staging message to `NOTIFICATION_TEST_EMAIL`. The subject is prefixed with `[STAGING PREVIEW]` and the body identifies it as a test copy. This action is staging-only, leaves the queue item pending, does not contact its intended recipient, and records an Operations audit entry. It requires the staging test address, Resend API key, and sender to be configured.
+
+Outbound notifications currently use the stored plain-text subject and body. Resend-hosted email templates are the preferred direction for branded formatting; adopting them requires defining template IDs and variables for each notification kind and changing the queued payload/dispatcher together. Until then, preview sends show the exact plain-text content used by the current dispatcher, with a staging banner.
+
 Staging intentionally rejects live delivery. Test mode sends a synthetic message to the configured test inbox and never reads or changes queued messages. Use queue preview to verify the event and message content, then cancel or clear staging items when finished.
 
 Inspect queue totals in the Supabase SQL editor:
