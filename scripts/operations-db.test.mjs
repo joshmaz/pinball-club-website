@@ -66,7 +66,7 @@ try {
  snapshot=(await query('select snh_operations_snapshot() s'))[0].s;
  assert.equal(snapshot.jobs[0].status,'succeeded'); assert.equal(snapshot.cache.total,2);
  const messages=(await query('select snh_operations_messages() m'))[0].m;
- assert.equal(messages.length,2); assert.equal('body' in messages[0],false);
+ assert.equal(messages.length,2); assert.equal(messages[0].body,'body');
  await assert.rejects(query("select snh_operations_messages('invalid')"),/Invalid message filter/);
  await sql('reset role');
  const audits=await query('select * from audit_log');
