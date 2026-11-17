@@ -2547,7 +2547,7 @@
     ], "standard");
     addDraftOptionSelect("Voice", "mg-ai-description-voice", [
       { value: "club", label: "Club voice (friendly and factual)" },
-      { value: "gentle_wit", label: "Friendly with gentle wit" },
+      { value: "gentle_wit", label: "Friendly with pinball-aware wit" },
       { value: "energetic", label: "More energetic" },
     ], "club");
     draftOptions.appendChild(draftOptionControls);
