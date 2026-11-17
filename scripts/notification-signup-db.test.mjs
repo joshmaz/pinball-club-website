@@ -187,7 +187,7 @@ try {
   assert.deepEqual(delivered.map(d => d.body.to[0]).sort(), queued.map(q => q.recipient_email).sort());
   for (const message of queued) {
     const delivery = delivered.find(d => d.key === message.id);
-    assert.equal(delivery.body.template.id, 'snhpc-new-website-account-notice');
+    assert.equal(delivery.body.template.id, 'snhpc-member-signup-alert-v1');
     assert.equal(delivery.body.template.variables.SUBJECT_PREFIX, '');
     assert.equal(delivery.body.template.variables.PREVIEW_BANNER, '');
     assert.equal(delivery.body.template.variables.NEW_USER_NAME, message.template_variables.NEW_USER_NAME);
