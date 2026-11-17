@@ -422,7 +422,7 @@
               },'Send the actual queued message content to the configured shared staging test inbox? It may include member names or email addresses. The email will be marked [STAGING PREVIEW]; the queued message remains pending and its intended recipient will not receive it.');
             });
           }
-          button('Cancel',c,function () { mutate(async function () { await rpc('snh_operations_cancel_notification',{p_id:m.id}); return {message:'Pending notification canceled.'}; },'Cancel this queued notification to ' + m.recipient_email + '? It will not be sent.');
+          button('Cancel',c,function () { mutate(async function () { await rpc('snh_operations_cancel_notification',{p_id:m.id}); return {message:'Pending notification canceled.'}; },'Cancel this queued notification to ' + m.recipient_email + '? It will not be sent.'); });
         }
         if (m.can_retry) button('Retry',c,function () { mutate(async function () { await rpc('snh_operations_retry',{p_id:m.id}); return {message:'Message queued for retry.'}; },'Queue this failed message for another delivery attempt?'); });
       });
