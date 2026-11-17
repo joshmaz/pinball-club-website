@@ -408,7 +408,7 @@
       messages.forEach(function (m) {
         var row = el('tr', null, body); var c = cell(row,m.recipient_email); el('p',m.kind + ': ' + m.subject,c);
         var preview = el('details',null,c); el('summary','Preview message',preview);
-        var messageText = el('pre',m.body || '',preview); messageText.style.whiteSpace='pre-wrap'; messageText.style.overflowWrap='anywhere';
+        var messageText = el('pre',m.body || '',preview); messageText.setAttribute('style','white-space:pre-wrap;overflow-wrap:anywhere');
         cell(row,m.status + ' / ' + m.attempts);
         c = cell(row,'Created: ' + date(m.created_at)); el('p','Available: ' + date(m.available_at),c); el('p','Sent: ' + date(m.sent_at),c);
         c = cell(row,m.last_error || 'None');
