@@ -419,7 +419,7 @@
               mutate(async function () {
                 var result = await edge('send_notification_preview',{notificationId:m.id});
                 return {message:result.message || 'Preview sent to the configured staging test inbox. The queued message remains pending.'};
-              },'Send a copy of this queued staging message to the configured test inbox? The email will be marked [STAGING PREVIEW]. The queued message remains pending and its intended recipient will not receive it.');
+              },'Send the actual queued message content to the configured shared staging test inbox? It may include member names or email addresses. The email will be marked [STAGING PREVIEW]; the queued message remains pending and its intended recipient will not receive it.');
             });
           }
           button('Cancel',c,function () { mutate(async function () { await rpc('snh_operations_cancel_notification',{p_id:m.id}); return {message:'Pending notification canceled.'}; },'Cancel this queued notification to ' + m.recipient_email + '? It will not be sent.');
