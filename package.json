@@ -3,6 +3,6 @@
     "@electric-sql/pglite": "^0.5.16",
     "@supabase/supabase-js": "2.119.0",
     "supabase": "^3.1.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }
