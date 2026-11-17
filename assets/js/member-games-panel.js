@@ -2198,6 +2198,8 @@
           ? " — Data provided by Kineticist"
           : item.provider === "OPDB" && item.verificationMethod === "archive"
           ? " — exact ID in validated OPDB archive"
+          : item.provider === "IPDB" && item.verificationMethod === "archive"
+          ? " — exact ID in validated IPDB reference archive"
           : item.verificationMethod === "operator" || priorOperatorConfirmation
           ? " — operator-confirmed match"
           : item.verified ? " — page fetched; identity matched" : " — not used"));

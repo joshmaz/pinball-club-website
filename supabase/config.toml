@@ -49,6 +49,10 @@ verify_jwt = false
 # Weekly archive worker is authorized by its dedicated Vault-backed scheduler secret.
 verify_jwt = false
 
+[functions.ipdb-reference-sync]
+# Monthly archive worker checks the GitHub file validator before downloading the JSON.
+verify_jwt = false
+
 [functions.photo-finalize]
 verify_jwt = true
 

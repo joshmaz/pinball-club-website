@@ -33,6 +33,9 @@ Deno.serve(async req => {
         { provider: "opdb", configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
           note: "Weekly validated V2 archive and IPDB crosswalk. Run history and freshness are in Jobs.",
           scheduler_configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
+        { provider: "ipdb", configured: Boolean(Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
+          note: "Monthly checked JSON reference archive for AI enrichment. Jobs shows the IPDB refresh date and import status.",
+          scheduler_configured: Boolean(Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
         { provider: "kineticist", configured: true, test_supported: false,
           note: "On-demand game lookup by exact OPDB ID. Game responses are cached for 24 hours." },
         { provider: "pintips", configured: Boolean(Deno.env.get("PINTIPS_IMPORT_SCHEDULER_SECRET")), test_supported: false, note: "Daily export import. Manual refresh is in Games; counts are in Jobs." },
@@ -80,6 +83,30 @@ Deno.serve(async req => {
         return json(result);
       } catch {
         return json({ error: "OPDB refresh timed out or could not be reached. Check Jobs before retrying." }, 503);
+      }
+    }
+    if (action === "run_ipdb_reference_sync") {
+      const schedulerSecret = Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET") || "";
+      const serviceRoleKey = serviceKey();
+      if (!schedulerSecret || !serviceRoleKey) return json({ error: "IPDB reference sync is not configured." }, 409);
+      try {
+        const response = await fetch(`${url.replace(/\/+$/, "")}/functions/v1/ipdb-reference-sync`, {
+          method: "POST",
+          redirect: "error",
+          signal: AbortSignal.timeout(290_000),
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": serviceRoleKey,
+            "Authorization": `Bearer ${serviceRoleKey}`,
+            "x-ipdb-reference-sync-secret": schedulerSecret,
+          },
+          body: "{}",
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) return json({ error: result.error || "IPDB refresh failed. Check Jobs for its safe error summary." }, response.status);
+        return json({ ok: true, message: result.unchanged ? "IPDB export is unchanged; no download was needed." : "IPDB reference archive refreshed." });
+      } catch {
+        return json({ error: "IPDB refresh timed out or could not be reached. Check Jobs before retrying." }, 503);
       }
     }
     if (action === "test_matchplay") {
