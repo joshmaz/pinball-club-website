@@ -91,7 +91,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
     const subjectPrefix = isStaging ? "[STAGING TEST]" : "[TEST]";
     const deliveryNote = isStaging ? "STAGING ENVIRONMENT. Test delivery." : "Test delivery.";
     const result = await send(apiKey, from, testEmail,
-      `${subjectPrefix} ${data[0].subject}`, `${data[0].body}\\n\\n${deliveryNote} No queued message was consumed.`,
+      `${subjectPrefix} ${data[0].subject}`, `${data[0].body}\n\n${deliveryNote} No queued message was consumed.`,
       `test-${crypto.randomUUID()}`);
     return response({ mode, sent: result.ok, providerId: result.id || null,
       error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
