@@ -1,6 +1,8 @@
 # SNHPC Website Roles and Authorization Policy
 
-**Status:** Canonical RBAC/security model. Publishing is an additive extension requiring `20261017180000_publishing_role_domain.sql`; see [rollout notes](publishing-domain.md).
+**Status:** Canonical authorization model for the eleven persisted roles,
+including the deployed Publishing domain. See [Publishing operations and
+deployment](publishing-domain.md) for its workflows.
 
 **Purpose:** Describe the deployed role hierarchy, role semantics, delegation model, and effective authorization principles for the Southern New Hampshire Pinball Club website.
 
@@ -120,7 +122,12 @@ Membership Editor retains ordinary membership upkeep but cannot grant or revoke 
 
 Destructive deletion is Admin-only where implemented; ordinary upkeep remains Editor-level. Events RLS and the event photo digest use canonical effective-role helpers, retaining the digest’s Photos-access alternative.
 
-**Publishing Editor** is responsible for announcements and featured activities, including drafting, previewing, publishing, scheduling, withdrawing, archiving, and ordering when the publishing editor ships. **Publishing Admin** includes those capabilities plus reserved administrative actions such as permanent deletion. Neither role confers other domain access or delegation authority. Publishing volunteers retain the general Website Volunteer helper access described below. This foundation adds authorization and role presentation; it does not yet add content tables or an editor. See [Publishing domain](publishing-domain.md).
+**Publishing Editor** maintains announcements and featured activities, including
+drafting, previewing, publishing, scheduling, withdrawing, archiving, and
+ordering through the Website Publishing panel. **Publishing Admin** includes
+those capabilities plus permanent deletion. Neither role confers other domain
+access or delegation authority. Publishing volunteers retain the general
+Website Volunteer helper access described below. See [Publishing domain](publishing-domain.md).
 
 ## 8. Pingolf policy
 

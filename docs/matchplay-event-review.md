@@ -129,7 +129,9 @@ checks the invalid old filter and valid JSONB containment. Provider errors keep
 HTTP status and at most 240 characters of a credential-redacted message or text
 excerpt. Raw request/transport errors are not returned.
 
-These checks reproduce the code defect; they do not inspect production Edge
-Function logs or exercise an authenticated production review. After deploying,
-verify an individual review from the Events dashboard. The preview shares the
-production Supabase project, so deployment affects both environments.
+These checks reproduce the code defect; they do not inspect hosted Edge Function
+logs or exercise an authenticated review. After deploying the function, verify
+an individual review from Event Management in the intended environment. Before
+using a Netlify preview for any write-capable action, confirm its generated
+Supabase URL points to staging. A frontend preview does not deploy the matching
+Edge Function or database migration.
