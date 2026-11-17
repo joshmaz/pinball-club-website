@@ -61,7 +61,7 @@ $$;
 
 create function public.snh_operations_notification_preview_request(p_id uuid)
 returns void
-language plpgsql security definer set search_path = '' as $
+language plpgsql security definer set search_path = '' as $$
 declare
   v_message public.notification_outbox;
 begin
@@ -79,8 +79,7 @@ begin
     jsonb_build_object('kind',v_message.kind,'status',v_message.status),
     jsonb_build_object('destination','configured_test_inbox','status','requested'));
 end;
-$;
-
+$$;
 revoke all on function public.snh_operations_notification_preview_request(uuid) from public,anon;
 grant execute on function public.snh_operations_notification_preview_request(uuid) to authenticated;
 
