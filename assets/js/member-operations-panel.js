@@ -476,9 +476,9 @@
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;
           el('p','Delivery mode: ' + (dispatcher ? dispatcher.mode : 'Unknown'),section);
-          if (dispatcher) el('p','Live-send safety switch: ' + (dispatcher.live_enabled ? 'Enabled' : 'Disabled') +
-            ' | Limit: ' + (dispatcher.live_per_run_limit || 10) + ' per run and ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.',section);
-          if (dispatcher && dispatcher.configured && (dispatcher.mode !== 'live' || dispatcher.live_enabled)) {
+          if (dispatcher) el('p','Live-send limits: ' + (dispatcher.live_per_run_limit || 10) +
+            ' per run and ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.',section);
+          if (dispatcher && dispatcher.configured) {
             var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
             var dispatchPrompt = dispatcher.mode === 'test'
               ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
@@ -488,8 +488,6 @@
             button(dispatchLabel,section,function () {
               mutate(function () { return edge('dispatch'); },dispatchPrompt);
             });
-          } else if (dispatcher && dispatcher.configured && dispatcher.mode === 'live') {
-            el('p','Live dispatch is locked by the server safety switch. Preview and test remain available.',section);
           } else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
         }
       });
