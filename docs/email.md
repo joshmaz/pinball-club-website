@@ -71,18 +71,21 @@ retries; delivery beyond that window is held for manual review.
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
-2. Confirm the Resend API key for each project can access the published `snhpc-new-website-account-notice` template alias. Configure project-specific Edge Function secrets:
+2. Publish the `snhpc-new-website-account-notice` template in Resend and
+   confirm the API key configured for each project can access it.
+3. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
    sending domain), `NOTIFICATION_FROM` (a sender on the verified domain),
-`NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
-3. In Operations → Jobs, use **Preview queue** to inspect the safe summary of
-   the oldest pending item. Use **Send test email** to send a synthetic test
-   message to the test inbox and check both the inbox and Resend's delivery log.
-   Repeated test runs send additional copies to that test destination.
-4. Keep delivery mode at `preview` by default. Enable `live` only after the
-   live-send safeguards and the production configuration review are complete.
-   A scheduled caller is not configured by default. Keep dispatch secrets out
+   and `NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
+4. In Operations → Messaging, inspect queued content and use **Send preview**
+   on a staging item to receive the rendered template at the configured test
+   inbox. The item remains pending and its intended recipient is not contacted.
+   Use **Send test email** separately to verify the dispatcher with a synthetic
+   message. Repeated test runs send additional copies to the test destination.
+5. Keep delivery mode at `preview` by default. Enable `live` only after the
+   staging preview and production configuration review are complete. A
+   scheduled caller is not configured by default. Keep dispatch secrets out
    of browser code and public build variables.
 
 ### Queue review and staging cleanup
