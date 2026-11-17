@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
   } : null;
   const safeError = outcome.ok && !summary.failed ? null
     : typeof summary.error === "string" && summary.error.trim()
-      ? summary.error.replace(/[\\r\\n\\t]/g, " ").slice(0, 180)
+      ? summary.error.replace(/[\r\n\t]/g, " ").slice(0, 180)
       : "Notification dispatch failed. Check dispatcher logs.";
   const finish = await db.from("operations_job_runs").update({
     finished_at: new Date().toISOString(),
@@ -111,7 +111,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
       isStaging ? "STAGING ENVIRONMENT. Test delivery." : "Test delivery.",
       "No queued message was read or changed.",
       `Sent at ${sentAt}.`,
-    ].join("\\n\\n");
+    ].join("\n\n");
     const result = await send(apiKey, from, testEmail, subject, text, `test-${crypto.randomUUID()}`);
     return response({ mode, sent: result.ok, synthetic: true, providerId: result.id || null,
       error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
