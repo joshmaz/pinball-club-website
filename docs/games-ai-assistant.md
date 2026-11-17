@@ -30,15 +30,15 @@ Propose-only AI for the member **Games** catalog editor (`members.html`). Editor
 
 3. **Config**: `supabase/config.toml` sets `verify_jwt = true` for this function.
 
-## Reference sources and link confirmation
+## Reference sources and link review
 
 A Games Editor can edit the catalog's provider URLs. Enrichment does not fetch
 HTML pages from IPDB, Pinside, or Kineticist. Link candidates use the validated
 OPDB archive and exact IPDB crosswalk, the validated IPDB JSON archive, the Kineticist game API response, and safe
 catalog slug patterns. The evidence panel shows the OPDB, IPDB, and Kineticist records
-that were used; it does not report blocked page reads. Editors can open a proposed
-link and confirm it manually. The confirmation is scoped to the current editing
-session and does not make the page text available to enrichment.
+that were used; it does not report blocked page reads. Editors can open and review
+a proposed link before copying it into the game record. The site does not fetch
+the linked page or use its text.
 
 Metadata suggestions use the validated OPDB and IPDB archives and cached Kineticist
 game API response (including credits). IPDB records are resolved by exact saved IPDB ID or the exact OPDB crosswalk; conflicts between those IDs omit the IPDB record. IPDB manufacture dates are compared only with the manufacture-date field, never treated as release dates. Operator notes are only used for
@@ -72,7 +72,7 @@ handler and canonical SQL role boundary before protected work.
 ## Editor workflow (short)
 
 1. Open a saved game and choose **Find or verify source links**. Existing URLs stay in place; generated candidates are shown for operator review. **Copy selected links to fields** places them in the URL fields above; use **Save game** to persist them.
-2. Open the evidence details to review the registered OPDB, IPDB, and Kineticist records. Catalog data is resolved by ID. Edit a proposed URL directly, open it, and confirm the exact machine page before applying it; the site does not fetch provider pages.
+2. Open the evidence details to review the registered OPDB, IPDB, and Kineticist records. Catalog data is resolved by ID. Review any proposed URL before copying it into a field; the site does not fetch provider pages.
 3. In **Game metadata**, choose **Check metadata** to check existing values against OPDB/IPDB/Kineticist records and suggest supported values for blank fields in the same result. IPDB's date of manufacture can support the manufacture-date field, not the release date. An explicit release month and year in the exact Kineticist description can produce a suggestion when the release date is blank, or a review recommendation when it differs from an existing date. A production month is shown as a lower-confidence candidate with a note that production timing may differ from release timing. Because the editor stores a full date, the first of that month is proposed and the unspecified day is explained. Select the updates or missing values you want, apply them to the form, then use **Save game** to persist changes. Operator notes are not used for metadata.
 4. In Operations → Jobs, review the IPDB archive's last check, embedded source refresh date, record count, and freshness warning. **Check for updates** downloads and indexes the JSON only if its ETag changed.
 5. OPDB ID, match method, and canonical name are imported integration data and are read-only in this editor. Third-party source URLs appear at the end of the metadata block.
