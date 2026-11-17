@@ -63,7 +63,7 @@ function signupNoticeTemplate(kind: string, values: unknown, stagingPreview = fa
   const value = (key: string) => typeof data[key] === "string" && String(data[key]).trim()
     ? String(data[key]).trim() : "Not provided";
   return {
-    id: "snhpc-new-website-account-notice",
+    id: "snhpc-member-signup-alert-v1",
     variables: {
       SUBJECT_PREFIX: stagingPreview ? "[STAGING PREVIEW] " : "",
       PREVIEW_BANNER: stagingPreview
