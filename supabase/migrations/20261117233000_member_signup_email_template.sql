@@ -36,7 +36,7 @@ begin
       'member_signup', v_recipient.id, v_recipient.email,
       'New SNHPC website account created',
       'A new profile was created for the SNH Pinball Club website.' || E'\n\n' ||
-      'You are receiving this informational notice because your website role includes membership-management access and is eligible for new-account notifications.' || E'\n\n' ||
+      'You’re receiving this informational notice because your website role includes membership-management access and is eligible for new-account notifications.' || E'\n\n' ||
       'Name: ' || v_name || E'\n' ||
       'Email: ' || v_email || E'\n\n' ||
       'No action is needed. This is a website-account notice only; it does not confirm or change paid membership status.',
