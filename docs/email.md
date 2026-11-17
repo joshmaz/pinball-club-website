@@ -85,6 +85,12 @@ retries; delivery beyond that window is held for manual review.
    A scheduled caller is not configured by default. Keep dispatch secrets out
    of browser code and public build variables.
 
+### Queue review and staging cleanup
+
+Operations → Messaging can expand **Preview message** to show the queued text and recipient. This content can include member names and email addresses, so it is available only to Club Administrators. Pending messages can be canceled individually. In staging, **Clear staging pending queue** cancels all pending messages in that project; it does not send them or affect messages already being sent. These actions leave canceled records visible in history and write an Operations audit entry.
+
+Staging intentionally rejects live delivery. Test mode sends a synthetic message to the configured test inbox and never reads or changes queued messages. Use queue preview to verify the event and message content, then cancel or clear staging items when finished.
+
 Inspect queue totals in the Supabase SQL editor:
 
 ```sql
