@@ -372,11 +372,18 @@ Deno.serve(async (req) => {
       const discovered = new Map<string, Record<string, unknown>>();
       const searchQueries = ["SNHPC", "Southern New Hampshire Pinball Club"];
       const searchPageLimit = 5;
+      const lookbackCutoff = new Date(now);
+      lookbackCutoff.setUTCMonth(lookbackCutoff.getUTCMonth() - 1);
+      const lookbackCutoffMs = lookbackCutoff.getTime();
       const cacheStates: unknown[] = [];
       const warnings: string[] = [];
       let rateLimited = false;
       for (const query of searchQueries) {
         let hasMorePages = false;
+        let stoppedAtLookback = false;
+        let dateOrderConfirmed = true;
+        let previousPageOldestStart: number | null = null;
+        let orderWarningAdded = false;
         for (let page = 1; page <= searchPageLimit; page += 1) {
           let result;
           try {
@@ -392,19 +399,64 @@ Deno.serve(async (req) => {
           }
           const { payload, cache } = result;
           cacheStates.push(cache);
-          for (const item of Array.isArray(payload?.data) ? payload.data : []) {
+          const rows = Array.isArray(payload?.data) ? payload.data : [];
+          const pageStartTimes: number[] = [];
+          let pageChronological = rows.length > 0;
+          let previousStart = Number.POSITIVE_INFINITY;
+          for (const item of rows) {
+            if (!item || typeof item !== "object") {
+              pageChronological = false;
+              continue;
+            }
+            const row = item as Record<string, unknown>;
+            const start = typeof row.startUtc === "string" ? Date.parse(row.startUtc) : NaN;
+            if (!Number.isFinite(start)) {
+              pageChronological = false;
+              continue;
+            }
+            pageStartTimes.push(start);
+            if (start > previousStart) pageChronological = false;
+            previousStart = start;
+          }
+          const pageNewestStart = pageStartTimes.length ? Math.max(...pageStartTimes) : null;
+          const pageOldestStart = pageStartTimes.length ? Math.min(...pageStartTimes) : null;
+          const orderedAcrossBoundary = previousPageOldestStart === null ||
+            (pageNewestStart !== null && pageNewestStart <= previousPageOldestStart);
+          if (!pageChronological || !orderedAcrossBoundary) dateOrderConfirmed = false;
+
+          for (const item of rows) {
             if (!item || typeof item !== "object") continue;
             const row = item as Record<string, unknown>;
             const id = positiveId(row.tournamentId);
             const name = String(row.name || "");
-            if (id && /snhpc|southern new hampshire pinball club/i.test(name)) discovered.set(id, row);
+            const start = typeof row.startUtc === "string" ? Date.parse(row.startUtc) : NaN;
+            const isOlderThanLookback = Number.isFinite(start) && start < lookbackCutoffMs;
+            if (id && !isOlderThanLookback && /snhpc|southern new hampshire pinball club/i.test(name)) {
+              discovered.set(id, row);
+            }
           }
           const links = payload?.links && typeof payload.links === "object"
             ? payload.links as Record<string, unknown> : {};
           hasMorePages = !!links.next;
+          const pageEntirelyOlderThanLookback = rows.length > 0 &&
+            pageStartTimes.length === rows.length &&
+            pageStartTimes.every(start => start < lookbackCutoffMs);
+          if (page >= 2 && pageEntirelyOlderThanLookback && dateOrderConfirmed) {
+            warnings.push(`The “${query}” search stopped after page ${page}; all results on that page were more than one month old and the pages were ordered newest first.`);
+            stoppedAtLookback = true;
+            hasMorePages = false;
+            break;
+          }
+          if (page >= 2 && pageEntirelyOlderThanLookback && !dateOrderConfirmed && !orderWarningAdded) {
+            warnings.push(`The “${query}” results were not consistently ordered by date, so the one-month cutoff could not stop pagination safely.`);
+            orderWarningAdded = true;
+          }
+          if (pageChronological && orderedAcrossBoundary && pageOldestStart !== null) {
+            previousPageOldestStart = pageOldestStart;
+          }
           if (!hasMorePages) break;
         }
-        if (hasMorePages && !rateLimited) {
+        if (hasMorePages && !rateLimited && !stoppedAtLookback) {
           warnings.push("Search stopped after the first 5 pages for a title to avoid excessive Match Play requests.");
         }
         if (rateLimited) break;

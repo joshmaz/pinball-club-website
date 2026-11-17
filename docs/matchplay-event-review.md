@@ -52,12 +52,21 @@ The operator can run the reconciliation again after the source is available.
 ## Event Management scan and approval
 
 The separate routine scan checks linked upcoming or in-progress club events
-and searches MatchPlay titles for current additions and updates. It uses the
-server-side cache and runs only when an editor asks for it. Its results may
-include possible additions, field changes, possible matches, and unchanged
-linked events. Editors approve proposed changes one field at a time. A
-date/time change can optionally be recorded as a reschedule. Any new event is
-created as an unpublished draft only after an explicit approval.
+and searches MatchPlay titles for current additions and updates. It retains
+future tournaments and tournaments from the past month; older dated search
+results are left to historical reconciliation. The scan stops requesting pages
+when every result on a page is older than that cutoff and the results have been
+consistently ordered newest first across at least two pages. If dates are
+missing or the order is inconsistent, it keeps the existing five-page limit
+instead of stopping early. This date window does not affect the historical
+reconciliation scan.
+
+The routine scan uses the server-side cache and runs only when an editor asks
+for it. Its results may include possible additions, field changes, possible
+matches, and unchanged linked events. Editors approve proposed changes one
+field at a time. A date/time change can optionally be recorded as a reschedule.
+Any new event is created as an unpublished draft only after an explicit
+approval.
 
 The MatchPlay tournament format is stored in the optional
 `events.matchplay_format` field and shown publicly when present. Format,
