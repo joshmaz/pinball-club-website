@@ -59,6 +59,31 @@ begin
 end;
 $$;
 
+create function public.snh_operations_notification_preview_request(p_id uuid)
+returns void
+language plpgsql security definer set search_path = '' as $
+declare
+  v_message public.notification_outbox;
+begin
+  perform private.snh_require_operations_admin();
+  select * into v_message
+  from public.notification_outbox
+  where id=p_id
+  for key share;
+  if not found or v_message.status <> 'pending' then
+    raise exception 'Only pending notifications can be previewed' using errcode='22023';
+  end if;
+
+  insert into public.audit_log(module,action,actor_user_id,entity_type,entity_id,old_data,new_data)
+  values('operations','send_notification_preview',auth.uid(),'notification',p_id::text,
+    jsonb_build_object('kind',v_message.kind,'status',v_message.status),
+    jsonb_build_object('destination','configured_test_inbox','status','requested'));
+end;
+$;
+
+revoke all on function public.snh_operations_notification_preview_request(uuid) from public,anon;
+grant execute on function public.snh_operations_notification_preview_request(uuid) to authenticated;
+
 -- This privileged action is called only through the Operations Edge Function,
 -- which verifies the club-admin session and enforces the staging project ID.
 create function public.snh_operations_clear_staging_notifications(p_actor_user_id uuid)
