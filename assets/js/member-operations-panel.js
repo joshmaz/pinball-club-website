@@ -245,8 +245,8 @@
     el('h3', sectionTitles[current] || current.charAt(0).toUpperCase() + current.slice(1), content);
     if (current === 'overview') {
       var cards = el('div', null, content); cards.className = 'operations-cards';
-      var card = el('section', null, cards); el('h4', 'Integrations', card);
-      Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), card); });
+      var integrationsCard = el('section', null, cards); el('h4', 'Integrations', integrationsCard);
+      Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), integrationsCard); });
       card = el('section', null, cards); el('h4', 'Supabase usage & errors', card);
       el('p', 'Review organization-wide utilization and inspect each project’s logs in Supabase.', card);
       var usageLink = el('a', 'Organization usage ↗', card);
@@ -270,20 +270,20 @@
       var stagingLogs = el('a', 'Logs & errors ↗', stagingLinks);
       stagingLogs.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv/logs/explorer';
       stagingLogs.target = '_blank'; stagingLogs.rel = 'noopener noreferrer';
-      card = el('section', null, cards); el('h4', 'Messaging', card);
-      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', card);
-      card = el('section', null, cards); el('h4', 'Cache', card);
-      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
-      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
-      card = el('section', null, cards); el('h4', 'Jobs', card);
+      var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
+      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
+      var cacheCard = el('section', null, cards); el('h4', 'Cache', cacheCard);
+      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', cacheCard);
+      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', cacheCard);
+      var jobsCard = el('section', null, cards); el('h4', 'Jobs', jobsCard);
       ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'ipdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
-        el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
+        el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), jobsCard);
       });
-      button('View integrations', cards.children[0], function () { selectSection('integrations'); });
-      button((snapshot.messages.failed || 0) + ' failed messages', cards.children[1], function () { selectSection('messaging', 'failed'); });
-      button('View cache', cards.children[2], function () { selectSection('cache'); });
-      button('View jobs', cards.children[3], function () { selectSection('jobs'); });
+      button('View integrations', integrationsCard, function () { selectSection('integrations'); });
+      button((snapshot.messages.failed || 0) + ' failed messages', messagingCard, function () { selectSection('messaging', 'failed'); });
+      button('View cache', cacheCard, function () { selectSection('cache'); });
+      button('View jobs', jobsCard, function () { selectSection('jobs'); });
       renderAiUsageSummary(cards);
       var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
       if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
@@ -418,8 +418,18 @@
         if (run) {
           if (job.key === 'cache_cleanup') el('p', run.status === 'succeeded' ? 'Removed ' + (run.result.removed || 0) + ' cache entries.' : 'No completed cleanup.', section);
           else if (job.key === 'notification_dispatch') {
-            var result = run.result;
-            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? 'Test mode. ' + (result.sent ? 'Sent to the configured test inbox.' : 'No test message sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+            var result = run.result || {};
+            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? (result.sent ? 'Synthetic test sent to the configured test inbox. Queue unchanged.' : 'Synthetic test was not sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+            if (result.mode === 'preview') {
+              var preview = result.preview;
+              if (preview) {
+                el('p', 'Next pending message: ' + (preview.kind || 'notification') + (preview.subject ? ' — ' + preview.subject : ''), section);
+                var eligibility = preview.live_eligible === true ? 'Within the 24-hour live-delivery window.'
+                  : preview.live_eligible === false ? 'Older than 24 hours; live dispatch will expire it.'
+                  : 'Live-delivery eligibility could not be determined.';
+                el('p', 'Queued: ' + date(preview.created_at) + ' | ' + eligibility, section);
+              } else if (run.status === 'succeeded') el('p', 'No pending message to preview.', section);
+            }
           } else if (job.key === 'pintips_import' && run.status === 'succeeded') {
             var counts = run.result;
             el('p', counts.tips + ' tips; ' + counts.added + ' added, ' + counts.changed + ' changed, ' + counts.removed + ' removed.', section);
@@ -461,10 +471,17 @@
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;
           el('p','Delivery mode: ' + (dispatcher ? dispatcher.mode : 'Unknown'),section);
-          if (dispatcher && dispatcher.configured) button('Run Now',section,function () {
-            mutate(function () { return edge('dispatch'); },'Run the notification dispatcher in ' + dispatcher.mode + ' mode? Live mode sends queued messages; test mode sends to the configured test inbox.');
-          });
-          else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
+          if (dispatcher && dispatcher.configured) {
+            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
+            var dispatchPrompt = dispatcher.mode === 'test'
+              ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
+              : dispatcher.mode === 'live'
+                ? 'Run live dispatch? It may send up to 10 queued messages to their actual recipients.'
+                : 'Preview the oldest pending notification? No email will be sent.';
+            button(dispatchLabel,section,function () {
+              mutate(function () { return edge('dispatch'); },dispatchPrompt);
+            });
+          } else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
         }
       });
     }

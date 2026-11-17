@@ -54,12 +54,28 @@ Deno.serve(async (req) => {
   try { outcome = await dispatch(db); }
   catch { outcome = response({ error: "Dispatcher failed unexpectedly" }, 500); }
   const summary = await outcome.clone().json();
+  const configuredMode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
+  const next = summary.mode === "preview" && summary.next && typeof summary.next === "object" ? summary.next : null;
+  const parsedCreatedAt = typeof next?.created_at === "string" ? Date.parse(next.created_at) : NaN;
+  const ageSeconds = Number.isFinite(parsedCreatedAt)
+    ? Math.max(0, Math.floor((Date.now() - parsedCreatedAt) / 1000)) : null;
+  const preview = next ? {
+    kind: typeof next.kind === "string" ? next.kind.slice(0, 80) : "notification",
+    subject: typeof next.subject === "string" ? next.subject.slice(0, 180) : "",
+    created_at: typeof next.created_at === "string" ? next.created_at : null,
+    age_seconds: ageSeconds,
+    live_eligible: ageSeconds === null ? null : ageSeconds < 24 * 60 * 60,
+  } : null;
+  const safeError = outcome.ok && !summary.failed ? null
+    : typeof summary.error === "string" && summary.error.trim()
+      ? summary.error.replace(/[\r\n\t]/g, " ").slice(0, 180)
+      : "Notification dispatch failed. Check dispatcher logs.";
   const finish = await db.from("operations_job_runs").update({
     finished_at: new Date().toISOString(),
     status: outcome.ok && !summary.failed ? "succeeded" : "failed",
-    result: { mode: summary.mode || null, sent: summary.sent ?? 0,
-      canceled: summary.canceled ?? 0, failed: summary.failed ?? 0 },
-    error: outcome.ok && !summary.failed ? null : "Notification dispatch encountered errors; inspect Messaging",
+    result: { mode: summary.mode || configuredMode, sent: summary.sent ?? 0,
+      canceled: summary.canceled ?? 0, failed: summary.failed ?? 0, preview },
+    error: safeError,
   }).eq("id", run.data.id);
   if (finish.error) return response({ error: "Could not record job completion" }, 503);
   return outcome;
@@ -68,32 +84,36 @@ Deno.serve(async (req) => {
 async function dispatch(db: SupabaseClient): Promise<Response> {
   const mode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
   const isStaging = isStagingProject();
-  if (!["preview", "test", "live"].includes(mode)) return response({ error: "Invalid delivery mode" }, 500);
+  if (!["preview", "test", "live"].includes(mode)) return response({ mode, error: "Invalid delivery mode" }, 500);
   if (isStaging && mode === "live") {
-    return response({ error: "Live delivery is disabled for staging" }, 409);
+    return response({ mode, error: "Live delivery is disabled for staging" }, 409);
   }
 
-  // Preview and test never claim or consume a real job. The test message goes
-  // only to the configured test inbox, never to a queued recipient.
-  if (mode !== "live") {
+  // Preview reports only safe metadata for the oldest pending message. Tests use
+  // a synthetic payload so they never expose, consume, or repeatedly resend queue content.
+  if (mode === "preview") {
     const { data, error } = await db.from("notification_outbox")
-      .select("id,kind,subject,body,created_at")
+      .select("kind,subject,created_at")
       .eq("status", "pending").order("created_at").limit(1);
-    if (error) return response({ error: "Could not preview queue" }, 500);
-    if (mode === "preview") {
-      return response({ mode, next: data?.[0] || null });
-    }
+    if (error) return response({ mode, error: "Could not preview queue" }, 500);
+    return response({ mode, next: data?.[0] || null });
+  }
+
+  if (mode === "test") {
     const testEmail = Deno.env.get("NOTIFICATION_TEST_EMAIL")?.trim();
     const apiKey = Deno.env.get("RESEND_API_KEY");
     const from = Deno.env.get("NOTIFICATION_FROM");
-    if (!testEmail || !apiKey || !from) return response({ error: "Test delivery configuration missing" }, 500);
-    if (!data?.length) return response({ mode, sent: false, reason: "Queue is empty" });
-    const subjectPrefix = isStaging ? "[STAGING TEST]" : "[TEST]";
-    const deliveryNote = isStaging ? "STAGING ENVIRONMENT. Test delivery." : "Test delivery.";
-    const result = await send(apiKey, from, testEmail,
-      `${subjectPrefix} ${data[0].subject}`, `${data[0].body}\n\n${deliveryNote} No queued message was consumed.`,
-      `test-${crypto.randomUUID()}`);
-    return response({ mode, sent: result.ok, providerId: result.id || null,
+    if (!testEmail || !apiKey || !from) return response({ mode, error: "Test delivery configuration missing" }, 500);
+    const subject = `${isStaging ? "[STAGING TEST]" : "[TEST]"} Notification dispatcher test`;
+    const sentAt = new Date().toISOString();
+    const text = [
+      "This is a synthetic notification dispatcher test.",
+      isStaging ? "STAGING ENVIRONMENT. Test delivery." : "Test delivery.",
+      "No queued message was read or changed.",
+      `Sent at ${sentAt}.`,
+    ].join("\n\n");
+    const result = await send(apiKey, from, testEmail, subject, text, `test-${crypto.randomUUID()}`);
+    return response({ mode, sent: result.ok, synthetic: true, providerId: result.id || null,
       error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
   }
 

@@ -44,13 +44,17 @@ the website account and does not imply paid membership.
 
 The `notification-dispatch` Edge Function reads the outbox and sends through
 Resend. It requires an independent `NOTIFICATION_DISPATCH_SECRET` header. Its
-default mode is `preview`, which shows one queued message without consuming it.
-`test` sends that message only to `NOTIFICATION_TEST_EMAIL` and does not
-consume the queue. Staging test messages use a `[STAGING TEST]` subject prefix
-and a visible staging note in the body; live delivery is rejected in staging
-before any queued message is claimed. Production test messages use `[TEST]`.
+default mode is `preview`, which reports a safe summary of the
+oldest pending message (kind, subject, queued time, and whether it is within the
+24-hour live-delivery window). It does not expose the message body or recipient
+in job history and does not consume the queue. `test` sends a synthetic test
+message only to `NOTIFICATION_TEST_EMAIL`; it does not read or change the
+outbox. Each test run sends another copy to that test destination. Staging test
+messages use a `[STAGING TEST]` subject prefix and a visible staging note in
+the body; live delivery is rejected in staging before any queued message is
+claimed. Production test messages use `[TEST]`.
 `live` claims up to ten messages per call, sends to the queued recipient, and
-records the provider ID or an error. Recipient
+records the provider ID or a safe error summary. Recipient
 authorization occurs only at enqueue, using the canonical effective Membership
 Editor role. Removing a qualifying role afterward does not suppress already
 queued mail; removing it before the next signup prevents new mail for that
@@ -63,21 +67,19 @@ retries; delivery beyond that window is held for manual review.
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
-2. Configure Edge Function secrets `NOTIFICATION_DISPATCH_SECRET` (a random,
-   high-entropy value), `RESEND_API_KEY`, `NOTIFICATION_FROM` (a verified club
-   sender such as `SNH Pinball Club <support@snhpinballclub.com>`), and
-   `NOTIFICATION_TEST_EMAIL` (an operator's inbox).
-3. Call `POST /functions/v1/notification-dispatch` with
-   `x-notification-secret: <secret>` while delivery mode is unset. Verify the
-   preview. Set `NOTIFICATION_DELIVERY_MODE=test`, call again, and inspect the
-   test inbox and Resend's delivery log. The test recipient is the only address
-   used in this mode.
-4. After confirming coordinator accounts and their membership roles, set
-   `NOTIFICATION_DELIVERY_MODE=live` and call the function. Set up a server-side
-   scheduled POST (for example, every few minutes) with the same secret.
-   Keep the secret out of browser code and public build variables. The
-   scheduled caller is intentionally not installed by this change because the
-   destination and secret must be configured in the hosted project.
+2. Configure project-specific Edge Function secrets:
+   `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
+   project), `RESEND_API_KEY` (Sending access, restricted to the verified
+   sending domain), `NOTIFICATION_FROM` (a sender on the verified domain), and
+   `NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
+3. In Operations → Jobs, use **Preview queue** to inspect the safe summary of
+   the oldest pending item. Use **Send test email** to send a synthetic test
+   message to the test inbox and check both the inbox and Resend's delivery log.
+   Repeated test runs send additional copies to that test destination.
+4. Keep delivery mode at `preview` by default. Enable `live` only after the
+   live-send safeguards and the production configuration review are complete.
+   A scheduled caller is not configured by default. Keep dispatch secrets out
+   of browser code and public build variables.
 
 Inspect queue totals in the Supabase SQL editor:
 
