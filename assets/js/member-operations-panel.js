@@ -49,7 +49,8 @@
   }
   async function edge(action, extra) {
     var result = await window.snhSupabase.functions.invoke('operations', { body: Object.assign({ action: action }, extra || {}) });
-    if (result.error || result.data.error) throw new Error('Operations service unavailable. Check deployment and your session.');
+    if (result.data && result.data.error) throw new Error(result.data.error);
+    if (result.error || !result.data) throw new Error('Operations service unavailable. Check deployment and your session.');
     return result.data;
   }
   async function mutate(action, confirmation) {
@@ -394,12 +395,35 @@
         filter = select.value; cursor = null; route(); await loadMessages(false);
       });
       el('p', 'Retries keep the original recipient, content, message ID, and delivery deadline. Messages older than 23 hours or with a recorded delivery cannot be retried.', content);
+      var dispatcherConfig = configuration && configuration.dispatcher;
+      var pendingCount = Number(snapshot.messages.pending || 0);
+      if (dispatcherConfig && dispatcherConfig.is_staging && pendingCount > 0) {
+        button('Clear staging pending queue (' + pendingCount + ')', content, function () {
+          mutate(async function () {
+            var result = await edge('clear_staging_notification_queue');
+            return { message: result.message || 'Staging pending messages canceled.' };
+          }, 'Cancel all ' + pendingCount + ' pending staging notifications? They will remain in history as canceled and will not be sent.');
+        });
+      }
       var body = table(['Recipient / message', 'Status / attempts', 'Timestamps', 'Error / action']);
       messages.forEach(function (m) {
         var row = el('tr', null, body); var c = cell(row,m.recipient_email); el('p',m.kind + ': ' + m.subject,c);
+        var preview = el('details',null,c); el('summary','Preview message',preview);
+        var messageText = el('pre',m.body || '(No message body is available. Apply the queue preview migration.)',preview); messageText.setAttribute('style','white-space:pre-wrap;overflow-wrap:anywhere');
         cell(row,m.status + ' / ' + m.attempts);
         c = cell(row,'Created: ' + date(m.created_at)); el('p','Available: ' + date(m.available_at),c); el('p','Sent: ' + date(m.sent_at),c);
         c = cell(row,m.last_error || 'None');
+        if (m.status === 'pending') {
+          if (dispatcherConfig && dispatcherConfig.is_staging && dispatcherConfig.preview_email_configured) {
+            button('Send preview to test inbox',c,function () {
+              mutate(async function () {
+                var result = await edge('send_notification_preview',{notificationId:m.id});
+                return {message:result.message || 'Preview sent to the configured staging test inbox. The queued message remains pending.'};
+              },'Send the actual queued message content to the configured shared staging test inbox? It may include member names or email addresses. The email will be marked [STAGING PREVIEW]; the queued message remains pending and its intended recipient will not receive it.');
+            });
+          }
+          button('Cancel',c,function () { mutate(async function () { await rpc('snh_operations_cancel_notification',{p_id:m.id}); return {message:'Pending notification canceled.'}; },'Cancel this queued notification to ' + m.recipient_email + '? It will not be sent.'); });
+        }
         if (m.can_retry) button('Retry',c,function () { mutate(async function () { await rpc('snh_operations_retry',{p_id:m.id}); return {message:'Message queued for retry.'}; },'Queue this failed message for another delivery attempt?'); });
       });
       if (!messages.length) el('p','No messages match this status.',content);

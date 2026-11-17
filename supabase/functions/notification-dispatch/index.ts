@@ -48,6 +48,8 @@ Deno.serve(async (req) => {
   const key = elevatedKey();
   if (!url || !key) return response({ error: "Supabase configuration missing" }, 500);
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const request = await req.json().catch(() => ({}));
+  if (request && request.action === "send_preview") return sendPreview(db, request.notification_id);
   const run = await db.from("operations_job_runs").insert({ job: "notification_dispatch" }).select("id").single();
   if (run.error) return response({ error: "Could not record job start" }, 503);
   let outcome: Response;
@@ -94,6 +96,31 @@ Deno.serve(async (req) => {
   if (finish.error) return response({ error: "Could not record job completion" }, 503);
   return outcome;
 });
+
+async function sendPreview(db: SupabaseClient, notificationId: unknown): Promise<Response> {
+  if (!isStagingProject()) return response({ error: "Queued-message previews are available only in staging" }, 409);
+  if (typeof notificationId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(notificationId)) {
+    return response({ error: "A valid queued message ID is required" }, 400);
+  }
+  const testEmail = Deno.env.get("NOTIFICATION_TEST_EMAIL")?.trim();
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  const from = Deno.env.get("NOTIFICATION_FROM");
+  if (!testEmail || !apiKey || !from) return response({ error: "Staging preview email configuration is missing" }, 409);
+  const queued = await db.from("notification_outbox").select("id,subject,body,status")
+    .eq("id", notificationId).eq("status", "pending").maybeSingle();
+  if (queued.error) return response({ error: "Could not load pending notification" }, 503);
+  if (!queued.data) return response({ error: "Pending notification was not found" }, 404);
+  const subject = "[STAGING PREVIEW] " + String(queued.data.subject || "Notification");
+  const text = [
+    "STAGING PREVIEW — this copy was sent only to the configured test inbox.",
+    "The queued message remains pending; its intended recipient was not contacted.",
+    "",
+    String(queued.data.body || "(No message body was saved.)"),
+  ].join("\n");
+  const result = await send(apiKey, from, testEmail, subject, text,
+    "staging-preview-" + notificationId + "-" + crypto.randomUUID());
+  return response({ sent: result.ok, preview: true, error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
+}
 
 async function dispatch(db: SupabaseClient): Promise<Response> {
   const mode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";

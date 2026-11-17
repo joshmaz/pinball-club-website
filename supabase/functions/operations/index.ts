@@ -47,7 +47,9 @@ Deno.serve(async req => {
       ],
       dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
         mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview",
-        live_per_run_limit: 10, live_rolling_24h_limit: 10 },
+        live_per_run_limit: 10, live_rolling_24h_limit: 10,
+        is_staging: new URL(url).hostname === "eptbdrwmcwogxcjleudv.supabase.co",
+        preview_email_configured: Boolean(Deno.env.get("NOTIFICATION_TEST_EMAIL") && Deno.env.get("RESEND_API_KEY") && Deno.env.get("NOTIFICATION_FROM")) },
     });
     if (action === "set_ai_usage_budget") {
       const monthlyLimitUsd = Number(body.monthlyLimitUsd);
@@ -124,6 +126,45 @@ Deno.serve(async req => {
         ...(ok ? { last_success_at: completed } : { last_error_at: completed, last_error: "Connection test failed" }) });
       if (status.error) return json({ error: "Could not record connection test result" }, 503);
       return json({ ok, message: ok ? "Connection successful" : "Connection test failed. Check provider configuration." });
+    }
+    if (action === "clear_staging_notification_queue") {
+      if (new URL(url).hostname !== "eptbdrwmcwogxcjleudv.supabase.co") {
+        return json({ error: "Queue clearing is available only in staging." }, 409);
+      }
+      const cleared = await db.rpc("snh_operations_clear_staging_notifications", {
+        p_actor_user_id: auth.user.id,
+      });
+      if (cleared.error) return json({ error: "Could not clear staging notification queue." }, 503);
+      const count = Number(cleared.data);
+      if (!Number.isSafeInteger(count) || count < 0) return json({ error: "Invalid queue cleanup result." }, 503);
+      return json({ ok: true, count, message: "Canceled " + count + " pending staging notification" + (count === 1 ? "." : "s.") });
+    }
+    if (action === "send_notification_preview") {
+      if (new URL(url).hostname !== "eptbdrwmcwogxcjleudv.supabase.co") {
+        return json({ error: "Queued-message preview sending is available only in staging." }, 409);
+      }
+      const notificationId = body.notificationId;
+      if (typeof notificationId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(notificationId)) {
+        return json({ error: "A valid queued message ID is required." }, 400);
+      }
+      const secret = Deno.env.get("NOTIFICATION_DISPATCH_SECRET");
+      if (!secret) return json({ error: "Dispatcher is not configured." }, 409);
+      const userDb = createClient(url, serviceKey(), { global: { headers: { Authorization: bearer } }, auth: { persistSession: false } });
+      const audit = await userDb.rpc("snh_operations_notification_preview_request", { p_id: notificationId });
+      if (audit.error) return json({ error: "Only a pending message can be previewed." }, 409);
+      try {
+        const response = await fetch(`${url.replace(/\/+$/, "")}/functions/v1/notification-dispatch`, {
+          method: "POST", redirect: "error", signal: AbortSignal.timeout(60000),
+          headers: { "Content-Type": "application/json", "x-notification-secret": secret },
+          body: JSON.stringify({ action: "send_preview", notification_id: notificationId }),
+        });
+        if (!response.ok) return json({ error: "Could not send staging preview. Check Resend configuration and dispatcher logs." }, response.status);
+        const result = await response.json().catch(() => ({}));
+        if (result.sent !== true) return json({ error: "Staging preview was not sent. Check Resend configuration and dispatcher logs." }, 502);
+        return json({ ok: true, message: "Preview sent to the configured staging test inbox. The queued message remains pending." });
+      } catch {
+        return json({ error: "Staging preview timed out or could not be reached. Check Resend logs before retrying." }, 503);
+      }
     }
     if (action === "dispatch") {
       const secret = Deno.env.get("NOTIFICATION_DISPATCH_SECRET");
