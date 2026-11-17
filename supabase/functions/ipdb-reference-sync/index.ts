@@ -1,8 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 import {
+  createIpdbArchiveParser,
   IPDB_JSON_URL,
   MAX_IPDB_EXPORT_BYTES,
-  normalizeIpdbArchive,
 } from "../_shared/ipdb-reference.mjs";
 
 const BUCKET = "game-reference-archives";
@@ -56,7 +56,7 @@ async function latestHeaders() {
   return { etag, byteSize: length == null ? null : Number(length) };
 }
 
-async function downloadArchive() {
+async function downloadArchive(previousEntryCount: number) {
   let response: Response;
   try {
     response = await fetch(IPDB_JSON_URL, {
@@ -80,7 +80,8 @@ async function downloadArchive() {
   }
   const reader = response.body?.getReader();
   if (!reader) throw new Error("IPDB export response had no body.");
-  const chunks: Uint8Array[] = [];
+  const bytes = new Uint8Array(MAX_IPDB_EXPORT_BYTES);
+  const parser = createIpdbArchiveParser(previousEntryCount);
   let size = 0;
   try {
     while (true) {
@@ -91,16 +92,12 @@ async function downloadArchive() {
         await reader.cancel();
         throw new Error("IPDB export exceeds the safe download limit; the previous archive remains active.");
       }
-      chunks.push(value);
+      bytes.set(value, size - value.byteLength);
+      parser.push(value);
     }
   } finally { reader.releaseLock(); }
-  const bytes = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
-  let payload: unknown;
-  try { payload = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)); }
-  catch { throw new Error("IPDB export is not valid UTF-8 JSON; the previous archive remains active."); }
-  return { bytes, payload, etag: response.headers.get("etag") || "" };
+  const normalized = parser.finish();
+  return { bytes: bytes.subarray(0, size), normalized, etag: response.headers.get("etag") || "" };
 }
 
 Deno.serve(async (req) => {
@@ -171,9 +168,8 @@ Deno.serve(async (req) => {
     }
 
     stage = "IPDB download and validation";
-    const { bytes, payload, etag } = await downloadArchive();
+    const { bytes, normalized, etag } = await downloadArchive(latest.data?.entry_count || 0);
     if (!etag) throw new Error("IPDB download did not return a file validator; the previous archive remains active.");
-    const normalized = normalizeIpdbArchive(payload, latest.data?.entry_count || 0);
     const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
     const sha256 = [...digest].map((value) => value.toString(16).padStart(2, "0")).join("");
     const fetchedAt = new Date().toISOString();
