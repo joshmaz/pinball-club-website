@@ -245,8 +245,8 @@
     el('h3', sectionTitles[current] || current.charAt(0).toUpperCase() + current.slice(1), content);
     if (current === 'overview') {
       var cards = el('div', null, content); cards.className = 'operations-cards';
-      var card = el('section', null, cards); el('h4', 'Integrations', card);
-      Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), card); });
+      var integrationsCard = el('section', null, cards); el('h4', 'Integrations', integrationsCard);
+      Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), integrationsCard); });
       card = el('section', null, cards); el('h4', 'Supabase usage & errors', card);
       el('p', 'Review organization-wide utilization and inspect each project’s logs in Supabase.', card);
       var usageLink = el('a', 'Organization usage ↗', card);
@@ -270,20 +270,20 @@
       var stagingLogs = el('a', 'Logs & errors ↗', stagingLinks);
       stagingLogs.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv/logs/explorer';
       stagingLogs.target = '_blank'; stagingLogs.rel = 'noopener noreferrer';
-      card = el('section', null, cards); el('h4', 'Messaging', card);
-      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', card);
-      card = el('section', null, cards); el('h4', 'Cache', card);
-      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
-      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
-      card = el('section', null, cards); el('h4', 'Jobs', card);
+      var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
+      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
+      var cacheCard = el('section', null, cards); el('h4', 'Cache', cacheCard);
+      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', cacheCard);
+      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', cacheCard);
+      var jobsCard = el('section', null, cards); el('h4', 'Jobs', jobsCard);
       ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'ipdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
-        el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
+        el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), jobsCard);
       });
-      button('View integrations', cards.children[0], function () { selectSection('integrations'); });
-      button((snapshot.messages.failed || 0) + ' failed messages', cards.children[1], function () { selectSection('messaging', 'failed'); });
-      button('View cache', cards.children[2], function () { selectSection('cache'); });
-      button('View jobs', cards.children[3], function () { selectSection('jobs'); });
+      button('View integrations', integrationsCard, function () { selectSection('integrations'); });
+      button((snapshot.messages.failed || 0) + ' failed messages', messagingCard, function () { selectSection('messaging', 'failed'); });
+      button('View cache', cacheCard, function () { selectSection('cache'); });
+      button('View jobs', jobsCard, function () { selectSection('jobs'); });
       renderAiUsageSummary(cards);
       var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
       if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
