@@ -8,6 +8,7 @@ type Job = {
   recipient_email: string;
   subject: string;
   body: string;
+  template_variables: Record<string, unknown> | null;
 };
 
 function response(body: unknown, status = 200): Response {
@@ -35,6 +36,43 @@ function isStagingProject(): boolean {
   } catch {
     return false;
   }
+}
+
+
+type ResendTemplatePayload = {
+  id: string;
+  variables: Record<string, string>;
+};
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function escapeHtml(value: string): string {
+  const entities: Record<string, string> = {
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  };
+  return value.replace(/[&<>"']/g, (character) => entities[character]);
+}
+
+function signupNoticeTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
+  if (kind !== "member_signup") return null;
+  const data = asRecord(values);
+  if (!data) return null;
+  const value = (key: string) => typeof data[key] === "string" && String(data[key]).trim()
+    ? String(data[key]).trim() : "Not provided";
+  return {
+    id: "snhpc-new-website-account-notice",
+    variables: {
+      SUBJECT_PREFIX: stagingPreview ? "[STAGING PREVIEW] " : "",
+      PREVIEW_BANNER: stagingPreview
+        ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
+        : "",
+      NEW_USER_NAME: escapeHtml(value("NEW_USER_NAME")),
+      NEW_USER_EMAIL: escapeHtml(value("NEW_USER_EMAIL")),
+    },
+  };
 }
 
 Deno.serve(async (req) => {
@@ -106,7 +144,7 @@ async function sendPreview(db: SupabaseClient, notificationId: unknown): Promise
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const from = Deno.env.get("NOTIFICATION_FROM");
   if (!testEmail || !apiKey || !from) return response({ error: "Staging preview email configuration is missing" }, 409);
-  const queued = await db.from("notification_outbox").select("id,subject,body,status")
+  const queued = await db.from("notification_outbox").select("id,kind,subject,body,template_variables,status")
     .eq("id", notificationId).eq("status", "pending").maybeSingle();
   if (queued.error) return response({ error: "Could not load pending notification" }, 503);
   if (!queued.data) return response({ error: "Pending notification was not found" }, 404);
@@ -117,8 +155,9 @@ async function sendPreview(db: SupabaseClient, notificationId: unknown): Promise
     "",
     String(queued.data.body || "(No message body was saved.)"),
   ].join("\n");
+  const template = signupNoticeTemplate(String(queued.data.kind || ""), queued.data.template_variables, true);
   const result = await send(apiKey, from, testEmail, subject, text,
-    "staging-preview-" + notificationId + "-" + crypto.randomUUID());
+    "staging-preview-" + notificationId + "-" + crypto.randomUUID(), template || undefined);
   return response({ sent: result.ok, preview: true, error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
 }
 
@@ -186,7 +225,8 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
 
     // The explicit recipient was authorized at enqueue; role changes do not
     // revoke delivery of an already-authorized message.
-    const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id);
+    const template = signupNoticeTemplate(job.kind, job.template_variables);
+    const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id, template || undefined);
     const status = result.ok ? "sent" : "failed";
     const providerId = result.id || null;
     const failure = result.error || null;
@@ -210,7 +250,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
 }
 
 async function send(apiKey: string, from: string, to: string, subject: string,
-  text: string, idempotencyKey: string): Promise<{ ok: boolean; id?: string; error?: string }> {
+  text: string, idempotencyKey: string, template?: ResendTemplatePayload): Promise<{ ok: boolean; id?: string; error?: string }> {
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -219,7 +259,7 @@ async function send(apiKey: string, from: string, to: string, subject: string,
         "Content-Type": "application/json",
         "Idempotency-Key": idempotencyKey,
       },
-      body: JSON.stringify({ from, to: [to], subject, text }),
+      body: JSON.stringify(template ? { from, to: [to], template } : { from, to: [to], subject, text }),
     });
     if (!res.ok) return { ok: false, error: `Resend HTTP ${res.status}` };
     const data = await res.json();
