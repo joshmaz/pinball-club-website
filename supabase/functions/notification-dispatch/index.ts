@@ -62,6 +62,8 @@ function signupNoticeTemplate(kind: string, values: unknown, stagingPreview = fa
   if (!data) return null;
   const value = (key: string) => typeof data[key] === "string" && String(data[key]).trim()
     ? String(data[key]).trim() : "Not provided";
+  const name = value("NEW_USER_NAME");
+  const email = value("NEW_USER_EMAIL");
   return {
     id: "snhpc-member-signup-alert-v1",
     variables: {
@@ -69,8 +71,10 @@ function signupNoticeTemplate(kind: string, values: unknown, stagingPreview = fa
       PREVIEW_BANNER: stagingPreview
         ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
         : "",
-      NEW_USER_NAME: escapeHtml(value("NEW_USER_NAME")),
-      NEW_USER_EMAIL: escapeHtml(value("NEW_USER_EMAIL")),
+      NEW_USER_NAME: name,
+      NEW_USER_EMAIL: email,
+      NEW_USER_NAME_HTML: escapeHtml(name),
+      NEW_USER_EMAIL_HTML: escapeHtml(email),
     },
   };
 }
