@@ -45,9 +45,12 @@ the website account and does not imply paid membership.
 The `notification-dispatch` Edge Function reads the outbox and sends through
 Resend. It requires an independent `NOTIFICATION_DISPATCH_SECRET` header. Its
 default mode is `preview`, which shows one queued message without consuming it.
-`test` sends that message only to `NOTIFICATION_TEST_EMAIL` with a test label and
-does not consume the queue. `live` claims up to ten messages per call, sends to
-the queued recipient, and records the provider ID or an error. Recipient
+`test` sends that message only to `NOTIFICATION_TEST_EMAIL` and does not
+consume the queue. Staging test messages use a `[STAGING TEST]` subject prefix
+and a visible staging note in the body; live delivery is rejected in staging
+before any queued message is claimed. Production test messages use `[TEST]`.
+`live` claims up to ten messages per call, sends to the queued recipient, and
+records the provider ID or an error. Recipient
 authorization occurs only at enqueue, using the canonical effective Membership
 Editor role. Removing a qualifying role afterward does not suppress already
 queued mail; removing it before the next signup prevents new mail for that
