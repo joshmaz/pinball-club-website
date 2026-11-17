@@ -2,7 +2,7 @@
   var allowed = false, initialized = false, busy = false, snapshot, configuration, aiUsage = null, current = 'overview';
   var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
-  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', kineticist: 'Kineticist' };
+  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', ipdb: 'IPDB', kineticist: 'Kineticist' };
   function el(tag, text, parent) {
     var node = document.createElement(tag);
     if (text != null) node.textContent = String(text);
@@ -253,7 +253,7 @@
       el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
       el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
       card = el('section', null, cards); el('h4', 'Jobs', card);
-      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
+      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'ipdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
         el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
       });
@@ -384,7 +384,7 @@
     }
     if (current === 'jobs') {
       el('p','Schedules are managed by the existing scheduler. Import history starts when tracking was enabled.',content);
-      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'opdb_reference_sync',name:'OPDB reference archive'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
+      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'opdb_reference_sync',name:'OPDB reference archive'},{key:'ipdb_reference_sync',name:'IPDB reference archive'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
       snapshot.jobs.forEach(function (r) { if (!jobs.some(function (j) { return j.key === r.job; })) jobs.push({key:r.job,name:r.job}); });
       jobs.forEach(function (job) {
         var section = el('section',null,content); section.className='operations-provider'; el('h4',job.name,section);
@@ -404,6 +404,20 @@
           } else if (job.key === 'opdb_reference_sync' && run.status === 'succeeded') {
             el('p', (run.result.entry_count || 0) + ' OPDB entries; ' + (run.result.ipdb_mapping_count || 0) + ' IPDB mappings; ' + (run.result.byte_size || 0).toLocaleString() + ' archive bytes.', section);
             if (run.result.content_sha256) el('p', 'SHA-256: ' + run.result.content_sha256, section);
+          } else if (job.key === 'ipdb_reference_sync' && run.status === 'succeeded') {
+            var refreshDate = run.result.source_refreshed_at ? date(run.result.source_refreshed_at) : 'Not recorded';
+            el('p', run.result.unchanged
+              ? (run.result.entry_count || 0) + ' IPDB entries; export unchanged; ' + (run.result.byte_size || 0).toLocaleString() + ' bytes checked.'
+              : (run.result.entry_count || 0) + ' IPDB entries imported; ' + (run.result.byte_size || 0).toLocaleString() + ' archive bytes.', section);
+            el('p', 'IPDB data refreshed: ' + refreshDate + ' | Last check: ' + date(run.result.checked_at || run.result.fetched_at || run.finished_at), section);
+            var refreshAge = run.result.source_refreshed_at ? Math.floor((Date.now() - Date.parse(run.result.source_refreshed_at)) / 86400000) : null;
+            if (refreshAge !== null && refreshAge > 45) el('p', 'The source data is ' + refreshAge + ' days old. The exporter normally refreshes monthly.', section);
+            if (run.result.content_sha256) el('p', 'SHA-256: ' + run.result.content_sha256, section);
+          } else if (job.key === 'ipdb_reference_sync' && run.status === 'failed' && run.result.source_refreshed_at) {
+            el('p', (run.result.entry_count || 0) + ' IPDB entries remain available from the last successful archive.', section);
+            el('p', 'Last indexed IPDB data refresh: ' + date(run.result.source_refreshed_at) + '. The latest update check failed; the active archive was kept.', section);
+            var lastRefreshAge = Math.floor((Date.now() - Date.parse(run.result.source_refreshed_at)) / 86400000);
+            if (lastRefreshAge > 45) el('p', 'The indexed source data is ' + lastRefreshAge + ' days old. The exporter normally refreshes monthly.', section);
           } if (run.error) el('p',run.error,section);
           if (run.status==='running') el('p','Completion has not been recorded. The worker may still be running or may have stopped.',section); }
         if (job.key==='opdb_reference_sync') {
@@ -412,6 +426,13 @@
             mutate(function () { return edge('run_opdb_reference_sync'); },'Download, validate, and archive the current OPDB V2 export? The current good archive stays active if this run fails.');
           });
           else el('p','Manual refresh is unavailable until the OPDB scheduler secret is configured.',section);
+        }
+        if (job.key==='ipdb_reference_sync') {
+          var ipdb = configuration && configuration.providers && configuration.providers.find(function (p) { return p.provider === 'ipdb'; });
+          if (ipdb && ipdb.configured) button('Check for updates',section,function () {
+            mutate(function () { return edge('run_ipdb_reference_sync'); },'Check the IPDB export for changes. The file is downloaded only when its ETag changes, and the current good archive stays active if the update fails.');
+          });
+          else el('p','Manual check is unavailable until the IPDB scheduler secret is configured.',section);
         }
         if (job.key==='cache_cleanup') button('Run Now',section,function () { mutate(cleanup,'Run cache cleanup for search resources expired more than seven days ago?'); });
         if (job.key==='notification_dispatch') {

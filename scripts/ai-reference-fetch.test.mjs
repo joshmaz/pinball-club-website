@@ -17,7 +17,7 @@ const html = '<title>Game &amp; history</title><h1>2001</h1><meta name="descript
 function fixture(response = () => new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } })) {
   const calls=[];
   const functions = new Function('Deno', 'createClient', 'fetch', source +
-    '\nreturn {researchUrl,fetchReferenceHtml,fetchReferenceEvidence,buildDescriptionResearchContext,referenceEvidence,operatorConfirmedSourceEvidence,buildLinkField,REFERENCE_MAX_BYTES};')(
+    '\nreturn {researchUrl,fetchReferenceHtml,fetchReferenceEvidence,buildDescriptionResearchContext,referenceEvidence,buildLinkField,REFERENCE_MAX_BYTES};')(
     {serve() {}}, () => { throw new Error('No database calls expected'); }, async (url, init) => {
       calls.push({url,init});return response(url,init);
     });
@@ -175,15 +175,4 @@ test('routine description context uses attributed API details without fetching p
   assert.match(context,/Design credits: Ed Krynski \(design\)/);
   assert.match(context,/Gameplay tags: Space/);
   assert.equal(evidence.find((item)=>item.provider==='Kineticist API').canGroundDescription,true);
-});
-
-test('operator source confirmation records identity without fetching its page', () => {
-  const f=fixture();
-  const game={ipdb_url:providerLinks.IPDB,pinside_url:providerLinks.Pinside,kineticist_url:providerLinks.Kineticist};
-  const evidence=f.operatorConfirmedSourceEvidence(game,[{provider:'Pinside',url:providerLinks.Pinside}]);
-  assert.equal(f.calls.length,0);
-  assert.equal(evidence.length,1);
-  assert.equal(evidence[0].verified,true);
-  assert.equal(evidence[0].excerpt,'');
-  assert.equal(evidence[0].verificationMethod,'operator');
 });
