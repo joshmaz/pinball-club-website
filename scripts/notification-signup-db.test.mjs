@@ -192,6 +192,8 @@ try {
     assert.equal(delivery.body.template.variables.PREVIEW_BANNER, '');
     assert.equal(delivery.body.template.variables.NEW_USER_NAME, message.template_variables.NEW_USER_NAME);
     assert.equal(delivery.body.template.variables.NEW_USER_EMAIL, message.template_variables.NEW_USER_EMAIL);
+    assert.equal(delivery.body.template.variables.NEW_USER_NAME_HTML, message.template_variables.NEW_USER_NAME);
+    assert.equal(delivery.body.template.variables.NEW_USER_EMAIL_HTML, message.template_variables.NEW_USER_EMAIL);
   }
   const finished = (await db.query('select * from notification_outbox')).rows;
   assert.ok(finished.every(r => r.status === 'sent' && r.lease_id === null && r.attempts === 1 && r.provider_id === 'provider-id'));
