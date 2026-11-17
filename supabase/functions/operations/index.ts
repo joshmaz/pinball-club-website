@@ -153,7 +153,7 @@ Deno.serve(async req => {
       const audit = await userDb.rpc("snh_operations_notification_preview_request", { p_id: notificationId });
       if (audit.error) return json({ error: "Only a pending message can be previewed." }, 409);
       try {
-        const response = await fetch(`${url.replace(/\\/+$/, "")}/functions/v1/notification-dispatch`, {
+        const response = await fetch(`${url.replace(/\/+$/, "")}/functions/v1/notification-dispatch`, {
           method: "POST", redirect: "error", signal: AbortSignal.timeout(60000),
           headers: { "Content-Type": "application/json", "x-notification-secret": secret },
           body: JSON.stringify({ action: "send_preview", notification_id: notificationId }),
