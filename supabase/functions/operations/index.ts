@@ -46,7 +46,9 @@ Deno.serve(async req => {
           scheduler_configured: Boolean(Deno.env.get("PINBALLMAP_INGEST_SCHEDULER_SECRET")) },
       ],
       dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
-        mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview" },
+        mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview",
+        live_enabled: (Deno.env.get("NOTIFICATION_LIVE_ENABLED") || "").trim().toLowerCase() === "true",
+        live_per_run_limit: 10, live_rolling_24h_limit: 10 },
     });
     if (action === "set_ai_usage_budget") {
       const monthlyLimitUsd = Number(body.monthlyLimitUsd);
