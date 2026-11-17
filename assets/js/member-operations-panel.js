@@ -418,8 +418,18 @@
         if (run) {
           if (job.key === 'cache_cleanup') el('p', run.status === 'succeeded' ? 'Removed ' + (run.result.removed || 0) + ' cache entries.' : 'No completed cleanup.', section);
           else if (job.key === 'notification_dispatch') {
-            var result = run.result;
-            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? 'Test mode. ' + (result.sent ? 'Sent to the configured test inbox.' : 'No test message sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+            var result = run.result || {};
+            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? (result.sent ? 'Synthetic test sent to the configured test inbox. Queue unchanged.' : 'Synthetic test was not sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+            if (result.mode === 'preview') {
+              var preview = result.preview;
+              if (preview) {
+                el('p', 'Next pending message: ' + (preview.kind || 'notification') + (preview.subject ? ' — ' + preview.subject : ''), section);
+                var eligibility = preview.live_eligible === true ? 'Within the 24-hour live-delivery window.'
+                  : preview.live_eligible === false ? 'Older than 24 hours; live dispatch will expire it.'
+                  : 'Live-delivery eligibility could not be determined.';
+                el('p', 'Queued: ' + date(preview.created_at) + ' | ' + eligibility, section);
+              } else if (run.status === 'succeeded') el('p', 'No pending message to preview.', section);
+            }
           } else if (job.key === 'pintips_import' && run.status === 'succeeded') {
             var counts = run.result;
             el('p', counts.tips + ' tips; ' + counts.added + ' added, ' + counts.changed + ' changed, ' + counts.removed + ' removed.', section);
@@ -461,10 +471,17 @@
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;
           el('p','Delivery mode: ' + (dispatcher ? dispatcher.mode : 'Unknown'),section);
-          if (dispatcher && dispatcher.configured) button('Run Now',section,function () {
-            mutate(function () { return edge('dispatch'); },'Run the notification dispatcher in ' + dispatcher.mode + ' mode? Live mode sends queued messages; test mode sends to the configured test inbox.');
-          });
-          else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
+          if (dispatcher && dispatcher.configured) {
+            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
+            var dispatchPrompt = dispatcher.mode === 'test'
+              ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
+              : dispatcher.mode === 'live'
+                ? 'Run live dispatch? It may send up to 10 queued messages to their actual recipients.'
+                : 'Preview the oldest pending notification? No email will be sent.';
+            button(dispatchLabel,section,function () {
+              mutate(function () { return edge('dispatch'); },dispatchPrompt);
+            });
+          } else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
         }
       });
     }
