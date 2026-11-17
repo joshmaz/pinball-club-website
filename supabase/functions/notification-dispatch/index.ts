@@ -66,6 +66,19 @@ Deno.serve(async (req) => {
     age_seconds: ageSeconds,
     live_eligible: ageSeconds === null ? null : ageSeconds < 24 * 60 * 60,
   } : null;
+  const rawBudget = summary.budget && typeof summary.budget === "object" ? summary.budget : null;
+  const safeCount = (value: unknown) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : 0;
+  const budget = rawBudget ? {
+    rolling_limit: safeCount(rawBudget.rolling_limit),
+    per_run_limit: safeCount(rawBudget.per_run_limit),
+    sent_last_24h: safeCount(rawBudget.sent_last_24h),
+    in_flight: safeCount(rawBudget.in_flight),
+    used: safeCount(rawBudget.used),
+    remaining: safeCount(rawBudget.remaining),
+    eligible_pending: safeCount(rawBudget.eligible_pending),
+    waiting_pending: safeCount(rawBudget.waiting_pending),
+    expired_pending: safeCount(rawBudget.expired_pending),
+  } : null;
   const safeError = outcome.ok && !summary.failed ? null
     : typeof summary.error === "string" && summary.error.trim()
       ? summary.error.replace(/[\r\n\t]/g, " ").slice(0, 180)
@@ -74,7 +87,8 @@ Deno.serve(async (req) => {
     finished_at: new Date().toISOString(),
     status: outcome.ok && !summary.failed ? "succeeded" : "failed",
     result: { mode: summary.mode || configuredMode, sent: summary.sent ?? 0,
-      canceled: summary.canceled ?? 0, failed: summary.failed ?? 0, preview },
+      canceled: summary.canceled ?? 0, failed: summary.failed ?? 0,
+      limited: summary.limited === true, preview, budget },
     error: safeError,
   }).eq("id", run.data.id);
   if (finish.error) return response({ error: "Could not record job completion" }, 503);
@@ -88,15 +102,20 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
   if (isStaging && mode === "live") {
     return response({ mode, error: "Live delivery is disabled for staging" }, 409);
   }
+  if (mode === "live" && (Deno.env.get("NOTIFICATION_LIVE_ENABLED") || "").trim().toLowerCase() !== "true") {
+    return response({ mode, error: "Live delivery is disabled by the safety switch" }, 409);
+  }
 
   // Preview reports only safe metadata for the oldest pending message. Tests use
   // a synthetic payload so they never expose, consume, or repeatedly resend queue content.
   if (mode === "preview") {
-    const { data, error } = await db.from("notification_outbox")
-      .select("kind,subject,created_at")
-      .eq("status", "pending").order("created_at").limit(1);
-    if (error) return response({ mode, error: "Could not preview queue" }, 500);
-    return response({ mode, next: data?.[0] || null });
+    const [queue, status] = await Promise.all([
+      db.from("notification_outbox").select("kind,subject,created_at")
+        .eq("status", "pending").order("created_at").limit(1),
+      db.rpc("snh_notification_live_status"),
+    ]);
+    if (queue.error || status.error || !status.data) return response({ mode, error: "Could not preview queue and live-send budget" }, 500);
+    return response({ mode, next: queue.data?.[0] || null, budget: status.data });
   }
 
   if (mode === "test") {
@@ -119,12 +138,24 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const from = Deno.env.get("NOTIFICATION_FROM");
-  if (!apiKey || !from) return response({ error: "Live delivery configuration missing" }, 500);
+  if (!apiKey || !from) return response({ mode, error: "Live delivery configuration missing" }, 500);
+
+  const budgetResult = await db.rpc("snh_notification_live_status");
+  if (budgetResult.error || !budgetResult.data) return response({ mode, error: "Could not check live-send budget" }, 503);
+  const budget = budgetResult.data as { remaining?: number };
+  if (!Number.isInteger(budget.remaining) || Number(budget.remaining) < 0) {
+    return response({ mode, error: "Live-send budget is unavailable" }, 503);
+  }
+  const remainingAtStart = Number(budget.remaining);
+  if (remainingAtStart === 0) {
+    return response({ mode, sent: 0, canceled: 0, failed: 0, limited: true, budget: budgetResult.data });
+  }
 
   let sent = 0;
   const canceled = 0;
   let failed = 0;
-  for (let i = 0; i < 10; i += 1) {
+  const runLimit = Math.min(10, remainingAtStart);
+  for (let i = 0; i < runLimit; i += 1) {
     const claim = await db.rpc("snh_claim_notification");
     if (claim.error) return response({ error: "Could not claim queue", sent, canceled, failed }, 500);
     const job = (claim.data as Job[] | null)?.[0];
@@ -144,7 +175,15 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
     if (status === "sent") sent++;
     else failed++;
   }
-  return response({ mode, sent, canceled, failed });
+  const refreshedBudget = await db.rpc("snh_notification_live_status");
+  const finalBudget = !refreshedBudget.error && refreshedBudget.data ? refreshedBudget.data : {
+    ...budgetResult.data,
+    sent_last_24h: Number(budgetResult.data.sent_last_24h || 0) + sent,
+    used: Number(budgetResult.data.used || 0) + sent,
+    remaining: Math.max(0, remainingAtStart - sent),
+  };
+  return response({ mode, sent, canceled, failed,
+    limited: Number(finalBudget.remaining || 0) === 0, budget: finalBudget });
 }
 
 async function send(apiKey: string, from: string, to: string, subject: string,
