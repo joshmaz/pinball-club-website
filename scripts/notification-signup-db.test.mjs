@@ -52,6 +52,9 @@ try {
   assert.equal(row.status, 'pending');
   assert.ok(row.body.includes('Test New Member'));
   assert.ok(row.body.includes('after@example.com'));
+  assert.ok(row.body.includes('membership-management access'));
+  assert.ok(row.body.includes('No action is needed.'));
+  assert.deepEqual(row.template_variables, { NEW_USER_NAME: 'Test New Member', NEW_USER_EMAIL: 'after@example.com' });
   assert.ok(row.body.includes('\n\n'));
   await db.exec(`
     update members set display_name = 'Edited' where user_id = '${uid(11)}';
