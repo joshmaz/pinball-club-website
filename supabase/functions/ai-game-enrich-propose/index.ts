@@ -76,7 +76,6 @@ type GameReferenceData = {
   ipdbUrl: string | null;
   ipdbEntry: Record<string, unknown> | null;
   ipdbSourceRefreshedAt: string | null;
-  ipdbStale: boolean;
   kineticistUrl: string | null;
   kineticistPayload: Record<string, unknown> | null;
   kineticistStale: boolean;
@@ -505,7 +504,6 @@ async function loadGameReferenceData(
     ipdbUrl: null,
     ipdbEntry: null,
     ipdbSourceRefreshedAt: null,
-    ipdbStale: false,
     kineticistUrl: null,
     kineticistPayload: null,
     kineticistStale: false,
@@ -569,7 +567,6 @@ async function loadGameReferenceData(
         if (latestIpdb.error) throw new Error("snapshot lookup failed");
         if (!latestIpdb.data?.id) throw new Error("snapshot missing");
         references.ipdbSourceRefreshedAt = String(latestIpdb.data.source_refreshed_at);
-        references.ipdbStale = Date.now() - Date.parse(references.ipdbSourceRefreshedAt) > 45 * 86400000;
         const ipdbEntry = await admin.from("ipdb_reference_entries")
           .select("ipdb_id,title,players,additional_details,manufacturer,manufacturer_short_name,manufacturer_id,machine_type,type_short_name,date_of_manufacture,theme,notable_features,design_by,art_by,notes,photos_in,image_files")
           .eq("snapshot_id", latestIpdb.data.id)
@@ -578,9 +575,6 @@ async function loadGameReferenceData(
         if (ipdbEntry.error) throw new Error("record lookup failed");
         if (!ipdbEntry.data) throw new Error("record missing");
         references.ipdbEntry = ipdbEntry.data as Record<string, unknown>;
-        if (references.ipdbStale) {
-          references.warnings.push("The IPDB reference file was last refreshed more than 45 days ago; its data is shown as dated evidence for review.");
-        }
       } catch {
         references.warnings.push("The IPDB reference archive is unavailable or has no record for the linked IPDB ID. Existing links were left unchanged.");
         references.ipdbEntry = null;
@@ -647,9 +641,6 @@ function ipdbIdFromPermalink(value: string | null): number | null {
 function warningsFromReference(references: GameReferenceData, warnings: string[]) {
   warnings.push(...references.warnings);
   if (references.kineticistStale) warnings.push("The Kineticist cache is stale; its existing value is shown for review.");
-  if (references.ipdbStale && !references.warnings.some((warning) => warning.includes("last refreshed more than 45 days ago"))) {
-    warnings.push("The IPDB reference file was last refreshed more than 45 days ago; its data is shown as dated evidence for review.");
-  }
 }
 
 function referenceEvidence(references: GameReferenceData): SourceEvidence[] {
