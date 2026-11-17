@@ -50,6 +50,8 @@ Voice affects phrasing only. It does not relax evidence or accuracy requirements
 
 ## Evidence and operator notes
 
+- Favor features that define the game or shape its play. Explain their gameplay role when evidence supports it.
+- Avoid catalog-like inventories of ordinary hardware or bare component counts. Include counts when they are distinctive and meaningful to the game.
 - Draft only when retrieved game-specific source text or concrete existing catalog copy provides gameplay evidence.
 - If the evidence is thin, ask the operator to add gameplay fragments and polish those notes without adding unsupported gameplay claims.
 - Keep source evidence and draft choices inside the collapsed assistant section so the editor remains scannable.
