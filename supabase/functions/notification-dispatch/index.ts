@@ -28,6 +28,15 @@ function elevatedKey(): string {
   return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 }
 
+function isStagingProject(): boolean {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+  try {
+    return new URL(supabaseUrl).hostname === "eptbdrwmcwogxcjleudv.supabase.co";
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return response({ error: "POST required" }, 405);
   const expectedSecret = Deno.env.get("NOTIFICATION_DISPATCH_SECRET");
@@ -58,7 +67,11 @@ Deno.serve(async (req) => {
 
 async function dispatch(db: SupabaseClient): Promise<Response> {
   const mode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
+  const isStaging = isStagingProject();
   if (!["preview", "test", "live"].includes(mode)) return response({ error: "Invalid delivery mode" }, 500);
+  if (isStaging && mode === "live") {
+    return response({ error: "Live delivery is disabled for staging" }, 409);
+  }
 
   // Preview and test never claim or consume a real job. The test message goes
   // only to the configured test inbox, never to a queued recipient.
@@ -75,8 +88,10 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
     const from = Deno.env.get("NOTIFICATION_FROM");
     if (!testEmail || !apiKey || !from) return response({ error: "Test delivery configuration missing" }, 500);
     if (!data?.length) return response({ mode, sent: false, reason: "Queue is empty" });
+    const subjectPrefix = isStaging ? "[STAGING TEST]" : "[TEST]";
+    const deliveryNote = isStaging ? "STAGING ENVIRONMENT. Test delivery." : "Test delivery.";
     const result = await send(apiKey, from, testEmail,
-      `[TEST] ${data[0].subject}`, `${data[0].body}\n\nTest delivery. No queued message was consumed.`,
+      `${subjectPrefix} ${data[0].subject}`, `${data[0].body}\\n\\n${deliveryNote} No queued message was consumed.`,
       `test-${crypto.randomUUID()}`);
     return response({ mode, sent: result.ok, providerId: result.id || null,
       error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
