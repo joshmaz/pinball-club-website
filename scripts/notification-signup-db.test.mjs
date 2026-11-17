@@ -140,6 +140,20 @@ try {
       if (claimError) return Response.json({ message: 'claim failed' }, { status: 500 });
       return Response.json((await db.query('select * from public.snh_claim_notification()')).rows);
     }
+    if (url.pathname === '/rest/v1/rpc/snh_notification_live_status') {
+      const counts = (await db.query(`select
+        count(*) filter (where status='sent' and sent_at>now()-interval '24 hours')::integer sent,
+        count(*) filter (where status='sending' and locked_until>now())::integer in_flight,
+        count(*) filter (where (status='pending' and available_at<=now() or status='sending' and locked_until<now())
+          and created_at>now()-interval '24 hours' and (attempts<3 or manual_retry_allowance))::integer eligible,
+        count(*) filter (where status='pending' and available_at>now() and created_at>now()-interval '24 hours')::integer waiting,
+        count(*) filter (where status in ('pending','sending') and created_at<=now()-interval '24 hours')::integer expired
+        from notification_outbox`)).rows[0];
+      const sent = Number(counts.sent), inFlight = Number(counts.in_flight), used = sent + inFlight;
+      return Response.json({rolling_limit:10,per_run_limit:10,sent_last_24h:sent,in_flight:inFlight,
+        used,remaining:Math.max(0,10-used),eligible_pending:Number(counts.eligible),
+        waiting_pending:Number(counts.waiting),expired_pending:Number(counts.expired)});
+    }
     if (url.pathname === '/rest/v1/rpc/snh_finish_notification') {
       if (finishError) return Response.json(false);
       const p = JSON.parse(init.body);
@@ -161,7 +175,11 @@ try {
   assert.equal(clients, 0, 'Service credentials stay behind dispatcher authentication');
   const result = await dispatch();
   assert.equal(result.status, 200);
-  assert.deepEqual(await result.json(), { mode: 'live', sent: 3, canceled: 0, failed: 0 });
+  const sentResult = await result.json();
+  assert.equal(sentResult.mode, 'live');
+  assert.deepEqual({sent:sentResult.sent,canceled:sentResult.canceled,failed:sentResult.failed,limited:sentResult.limited},
+    {sent:3,canceled:0,failed:0,limited:false});
+  assert.deepEqual(sentResult.budget,{rolling_limit:10,per_run_limit:10,sent_last_24h:3,in_flight:0,used:3,remaining:7,eligible_pending:0,waiting_pending:0,expired_pending:0});
   assert.deepEqual(delivered.map(d => d.body.to[0]).sort(), queued.map(q => q.recipient_email).sort());
   for (const message of queued) {
     const delivery = delivered.find(d => d.key === message.id);
@@ -180,7 +198,9 @@ try {
   // Delivery failure still uses the production retry state transition.
   await db.query("update notification_outbox set status='pending',attempts=0 where id=$1", [queued[0].id]);
   failProvider = true;
-  assert.deepEqual(await (await dispatch()).json(), { mode: 'live', sent: 0, canceled: 0, failed: 1 });
+  const failedResult = await (await dispatch()).json();
+  assert.equal(failedResult.mode, 'live'); assert.equal(failedResult.sent, 0);
+  assert.equal(failedResult.canceled, 0); assert.equal(failedResult.failed, 1);
   const retry = (await db.query('select * from notification_outbox where id=$1', [queued[0].id])).rows[0];
   assert.equal(retry.status, 'pending');
   assert.equal(retry.last_error, 'Resend HTTP 503');

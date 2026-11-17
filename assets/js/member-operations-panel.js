@@ -419,7 +419,12 @@
           if (job.key === 'cache_cleanup') el('p', run.status === 'succeeded' ? 'Removed ' + (run.result.removed || 0) + ' cache entries.' : 'No completed cleanup.', section);
           else if (job.key === 'notification_dispatch') {
             var result = run.result || {};
-            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? (result.sent ? 'Synthetic test sent to the configured test inbox. Queue unchanged.' : 'Synthetic test was not sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? (result.sent ? 'Synthetic test sent to the configured test inbox. Queue unchanged.' : 'Synthetic test was not sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' + (result.limited ? ' Rolling 24-hour limit reached.' : '') : 'No delivery result recorded.', section);
+            if (result.budget) {
+              var budget = result.budget;
+              el('p', 'Live-send allowance: ' + budget.remaining + ' of ' + budget.rolling_limit + ' messages remain in the rolling 24-hour window (' + budget.sent_last_24h + ' sent, ' + budget.in_flight + ' in flight).', section);
+              if (result.mode === 'preview') el('p', 'Queue: ' + budget.eligible_pending + ' eligible now, ' + budget.waiting_pending + ' waiting, ' + budget.expired_pending + ' expired.', section);
+            }
             if (result.mode === 'preview') {
               var preview = result.preview;
               if (preview) {
@@ -471,12 +476,14 @@
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;
           el('p','Delivery mode: ' + (dispatcher ? dispatcher.mode : 'Unknown'),section);
+          if (dispatcher) el('p','Live-send limits: ' + (dispatcher.live_per_run_limit || 10) +
+            ' per run and ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.',section);
           if (dispatcher && dispatcher.configured) {
             var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
             var dispatchPrompt = dispatcher.mode === 'test'
               ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
               : dispatcher.mode === 'live'
-                ? 'Run live dispatch? It may send up to 10 queued messages to their actual recipients.'
+                ? 'Run live dispatch? It can send up to ' + (dispatcher.live_per_run_limit || 10) + ' messages to actual recipients, subject to a maximum of ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.'
                 : 'Preview the oldest pending notification? No email will be sent.';
             button(dispatchLabel,section,function () {
               mutate(function () { return edge('dispatch'); },dispatchPrompt);

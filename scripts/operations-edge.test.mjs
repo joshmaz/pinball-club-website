@@ -15,6 +15,7 @@ function setup(t,name,options={}) {
   const url=new URL(input); calls.push({url,init});
   if(url.pathname==='/auth/v1/user') return Response.json({id:'user'});
   if(url.pathname==='/rest/v1/members') return Response.json(options.denied ? [] : [{id:'member'}]);
+  if(url.pathname==='/rest/v1/rpc/snh_notification_live_status') return Response.json({rolling_limit:10,per_run_limit:10,sent_last_24h:0,in_flight:0,used:0,remaining:10,eligible_pending:1,waiting_pending:0,expired_pending:0});
   if(url.pathname==='/rest/v1/integration_status') return new Response(null,{status:201});
   if(url.pathname==='/rest/v1/rpc/snh_operations_dispatch_request') {
    assert.equal(init.headers.get('Authorization'),'Bearer user-session');

@@ -53,8 +53,12 @@ outbox. Each test run sends another copy to that test destination. Staging test
 messages use a `[STAGING TEST]` subject prefix and a visible staging note in
 the body; live delivery is rejected in staging before any queued message is
 claimed. Production test messages use `[TEST]`.
-`live` claims up to ten messages per call, sends to the queued recipient, and
-records the provider ID or a safe error summary. Recipient
+`live` is selected with `NOTIFICATION_DELIVERY_MODE=live`. Claims are
+serialized in Postgres and reserve capacity for in-flight sends, enforcing a
+maximum of ten messages per run and ten per rolling 24-hour window across
+repeated or concurrent runs. Operations shows remaining capacity and
+pending/expired counts. Staging rejects live mode. Live sends go to the queued
+recipient and record the provider ID or a safe error summary. Recipient
 authorization occurs only at enqueue, using the canonical effective Membership
 Editor role. Removing a qualifying role afterward does not suppress already
 queued mail; removing it before the next signup prevents new mail for that
@@ -70,8 +74,8 @@ retries; delivery beyond that window is held for manual review.
 2. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
-   sending domain), `NOTIFICATION_FROM` (a sender on the verified domain), and
-   `NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
+   sending domain), `NOTIFICATION_FROM` (a sender on the verified domain),
+`NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
 3. In Operations → Jobs, use **Preview queue** to inspect the safe summary of
    the oldest pending item. Use **Send test email** to send a synthetic test
    message to the test inbox and check both the inbox and Resend's delivery log.
