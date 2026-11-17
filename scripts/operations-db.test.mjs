@@ -20,6 +20,7 @@ try {
  await sql("update external_api_cache_policies set ttl_seconds=99 where provider='matchplay' and policy='event'");
  await migration('20260928160000_operations.sql');
  await migration('20261117220000_staging_notification_queue_controls.sql');
+ await migration('20261117232037_operations_messages_acl.sql');
  assert.equal((await query('select count(*)::int n from external_api_cache_policies'))[0].n,1,'custom values survive migration');
  for (const role of ['anon','authenticated']) {
    await sql(`set role ${role}; set request.jwt.claim.sub='${uid(2)}'`);
