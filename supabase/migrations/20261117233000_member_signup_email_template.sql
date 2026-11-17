@@ -9,9 +9,10 @@ alter table public.notification_outbox
 -- snapshot for queue review and legacy fallback.
 create or replace function private.snh_enqueue_member_signup(p_member public.members)
 returns void language plpgsql security definer set search_path = '' as $$
-declare v_recipient record;
-declare v_name text;
-declare v_email text;
+declare
+  v_recipient record;
+  v_name text;
+  v_email text;
 begin
   v_name := coalesce(
     nullif(trim(concat_ws(' ', p_member.first_name, p_member.last_name)), ''),
