@@ -71,7 +71,7 @@ retries; delivery beyond that window is held for manual review.
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
-2. Publish the `snhpc-new-website-account-notice` template in Resend and
+2. Publish the `snhpc-member-signup-alert-v1` template in Resend and
    confirm the API key configured for each project can access it.
 3. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
@@ -94,7 +94,7 @@ Operations → Messaging can expand **Preview message** to show the queued text 
 
 Club Administrators can also send a copy of a pending staging message to `NOTIFICATION_TEST_EMAIL`. The subject is prefixed with `[STAGING PREVIEW]` and the body identifies it as a test copy. This action is staging-only, leaves the queue item pending, does not contact its intended recipient, and records an Operations audit entry. It requires the staging test address, Resend API key, and sender to be configured.
 
-The `member_signup` notice uses the published Resend template alias `snhpc-new-website-account-notice`. New queue rows store `NEW_USER_NAME` and `NEW_USER_EMAIL` in `template_variables`, alongside a plain-text snapshot for queue review and legacy fallback. The template explains why the recipient is getting the informational notice, says no action is needed, and clarifies that a website profile does not confirm or change paid membership.
+The `member_signup` notice uses the published Resend template alias `snhpc-member-signup-alert-v1`. New queue rows store `NEW_USER_NAME` and `NEW_USER_EMAIL` in `template_variables`, alongside a plain-text snapshot for queue review and legacy fallback. The template explains why the recipient is getting the informational notice, says no action is needed, and clarifies that a website profile does not confirm or change paid membership.
 
 The live dispatcher and the staging-only queued-message preview use the same Resend template and values. A staging preview adds a `[STAGING PREVIEW]` subject prefix and a visible banner, sends only to `NOTIFICATION_TEST_EMAIL`, and leaves the queue item pending. Rows queued before the template migration have null template variables and continue through the plain-text delivery path. Template variables are HTML-escaped by the dispatcher. No member-facing unsubscribe link is included: this is a role-based operational alert, not a member campaign.
 
