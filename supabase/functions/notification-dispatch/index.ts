@@ -102,10 +102,6 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
   if (isStaging && mode === "live") {
     return response({ mode, error: "Live delivery is disabled for staging" }, 409);
   }
-  if (mode === "live" && (Deno.env.get("NOTIFICATION_LIVE_ENABLED") || "").trim().toLowerCase() !== "true") {
-    return response({ mode, error: "Live delivery is disabled by the safety switch" }, 409);
-  }
-
   // Preview reports only safe metadata for the oldest pending message. Tests use
   // a synthetic payload so they never expose, consume, or repeatedly resend queue content.
   if (mode === "preview") {
