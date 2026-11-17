@@ -25,7 +25,7 @@ begin
     from public.members m
     where private.snh_member_has_effective_role(m.id, 'membership_editor')
       and m.user_id is distinct from p_member.user_id
-      and trim(coalesce(m.email, '')) ~* '^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$'
+      and trim(coalesce(m.email, '')) ~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
     order by lower(trim(m.email)), m.id
   loop
     insert into public.notification_outbox
@@ -34,10 +34,10 @@ begin
       'member_signup:' || p_member.id::text || ':' || v_recipient.id::text,
       'member_signup', v_recipient.id, v_recipient.email,
       'New SNHPC website account created',
-      'A new profile was created for the SNH Pinball Club website.' || E'\\n\\n' ||
-      'You are receiving this informational notice because your website role includes membership-management access and is eligible for new-account notifications.' || E'\\n\\n' ||
-      'Name: ' || v_name || E'\\n' ||
-      'Email: ' || v_email || E'\\n\\n' ||
+      'A new profile was created for the SNH Pinball Club website.' || E'\n\n' ||
+      'You are receiving this informational notice because your website role includes membership-management access and is eligible for new-account notifications.' || E'\n\n' ||
+      'Name: ' || v_name || E'\n' ||
+      'Email: ' || v_email || E'\n\n' ||
       'No action is needed. This is a website-account notice only; it does not confirm or change paid membership status.',
       jsonb_build_object('NEW_USER_NAME', v_name, 'NEW_USER_EMAIL', v_email)
     ) on conflict (event_key) do nothing;
