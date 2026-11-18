@@ -134,7 +134,7 @@ announcements default to off. A dedicated queue follows the existing notificatio
 worker pattern but does not reuse email recipients or email delivery semantics.
 
 Delivery is server-side. Immediate publish/withdraw tries the authenticated
-worker; a minute scheduler handles future publication and queued work. The
+worker; a two-minute scheduler handles future publication and queued work. The
 website save succeeds independently of delivery. The worker verifies an actual
 Publishing user or dedicated scheduler secret before any protected work, then
 checks the webhook's server and channel against its configured destination.

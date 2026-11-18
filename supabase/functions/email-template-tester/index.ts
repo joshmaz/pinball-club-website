@@ -45,6 +45,18 @@ const TEMPLATE_TESTS: Record<string, TemplateDefinition> = {
         description: "A fictional email address ending in @example.com.", sample: "mina.arcadewell@example.com" },
     ],
   },
+  "snhpc-account-confirmation-reminder-v1": {
+    alias: "snhpc-account-confirmation-reminder-v1",
+    name: "Email confirmation reminder",
+    description: "One-time reminder for a newly created account that still needs email confirmation.",
+    fields: [],
+  },
+  "snhpc-member-welcome-v1": {
+    alias: "snhpc-member-welcome-v1",
+    name: "New member welcome",
+    description: "One-time welcome after a member first signs in with a confirmed email address.",
+    fields: [],
+  },
   "snhpc-pinballmap-game-changes-v1": {
     alias: "snhpc-pinballmap-game-changes-v1",
     name: "Pinball Map game changes",
@@ -68,10 +80,14 @@ function isExampleEmail(value: string): boolean {
   return /^[^\s@]+@example\.com$/i.test(value);
 }
 function buildTemplate(definition: TemplateDefinition, values: Record<string, string>, isStaging: boolean) {
+  const siteRoot = isStaging ? "https://staging.snhpinballclub.com" : "https://snhpinballclub.com";
   const variables: Record<string, string> = {
     SUBJECT_PREFIX: isStaging ? "[STAGING TEMPLATE TEST] " : "[TEMPLATE TEST] ",
     PREVIEW_BANNER: (isStaging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
       " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
+    SIGNIN_URL: siteRoot + "/signin.html",
+    GAMES_URL: siteRoot + "/games.html?view=all",
+    EVENTS_URL: siteRoot + "/events.html",
   };
   for (const field of definition.fields) {
     variables[field.key] = values[field.key];
