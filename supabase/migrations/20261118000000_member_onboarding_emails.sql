@@ -24,30 +24,43 @@ alter table public.notification_outbox
 create or replace function public.snh_claim_notification()
 returns setof public.notification_outbox
 language plpgsql security definer set search_path = '' as $$
+declare
+  v_live_occupancy integer;
 begin
-  update public.notification_outbox n
-  set status = 'failed', last_error = 'Delivery window expired',
-      locked_until = null, lease_id = null
-  where n.status in ('pending', 'sending')
-    and n.delivery_deadline_at <= now();
+  perform private.snh_cancel_mismatched_notification_recipients();
 
-  return query
-  with next_job as (
+  update public.notification_outbox n
+  set status='failed', last_error='Delivery window expired', locked_until=null, lease_id=null
+  where n.status in ('pending','sending') and n.delivery_deadline_at<=now();
+
+  update public.notification_outbox n
+  set status='failed', last_error='Delivery lease expired', locked_until=null, lease_id=null
+  where n.status='sending' and n.locked_until<now() and n.attempts>=3;
+
+  perform pg_catalog.pg_advisory_xact_lock(74111710::bigint);
+  select count(*)::integer into v_live_occupancy
+  from public.notification_outbox n
+  where (n.status='sent' and n.sent_at>now()-interval '24 hours')
+     or (n.status='sending' and n.locked_until>now());
+
+  if v_live_occupancy>=10 then return; end if;
+
+  return query with next_job as (
     select n.id from public.notification_outbox n
-    where (n.status = 'pending' and n.available_at <= now()
-           or n.status = 'sending' and n.locked_until < now())
-      and n.attempts < 3
-      and n.delivery_deadline_at > now()
-    order by n.available_at, n.created_at
-    limit 1 for update skip locked
+    where (n.status='pending' and n.available_at<=now()
+           or n.status='sending' and n.locked_until<now())
+      and (n.attempts<3 or n.manual_retry_allowance)
+      and n.delivery_deadline_at>now()
+    order by n.available_at,n.created_at limit 1 for update skip locked
   )
   update public.notification_outbox n
-  set status = 'sending', attempts = n.attempts + 1,
-      locked_until = now() + interval '5 minutes', lease_id = gen_random_uuid()
-  from next_job where n.id = next_job.id returning n.*;
+  set status='sending', attempts=n.attempts+1,
+      locked_until=now()+interval '5 minutes', lease_id=gen_random_uuid(),
+      manual_retry_allowance=false
+  from next_job where n.id=next_job.id returning n.*;
 end;
 $$;
-revoke all on function public.snh_claim_notification() from public, anon, authenticated;
+revoke all on function public.snh_claim_notification() from public,anon,authenticated;
 grant execute on function public.snh_claim_notification() to service_role;
 
 create or replace function public.snh_finish_notification(
@@ -60,21 +73,21 @@ begin
     raise exception 'invalid notification status' using errcode = '22023';
   end if;
   update public.notification_outbox n
-  set status = case when p_status = 'failed' and n.attempts < 3
-                         and n.delivery_deadline_at > now()
+  set status = case when p_status='failed' and n.attempts<3
+                         and n.delivery_deadline_at>now()
                     then 'pending' else p_status end,
-      available_at = case when p_status = 'failed'
-                          then now() + make_interval(mins => power(2, n.attempts)::int)
+      available_at = case when p_status='failed'
+                          then now()+make_interval(mins=>power(2,n.attempts)::int)
                           else n.available_at end,
-      locked_until = null, lease_id = null,
-      sent_at = case when p_status = 'sent' then now() else null end,
-      provider_id = left(p_provider_id, 200), last_error = left(p_error, 500)
-  where n.id = p_id and n.lease_id = p_lease_id and n.status = 'sending';
+      locked_until=null, lease_id=null,
+      sent_at=case when p_status='sent' then now() else null end,
+      provider_id=left(p_provider_id,200), last_error=left(p_error,500)
+  where n.id=p_id and n.lease_id=p_lease_id and n.status='sending';
   return found;
 end;
 $$;
-revoke all on function public.snh_finish_notification(uuid, uuid, text, text, text) from public, anon, authenticated;
-grant execute on function public.snh_finish_notification(uuid, uuid, text, text, text) to service_role;
+revoke all on function public.snh_finish_notification(uuid,uuid,text,text,text) from public,anon,authenticated;
+grant execute on function public.snh_finish_notification(uuid,uuid,text,text,text) to service_role;
 
 create or replace function private.snh_enqueue_member_confirmation_reminder(
   p_user_id uuid, p_member_id uuid, p_email text, p_created_at timestamptz
@@ -130,6 +143,35 @@ begin
 end;
 $$;
 revoke all on function private.snh_enqueue_member_welcome(uuid) from public, anon, authenticated;
+
+-- Preserve the rolling live-send cap and safe status summary while using per-message deadlines.
+create or replace function public.snh_notification_live_status()
+returns jsonb language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_sent integer; v_in_flight integer; v_eligible integer; v_waiting integer; v_expired integer;
+begin
+  select
+    count(*) filter(where n.status='sent' and n.sent_at>now()-interval '24 hours')::integer,
+    count(*) filter(where n.status='sending' and n.locked_until>now())::integer,
+    count(*) filter(
+      where (n.status='pending' and n.available_at<=now() or n.status='sending' and n.locked_until<now())
+        and n.delivery_deadline_at>now() and (n.attempts<3 or n.manual_retry_allowance)
+    )::integer,
+    count(*) filter(where n.status='pending' and n.available_at>now() and n.delivery_deadline_at>now())::integer,
+    count(*) filter(where n.status in ('pending','sending') and n.delivery_deadline_at<=now())::integer
+  into v_sent,v_in_flight,v_eligible,v_waiting,v_expired
+  from public.notification_outbox n;
+
+  return jsonb_build_object(
+    'rolling_limit',10,'per_run_limit',10,'sent_last_24h',v_sent,
+    'in_flight',v_in_flight,'used',v_sent+v_in_flight,
+    'remaining',greatest(0,10-v_sent-v_in_flight),
+    'eligible_pending',v_eligible,'waiting_pending',v_waiting,'expired_pending',v_expired
+  );
+end;
+$$;
+revoke all on function public.snh_notification_live_status() from public,anon,authenticated;
+grant execute on function public.snh_notification_live_status() to service_role;
 
 -- The account-created hook also queues the existing role-based volunteer alert.
 create or replace function public.handle_new_user()
