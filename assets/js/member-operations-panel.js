@@ -211,7 +211,7 @@
       rows.forEach(function (item) {
         var feature = el('div', null, featureGrid); feature.className = 'operations-ai-feature';
         var heading = el('div', null, feature); heading.className = 'operations-ai-feature-heading';
-        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature, heading);
+        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature === 'email_template_test_data' ? 'Email template test data' : item.feature, heading);
         var cost = el('strong', money(item.cost_usd), heading); cost.className = 'operations-ai-feature-cost';
         el('p', item.models || 'Unknown model', feature).className = 'operations-ai-feature-model';
         var stats = el('dl', null, feature); stats.className = 'operations-ai-feature-stats';
@@ -292,7 +292,8 @@
       } catch (error) { status.textContent = error.message; }
       finally { busy = false; setBusy(); }
     });
-    if (!config.ai_sample_configured) generateButton.disabled = true;
+    if (!config.ai_sample_configured) generateButton.unavailable = function () { return true; };
+    generateButton.disabled = busy || Boolean(generateButton.unavailable());
     button('Send template test', card, function () {
       var variables = {};
       Object.keys(fieldInputs).forEach(function (key) { variables[key] = fieldInputs[key].value; });
