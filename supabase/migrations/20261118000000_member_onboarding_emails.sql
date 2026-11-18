@@ -17,7 +17,7 @@ alter table public.notification_outbox
 
 alter table public.notification_outbox
   add constraint notification_outbox_kind_check
-  check (kind in ('member_signup', 'pinballmap_game_changes',
+  check (kind in ('member_signup', 'pinballmap_failure', 'pinballmap_game_changes',
                   'member_confirmation_reminder', 'member_welcome'));
 
 -- Give delayed mail its full retry window after the scheduled due time.
