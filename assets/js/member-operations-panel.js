@@ -264,20 +264,24 @@
     });
     var selected = templates[0];
     var fieldsWrap = el('div', null, card);
+    fieldsWrap.className = 'operations-email-template-fields';
     var fieldInputs = {};
     var generated = false;
     function showValues(template, values) {
       selected = template;
       fieldInputs = {};
       fieldsWrap.replaceChildren();
-      (template.fields || []).forEach(function (field) {
-        var label = el('label', field.label + ' ', fieldsWrap);
-        var input = el('input', null, label);
+      (template.fields || []).forEach(function (field, index) {
+        var fieldWrap = el('div', null, fieldsWrap);
+        fieldWrap.className = 'operations-email-template-field';
+        var label = el('label', field.label, fieldWrap);
+        var input = el('input', null, fieldWrap);
+        input.id = 'operations-email-template-field-' + index;
+        label.htmlFor = input.id;
         input.type = 'text'; input.maxLength = 100; input.value = values[field.key] || field.sample || '';
         input.setAttribute('maxlength', '100');
         input.setAttribute('aria-label', field.label);
         fieldInputs[field.key] = input;
-        el('small', field.description, label);
       });
       generated = false;
     }
