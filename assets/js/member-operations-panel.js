@@ -235,6 +235,74 @@
     return card;
   }
 
+  function renderEmailTemplateTester(parent) {
+    var config = configuration && configuration.email_template_test;
+    var card = el('section', null, parent); card.className = 'operations-provider operations-email-template-tester';
+    el('h4', 'Email template tester', card);
+    el('p', 'Send a rendered template to the configured test inbox. This does not create or consume a notification.', card);
+    if (!config || !config.configured) {
+      el('p', 'Template testing is unavailable until the test inbox, sender, and Resend key are configured.', card);
+      return;
+    }
+    var templates = config.templates || [];
+    if (!templates.length) { el('p', 'No email templates are registered for testing yet.', card); return; }
+    var templateLabel = el('label', 'Email template ', card);
+    var templateSelect = el('select', null, templateLabel);
+    templates.forEach(function (template) {
+      var option = el('option', template.name, templateSelect);
+      option.value = template.alias;
+    });
+    var selected = templates[0];
+    var fieldsWrap = el('div', null, card);
+    var fieldInputs = {};
+    var generated = false;
+    function showValues(template, values) {
+      selected = template;
+      fieldInputs = {};
+      fieldsWrap.replaceChildren();
+      (template.fields || []).forEach(function (field) {
+        var label = el('label', field.label + ' ', fieldsWrap);
+        var input = el('input', null, label);
+        input.type = 'text'; input.maxLength = 100; input.value = values[field.key] || field.sample || '';
+        input.setAttribute('maxlength', '100');
+        input.setAttribute('aria-label', field.label);
+        fieldInputs[field.key] = input;
+        el('small', field.description, label);
+      });
+      generated = false;
+    }
+    showValues(selected, {});
+    templateSelect.value = selected.alias;
+    templateSelect.addEventListener('change', function () {
+      selected = templates.find(function (template) { return template.alias === templateSelect.value; }) || templates[0];
+      showValues(selected, {});
+    });
+    el('p', config.ai_sample_configured
+      ? 'AI-generated samples are fictional and charged to the club’s monthly AI budget. Email examples are restricted to example.com.'
+      : 'AI sample generation is not configured. Example data is still available.', card);
+    button('Use example data', card, function () { showValues(selected, {}); });
+    var generateButton = button('Generate fake data with AI', card, async function () {
+      if (busy) return;
+      busy = true; setBusy(); status.textContent = 'Generating fictional sample data...';
+      try {
+        var result = await edge('generate_email_template_sample', { alias: selected.alias });
+        showValues(selected, result.values || {});
+        generated = true;
+        status.textContent = 'Fictional sample data generated. Review or edit the values before sending.';
+      } catch (error) { status.textContent = error.message; }
+      finally { busy = false; setBusy(); }
+    });
+    if (!config.ai_sample_configured) generateButton.disabled = true;
+    button('Send template test', card, function () {
+      var variables = {};
+      Object.keys(fieldInputs).forEach(function (key) { variables[key] = fieldInputs[key].value; });
+      var alias = selected.alias, usedAi = generated;
+      mutate(function () {
+        return edge('send_email_template_test', { alias: alias, variables: variables, aiSampleUsed: usedAi });
+      }, 'Send this rendered template only to the configured test inbox? It will be labeled as a template test and no member will be contacted.');
+    });
+  }
+
   function render() {
     content.replaceChildren();
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.section === current ? 'true' : 'false'); });
@@ -389,6 +457,7 @@
       });
     }
     if (current === 'messaging') {
+      renderEmailTemplateTester(content);
       var label = el('label', 'Status ', content), select = el('select', null, label);
       ['', 'pending','sending','sent','failed','canceled'].forEach(function (s) { var option = el('option', s || 'All statuses', select); option.value = s; });
       select.value = filter; select.addEventListener('change', async function () {
