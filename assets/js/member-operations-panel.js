@@ -228,7 +228,11 @@
         [['Requests', Number(item.request_count || 0).toLocaleString()],
           ['Input tokens', Number(item.input_tokens || 0).toLocaleString()],
           ['Output tokens', Number(item.output_tokens || 0).toLocaleString()]]
-          .forEach(function (pair) {\n            var stat = el('div', null, stats); stat.className = 'operations-ai-feature-stat';\n            el('dt', pair[0], stat);\n            el('dd', pair[1], stat);\n          });
+          .forEach(function (pair) {
+            var stat = el('div', null, stats); stat.className = 'operations-ai-feature-stat';
+            el('dt', pair[0], stat);
+            el('dd', pair[1], stat);
+          });
       });
     }
     var settings = el('details', null, card); el('summary', 'Monthly spending limit', settings);
