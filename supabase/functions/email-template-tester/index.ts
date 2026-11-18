@@ -86,7 +86,7 @@ function buildTemplate(definition: TemplateDefinition, values: Record<string, st
     PREVIEW_BANNER: (isStaging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
       " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
     SIGNIN_URL: siteRoot + "/signin.html",
-    GAMES_URL: siteRoot + "/games.html",
+    GAMES_URL: siteRoot + "/games.html?view=all",
     EVENTS_URL: siteRoot + "/events.html",
   };
   for (const field of definition.fields) {
