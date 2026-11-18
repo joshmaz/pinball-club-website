@@ -12,128 +12,6 @@ function serviceKey() {
   catch { /* legacy configuration */ }
   return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 }
-type EmailTemplateTestDefinition = {
-  alias: string;
-  name: string;
-  description: string;
-  fields: Array<{ key: string; label: string; description: string; sample: string; htmlKey?: string; exampleEmail?: boolean }>;
-};
-const EMAIL_TEMPLATE_TESTS: Record<string, EmailTemplateTestDefinition> = {
-  "snhpc-member-signup-alert-v1": {
-    alias: "snhpc-member-signup-alert-v1",
-    name: "New website account notice",
-    description: "Informational notice for membership managers when a website account is created.",
-    fields: [
-      { key: "NEW_USER_NAME", htmlKey: "NEW_USER_NAME_HTML", label: "New user name", description: "A fictional display name.", sample: "Mina Arcadewell" },
-      { key: "NEW_USER_EMAIL", htmlKey: "NEW_USER_EMAIL_HTML", exampleEmail: true, label: "New user email", description: "A fictional email address ending in @example.com.", sample: "mina.arcadewell@example.com" },
-    ],
-  },
-};
-const TEMPLATE_TEST_MODEL = "gpt-4o-mini";
-function escapeTemplateHtml(value: string): string {
-  const entities: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
-  };
-  return value.replace(/[&<>"']/g, (ch) => entities[ch] || ch);
-}
-function templateTestTemplateData(definition: EmailTemplateTestDefinition, values: Record<string, string>, staging: boolean) {
-  const variables: Record<string, string> = {
-    SUBJECT_PREFIX: staging ? "[STAGING TEMPLATE TEST] " : "[TEMPLATE TEST] ",
-    PREVIEW_BANNER: (staging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
-      " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
-  };
-  for (const field of definition.fields) {
-    variables[field.key] = values[field.key];
-    if (field.htmlKey) variables[field.htmlKey] = escapeTemplateHtml(values[field.key]);
-  }
-  return { id: definition.alias, variables };
-}
-
-async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, alias: string): Promise<{ values?: Record<string, string>; error?: string; status?: number }> {
-  const definition = EMAIL_TEMPLATE_TESTS[alias];
-  if (!definition) return { error: "Choose a supported email template.", status: 400 };
-  const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || "";
-  if (!apiKey) return { error: "AI sample generation is not configured.", status: 409 };
-  const fields = definition.fields.map((field) => ({
-    key: field.key, description: field.description,
-  }));
-  const prompt = "Make fictional sample values for this email-template test. Return one JSON object with exactly these keys and string values: " +
-    JSON.stringify(fields) + ". Never use real people or real contact details. Any email address must use the reserved example.com domain. " +
-    "Keep the examples plausible and friendly. Template context: " + definition.description;
-  const inputTokens = Math.ceil((prompt.length + 220) / 3);
-  const maxOutputTokens = 120;
-  const cost = (((inputTokens * 0.15) + (maxOutputTokens * 0.60)) / 1000000) * 1.5;
-  const { data: reservationData, error: reserveError } = await db.rpc("snh_ai_usage_reserve", {
-    p_feature: "email_template_test_data", p_model: TEMPLATE_TEST_MODEL, p_reserved_usd: cost,
-  });
-  if (reserveError) return { error: "AI budget check is unavailable. Sample generation was blocked.", status: 503 };
-  const reservation = typeof reservationData === "string" ? JSON.parse(reservationData) : reservationData;
-  if (!reservation?.allowed) return { error: "The monthly AI budget limit blocks this sample. Use the example values or contact an administrator.", status: 429 };
-  const settle = async (usage: { prompt_tokens?: number; completion_tokens?: number } | null, succeeded: boolean, chargeReservation = false) => {
-    const usedInput = Number.isInteger(usage?.prompt_tokens) ? Number(usage?.prompt_tokens) : inputTokens;
-    const usedOutput = Number.isInteger(usage?.completion_tokens) ? Number(usage?.completion_tokens) : maxOutputTokens;
-    const actualCost = usage
-      ? (((usedInput * 0.15) + (usedOutput * 0.60)) / 1000000)
-      : chargeReservation ? cost : 0;
-    const { error } = await db.rpc("snh_ai_usage_settle", {
-      p_call_id: reservation.id, p_cost_usd: actualCost,
-      p_input_tokens: usage ? usedInput : 0, p_output_tokens: usage ? usedOutput : 0,
-      p_succeeded: succeeded,
-    });
-    if (error) throw new Error("AI usage could not be recorded. Sample generation was stopped.");
-  };
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-  let settled = false;
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST", signal: controller.signal,
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + apiKey },
-      body: JSON.stringify({
-        model: TEMPLATE_TEST_MODEL,
-        messages: [
-          { role: "system", content: "Generate clearly fictional test data only. Return valid JSON and follow the requested field descriptions exactly." },
-          { role: "user", content: prompt },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: maxOutputTokens,
-        temperature: 0.8,
-      }),
-    });
-    const result = await response.json().catch(() => ({}));
-    const usage = result?.usage || null;
-    if (!response.ok) {
-      await settle(usage, false, !usage && response.status >= 500);
-      settled = true;
-      return { error: response.status === 429 ? "OpenAI rate or account limit reached. Use the example values or try again later."
-        : response.status === 401 || response.status === 403 ? "OpenAI authentication failed. Check the server configuration."
-        : "Could not generate sample data. Use the example values or try again.", status: 502 };
-    }
-    const raw = result?.choices?.[0]?.message?.content;
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : null;
-    const values: Record<string, string> = {};
-    for (const field of definition.fields) {
-      const value = parsed?.[field.key];
-      if (typeof value !== "string" || !value.trim() || value.length > 100) {
-        await settle(usage, false, !usage); settled = true;
-        return { error: "The sample generator returned unusable data. Use the example values or try again.", status: 502 };
-      }
-      values[field.key] = value.trim();
-    }
-    if (definition.fields.some((field) => field.exampleEmail && !/^[^\s@]+@example\.com$/i.test(values[field.key] || ""))) {
-      await settle(usage, false, !usage); settled = true;
-      return { error: "The sample generator returned an email outside the reserved example.com domain. Use the example values or try again.", status: 502 };
-    }
-    await settle(usage, true, !usage); settled = true;
-    return { values };
-  } catch {
-    if (!settled) {
-      try { await settle(null, false, true); } catch { /* Keep an unsettled reservation counted. */ }
-    }
-    return { error: controller.signal.aborted ? "Sample generation timed out. Use the example values or try again." : "Could not generate sample data. Use the example values or try again.", status: 502 };
-  } finally { clearTimeout(timeout); }
-}
-
 Deno.serve(async req => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   if (req.method !== "POST") return json({ error: "POST required" }, 405);
@@ -172,14 +50,6 @@ Deno.serve(async req => {
         live_per_run_limit: 10, live_rolling_24h_limit: 10,
         is_staging: new URL(url).hostname === "eptbdrwmcwogxcjleudv.supabase.co",
         preview_email_configured: Boolean(Deno.env.get("NOTIFICATION_TEST_EMAIL") && Deno.env.get("RESEND_API_KEY") && Deno.env.get("NOTIFICATION_FROM")) },
-      email_template_test: {
-        configured: Boolean(Deno.env.get("NOTIFICATION_TEST_EMAIL") && Deno.env.get("RESEND_API_KEY") && Deno.env.get("NOTIFICATION_FROM")),
-        ai_sample_configured: Boolean(Deno.env.get("OPENAI_PLATFORM_KEY")),
-        templates: Object.values(EMAIL_TEMPLATE_TESTS).map((item) => ({
-          alias: item.alias, name: item.name, description: item.description,
-          fields: item.fields.map(({ key, label, description, sample }) => ({ key, label, description, sample })),
-        })),
-      },
     });
     if (action === "set_ai_usage_budget") {
       const monthlyLimitUsd = Number(body.monthlyLimitUsd);
@@ -240,57 +110,6 @@ Deno.serve(async req => {
         return json({ ok: true, message: result.unchanged ? "IPDB export is unchanged; no download was needed." : "IPDB reference archive refreshed." });
       } catch {
         return json({ error: "IPDB refresh timed out or could not be reached. Check Jobs before retrying." }, 503);
-      }
-    }
-    if (action === "generate_email_template_sample") {
-      const alias = typeof body.alias === "string" ? body.alias : "";
-      const result = await generateEmailTemplateSample(db, alias);
-      if (result.error) return json({ error: result.error }, result.status || 502);
-      return json({ values: result.values });
-    }
-    if (action === "send_email_template_test") {
-      const alias = typeof body.alias === "string" ? body.alias : "";
-      const definition = EMAIL_TEMPLATE_TESTS[alias];
-      if (!definition) return json({ error: "Choose a supported email template." }, 400);
-      const testEmail = (Deno.env.get("NOTIFICATION_TEST_EMAIL") || "").trim();
-      const resendKey = Deno.env.get("RESEND_API_KEY") || "";
-      const from = (Deno.env.get("NOTIFICATION_FROM") || "").trim();
-      if (!testEmail || !resendKey || !from) return json({ error: "Template testing is unavailable until the test inbox, sender, and Resend key are configured." }, 409);
-      const incoming = body.variables && typeof body.variables === "object" && !Array.isArray(body.variables)
-        ? body.variables as Record<string, unknown> : {};
-      const values: Record<string, string> = {};
-      for (const field of definition.fields) {
-        const raw = incoming[field.key];
-        const value = typeof raw === "string" ? raw.trim() : "";
-        if (!value || value.length > 100) return json({ error: "Enter a value of 1 to 100 characters for " + field.label + "." }, 400);
-        values[field.key] = value;
-      }
-      if (definition.fields.some((field) => field.exampleEmail && !/^[^\s@]+@example\.com$/i.test(values[field.key] || ""))) {
-        return json({ error: "Sample email values must use the reserved example.com domain." }, 400);
-      }
-      const userDb = createClient(url, serviceKey(), { global: { headers: { Authorization: bearer } }, auth: { persistSession: false } });
-      const audit = await userDb.rpc("snh_operations_template_test_request", {
-        p_template_alias: alias, p_ai_sample_used: body.aiSampleUsed === true,
-      });
-      if (audit.error) return json({ error: "Could not record the email test request." }, 503);
-      const staging = new URL(url).hostname === "eptbdrwmcwogxcjleudv.supabase.co";
-      const template = templateTestTemplateData(definition, values, staging);
-      try {
-        const response = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          redirect: "error",
-          signal: AbortSignal.timeout(30000),
-          headers: {
-            Authorization: "Bearer " + resendKey,
-            "Content-Type": "application/json",
-            "Idempotency-Key": "template-test-" + crypto.randomUUID(),
-          },
-          body: JSON.stringify({ from, to: [testEmail], template }),
-        });
-        if (!response.ok) return json({ error: "Resend could not accept this template test. Check the template and sender configuration." }, 502);
-        return json({ ok: true, message: "Template test sent to the configured test inbox. No notification was queued." });
-      } catch {
-        return json({ error: "Template test timed out or could not be reached. Check Resend logs before retrying." }, 503);
       }
     }
     if (action === "test_matchplay") {
