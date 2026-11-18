@@ -16,7 +16,7 @@ type EmailTemplateTestDefinition = {
   alias: string;
   name: string;
   description: string;
-  fields: Array<{ key: string; label: string; description: string; sample: string }>;
+  fields: Array<{ key: string; label: string; description: string; sample: string; htmlKey?: string; exampleEmail?: boolean }>;
 };
 const EMAIL_TEMPLATE_TESTS: Record<string, EmailTemplateTestDefinition> = {
   "snhpc-member-signup-alert-v1": {
@@ -24,8 +24,8 @@ const EMAIL_TEMPLATE_TESTS: Record<string, EmailTemplateTestDefinition> = {
     name: "New website account notice",
     description: "Informational notice for membership managers when a website account is created.",
     fields: [
-      { key: "NEW_USER_NAME", label: "New user name", description: "A fictional display name.", sample: "Mina Arcadewell" },
-      { key: "NEW_USER_EMAIL", label: "New user email", description: "A fictional email address ending in @example.com.", sample: "mina.arcadewell@example.com" },
+      { key: "NEW_USER_NAME", htmlKey: "NEW_USER_NAME_HTML", label: "New user name", description: "A fictional display name.", sample: "Mina Arcadewell" },
+      { key: "NEW_USER_EMAIL", htmlKey: "NEW_USER_EMAIL_HTML", exampleEmail: true, label: "New user email", description: "A fictional email address ending in @example.com.", sample: "mina.arcadewell@example.com" },
     ],
   },
 };
@@ -37,21 +37,18 @@ function escapeTemplateHtml(value: string): string {
   return value.replace(/[&<>"']/g, (ch) => entities[ch] || ch);
 }
 function templateTestTemplateData(definition: EmailTemplateTestDefinition, values: Record<string, string>, staging: boolean) {
-  const name = values.NEW_USER_NAME;
-  const email = values.NEW_USER_EMAIL;
-  return {
-    id: definition.alias,
-    variables: {
-      SUBJECT_PREFIX: staging ? "[STAGING TEMPLATE TEST] " : "[TEMPLATE TEST] ",
-      PREVIEW_BANNER: (staging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
-        " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
-      NEW_USER_NAME: name,
-      NEW_USER_EMAIL: email,
-      NEW_USER_NAME_HTML: escapeTemplateHtml(name),
-      NEW_USER_EMAIL_HTML: escapeTemplateHtml(email),
-    },
+  const variables: Record<string, string> = {
+    SUBJECT_PREFIX: staging ? "[STAGING TEMPLATE TEST] " : "[TEMPLATE TEST] ",
+    PREVIEW_BANNER: (staging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
+      " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
   };
+  for (const field of definition.fields) {
+    variables[field.key] = values[field.key];
+    if (field.htmlKey) variables[field.htmlKey] = escapeTemplateHtml(values[field.key]);
+  }
+  return { id: definition.alias, variables };
 }
+
 async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, alias: string): Promise<{ values?: Record<string, string>; error?: string; status?: number }> {
   const definition = EMAIL_TEMPLATE_TESTS[alias];
   if (!definition) return { error: "Choose a supported email template.", status: 400 };
@@ -123,8 +120,8 @@ async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, 
       }
       values[field.key] = value.trim();
     }
-    if (!/^[^\s@]+@example\.com$/i.test(values.NEW_USER_EMAIL || "")) {
-      await settle(usage, false); settled = true;
+    if (definition.fields.some((field) => field.exampleEmail && !/^[^\s@]+@example\.com$/i.test(values[field.key] || ""))) {
+      await settle(usage, false, !usage); settled = true;
       return { error: "The sample generator returned an email outside the reserved example.com domain. Use the example values or try again.", status: 502 };
     }
     await settle(usage, true, !usage); settled = true;
@@ -268,8 +265,8 @@ Deno.serve(async req => {
         if (!value || value.length > 100) return json({ error: "Enter a value of 1 to 100 characters for " + field.label + "." }, 400);
         values[field.key] = value;
       }
-      if (!/^[^\s@]+@example\.com$/i.test(values.NEW_USER_EMAIL || "")) {
-        return json({ error: "The sample email must use the reserved example.com domain." }, 400);
+      if (definition.fields.some((field) => field.exampleEmail && !/^[^\s@]+@example\.com$/i.test(values[field.key] || ""))) {
+        return json({ error: "Sample email values must use the reserved example.com domain." }, 400);
       }
       const userDb = createClient(url, serviceKey(), { global: { headers: { Authorization: bearer } }, auth: { persistSession: false } });
       const audit = await userDb.rpc("snh_operations_template_test_request", {
