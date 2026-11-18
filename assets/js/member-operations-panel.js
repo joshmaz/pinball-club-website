@@ -1,6 +1,6 @@
 (function () {
   var allowed = false, initialized = false, busy = false, snapshot, configuration, aiUsage = null, current = 'overview';
-  var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
+  var pinballmap = null, pinballmapError = '', publishingDeliveries = null, templateTesterConfiguration = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
   var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', ipdb: 'IPDB', kineticist: 'Kineticist' };
   function el(tag, text, parent) {
@@ -29,7 +29,7 @@
     if (messageStatus !== undefined) filter = messageStatus;
     route();
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); }
-    else if (current === 'messaging') await loadMessages(false);
+    else if (current === 'messaging') { await loadTemplateTesterConfiguration(); await loadMessages(false); }
     else if (!snapshot) await load();
     else render();
   }
@@ -52,6 +52,16 @@
     if (result.data && result.data.error) throw new Error(result.data.error);
     if (result.error || !result.data) throw new Error('Operations service unavailable. Check deployment and your session.');
     return result.data;
+  }
+  async function templateEdge(action, extra) {
+    var result = await window.snhSupabase.functions.invoke('email-template-tester', { body: Object.assign({ action: action }, extra || {}) });
+    if (result.data && result.data.error) throw new Error(result.data.error);
+    if (result.error || !result.data) throw new Error('Email template tester unavailable. Check deployment and your session.');
+    return result.data;
+  }
+  async function loadTemplateTesterConfiguration() {
+    try { templateTesterConfiguration = await templateEdge('configuration'); }
+    catch { templateTesterConfiguration = null; }
   }
   async function mutate(action, confirmation) {
     if (busy || !allowed || (confirmation && !window.confirm(confirmation))) return;
@@ -211,7 +221,7 @@
       rows.forEach(function (item) {
         var feature = el('div', null, featureGrid); feature.className = 'operations-ai-feature';
         var heading = el('div', null, feature); heading.className = 'operations-ai-feature-heading';
-        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature, heading);
+        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature === 'email_template_test_data' ? 'Email template test data' : item.feature, heading);
         var cost = el('strong', money(item.cost_usd), heading); cost.className = 'operations-ai-feature-cost';
         el('p', item.models || 'Unknown model', feature).className = 'operations-ai-feature-model';
         var stats = el('dl', null, feature); stats.className = 'operations-ai-feature-stats';
@@ -233,6 +243,75 @@
       mutate(function () { return edge('set_ai_usage_budget', { monthlyLimitUsd: next }); });
     });
     return card;
+  }
+
+  function renderEmailTemplateTester(parent) {
+    var config = templateTesterConfiguration;
+    var card = el('section', null, parent); card.className = 'operations-provider operations-email-template-tester';
+    el('h4', 'Email template tester', card);
+    el('p', 'Send a rendered template to the configured test inbox. This does not create or consume a notification.', card);
+    if (!config || !config.configured) {
+      el('p', 'Template testing is unavailable until the test inbox, sender, and Resend key are configured.', card);
+      return;
+    }
+    var templates = config.templates || [];
+    if (!templates.length) { el('p', 'No email templates are registered for testing yet.', card); return; }
+    var templateLabel = el('label', 'Email template ', card);
+    var templateSelect = el('select', null, templateLabel);
+    templates.forEach(function (template) {
+      var option = el('option', template.name, templateSelect);
+      option.value = template.alias;
+    });
+    var selected = templates[0];
+    var fieldsWrap = el('div', null, card);
+    var fieldInputs = {};
+    var generated = false;
+    function showValues(template, values) {
+      selected = template;
+      fieldInputs = {};
+      fieldsWrap.replaceChildren();
+      (template.fields || []).forEach(function (field) {
+        var label = el('label', field.label + ' ', fieldsWrap);
+        var input = el('input', null, label);
+        input.type = 'text'; input.maxLength = 100; input.value = values[field.key] || field.sample || '';
+        input.setAttribute('maxlength', '100');
+        input.setAttribute('aria-label', field.label);
+        fieldInputs[field.key] = input;
+        el('small', field.description, label);
+      });
+      generated = false;
+    }
+    showValues(selected, {});
+    templateSelect.value = selected.alias;
+    templateSelect.addEventListener('change', function () {
+      selected = templates.find(function (template) { return template.alias === templateSelect.value; }) || templates[0];
+      showValues(selected, {});
+    });
+    el('p', config.ai_sample_configured
+      ? 'AI-generated samples are fictional and charged to the club’s monthly AI budget. Email examples are restricted to example.com.'
+      : 'AI sample generation is not configured. Example data is still available.', card);
+    button('Use example data', card, function () { showValues(selected, {}); });
+    var generateButton = button('Generate fake data with AI', card, async function () {
+      if (busy) return;
+      busy = true; setBusy(); status.textContent = 'Generating fictional sample data...';
+      try {
+        var result = await templateEdge('generate_sample', { alias: selected.alias });
+        showValues(selected, result.values || {});
+        generated = true;
+        status.textContent = 'Fictional sample data generated. Review or edit the values before sending.';
+      } catch (error) { status.textContent = error.message; }
+      finally { busy = false; setBusy(); }
+    });
+    if (!config.ai_sample_configured) generateButton.unavailable = function () { return true; };
+    generateButton.disabled = busy || Boolean(generateButton.unavailable());
+    button('Send template test', card, function () {
+      var variables = {};
+      Object.keys(fieldInputs).forEach(function (key) { variables[key] = fieldInputs[key].value; });
+      var alias = selected.alias, usedAi = generated;
+      mutate(function () {
+        return templateEdge('send_test', { alias: alias, variables: variables, aiSampleUsed: usedAi });
+      }, 'Send this rendered template only to the configured test inbox? It will be labeled as a template test and no member will be contacted.');
+    });
   }
 
   function render() {
@@ -389,6 +468,7 @@
       });
     }
     if (current === 'messaging') {
+      renderEmailTemplateTester(content);
       var label = el('label', 'Status ', content), select = el('select', null, label);
       ['', 'pending','sending','sent','failed','canceled'].forEach(function (s) { var option = el('option', s || 'All statuses', select); option.value = s; });
       select.value = filter; select.addEventListener('change', async function () {
@@ -537,7 +617,7 @@
     try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
     catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }
     try { configuration = await edge('configuration'); } catch { configuration=null; }
-    if (current==='messaging') await fetchMessages(false);
+    if (current==='messaging') { await loadTemplateTesterConfiguration(); await fetchMessages(false); }
     render();
   }
   async function load() {

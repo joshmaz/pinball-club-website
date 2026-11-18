@@ -100,6 +100,25 @@ The live dispatcher and the staging-only queued-message preview use the same Res
 
 The Resend template must be published and available to the API key configured for each project before template delivery can succeed. Editing and publishing a new version changes future sends without a code change, so inspect a staging preview after template edits before enabling production delivery.
 
+### Template tester
+
+Operations → Messaging includes an Email template tester for the templates registered in
+the Operations Edge Function. It offers editable example values and optional
+LLM-generated fictional values, then sends the rendered Resend template only to
+`NOTIFICATION_TEST_EMAIL`. It does not create or consume an outbox item and is
+available independently of notification delivery mode. Test subjects and a
+visible banner identify the email as a template test. The send request is
+audited without storing the sample values.
+
+AI sample generation uses `OPENAI_PLATFORM_KEY` and the existing monthly AI
+spending cap. Its usage is tracked as `email_template_test_data` in Operations
+→ AI Usage. Sample email fields are restricted to the reserved `example.com`
+domain. When adding a template, register its alias, variable descriptions and
+safe example values in `supabase/functions/email-template-tester/index.ts`; include the
+`SUBJECT_PREFIX` and `PREVIEW_BANNER` variables so the test copy is clearly
+labeled, and map any HTML-specific escaped variables. The tester only sends
+templates from this allowlist.
+
 Staging intentionally rejects live delivery. Test mode sends a synthetic message to the configured test inbox and never reads or changes queued messages. Use queue preview to verify the event and message content, then cancel or clear staging items when finished.
 
 Inspect queue totals in the Supabase SQL editor:
