@@ -79,6 +79,36 @@ function signupNoticeTemplate(kind: string, values: unknown, stagingPreview = fa
   };
 }
 
+function gameChangesTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
+  if (kind !== "pinballmap_game_changes") return null;
+  const data = asRecord(values);
+  if (!data) return null;
+  const gameNames = (key: string) => {
+    const value = data[key];
+    if (!Array.isArray(value)) return [];
+    return value.filter((item): item is string => typeof item === "string")
+      .map((item) => item.trim()).filter(Boolean).slice(0, 100);
+  };
+  const added = gameNames("ADDED_GAMES");
+  const removed = gameNames("REMOVED_GAMES");
+  return {
+    id: "snhpc-pinballmap-game-changes-v1",
+    variables: {
+      SUBJECT_PREFIX: stagingPreview ? "[STAGING PREVIEW] " : "",
+      PREVIEW_BANNER: stagingPreview
+        ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
+        : "",
+      ADDED_GAMES_HTML: added.length ? added.map(escapeHtml).join("<br>") : "No games added during this import.",
+      REMOVED_GAMES_HTML: removed.length ? removed.map(escapeHtml).join("<br>") : "No games removed during this import.",
+    },
+  };
+}
+
+function notificationTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
+  return signupNoticeTemplate(kind, values, stagingPreview)
+    || gameChangesTemplate(kind, values, stagingPreview);
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return response({ error: "POST required" }, 405);
   const expectedSecret = Deno.env.get("NOTIFICATION_DISPATCH_SECRET");
@@ -159,7 +189,7 @@ async function sendPreview(db: SupabaseClient, notificationId: unknown): Promise
     "",
     String(queued.data.body || "(No message body was saved.)"),
   ].join("\n");
-  const template = signupNoticeTemplate(String(queued.data.kind || ""), queued.data.template_variables, true);
+  const template = notificationTemplate(String(queued.data.kind || ""), queued.data.template_variables, true);
   const result = await send(apiKey, from, testEmail, subject, text,
     "staging-preview-" + notificationId + "-" + crypto.randomUUID(), template || undefined);
   return response({ sent: result.ok, preview: true, error: result.ok ? undefined : result.error }, result.ok ? 200 : 502);
@@ -229,7 +259,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
 
     // The explicit recipient was authorized at enqueue; role changes do not
     // revoke delivery of an already-authorized message.
-    const template = signupNoticeTemplate(job.kind, job.template_variables);
+    const template = notificationTemplate(job.kind, job.template_variables);
     const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id, template || undefined);
     const status = result.ok ? "sent" : "failed";
     const providerId = result.id || null;
