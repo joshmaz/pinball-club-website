@@ -31,7 +31,10 @@ const EMAIL_TEMPLATE_TESTS: Record<string, EmailTemplateTestDefinition> = {
 };
 const TEMPLATE_TEST_MODEL = "gpt-4o-mini";
 function escapeTemplateHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[ch] || ch);
+  const entities: Record<string, string> = {
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
+  };
+  return value.replace(/[&<>"']/g, (ch) => entities[ch] || ch);
 }
 function templateTestTemplateData(definition: EmailTemplateTestDefinition, values: Record<string, string>, staging: boolean) {
   const name = values.NEW_USER_NAME;
