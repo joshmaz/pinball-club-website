@@ -593,5 +593,6 @@
 .operations-ai-feature-cost { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
 .operations-ai-feature-model { margin: .4rem 0 .75rem; color: var(--club-muted); font-size: .82rem; overflow-wrap: anywhere; }
 .operations-ai-feature-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .25rem .65rem; margin: 0; padding-top: .65rem; border-top: 1px solid var(--club-line); }
+.operations-ai-feature-stat { min-width: 0; }
 .operations-ai-feature-stats dt { color: var(--club-muted); font-size: .72rem; line-height: 1.4; }
 .operations-ai-feature-stats dd { margin: .15rem 0 0; font-size: .88rem; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
