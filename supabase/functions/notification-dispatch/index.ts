@@ -104,9 +104,28 @@ function gameChangesTemplate(kind: string, values: unknown, stagingPreview = fal
   };
 }
 
+function onboardingTemplate(kind: string, stagingPreview = false): ResendTemplatePayload | null {
+  const aliases: Record<string, string> = {
+    member_confirmation_reminder: "snhpc-account-confirmation-reminder-v1",
+    member_welcome: "snhpc-member-welcome-v1",
+  };
+  const id = aliases[kind];
+  if (!id) return null;
+  return {
+    id,
+    variables: {
+      SUBJECT_PREFIX: stagingPreview ? "[STAGING PREVIEW] " : "",
+      PREVIEW_BANNER: stagingPreview
+        ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
+        : "",
+    },
+  };
+}
+
 function notificationTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
   return signupNoticeTemplate(kind, values, stagingPreview)
-    || gameChangesTemplate(kind, values, stagingPreview);
+    || gameChangesTemplate(kind, values, stagingPreview)
+    || onboardingTemplate(kind, stagingPreview);
 }
 
 Deno.serve(async (req) => {
@@ -122,6 +141,10 @@ Deno.serve(async (req) => {
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const request = await req.json().catch(() => ({}));
   if (request && request.action === "send_preview") return sendPreview(db, request.notification_id);
+  const scheduled = req.headers.get("x-notification-scheduled") === "true";
+  if (scheduled && (Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview") === "test") {
+    return response({ mode: "test", sent: 0, skipped: true, reason: "Scheduled dispatch does not send synthetic test emails" });
+  }
   const run = await db.from("operations_job_runs").insert({ job: "notification_dispatch" }).select("id").single();
   if (run.error) return response({ error: "Could not record job start" }, 503);
   let outcome: Response;
@@ -248,7 +271,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
   }
 
   let sent = 0;
-  const canceled = 0;
+  let canceled = 0;
   let failed = 0;
   const runLimit = Math.min(10, remainingAtStart);
   for (let i = 0; i < runLimit; i += 1) {
@@ -257,8 +280,34 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
     const job = (claim.data as Job[] | null)?.[0];
     if (!job) break;
 
-    // The explicit recipient was authorized at enqueue; role changes do not
-    // revoke delivery of an already-authorized message.
+    // A confirmation reminder is useful only while the account remains unverified.
+    // Fail closed: if Auth state cannot be checked, the lease will expire and retry.
+    if (job.kind === "member_confirmation_reminder") {
+      const member = await db.from("members").select("user_id").eq("id", job.recipient_member_id).maybeSingle();
+      if (member.error) throw new Error("Could not check account confirmation status");
+      if (!member.data?.user_id) {
+        const canceledResult = await db.rpc("snh_finish_notification", {
+          p_id: job.id, p_lease_id: job.lease_id, p_status: "canceled",
+          p_provider_id: null, p_error: "Account profile was not found",
+        });
+        if (canceledResult.error || !canceledResult.data) return response({ error: "Could not record canceled reminder", sent, canceled, failed }, 500);
+        canceled++;
+        continue;
+      }
+      const authUser = await db.auth.admin.getUserById(member.data.user_id);
+      if (authUser.error) throw new Error("Could not check account confirmation status");
+      if (authUser.data.user?.email_confirmed_at) {
+        const canceledResult = await db.rpc("snh_finish_notification", {
+          p_id: job.id, p_lease_id: job.lease_id, p_status: "canceled",
+          p_provider_id: null, p_error: "Email was confirmed before the reminder was sent",
+        });
+        if (canceledResult.error || !canceledResult.data) return response({ error: "Could not record canceled reminder", sent, canceled, failed }, 500);
+        canceled++;
+        continue;
+      }
+    }
+
+    // Recipient is fixed by the trusted outbox record.
     const template = notificationTemplate(job.kind, job.template_variables);
     const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id, template || undefined);
     const status = result.ok ? "sent" : "failed";
