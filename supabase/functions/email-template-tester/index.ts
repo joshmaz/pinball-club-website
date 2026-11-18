@@ -85,7 +85,7 @@ function buildTemplate(definition: TemplateDefinition, values: Record<string, st
     SUBJECT_PREFIX: isStaging ? "[STAGING TEMPLATE TEST] " : "[TEMPLATE TEST] ",
     PREVIEW_BANNER: (isStaging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
       " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
-    SIGNIN_URL: siteRoot + "/signin.html?resendConfirmation=1",
+    SIGNIN_URL: siteRoot + "/signin.html",
     GAMES_URL: siteRoot + "/games.html",
     EVENTS_URL: siteRoot + "/events.html",
   };
