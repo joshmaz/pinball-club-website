@@ -95,8 +95,10 @@ continues to reject `live` delivery.
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
-2. Publish the `snhpc-member-signup-alert-v1` template in Resend and
-   confirm the API key configured for each project can access it.
+2. Publish the `snhpc-member-signup-alert-v1`,
+   `snhpc-account-confirmation-reminder-v1`, and `snhpc-member-welcome-v1`
+   templates in Resend. Confirm the API key configured for each project can
+   access them.
 3. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
