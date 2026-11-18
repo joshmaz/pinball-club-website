@@ -77,7 +77,7 @@ function buildTemplate(definition: TemplateDefinition, values: Record<string, st
     variables[field.key] = values[field.key];
     if (field.htmlKey) {
       if (field.listHtml) {
-        const items = values[field.key].split(/[;\\n]+/).map((item) => item.trim()).filter(Boolean);
+        const items = values[field.key].split(/[;\n]+/).map((item) => item.trim()).filter(Boolean);
         variables[field.htmlKey] = items.length ? items.map(escapeHtml).join("<br>") : "None.";
       } else variables[field.htmlKey] = escapeHtml(values[field.key]);
     }
