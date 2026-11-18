@@ -59,7 +59,7 @@ begin
   where id=p_run;
 end; $$;
 
-create function private.snh_pinballmap_enqueue_game_changes(p_run uuid)
+create or replace function private.snh_pinballmap_enqueue_game_changes(p_run uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 declare
   v_run public.operations_job_runs;
@@ -111,7 +111,7 @@ begin
   end loop;
 end; $$;
 
-create function private.snh_pinballmap_game_changes_after_finish()
+create or replace function private.snh_pinballmap_game_changes_after_finish()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   if old.status='running' and new.status in ('succeeded','failed') then
