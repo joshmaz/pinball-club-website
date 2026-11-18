@@ -119,7 +119,7 @@ function onboardingTemplate(kind: string, stagingPreview = false): ResendTemplat
       PREVIEW_BANNER: stagingPreview
         ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
         : "",
-      SIGNIN_URL: siteRoot + "/signin.html?resendConfirmation=1",
+      SIGNIN_URL: siteRoot + "/signin.html",
       GAMES_URL: siteRoot + "/games.html",
       EVENTS_URL: siteRoot + "/events.html",
     },
