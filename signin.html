@@ -113,7 +113,7 @@
     </div>
     <button id="reset-password-btn" type="submit">Set New Password</button>
   </form>
-  <p class="club-signin-status" id="status" aria-live="polite"></p>
+  <p class="club-signin-status" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
   <div id="account-deletion-recovery"></div>
 </section>
 <section class="content signin-prose">
@@ -173,9 +173,13 @@
     return { email: email, password: password };
   }
 
-  function setStatusMessage(message) {
+  function setStatusMessage(message, state) {
     var status = document.getElementById("status");
-    if (status) status.innerText = message;
+    if (status) {
+      status.innerText = message;
+      if (state) status.dataset.state = state;
+      else delete status.dataset.state;
+    }
   }
 
   function getRedirectTarget() {
@@ -239,28 +243,45 @@
       return;
     }
 
-    await runAuthAction(async function () {
-      var result = await window.snhSupabase.auth.signUp({
-        email: creds.email,
-        password: creds.password,
-      });
+    var signupBtn = document.getElementById("signup-btn");
+    if (signupBtn) {
+      signupBtn.disabled = true;
+      signupBtn.setAttribute("aria-busy", "true");
+      signupBtn.textContent = "Creating account…";
+    }
+    setStatusMessage("Creating your account…", "pending");
 
-      if (result.error) {
-        setStatusMessage(result.error.message);
-        return;
-      }
-      if (result.data.session) {
-        if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
-          window.location.href = "members.html";
+    try {
+      await runAuthAction(async function () {
+        var result = await window.snhSupabase.auth.signUp({
+          email: creds.email,
+          password: creds.password,
+        });
+
+        if (result.error) {
+          setStatusMessage(result.error.message);
           return;
         }
-        window.location.href = getRedirectTarget();
-        return;
+        if (result.data.session) {
+          if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
+            window.location.href = "members.html";
+            return;
+          }
+          window.location.href = getRedirectTarget();
+          return;
+        }
+        setStatusMessage(
+          "Check your email to confirm your account, then sign in here.",
+          "confirmation"
+        );
+      });
+    } finally {
+      if (signupBtn) {
+        signupBtn.disabled = false;
+        signupBtn.removeAttribute("aria-busy");
+        signupBtn.textContent = "Sign Up";
       }
-      setStatusMessage(
-        "Check your email to confirm your account, then sign in here."
-      );
-    });
+    }
   }
 
   async function login() {
