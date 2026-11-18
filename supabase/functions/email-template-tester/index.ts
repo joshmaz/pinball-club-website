@@ -68,6 +68,21 @@ const TEMPLATE_TESTS: Record<string, TemplateDefinition> = {
         description: "A short semicolon-separated list of fictional pinball game titles.", sample: "Galaxy Quest" },
     ],
   },
+  "snhpc-club-note-created-v1": {
+    alias: "snhpc-club-note-created-v1",
+    name: "New club Note",
+    description: "Informational notice grouping Notes created on the website or during one Pinball Map import.",
+    fields: [
+      { key: "SOURCE_LABEL", label: "Note source", description: "The source of these fictional Notes, such as Member website or Pinball Map.", sample: "Pinball Map" },
+      { key: "NOTE_1_TITLE", label: "Fake Note 1 title", description: "A fictional title for the first Note.", sample: "Right flipper sticks during multiball" },
+      { key: "NOTE_1_GAME", label: "Fake Note 1 game", description: "A fictional pinball machine title.", sample: "Moonlight Rally" },
+      { key: "NOTE_1_DETAILS", label: "Fake Note 1 details", description: "Short fictional details for the first Note.", sample: "The right flipper hesitates after the ball drains." },
+      { key: "NOTE_2_TITLE", label: "Fake Note 2 title", description: "A second fictional Note title, showing how an import can group multiple Notes.", sample: "Start button sometimes needs a second press" },
+      { key: "NOTE_2_GAME", label: "Fake Note 2 game", description: "A second fictional pinball machine title.", sample: "Orbit Wizard" },
+      { key: "NOTE_2_DETAILS", label: "Fake Note 2 details", description: "Short fictional details for the second Note.", sample: "The game starts normally after a brief pause." },
+      { key: "SUBMITTED_BY", label: "Fake submitter", description: "A fictional submitter label or Pinball Map.", sample: "Pinball Map" },
+    ],
+  },
 };
 const AI_MODEL = "gpt-4o-mini";
 function escapeHtml(value: string): string {
@@ -81,7 +96,7 @@ function isExampleEmail(value: string): boolean {
 }
 function buildTemplate(definition: TemplateDefinition, values: Record<string, string>, isStaging: boolean) {
   const siteRoot = isStaging ? "https://staging.snhpinballclub.com" : "https://snhpinballclub.com";
-  const variables: Record<string, string> = {
+  const variables: Record<string, string | number> = {
     SUBJECT_PREFIX: isStaging ? "[STAGING TEMPLATE TEST] " : "[TEMPLATE TEST] ",
     PREVIEW_BANNER: (isStaging ? "STAGING TEMPLATE TEST" : "TEMPLATE TEST") +
       " — sent only to the configured test inbox with fictional sample data. No member was contacted.",
@@ -97,6 +112,29 @@ function buildTemplate(definition: TemplateDefinition, values: Record<string, st
         variables[field.htmlKey] = items.length ? items.map(escapeHtml).join("<br>") : "None.";
       } else variables[field.htmlKey] = escapeHtml(values[field.key]);
     }
+  }
+  if (definition.alias === "snhpc-club-note-created-v1") {
+    const source = values.SOURCE_LABEL.trim();
+    const submittedBy = values.SUBMITTED_BY.trim();
+    const notes = [
+      { title: values.NOTE_1_TITLE, game_title: values.NOTE_1_GAME, body: values.NOTE_1_DETAILS },
+      { title: values.NOTE_2_TITLE, game_title: values.NOTE_2_GAME, body: values.NOTE_2_DETAILS },
+    ].filter((note) => note.title || note.game_title || note.body).map((note) => ({
+      ...note, submitted_by: submittedBy || "Fictional member",
+      status: "Open", submitted_at: "November 18, 2026",
+    }));
+    variables.SOURCE_LABEL = escapeHtml(source || "Member website");
+    variables.NOTE_COUNT = notes.length;
+    variables.UPDATE_HEADING = notes.length === 1 ? "A new Note was added" : notes.length + " new Notes were added";
+    variables.SOURCE_SUMMARY = "Source: " + escapeHtml(source || "Member website");
+    variables.NOTES_HTML = notes.map((note) =>
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9dee7;margin-top:16px;"><tr><td style="padding:14px 16px;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:24px;color:#14243a;font-weight:bold;">' + escapeHtml(note.title || "Untitled Note") + '</td></tr><tr><td style="padding:0 16px 14px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#14243a;"><strong>Game:</strong> ' + escapeHtml(note.game_title || "Club or facility") + '<br><strong>Details:</strong> ' + escapeHtml(note.body || "No details provided").replace(/\r?\n/g, "<br>") + '<br><strong>Submitted by:</strong> ' + escapeHtml(note.submitted_by) + '<br><strong>Status:</strong> Open<br><strong>Submitted:</strong> November 18, 2026</td></tr></table>'
+    ).join("");
+    variables.NOTES_TEXT = notes.map((note) =>
+      [note.title || "Untitled Note", "Game: " + (note.game_title || "Club or facility"),
+        "Details: " + (note.body || "No details provided"), "Submitted by: " + note.submitted_by,
+        "Status: Open", "Submitted: November 18, 2026"].join("\n")
+    ).join("\n\n");
   }
   return { id: definition.alias, variables };
 }

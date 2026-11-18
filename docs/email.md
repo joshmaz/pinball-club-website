@@ -90,6 +90,16 @@ the Edge Function secret remains `NOTIFICATION_DISPATCH_SECRET`. Scheduled
 calls do not send synthetic messages when delivery mode is `test`. Staging
 continues to reject `live` delivery.
 
+New Note creation notices use the `club_note_created` queue kind and the
+`snhpc-club-note-created-v1` Resend template. A Note submitted through the site
+queues one message per distinct email held by a member with any effective
+website volunteer role. A Pinball Map import groups all newly imported Notes
+from that run into one message per recipient; previously imported submissions
+are skipped, so repeat imports do not repeat Note alerts. Changes to existing
+Notes do not send another notice. The template tester includes a grouped,
+fictional two-Note example.
+
+
 ## Activation
 
 1. Apply the migration and deploy `notification-dispatch` with its configured
