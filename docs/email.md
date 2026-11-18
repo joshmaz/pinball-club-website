@@ -94,6 +94,17 @@ Operations → Messaging can expand **Preview message** to show the queued text 
 
 Club Administrators can also send a copy of a pending staging message to `NOTIFICATION_TEST_EMAIL`. The subject is prefixed with `[STAGING PREVIEW]` and the body identifies it as a test copy. This action is staging-only, leaves the queue item pending, does not contact its intended recipient, and records an Operations audit entry. It requires the staging test address, Resend API key, and sender to be configured.
 
+The Pinball Map game-change notice uses the published Resend template alias
+`snhpc-pinballmap-game-changes-v1`. On each completed Pinball Map import, the
+database compares the imported club-location status with the prior game state.
+A transition to listed at the club or away from the club queues one grouped
+notice for members with effective `games_editor` access or higher. Repeated,
+unchanged imports do not queue another notice. Removed games remain in the
+website catalog and history. The notice gives editors the Games Management link
+and asks them to verify metadata, add or confirm third-party links, and generate
+the club description for additions. Queueing is tied to import-run completion,
+including a run that committed catalog changes before a later stage failed.
+
 The `member_signup` notice uses the published Resend template alias `snhpc-member-signup-alert-v1`. New queue rows store `NEW_USER_NAME` and `NEW_USER_EMAIL` in `template_variables`, alongside a plain-text snapshot for queue review and legacy fallback. The template explains why the recipient is getting the informational notice, says no action is needed, and clarifies that a website profile does not confirm or change paid membership.
 
 The live dispatcher and the staging-only queued-message preview use the same Resend template and values. A staging preview adds a `[STAGING PREVIEW]` subject prefix and a visible banner, sends only to `NOTIFICATION_TEST_EMAIL`, and leaves the queue item pending. Rows queued before the template migration have null template variables and continue through the plain-text delivery path. HTML-specific name and email variables are escaped by the dispatcher; their plain-text counterparts remain readable. No member-facing unsubscribe link is included: this is a role-based operational alert, not a member campaign.
