@@ -149,7 +149,7 @@ async function generateSample(db: ReturnType<typeof createClient>, alias: string
     JSON.stringify(requestedFields) + ". Never use real people or real contact details. Any email address must use the reserved example.com domain. " +
     "Keep examples plausible and friendly. Template context: " + definition.description;
   const inputTokens = Math.ceil((prompt.length + 220) / 3);
-  const maxOutputTokens = 120;
+  const maxOutputTokens = Math.max(160, definition.fields.length * 80);
   const reservedCost = (((inputTokens * 0.15) + (maxOutputTokens * 0.60)) / 1_000_000) * 1.5;
   const { data: reservationData, error: reserveError } = await db.rpc("snh_ai_usage_reserve", {
     p_feature: "email_template_test_data", p_model: AI_MODEL, p_reserved_usd: reservedCost,
