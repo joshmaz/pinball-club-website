@@ -71,18 +71,21 @@ retries; delivery beyond that window is held for manual review.
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
-2. Configure project-specific Edge Function secrets:
+2. Publish the `snhpc-member-signup-alert-v1` template in Resend and
+   confirm the API key configured for each project can access it.
+3. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
    sending domain), `NOTIFICATION_FROM` (a sender on the verified domain),
-`NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
-3. In Operations → Jobs, use **Preview queue** to inspect the safe summary of
-   the oldest pending item. Use **Send test email** to send a synthetic test
-   message to the test inbox and check both the inbox and Resend's delivery log.
-   Repeated test runs send additional copies to that test destination.
-4. Keep delivery mode at `preview` by default. Enable `live` only after the
-   live-send safeguards and the production configuration review are complete.
-   A scheduled caller is not configured by default. Keep dispatch secrets out
+   and `NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
+4. In Operations → Messaging, inspect queued content and use **Send preview**
+   on a staging item to receive the rendered template at the configured test
+   inbox. The item remains pending and its intended recipient is not contacted.
+   Use **Send test email** separately to verify the dispatcher with a synthetic
+   message. Repeated test runs send additional copies to the test destination.
+5. Keep delivery mode at `preview` by default. Enable `live` only after the
+   staging preview and production configuration review are complete. A
+   scheduled caller is not configured by default. Keep dispatch secrets out
    of browser code and public build variables.
 
 ### Queue review and staging cleanup
@@ -91,7 +94,11 @@ Operations → Messaging can expand **Preview message** to show the queued text 
 
 Club Administrators can also send a copy of a pending staging message to `NOTIFICATION_TEST_EMAIL`. The subject is prefixed with `[STAGING PREVIEW]` and the body identifies it as a test copy. This action is staging-only, leaves the queue item pending, does not contact its intended recipient, and records an Operations audit entry. It requires the staging test address, Resend API key, and sender to be configured.
 
-Outbound notifications currently use the stored plain-text subject and body. Resend-hosted email templates are the preferred direction for branded formatting; adopting them requires defining template IDs and variables for each notification kind and changing the queued payload/dispatcher together. Until then, preview sends show the exact plain-text content used by the current dispatcher, with a staging banner.
+The `member_signup` notice uses the published Resend template alias `snhpc-member-signup-alert-v1`. New queue rows store `NEW_USER_NAME` and `NEW_USER_EMAIL` in `template_variables`, alongside a plain-text snapshot for queue review and legacy fallback. The template explains why the recipient is getting the informational notice, says no action is needed, and clarifies that a website profile does not confirm or change paid membership.
+
+The live dispatcher and the staging-only queued-message preview use the same Resend template and values. A staging preview adds a `[STAGING PREVIEW]` subject prefix and a visible banner, sends only to `NOTIFICATION_TEST_EMAIL`, and leaves the queue item pending. Rows queued before the template migration have null template variables and continue through the plain-text delivery path. HTML-specific name and email variables are escaped by the dispatcher; their plain-text counterparts remain readable. No member-facing unsubscribe link is included: this is a role-based operational alert, not a member campaign.
+
+The Resend template must be published and available to the API key configured for each project before template delivery can succeed. Editing and publishing a new version changes future sends without a code change, so inspect a staging preview after template edits before enabling production delivery.
 
 Staging intentionally rejects live delivery. Test mode sends a synthetic message to the configured test inbox and never reads or changes queued messages. Use queue preview to verify the event and message content, then cancel or clear staging items when finished.
 

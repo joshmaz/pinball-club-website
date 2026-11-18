@@ -43,6 +43,7 @@ try {
   await migration('20260925020000_queue_notifications_from_auth_signup.sql');
   await migration('20260928230000_canonical_effective_role_core.sql');
   await migration('20260928235800_notification_enqueue_authorization.sql');
+  await migration('20261117233000_member_signup_email_template.sql');
   assert.equal(await count(), 0, 'No historical backfill');
   await db.exec(`insert into auth.users (id, email, raw_user_meta_data) values ('${uid(11)}', 'after@example.com', '{"display_name":"Test New Member"}')`);
   assert.equal(await count(), 1, 'One recipient after email and role deduplication');
@@ -51,6 +52,9 @@ try {
   assert.equal(row.status, 'pending');
   assert.ok(row.body.includes('Test New Member'));
   assert.ok(row.body.includes('after@example.com'));
+  assert.ok(row.body.includes('membership-management access'));
+  assert.ok(row.body.includes('No action is needed.'));
+  assert.deepEqual(row.template_variables, { NEW_USER_NAME: 'Test New Member', NEW_USER_EMAIL: 'after@example.com' });
   assert.ok(row.body.includes('\n\n'));
   await db.exec(`
     update members set display_name = 'Edited' where user_id = '${uid(11)}';
@@ -183,8 +187,13 @@ try {
   assert.deepEqual(delivered.map(d => d.body.to[0]).sort(), queued.map(q => q.recipient_email).sort());
   for (const message of queued) {
     const delivery = delivered.find(d => d.key === message.id);
-    assert.equal(delivery.body.subject, message.subject);
-    assert.equal(delivery.body.text, message.body);
+    assert.equal(delivery.body.template.id, 'snhpc-member-signup-alert-v1');
+    assert.equal(delivery.body.template.variables.SUBJECT_PREFIX, '');
+    assert.equal(delivery.body.template.variables.PREVIEW_BANNER, '');
+    assert.equal(delivery.body.template.variables.NEW_USER_NAME, message.template_variables.NEW_USER_NAME);
+    assert.equal(delivery.body.template.variables.NEW_USER_EMAIL, message.template_variables.NEW_USER_EMAIL);
+    assert.equal(delivery.body.template.variables.NEW_USER_NAME_HTML, message.template_variables.NEW_USER_NAME);
+    assert.equal(delivery.body.template.variables.NEW_USER_EMAIL_HTML, message.template_variables.NEW_USER_EMAIL);
   }
   const finished = (await db.query('select * from notification_outbox')).rows;
   assert.ok(finished.every(r => r.status === 'sent' && r.lease_id === null && r.attempts === 1 && r.provider_id === 'provider-id'));
