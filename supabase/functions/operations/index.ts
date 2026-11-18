@@ -118,7 +118,7 @@ async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, 
     for (const field of definition.fields) {
       const value = parsed?.[field.key];
       if (typeof value !== "string" || !value.trim() || value.length > 100) {
-        await settle(usage, false); settled = true;
+        await settle(usage, false, !usage); settled = true;
         return { error: "The sample generator returned unusable data. Use the example values or try again.", status: 502 };
       }
       values[field.key] = value.trim();
@@ -127,7 +127,7 @@ async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, 
       await settle(usage, false); settled = true;
       return { error: "The sample generator returned an email outside the reserved example.com domain. Use the example values or try again.", status: 502 };
     }
-    await settle(usage, true); settled = true;
+    await settle(usage, true, !usage); settled = true;
     return { values };
   } catch {
     if (!settled) {
