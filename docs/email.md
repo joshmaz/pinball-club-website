@@ -66,7 +66,31 @@ recipient. The dispatcher retries failures at most three times during the first
 24 hours. Resend's idempotency key uses the outbox ID for safe short-term
 retries; delivery beyond that window is held for manual review.
 
-### Activation
+### Member account onboarding
+
+Two one-time member emails use the private outbox and Resend templates:
+
+- `member_confirmation_reminder` is queued when a new Auth account is created,
+  for delivery after 24 hours. Immediately before sending, the dispatcher checks
+  Auth again and cancels the reminder if the email has been confirmed.
+- `member_welcome` is queued only on a verified account's first sign-in, using
+  the Auth user's first `last_sign_in_at` update. Existing accounts are not
+  backfilled and repeat sign-ins do not queue another welcome.
+
+The reminder links back to sign-in and gives an explicit **Resend Confirmation
+Email** action. It also explains how to reset a password after confirming.
+The welcome message is the same for everyone; it links to the Games and Events
+pages, acknowledges people who have been active in the club before joining
+online, and includes the conditional Full Access information. It does not branch
+on membership history or send marketing announcements.
+
+The dispatcher runs hourly through pg_cron. Scheduler calls use a dedicated
+header and matching Vault secret `snh_notification_dispatch_scheduler_secret`;
+the Edge Function secret remains `NOTIFICATION_DISPATCH_SECRET`. Scheduled
+calls do not send synthetic messages when delivery mode is `test`. Staging
+continues to reject `live` delivery.
+
+## Activation
 
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
@@ -78,15 +102,18 @@ retries; delivery beyond that window is held for manual review.
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
    sending domain), `NOTIFICATION_FROM` (a sender on the verified domain),
    and `NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
+   For the scheduled caller, store the exact `NOTIFICATION_DISPATCH_SECRET`
+   value in Vault as `snh_notification_dispatch_scheduler_secret`; use the
+   existing project URL and anon-key Vault entries for transport headers.
 4. In Operations → Messaging, inspect queued content and use **Send preview**
    on a staging item to receive the rendered template at the configured test
    inbox. The item remains pending and its intended recipient is not contacted.
    Use **Send test email** separately to verify the dispatcher with a synthetic
    message. Repeated test runs send additional copies to the test destination.
 5. Keep delivery mode at `preview` by default. Enable `live` only after the
-   staging preview and production configuration review are complete. A
-   scheduled caller is not configured by default. Keep dispatch secrets out
-   of browser code and public build variables.
+   staging preview and production configuration review are complete. Scheduled
+   dispatch runs hourly; production `test` mode skips synthetic sends. Keep
+   dispatch secrets out of browser code and public build variables.
 
 ### Queue review and staging cleanup
 
