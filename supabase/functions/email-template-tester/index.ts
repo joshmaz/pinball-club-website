@@ -39,9 +39,9 @@ const TEMPLATE_TESTS: Record<string, TemplateDefinition> = {
     name: "New website account notice",
     description: "Informational notice for membership managers when a website account is created.",
     fields: [
-      { key: "NEW_USER_NAME", htmlKey: "NEW_USER_NAME_HTML", label: "New user name",
+      { key: "NEW_USER_NAME", htmlKey: "NEW_USER_NAME_HTML", label: "Fake user name",
         description: "A fictional display name.", sample: "Mina Arcadewell" },
-      { key: "NEW_USER_EMAIL", htmlKey: "NEW_USER_EMAIL_HTML", exampleEmail: true, label: "New user email",
+      { key: "NEW_USER_EMAIL", htmlKey: "NEW_USER_EMAIL_HTML", exampleEmail: true, label: "Fake user email",
         description: "A fictional email address ending in @example.com.", sample: "mina.arcadewell@example.com" },
     ],
   },
