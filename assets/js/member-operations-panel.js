@@ -1,6 +1,6 @@
 (function () {
   var allowed = false, initialized = false, busy = false, snapshot, configuration, aiUsage = null, current = 'overview';
-  var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
+  var pinballmap = null, pinballmapError = '', publishingDeliveries = null, templateTesterConfiguration = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
   var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', ipdb: 'IPDB', kineticist: 'Kineticist' };
   function el(tag, text, parent) {
@@ -29,7 +29,7 @@
     if (messageStatus !== undefined) filter = messageStatus;
     route();
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); }
-    else if (current === 'messaging') await loadMessages(false);
+    else if (current === 'messaging') { await loadTemplateTesterConfiguration(); await loadMessages(false); }
     else if (!snapshot) await load();
     else render();
   }
@@ -52,6 +52,16 @@
     if (result.data && result.data.error) throw new Error(result.data.error);
     if (result.error || !result.data) throw new Error('Operations service unavailable. Check deployment and your session.');
     return result.data;
+  }
+  async function templateEdge(action, extra) {
+    var result = await window.snhSupabase.functions.invoke('email-template-tester', { body: Object.assign({ action: action }, extra || {}) });
+    if (result.data && result.data.error) throw new Error(result.data.error);
+    if (result.error || !result.data) throw new Error('Email template tester unavailable. Check deployment and your session.');
+    return result.data;
+  }
+  async function loadTemplateTesterConfiguration() {
+    try { templateTesterConfiguration = await templateEdge('configuration'); }
+    catch { templateTesterConfiguration = null; }
   }
   async function mutate(action, confirmation) {
     if (busy || !allowed || (confirmation && !window.confirm(confirmation))) return;
@@ -236,7 +246,7 @@
   }
 
   function renderEmailTemplateTester(parent) {
-    var config = configuration && configuration.email_template_test;
+    var config = templateTesterConfiguration;
     var card = el('section', null, parent); card.className = 'operations-provider operations-email-template-tester';
     el('h4', 'Email template tester', card);
     el('p', 'Send a rendered template to the configured test inbox. This does not create or consume a notification.', card);
@@ -285,7 +295,7 @@
       if (busy) return;
       busy = true; setBusy(); status.textContent = 'Generating fictional sample data...';
       try {
-        var result = await edge('generate_email_template_sample', { alias: selected.alias });
+        var result = await templateEdge('generate_sample', { alias: selected.alias });
         showValues(selected, result.values || {});
         generated = true;
         status.textContent = 'Fictional sample data generated. Review or edit the values before sending.';
@@ -299,7 +309,7 @@
       Object.keys(fieldInputs).forEach(function (key) { variables[key] = fieldInputs[key].value; });
       var alias = selected.alias, usedAi = generated;
       mutate(function () {
-        return edge('send_email_template_test', { alias: alias, variables: variables, aiSampleUsed: usedAi });
+        return templateEdge('send_test', { alias: alias, variables: variables, aiSampleUsed: usedAi });
       }, 'Send this rendered template only to the configured test inbox? It will be labeled as a template test and no member will be contacted.');
     });
   }
@@ -607,7 +617,7 @@
     try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
     catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }
     try { configuration = await edge('configuration'); } catch { configuration=null; }
-    if (current==='messaging') await fetchMessages(false);
+    if (current==='messaging') { await loadTemplateTesterConfiguration(); await fetchMessages(false); }
     render();
   }
   async function load() {
