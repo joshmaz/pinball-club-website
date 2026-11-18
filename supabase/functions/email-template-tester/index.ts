@@ -24,6 +24,7 @@ type TemplateField = {
   description: string;
   sample: string;
   htmlKey?: string;
+  listHtml?: boolean;
   exampleEmail?: boolean;
 };
 type TemplateDefinition = {
@@ -42,6 +43,17 @@ const TEMPLATE_TESTS: Record<string, TemplateDefinition> = {
         description: "A fictional display name.", sample: "Mina Arcadewell" },
       { key: "NEW_USER_EMAIL", htmlKey: "NEW_USER_EMAIL_HTML", exampleEmail: true, label: "New user email",
         description: "A fictional email address ending in @example.com.", sample: "mina.arcadewell@example.com" },
+    ],
+  },
+  "snhpc-pinballmap-game-changes-v1": {
+    alias: "snhpc-pinballmap-game-changes-v1",
+    name: "Pinball Map game changes",
+    description: "Informational notice to Games Editors and higher about games added to or removed from the club's Pinball Map location. Additions ask editors to verify metadata, add third-party links, and generate a club description.",
+    fields: [
+      { key: "ADDED_GAMES", htmlKey: "ADDED_GAMES_HTML", listHtml: true, label: "Games added at the club",
+        description: "A short semicolon-separated list of fictional pinball game titles.", sample: "Moonlight Rally; Orbit Wizard" },
+      { key: "REMOVED_GAMES", htmlKey: "REMOVED_GAMES_HTML", listHtml: true, label: "Games removed from the club",
+        description: "A short semicolon-separated list of fictional pinball game titles.", sample: "Galaxy Quest" },
     ],
   },
 };
@@ -63,7 +75,12 @@ function buildTemplate(definition: TemplateDefinition, values: Record<string, st
   };
   for (const field of definition.fields) {
     variables[field.key] = values[field.key];
-    if (field.htmlKey) variables[field.htmlKey] = escapeHtml(values[field.key]);
+    if (field.htmlKey) {
+      if (field.listHtml) {
+        const items = values[field.key].split(/[;\\n]+/).map((item) => item.trim()).filter(Boolean);
+        variables[field.htmlKey] = items.length ? items.map(escapeHtml).join("<br>") : "None.";
+      } else variables[field.htmlKey] = escapeHtml(values[field.key]);
+    }
   }
   return { id: definition.alias, variables };
 }
