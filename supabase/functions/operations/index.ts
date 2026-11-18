@@ -49,7 +49,7 @@ function templateTestTemplateData(definition: EmailTemplateTestDefinition, value
     },
   };
 }
-async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, alias: string) {
+async function generateEmailTemplateSample(db: ReturnType<typeof createClient>, alias: string): Promise<{ values?: Record<string, string>; error?: string; status?: number }> {
   const definition = EMAIL_TEMPLATE_TESTS[alias];
   if (!definition) return { error: "Choose a supported email template.", status: 400 };
   const apiKey = Deno.env.get("OPENAI_PLATFORM_KEY") || "";
