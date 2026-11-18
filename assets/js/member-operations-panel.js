@@ -228,7 +228,11 @@
         [['Requests', Number(item.request_count || 0).toLocaleString()],
           ['Input tokens', Number(item.input_tokens || 0).toLocaleString()],
           ['Output tokens', Number(item.output_tokens || 0).toLocaleString()]]
-          .forEach(function (pair) { el('dt', pair[0], stats); el('dd', pair[1], stats); });
+          .forEach(function (pair) {
+            var stat = el('div', null, stats); stat.className = 'operations-ai-feature-stat';
+            el('dt', pair[0], stat);
+            el('dd', pair[1], stat);
+          });
       });
     }
     var settings = el('details', null, card); el('summary', 'Monthly spending limit', settings);
@@ -327,49 +331,38 @@
       var cards = el('div', null, content); cards.className = 'operations-cards';
       var integrationsCard = el('section', null, cards); el('h4', 'Integrations', integrationsCard);
       Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), integrationsCard); });
-      card = el('section', null, cards); el('h4', 'Supabase usage & errors', card);
-      el('p', 'Review organization-wide utilization and inspect each project’s logs in Supabase.', card);
-      var usageLink = el('a', 'Organization usage ↗', card);
-      usageLink.href = 'https://supabase.com/dashboard/org/qmlpijvpdqpaceionmds/usage';
-      usageLink.target = '_blank'; usageLink.rel = 'noopener noreferrer';
-      var productionLinks = el('p', null, card);
-      el('strong', 'Production: ', productionLinks);
-      var productionProject = el('a', 'Project dashboard ↗', productionLinks);
-      productionProject.href = 'https://supabase.com/dashboard/project/dawypferbucqanrkcdkj';
-      productionProject.target = '_blank'; productionProject.rel = 'noopener noreferrer';
-      el('span', ' · ', productionLinks);
-      var productionLogs = el('a', 'Logs & errors ↗', productionLinks);
-      productionLogs.href = 'https://supabase.com/dashboard/project/dawypferbucqanrkcdkj/logs/explorer';
-      productionLogs.target = '_blank'; productionLogs.rel = 'noopener noreferrer';
-      var stagingLinks = el('p', null, card);
-      el('strong', 'Staging: ', stagingLinks);
-      var stagingProject = el('a', 'Project dashboard ↗', stagingLinks);
-      stagingProject.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv';
-      stagingProject.target = '_blank'; stagingProject.rel = 'noopener noreferrer';
-      el('span', ' · ', stagingLinks);
-      var stagingLogs = el('a', 'Logs & errors ↗', stagingLinks);
-      stagingLogs.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv/logs/explorer';
-      stagingLogs.target = '_blank'; stagingLogs.rel = 'noopener noreferrer';
-      var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
-      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
-      var cacheCard = el('section', null, cards); el('h4', 'Cache', cacheCard);
-      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', cacheCard);
-      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', cacheCard);
+      button('View integrations', integrationsCard, function () { selectSection('integrations'); });
+
       var jobsCard = el('section', null, cards); el('h4', 'Jobs', jobsCard);
       ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'ipdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
         el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), jobsCard);
       });
-      button('View integrations', integrationsCard, function () { selectSection('integrations'); });
-      button((snapshot.messages.failed || 0) + ' failed messages', messagingCard, function () { selectSection('messaging', 'failed'); });
-      button('View cache', cacheCard, function () { selectSection('cache'); });
       button('View jobs', jobsCard, function () { selectSection('jobs'); });
+
+      var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
+      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
+      button((snapshot.messages.failed || 0) + ' failed messages', messagingCard, function () { selectSection('messaging', 'failed'); });
+
       renderAiUsageSummary(cards);
+
       var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
       if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
       else el('p','Discord queue unavailable. Check publishing access and deployment, then refresh.',publishingCard);
       el('p','Queue state only. Timer, delivery mode and webhook configuration are managed separately. Delivery attempts and results appear in Audit with automated activity enabled.',publishingCard);
       var publishingLink=el('a','Open Publishing',publishingCard);publishingLink.href='members.html?panel=publishing';
+
+      var storeCard = el('section', null, cards); el('h4', 'Store management', storeCard);
+      el('p', 'The Fourthwall store is managed separately. Products, orders, settings, and sales reports are in Fourthwall.', storeCard);
+      var storefrontLink = el('a', 'Open storefront ↗', storeCard);
+      storefrontLink.href = 'https://shop.snhpinballclub.com/';
+      storefrontLink.target = '_blank'; storefrontLink.rel = 'noopener noreferrer';
+      var fourthwallLinkParagraph = el('p', null, storeCard);
+      var fourthwallLink = el('a', 'Manage store in Fourthwall ↗', fourthwallLinkParagraph);
+      fourthwallLink.href = 'https://admin.fourthwall.com/';
+      fourthwallLink.target = '_blank'; fourthwallLink.rel = 'noopener noreferrer';
+      el('p', 'Store status is not monitored here.', storeCard);
+
       var analyticsCard = el('section', null, cards); el('h4', 'Website analytics', analyticsCard);
       el('p', 'Umami records page views on the public site and member portal in production. No Supabase member ID is sent; staging and preview traffic is excluded.', analyticsCard);
       if (!window.location || ['snhpinballclub.com', 'www.snhpinballclub.com'].indexOf(window.location.hostname.toLowerCase()) === -1) {
@@ -393,16 +386,34 @@
       analyticsDashboard.target = '_blank';
       analyticsDashboard.rel = 'noopener noreferrer';
       el('p', 'Detailed reports are in Umami. We can add a small summary here later.', analyticsCard);
-      var storeCard = el('section', null, cards); el('h4', 'Store management', storeCard);
-      el('p', 'The Fourthwall store is managed separately. Products, orders, settings, and sales reports are in Fourthwall.', storeCard);
-      var storefrontLink = el('a', 'Open storefront ↗', storeCard);
-      storefrontLink.href = 'https://shop.snhpinballclub.com/';
-      storefrontLink.target = '_blank'; storefrontLink.rel = 'noopener noreferrer';
-      var fourthwallLinkParagraph = el('p', null, storeCard);
-      var fourthwallLink = el('a', 'Manage store in Fourthwall ↗', fourthwallLinkParagraph);
-      fourthwallLink.href = 'https://admin.fourthwall.com/';
-      fourthwallLink.target = '_blank'; fourthwallLink.rel = 'noopener noreferrer';
-      el('p', 'Store status is not monitored here.', storeCard);
+
+      var card = el('section', null, cards); el('h4', 'Supabase usage & errors', card);
+      el('p', 'Review organization-wide utilization and inspect each project’s logs in Supabase.', card);
+      var usageLink = el('a', 'Organization usage ↗', card);
+      usageLink.href = 'https://supabase.com/dashboard/org/qmlpijvpdqpaceionmds/usage';
+      usageLink.target = '_blank'; usageLink.rel = 'noopener noreferrer';
+      var productionLinks = el('p', null, card);
+      el('strong', 'Production: ', productionLinks);
+      var productionProject = el('a', 'Project dashboard ↗', productionLinks);
+      productionProject.href = 'https://supabase.com/dashboard/project/dawypferbucqanrkcdkj';
+      productionProject.target = '_blank'; productionProject.rel = 'noopener noreferrer';
+      el('span', ' · ', productionLinks);
+      var productionLogs = el('a', 'Logs & errors ↗', productionLinks);
+      productionLogs.href = 'https://supabase.com/dashboard/project/dawypferbucqanrkcdkj/logs/explorer';
+      productionLogs.target = '_blank'; productionLogs.rel = 'noopener noreferrer';
+      var stagingLinks = el('p', null, card);
+      el('strong', 'Staging: ', stagingLinks);
+      var stagingProject = el('a', 'Project dashboard ↗', stagingLinks);
+      stagingProject.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv';
+      stagingProject.target = '_blank'; stagingProject.rel = 'noopener noreferrer';
+      el('span', ' · ', stagingLinks);
+      var stagingLogs = el('a', 'Logs & errors ↗', stagingLinks);
+      stagingLogs.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv/logs/explorer';
+      stagingLogs.target = '_blank'; stagingLogs.rel = 'noopener noreferrer';
+      var cacheCard = el('section', null, cards); el('h4', 'Cache', cacheCard);
+      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', cacheCard);
+      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', cacheCard);
+      button('View cache', cacheCard, function () { selectSection('cache'); });
       el('p', 'Health reflects the latest recorded requests, not continuous monitoring.', content);
     }
     if (current === 'ai-usage') {
