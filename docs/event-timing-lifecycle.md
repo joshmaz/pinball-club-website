@@ -35,52 +35,16 @@ Old snapshots need no rewrite or end backfill. UUID-bearing imports upsert by UU
 legacy imports retain their existing import-key deduplication. Snapshot refresh
 uses public RLS and includes only published events.
 
-## Production rollout (user-run only)
+## Migration and release reference
 
-Apply the migration before merging this PR: readers select the new columns.
-Review the dry-run for any other pending migrations before pushing. From a local
-clone with `.env` containing the existing `SUPABASE_URL`:
+Migration `20261011120000_event_timing_lifecycle.sql` adds optional end,
+lifecycle, previous-schedule, and note columns with validation constraints. It
+does not backfill ends or change RLS/publication policies. MatchPlay review reads
+candidates; opening the editor loads the full saved event through the existing
+admin reader. New MatchPlay drafts use the same editor defaults.
 
-```bash
-git fetch origin
-git switch feat/events-timing-lifecycle
-git pull --ff-only
-npm ci
-npx supabase login
-npx supabase link --project-ref "$(node --env-file=.env -p 'new URL(process.env.SUPABASE_URL).hostname.split(".")[0]')"
-npx supabase db push --linked --dry-run
-npx supabase db push --linked
-```
-
-Migration: `20261011120000_event_timing_lifecycle.sql`. It adds optional end,
-lifecycle, previous-schedule, and note columns and validation constraints. It does
-not backfill ends or change RLS/publication policies.
-
-No Edge Function changes or deployments are required. MatchPlay review reads
-candidates, while opening the editor loads the full saved event from the existing
-admin reader. New MatchPlay drafts receive the same editor default.
-
-After migration, merge when ready. Main pushes trigger the existing Deploy to AWS
-S3 workflow and its CloudFront invalidation. An explicit redeploy after merging:
-
-```bash
-gh workflow run deploy.yml --repo joshmaz/pinball-club-website --ref main
-```
-
-No manual S3 or Edge Function deployment is needed. This workflow must be run on
-main after the merge. To update public fallback snapshots after rollout:
-
-```bash
-git switch main
-git pull --ff-only
-git switch -c chore/refresh-event-snapshot
-node --env-file=.env scripts/export-events-json-from-supabase.mjs
-node scripts/snapshots.mjs check
-git add data/events.json
-git commit -m "Refresh public event snapshot"
-git push -u origin chore/refresh-event-snapshot
-gh pr create --repo joshmaz/pinball-club-website --base main --title "Refresh public event snapshot" --body "Refresh published event fallback data after the event timing migration."
-```
-
-Review that separate snapshot PR before merging. No production deployment or
-snapshot refresh was performed during implementation.
+The one-time rollout commands from the original feature PR have been removed.
+For current migration review, staging verification, release promotion, and
+snapshot refresh instructions, use [Staging, migration, and release
+workflow](netlify-previews.md). A static site deployment does not apply this
+migration.

@@ -567,14 +567,10 @@
               ? (run.result.entry_count || 0) + ' IPDB entries; export unchanged; ' + (run.result.byte_size || 0).toLocaleString() + ' bytes checked.'
               : (run.result.entry_count || 0) + ' IPDB entries imported; ' + (run.result.byte_size || 0).toLocaleString() + ' archive bytes.', section);
             el('p', 'IPDB data refreshed: ' + refreshDate + ' | Last check: ' + date(run.result.checked_at || run.result.fetched_at || run.finished_at), section);
-            var refreshAge = run.result.source_refreshed_at ? Math.floor((Date.now() - Date.parse(run.result.source_refreshed_at)) / 86400000) : null;
-            if (refreshAge !== null && refreshAge > 45) el('p', 'The source data is ' + refreshAge + ' days old. The exporter normally refreshes monthly.', section);
             if (run.result.content_sha256) el('p', 'SHA-256: ' + run.result.content_sha256, section);
           } else if (job.key === 'ipdb_reference_sync' && run.status === 'failed' && run.result.source_refreshed_at) {
             el('p', (run.result.entry_count || 0) + ' IPDB entries remain available from the last successful archive.', section);
             el('p', 'Last indexed IPDB data refresh: ' + date(run.result.source_refreshed_at) + '. The latest update check failed; the active archive was kept.', section);
-            var lastRefreshAge = Math.floor((Date.now() - Date.parse(run.result.source_refreshed_at)) / 86400000);
-            if (lastRefreshAge > 45) el('p', 'The indexed source data is ' + lastRefreshAge + ' days old. The exporter normally refreshes monthly.', section);
           } if (run.error) el('p',run.error,section);
           if (run.status==='running') el('p','Completion has not been recorded. The worker may still be running or may have stopped.',section); }
         if (job.key==='opdb_reference_sync') {

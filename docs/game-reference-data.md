@@ -3,7 +3,7 @@
 ## Source responsibilities
 
 - The OPDB V2 export is the source for machine IDs and exact IPDB cross-references.
-- The IPDB JSON archive is a shared structured evidence source for AI metadata checks, description drafts, and future game lookup actions. It is queried by an exact IPDB ID from the saved game link or the OPDB crosswalk.
+- The IPDB JSON archive is a shared structured evidence source for AI metadata checks, description drafts, and link review. It is queried by an exact IPDB ID from the saved game link or the OPDB crosswalk.
 - Kineticist is queried only on demand by a game's exact OPDB ID. The full JSON response is cached for 24 hours in `external_api_cache`; its own `links.web` field supplies the canonical Kineticist permalink.
 - Pinball Map remains the source for current lineup and club-location history.
 - Existing values in `games` remain club-managed. Reference matches are shown as evidence and link proposals; they never update a saved game automatically.
@@ -28,7 +28,7 @@ The AI resolver uses an exact numeric IPDB ID from the saved IPDB permalink or t
 
 ## Schedule and Operations
 
-The migration registers weekly Sunday 09:00 UTC OPDB and monthly first-day 10:00 UTC IPDB `pg_cron` jobs. Operations → Integrations reports whether each Edge Function scheduler secret is configured. Operations → Jobs shows run state, last check, record counts, archive size, and checksum. For IPDB it also shows `LastRefreshDateUtc`; a source date more than 45 days old is called out even if the ETag check succeeds. Club admins can choose Run Now for OPDB or Check for updates for IPDB.
+The migration registers weekly Sunday 09:00 UTC OPDB and monthly first-day 10:00 UTC IPDB `pg_cron` jobs. Operations → Integrations reports whether each Edge Function scheduler secret is configured. Operations → Jobs shows run state, last check, record counts, archive size, and checksum. For IPDB it also shows `LastRefreshDateUtc` as source context; there is no age-based warning. Club admins can choose Run Now for OPDB or Check for updates for IPDB.
 
 The staging deployment needs the following secrets:
 

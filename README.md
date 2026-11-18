@@ -14,7 +14,7 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - per-machine PinTips links to Match Play Events when available
 - Supabase-backed sign up and sign in
 - Member dashboard (`members.html`) with:
-  - profile editing grouped into Account (name basics + avatar URL), Pinball profiles (IFPA, Stern Insider, MatchPlay player ID), Privacy (scaffolding only), and Password
+  - profile editing grouped into Account (name basics + avatar URL), Pinball profiles (IFPA, Stern Insider, MatchPlay player ID), privacy information, and Password
   - live IFPA profile link preview based on entered IFPA player number
   - current membership status display (status, tier, renews/ends) plus a phase-0 writeup of how membership works today (treasurer-tracked, $40/month or $480/year, pay via cash or PayPal at [paypal.me/snhpinball](https://paypal.me/snhpinball))
   - role-gated **Member Tools** panel (member directory with membership status fields, stats, role grants/revokes, and manual membership updates) backed by Supabase RPCs
@@ -23,18 +23,13 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - password change for signed-in users
 - Password recovery from `signin.html` ("Forgot Password" email flow via Supabase Auth + Resend SMTP)
 
-## Membership roadmap (working notes)
+## Membership state
 
-- **Billing:** Stripe Checkout + webhooks will be the source of truth for paid membership state.
-- **Tiering:** support free web users who can upgrade into paid/on-prem access tiers.
-- **Admin roles:** continue iterating on admin tooling and auditing around existing role-based controls.
-- **Authorization:** maintain the deployed [canonical RBAC policy](docs/website-roles-and-authorization-policy.md) as capabilities evolve.
-
-Keep auth and billing concerns separated:
-
-- Supabase Auth handles identity and sessions.
-- Stripe handles payment and subscription lifecycle.
-- Supabase database stores derived membership state (status/tier/period end) for app logic.
+Supabase Auth handles website identity and sessions. Membership status and role
+assignments are maintained by club staff through the member tools. The website
+does not currently process dues, manage subscriptions, or receive payment
+provider webhooks. See [account deletion and membership trends](docs/account-deletion-and-membership-trends.md)
+for the documented boundary around future billing integrations.
 
 ## Project layout
 
@@ -73,7 +68,9 @@ The member dashboard sidebar uses effective capabilities; the table lists assign
 | Photos         | Photos                   | `photos_editor`, `photos_admin`, `club_admin`                 | `ROLE_GROUPS.PHOTOS_ACCESS`. Album/asset editor: upload, caption, publish, regenerate, unpublish. Delete (album/asset) requires `photos_admin` or `club_admin`. See `docs/photos-foundation.md`. |
 | Games          | Games                    | `games_editor`, `games_admin`, `club_admin`                   | `ROLE_GROUPS.GAMES_ACCESS`; permanent uploaded-image and Pingolf target deletion require effective Games Admin. |
 
-Publishing Editor/Admin form a separate homepage-content domain. This foundation makes their role names, assignment controls, and inherited access available; the content editor follows separately. Apply its [database migration before deploying the frontend catalog](docs/publishing-domain.md).
+Publishing Editor/Admin form a separate homepage-content domain. Authorized
+editors manage announcements and featured activities through the Website
+Publishing panel. See [Publishing operations and deployment](docs/publishing-domain.md).
 
 Role groups are defined in `assets/js/site-auth.js` as `SNHSiteAuth.ROLE_GROUPS` and re-exported for compatibility as `SNHMemberPortal.ROLE_GROUPS`. The browser catalog and canonical SQL effective-role helpers define inheritance. Keep browser capabilities in sync with the RLS/RPC checks in `supabase/migrations/`. See `CLAUDE.md` for the full `member_roles` model and bootstrap instructions.
 
@@ -132,13 +129,17 @@ Location activity from [Pinball Map](https://pinballmap.com/) is merged into the
 
 ## Deployment
 
-The site deploys to AWS S3 via `.github/workflows/deploy.yml`, with optional CloudFront cache invalidation.
+The site deploys to AWS S3 and CloudFront from both long-lived branches.
+Feature work starts from `staging`, merges to `staging` for review, then reaches
+`main` through a separate release PR. Netlify Deploy Previews are used for PRs
+targeting `staging`. Before saving data in a preview, verify which Supabase
+project its generated public configuration selects.
 
-PR previews use Netlify's `snhpinballclub` project. `netlify.toml` runs the tests
-and builds a clean `dist/` directory with generated public Supabase configuration.
-See [Netlify previews and review workflow](docs/netlify-previews.md) for service
-settings, authentication redirects, and the preview → approve → merge workflow.
-Previews initially share the live Supabase project, so saved edits affect live data.
+The static workflow builds and publishes the site. It does not apply database
+migrations or deploy Edge Functions. Review those backend changes separately,
+apply them to staging, and verify their deployed behavior before promoting a
+release. See [staging, migrations, and release workflow](docs/netlify-previews.md)
+for environment settings, migration-history cautions, and release checks.
 
 The Wix-era museum is hosted independently at [archive.snhpinballclub.com](https://archive.snhpinballclub.com/) from [joshmaz/snhpc-website-archive](https://github.com/joshmaz/snhpc-website-archive). Its S3/CloudFront deployment, HTTPS, navigation, images, redirects and 404 behavior were verified before removing the duplicate here. `wix_archive/` now contains only small HTML redirects for the 12 historical page URLs; keep these in production and preview builds so bookmarks continue working. These are browser redirects (JavaScript preserves query strings and fragments, with a meta-refresh and clickable-link fallback), not HTTP 301 responses. Archived assets and mirror tooling are no longer deployed from this repository. Maintain museum content and image restoration in the archive repository.
 
@@ -157,6 +158,7 @@ node --env-file=../../.env send-test-email.mjs
 
 ## Architecture notes
 
+- Staging, hosted migration history, release, and recovery: `docs/netlify-previews.md`
 - Audit logging design: `docs/audit-logging-design.md`
 - Email (Resend, Supabase SMTP, support address): `docs/email.md`
 - Website task agents planning: `docs/website-task-agents.md`
@@ -179,15 +181,11 @@ Before merging, quickly confirm:
 
 Supabase URL and anon key are not committed. They are generated into `assets/js/config.js` by `scripts/write-config.mjs`.
 
-1. In GitHub, add Actions secrets:
-  - `SUPABASE_URL` (example: `https://xxxx.supabase.co`)
-  - `SUPABASE_ANON_KEY` (Supabase Project Settings -> API)
-  - `AWS_ROLE_ARN` (IAM role to assume via GitHub OIDC)
-  - `AWS_REGION` (example: `us-east-1`)
-  - `S3_BUCKET` (target static site bucket name)
-  - `CLOUDFRONT_DISTRIBUTION_ID` (optional, to invalidate CDN cache after deploy)
-  - `GAMES_CATALOG_SOURCE` (optional: `json` default, or `db` to load games from Supabase view `games_catalog_v1` on the public games page)
-2. On push to `main`, deploy writes `assets/js/config.js` from those secrets.
+1. Configure the repository Actions values described in
+   [staging, migrations, and release workflow](docs/netlify-previews.md).
+   Staging and production use separate public Supabase URL/key pairs.
+2. A push to `staging` or `main` builds the site with that branch's public
+   Supabase configuration. AWS staging settings are scoped in the workflow.
 3. For local development, copy `.env.example` to `.env`, set the same values, then run:
   ```bash
    node --env-file=.env scripts/write-config.mjs

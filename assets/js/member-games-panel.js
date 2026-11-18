@@ -3040,6 +3040,21 @@
     focusFirstFormField();
   }
 
+  function addYearOnlyDateUpdate(fields, fieldName, enteredYear, existingDate, isNewGame) {
+    var year = String(enteredYear || "").trim();
+    var existingYear = String(existingDate || "").slice(0, 4);
+    if (!isNewGame && year === existingYear) return;
+    if (!/^\d{4}$/.test(year)) {
+      fields[fieldName] = null;
+      return;
+    }
+
+    var existingMonthAndDay = /^\d{4}-\d{2}-\d{2}$/.test(existingDate || "")
+      ? String(existingDate).slice(4)
+      : "-01-01";
+    fields[fieldName] = year + existingMonthAndDay;
+  }
+
   async function onSaveGame() {
     if (!window.SNHMemberPortal) return;
     if (gameSaveBusy) return;
@@ -3070,8 +3085,6 @@
         title: getVal("mg-title"),
         slug: getVal("mg-slug") || undefined,
         details: getVal("mg-details"),
-        releaseDate: /^\d{4}$/.test(releaseYear) ? releaseYear + "-01-01" : null,
-        manufactureDate: /^\d{4}$/.test(manufactureYear) ? manufactureYear + "-01-01" : null,
         manufacturer: getVal("mg-mfr") || null,
         manufacturerFullName: getVal("mg-mfrfull") || null,
         type: getVal("mg-type") || null,
@@ -3082,6 +3095,8 @@
         kineticistUrl: getVal("mg-kineticist") || null,
         // OPDB identity and match diagnostics are imported by the catalog integration, not edited here.
       };
+      addYearOnlyDateUpdate(fields, "releaseDate", releaseYear, editingGame && editingGame.releaseDate, mode === "new");
+      addYearOnlyDateUpdate(fields, "manufactureDate", manufactureYear, editingGame && editingGame.manufactureDate, mode === "new");
       var savedGameId = currentGameId;
       if (mode === "new") {
         fields.slug = getVal("mg-slug") || slugify(title);

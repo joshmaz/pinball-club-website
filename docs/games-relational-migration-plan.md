@@ -180,10 +180,18 @@ Ship the relational catalog cutover prerequisites in one focused pass:
 
 ## Rollback checklist
 
-1. Set `GAMES_CATALOG_SOURCE=json`.
-2. Regenerate `assets/js/config.js` via `node scripts/write-config.mjs`.
-3. Redeploy site.
-4. If needed, refresh JSON snapshot from DB using `scripts/export-games-json-from-supabase.mjs`.
+The original checklist assumed the deploy could switch the public catalog to
+JSON by setting `GAMES_CATALOG_SOURCE=json`. The current AWS workflow explicitly
+sets `GAMES_CATALOG_SOURCE=db` for both staging and production, so this is not a
+ready-to-run rollback procedure. See [staging and release workflow](netlify-previews.md)
+before changing a deploy source. Check the generated public snapshot's freshness
+and contents first. It is not a database backup and does not include
+soft-deleted games.
+
+For a frontend regression, identify the reviewed commit to restore and deploy it
+through the normal branch release process. For schema or data changes, follow
+the feature's forward correction procedure. This document does not define a
+database restore procedure.
 
 ## Notes
 
