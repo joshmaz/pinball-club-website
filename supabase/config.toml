@@ -37,6 +37,10 @@ verify_jwt = true
 # is disabled so the function can use a dedicated secret without a user session.
 verify_jwt = false
 
+[functions.email-template-tester]
+# Club-admin-only transactional template tests; recipients are fixed to the configured test inbox.
+verify_jwt = true
+
 [functions.operations]
 # Authentication and club_admin membership are checked before every action.
 verify_jwt = true
