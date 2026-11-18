@@ -289,7 +289,7 @@ begin
 end;
 $$;
 revoke all on function private.snh_notification_dispatch_cron_invoke() from public, anon, authenticated;
-select cron.schedule('notification-dispatch-hourly', '0 * * * *',
+select cron.schedule('notification-dispatch-hourly', '*/10 * * * *',
   'select private.snh_notification_dispatch_cron_invoke();');
 
 commit;
