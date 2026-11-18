@@ -126,10 +126,61 @@ function onboardingTemplate(kind: string, stagingPreview = false): ResendTemplat
   };
 }
 
+function noteCreatedTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
+  if (kind !== "club_note_created") return null;
+  const data = asRecord(values);
+  if (!data || !Array.isArray(data.NOTES)) return null;
+  const source = typeof data.SOURCE_LABEL === "string" && data.SOURCE_LABEL.trim()
+    ? data.SOURCE_LABEL.trim() : "Website";
+  const allNotes = data.NOTES.filter((item): item is Record<string, unknown> =>
+    Boolean(item) && typeof item === "object" && !Array.isArray(item));
+  const notes = allNotes.slice(0, 100);
+  if (!notes.length) return null;
+  const omitted = allNotes.length - notes.length;
+  const get = (note: Record<string, unknown>, key: string, fallback: string) =>
+    typeof note[key] === "string" && String(note[key]).trim()
+      ? String(note[key]).trim().slice(0, key === "body" ? 3000 : 300) : fallback;
+  const html = notes.map((note) => {
+    const title = escapeHtml(get(note, "title", "Untitled Note"));
+    const game = escapeHtml(get(note, "game_title", "Club or facility"));
+    const details = escapeHtml(get(note, "body", "No details provided")).replace(/\r?\n/g, "<br>");
+    const submittedBy = escapeHtml(get(note, "submitted_by", "Not provided"));
+    const status = escapeHtml(get(note, "status", "Open"));
+    const submittedAt = escapeHtml(get(note, "submitted_at", "Not provided"));
+    return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9dee7;margin-top:16px;"><tr><td style="padding:14px 16px;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:24px;color:#14243a;font-weight:bold;">' + title + '</td></tr>' +
+      '<tr><td style="padding:0 16px 14px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#14243a;"><strong>Game:</strong> ' + game + '<br><strong>Details:</strong> ' + details + '<br><strong>Submitted by:</strong> ' + submittedBy + '<br><strong>Status:</strong> ' + status + '<br><strong>Submitted:</strong> ' + submittedAt + '</td></tr></table>';
+  }).join("") + (omitted ? '<p style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#526174;">' + omitted + ' additional Notes from this import are not shown here.</p>' : "");
+  const text = notes.map((note) => [
+    get(note, "title", "Untitled Note"),
+    "Game: " + get(note, "game_title", "Club or facility"),
+    "Details: " + get(note, "body", "No details provided"),
+    "Submitted by: " + get(note, "submitted_by", "Not provided"),
+    "Status: " + get(note, "status", "Open"),
+    "Submitted: " + get(note, "submitted_at", "Not provided"),
+  ].join("\n")).join("\n\n") + (omitted ? "\n\n" + omitted + " additional Notes from this import are not shown here." : "");
+  return {
+    id: "snhpc-club-note-created-v1",
+    variables: {
+      SUBJECT_PREFIX: stagingPreview ? "[STAGING PREVIEW] " : "",
+      PREVIEW_BANNER: stagingPreview
+        ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
+        : "",
+      SOURCE_LABEL: escapeHtml(source),
+      NOTE_COUNT: allNotes.length,
+      UPDATE_HEADING: allNotes.length === 1 ? "A new Note was added" : allNotes.length + " new Notes were added",
+      SOURCE_SUMMARY: "Source: " + escapeHtml(source),
+      NOTES_HTML: html,
+      NOTES_TEXT: text,
+    },
+  };
+}
+
+
 function notificationTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
   return signupNoticeTemplate(kind, values, stagingPreview)
     || gameChangesTemplate(kind, values, stagingPreview)
-    || onboardingTemplate(kind, stagingPreview);
+    || onboardingTemplate(kind, stagingPreview)
+    || noteCreatedTemplate(kind, values, stagingPreview);
 }
 
 Deno.serve(async (req) => {
