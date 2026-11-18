@@ -84,7 +84,7 @@ pages, acknowledges people who have been active in the club before joining
 online, and includes the conditional Full Access information. It does not branch
 on membership history or send marketing announcements.
 
-The dispatcher runs hourly through pg_cron. Scheduler calls use a dedicated
+The dispatcher runs every 10 minutes through pg_cron. Scheduler calls use a dedicated
 header and matching Vault secret `snh_notification_dispatch_scheduler_secret`;
 the Edge Function secret remains `NOTIFICATION_DISPATCH_SECRET`. Scheduled
 calls do not send synthetic messages when delivery mode is `test`. Staging
