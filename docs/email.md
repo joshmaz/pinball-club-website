@@ -114,7 +114,7 @@ AI sample generation uses `OPENAI_PLATFORM_KEY` and the existing monthly AI
 spending cap. Its usage is tracked as `email_template_test_data` in Operations
 → AI Usage. Sample email fields are restricted to the reserved `example.com`
 domain. When adding a template, register its alias, variable descriptions and
-safe example values in `supabase/functions/operations/index.ts`; include the
+safe example values in `supabase/functions/email-template-tester/index.ts`; include the
 `SUBJECT_PREFIX` and `PREVIEW_BANNER` variables so the test copy is clearly
 labeled, and map any HTML-specific escaped variables. The tester only sends
 templates from this allowlist.
