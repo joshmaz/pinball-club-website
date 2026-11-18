@@ -87,6 +87,7 @@
     <button id="login-btn" type="submit">Login</button>
     <button id="signup-btn" type="button">Sign Up</button>
     <button id="forgot-password-btn" type="button">Forgot Password</button>
+    <button id="resend-confirmation-btn" type="button" hidden>Resend Confirmation Email</button>
   </form>
   <form id="password-reset-form" class="members-auth-form" hidden>
     <div class="club-field">
@@ -147,6 +148,7 @@
     var loginBtn = document.getElementById("login-btn");
     var signupBtn = document.getElementById("signup-btn");
     var forgotPasswordBtn = document.getElementById("forgot-password-btn");
+    var resendConfirmationBtn = document.getElementById("resend-confirmation-btn");
     var status = document.getElementById("status");
 
     if (emailEl) emailEl.disabled = !enabled;
@@ -154,6 +156,7 @@
     if (loginBtn) loginBtn.disabled = !enabled;
     if (signupBtn) signupBtn.disabled = !enabled;
     if (forgotPasswordBtn) forgotPasswordBtn.disabled = !enabled;
+    if (resendConfirmationBtn) resendConfirmationBtn.disabled = !enabled;
     if (status && message) status.innerText = message;
   }
 
@@ -199,7 +202,17 @@
 
   function setRecoveryMode(enabled) {
     var authForm = document.getElementById("auth-form");
-    var passwordResetForm = document.getElementById("password-reset-form");
+    var resendConfirmationBtn = document.getElementById("resend-confirmation-btn");
+  if (resendConfirmationBtn) {
+    resendConfirmationBtn.addEventListener("click", function () {
+      resendConfirmation();
+    });
+  }
+  if (new URLSearchParams(window.location.search).get("resendConfirmation") === "1") {
+    if (resendConfirmationBtn) resendConfirmationBtn.hidden = false;
+    setStatusMessage("Enter the email address you used to sign up, then choose Resend Confirmation Email.");
+  }
+  var passwordResetForm = document.getElementById("password-reset-form");
     if (authForm) authForm.hidden = enabled;
     if (passwordResetForm) passwordResetForm.hidden = !enabled;
   }
@@ -270,8 +283,10 @@
           window.location.href = getRedirectTarget();
           return;
         }
+        var resendConfirmationBtn = document.getElementById("resend-confirmation-btn");
+        if (resendConfirmationBtn) resendConfirmationBtn.hidden = false;
         setStatusMessage(
-          "Check your email to confirm your account, then sign in here.",
+          "Check your email to confirm your account, then sign in here. Need another link? Choose Resend Confirmation Email.",
           "confirmation"
         );
       });
@@ -311,6 +326,45 @@
       }
       window.location.href = getRedirectTarget();
     });
+  }
+
+  async function resendConfirmation() {
+    if (!window.snhSupabase) {
+      setAuthEnabled(false, getUnavailableMessage());
+      return;
+    }
+    var email = document.getElementById("email").value.trim();
+    if (!email) {
+      setStatusMessage("Enter the email address you used to sign up, then choose Resend Confirmation Email.");
+      return;
+    }
+
+    var button = document.getElementById("resend-confirmation-btn");
+    if (button) {
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      button.textContent = "Sending…";
+    }
+    try {
+      var result = await window.snhSupabase.auth.resend({
+        type: "signup",
+        email: email,
+        options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      });
+      if (result.error) {
+        setStatusMessage(result.error.message);
+        return;
+      }
+      setStatusMessage("If this address has an account awaiting confirmation, another confirmation email is on its way.", "confirmation");
+    } catch (err) {
+      setStatusMessage(err && err.message ? err.message : "Could not request a confirmation email. Please try again.");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+        button.textContent = "Resend Confirmation Email";
+      }
+    }
   }
 
   async function sendPasswordReset() {
