@@ -111,6 +111,7 @@ function onboardingTemplate(kind: string, stagingPreview = false): ResendTemplat
   };
   const id = aliases[kind];
   if (!id) return null;
+  const siteRoot = isStagingProject() ? "https://staging.snhpinballclub.com" : "https://snhpinballclub.com";
   return {
     id,
     variables: {
@@ -118,6 +119,9 @@ function onboardingTemplate(kind: string, stagingPreview = false): ResendTemplat
       PREVIEW_BANNER: stagingPreview
         ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
         : "",
+      SIGNIN_URL: siteRoot + "/signin.html?resendConfirmation=1",
+      GAMES_URL: siteRoot + "/games.html",
+      EVENTS_URL: siteRoot + "/events.html",
     },
   };
 }
@@ -154,6 +158,8 @@ Deno.serve(async (req) => {
   const configuredMode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
   const next = summary.mode === "preview" && summary.next && typeof summary.next === "object" ? summary.next : null;
   const parsedCreatedAt = typeof next?.created_at === "string" ? Date.parse(next.created_at) : NaN;
+  const availableAt = typeof next?.available_at === "string" ? Date.parse(next.available_at) : NaN;
+  const deadlineAt = typeof next?.delivery_deadline_at === "string" ? Date.parse(next.delivery_deadline_at) : NaN;
   const ageSeconds = Number.isFinite(parsedCreatedAt)
     ? Math.max(0, Math.floor((Date.now() - parsedCreatedAt) / 1000)) : null;
   const preview = next ? {
@@ -161,7 +167,9 @@ Deno.serve(async (req) => {
     subject: typeof next.subject === "string" ? next.subject.slice(0, 180) : "",
     created_at: typeof next.created_at === "string" ? next.created_at : null,
     age_seconds: ageSeconds,
-    live_eligible: ageSeconds === null ? null : ageSeconds < 24 * 60 * 60,
+    live_eligible: Number.isFinite(availableAt) && Number.isFinite(deadlineAt)
+      ? availableAt <= Date.now() && deadlineAt > Date.now()
+      : ageSeconds === null ? null : ageSeconds < 24 * 60 * 60,
   } : null;
   const rawBudget = summary.budget && typeof summary.budget === "object" ? summary.budget : null;
   const safeCount = (value: unknown) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : 0;
@@ -229,7 +237,7 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
   // a synthetic payload so they never expose, consume, or repeatedly resend queue content.
   if (mode === "preview") {
     const [queue, status] = await Promise.all([
-      db.from("notification_outbox").select("kind,subject,created_at")
+      db.from("notification_outbox").select("kind,subject,created_at,available_at,delivery_deadline_at")
         .eq("status", "pending").order("created_at").limit(1),
       db.rpc("snh_notification_live_status"),
     ]);
@@ -296,10 +304,10 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
       }
       const authUser = await db.auth.admin.getUserById(member.data.user_id);
       if (authUser.error) throw new Error("Could not check account confirmation status");
-      if (authUser.data.user?.email_confirmed_at) {
+      if (!authUser.data.user || authUser.data.user.email_confirmed_at) {
         const canceledResult = await db.rpc("snh_finish_notification", {
           p_id: job.id, p_lease_id: job.lease_id, p_status: "canceled",
-          p_provider_id: null, p_error: "Email was confirmed before the reminder was sent",
+          p_provider_id: null, p_error: authUser.data.user ? "Email was confirmed before the reminder was sent" : "Auth account was not found",
         });
         if (canceledResult.error || !canceledResult.data) return response({ error: "Could not record canceled reminder", sent, canceled, failed }, 500);
         canceled++;
