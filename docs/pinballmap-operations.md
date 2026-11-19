@@ -55,6 +55,14 @@ dispatcher preview/test/live controls, retries and delivery deadlines apply:
 queued does not mean sent, and preview/test never consumes real alerts. Recipient
 authorization follows the queue's existing enqueue-time rule.
 
+Completed imports also queue one grouped game-change notice when Pinball Map changes a game's club-location status. The notice goes to members with effective Games Editor access or higher, including Games Admins and Club Admins. It is sent only for actual transitions to listed at the club or removed from the club; unchanged imports do not repeat notices. Removal updates preserve the website catalog history. If catalog changes committed before a later import stage failed, the completion record still queues the notice for those committed changes.
+New Pinball Map Notes are also grouped into one `club_note_created` notice per
+import run and per distinct email held by a member with any effective website
+volunteer role. Only newly inserted Pinball Map submissions are included;
+idempotent re-imports and later changes to an existing Note do not repeat this
+notice. The shared Notes template includes the source and each Note's details.
+
+
 ## Deployment
 
 1. Apply `20261009010000_pinballmap_operations.sql` through the reviewed migration

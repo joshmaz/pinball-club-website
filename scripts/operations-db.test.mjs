@@ -19,6 +19,8 @@ try {
  await migration('20260928150000_external_api_cache.sql');
  await sql("update external_api_cache_policies set ttl_seconds=99 where provider='matchplay' and policy='event'");
  await migration('20260928160000_operations.sql');
+ await migration('20261117220000_staging_notification_queue_controls.sql');
+ await migration('20261117232037_operations_messages_acl.sql');
  assert.equal((await query('select count(*)::int n from external_api_cache_policies'))[0].n,1,'custom values survive migration');
  for (const role of ['anon','authenticated']) {
    await sql(`set role ${role}; set request.jwt.claim.sub='${uid(2)}'`);
@@ -66,7 +68,7 @@ try {
  snapshot=(await query('select snh_operations_snapshot() s'))[0].s;
  assert.equal(snapshot.jobs[0].status,'succeeded'); assert.equal(snapshot.cache.total,2);
  const messages=(await query('select snh_operations_messages() m'))[0].m;
- assert.equal(messages.length,2); assert.equal('body' in messages[0],false);
+ assert.equal(messages.length,2); assert.equal(messages[0].body,'body');
  await assert.rejects(query("select snh_operations_messages('invalid')"),/Invalid message filter/);
  await sql('reset role');
  const audits=await query('select * from audit_log');

@@ -1,8 +1,8 @@
 (function () {
   var allowed = false, initialized = false, busy = false, snapshot, configuration, aiUsage = null, current = 'overview';
-  var pinballmap = null, pinballmapError = '', publishingDeliveries = null;
+  var pinballmap = null, pinballmapError = '', publishingDeliveries = null, templateTesterConfiguration = null;
   var root, content, status, tabs, messages = [], cursor = null, filter = '';
-  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', kineticist: 'Kineticist' };
+  var names = { matchplay: 'Match Play', ifpa: 'IFPA', pinballmap: 'Pinball Map', pintips: 'PinTips', opdb: 'OPDB', ipdb: 'IPDB', kineticist: 'Kineticist' };
   function el(tag, text, parent) {
     var node = document.createElement(tag);
     if (text != null) node.textContent = String(text);
@@ -29,7 +29,7 @@
     if (messageStatus !== undefined) filter = messageStatus;
     route();
     if (current === 'audit') { render(); await window.SNHMemberAuditPanel.load(false); }
-    else if (current === 'messaging') await loadMessages(false);
+    else if (current === 'messaging') { await loadTemplateTesterConfiguration(); await loadMessages(false); }
     else if (!snapshot) await load();
     else render();
   }
@@ -49,8 +49,19 @@
   }
   async function edge(action, extra) {
     var result = await window.snhSupabase.functions.invoke('operations', { body: Object.assign({ action: action }, extra || {}) });
-    if (result.error || result.data.error) throw new Error('Operations service unavailable. Check deployment and your session.');
+    if (result.data && result.data.error) throw new Error(result.data.error);
+    if (result.error || !result.data) throw new Error('Operations service unavailable. Check deployment and your session.');
     return result.data;
+  }
+  async function templateEdge(action, extra) {
+    var result = await window.snhSupabase.functions.invoke('email-template-tester', { body: Object.assign({ action: action }, extra || {}) });
+    if (result.data && result.data.error) throw new Error(result.data.error);
+    if (result.error || !result.data) throw new Error('Email template tester unavailable. Check deployment and your session.');
+    return result.data;
+  }
+  async function loadTemplateTesterConfiguration() {
+    try { templateTesterConfiguration = await templateEdge('configuration'); }
+    catch { templateTesterConfiguration = null; }
   }
   async function mutate(action, confirmation) {
     if (busy || !allowed || (confirmation && !window.confirm(confirmation))) return;
@@ -210,14 +221,18 @@
       rows.forEach(function (item) {
         var feature = el('div', null, featureGrid); feature.className = 'operations-ai-feature';
         var heading = el('div', null, feature); heading.className = 'operations-ai-feature-heading';
-        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature, heading);
+        el('h5', item.feature === 'game_metadata' ? 'Game metadata' : item.feature === 'game_description' ? 'Game descriptions' : item.feature === 'email_template_test_data' ? 'Email template test data' : item.feature, heading);
         var cost = el('strong', money(item.cost_usd), heading); cost.className = 'operations-ai-feature-cost';
         el('p', item.models || 'Unknown model', feature).className = 'operations-ai-feature-model';
         var stats = el('dl', null, feature); stats.className = 'operations-ai-feature-stats';
         [['Requests', Number(item.request_count || 0).toLocaleString()],
           ['Input tokens', Number(item.input_tokens || 0).toLocaleString()],
           ['Output tokens', Number(item.output_tokens || 0).toLocaleString()]]
-          .forEach(function (pair) { el('dt', pair[0], stats); el('dd', pair[1], stats); });
+          .forEach(function (pair) {
+            var stat = el('div', null, stats); stat.className = 'operations-ai-feature-stat';
+            el('dt', pair[0], stat);
+            el('dd', pair[1], stat);
+          });
       });
     }
     var settings = el('details', null, card); el('summary', 'Monthly spending limit', settings);
@@ -234,6 +249,79 @@
     return card;
   }
 
+  function renderEmailTemplateTester(parent) {
+    var config = templateTesterConfiguration;
+    var card = el('section', null, parent); card.className = 'operations-provider operations-email-template-tester';
+    el('h4', 'Email template tester', card);
+    el('p', 'Send a rendered template to the configured test inbox. This does not create or consume a notification.', card);
+    if (!config || !config.configured) {
+      el('p', 'Template testing is unavailable until the test inbox, sender, and Resend key are configured.', card);
+      return;
+    }
+    var templates = config.templates || [];
+    if (!templates.length) { el('p', 'No email templates are registered for testing yet.', card); return; }
+    var templateLabel = el('label', 'Email template ', card);
+    var templateSelect = el('select', null, templateLabel);
+    templates.forEach(function (template) {
+      var option = el('option', template.name, templateSelect);
+      option.value = template.alias;
+    });
+    var selected = templates[0];
+    var fieldsWrap = el('div', null, card);
+    fieldsWrap.className = 'operations-email-template-fields';
+    var fieldInputs = {};
+    var generated = false;
+    function showValues(template, values) {
+      selected = template;
+      fieldInputs = {};
+      fieldsWrap.replaceChildren();
+      (template.fields || []).forEach(function (field, index) {
+        var fieldWrap = el('div', null, fieldsWrap);
+        fieldWrap.className = 'operations-email-template-field';
+        var label = el('label', field.label, fieldWrap);
+        var input = el('input', null, fieldWrap);
+        input.id = 'operations-email-template-field-' + index;
+        label.htmlFor = input.id;
+        input.type = 'text'; input.maxLength = 100; input.value = values[field.key] || field.sample || '';
+        input.setAttribute('maxlength', '100');
+        input.setAttribute('aria-label', field.label);
+        fieldInputs[field.key] = input;
+      });
+      generated = false;
+    }
+    showValues(selected, {});
+    templateSelect.value = selected.alias;
+    templateSelect.addEventListener('change', function () {
+      selected = templates.find(function (template) { return template.alias === templateSelect.value; }) || templates[0];
+      showValues(selected, {});
+    });
+    el('p', config.ai_sample_configured
+      ? 'AI-generated samples are fictional and charged to the club’s monthly AI budget. Email examples are restricted to example.com.'
+      : 'AI sample generation is not configured. Example data is still available.', card);
+    button('Use example data', card, function () { showValues(selected, {}); });
+    var generateButton = button('Generate fake data with AI', card, async function () {
+      if (busy) return;
+      busy = true; setBusy(); status.textContent = 'Generating fictional sample data...';
+      try {
+        var result = await templateEdge('generate_sample', { alias: selected.alias });
+        showValues(selected, result.values || {});
+        generated = true;
+        status.textContent = 'Fictional sample data generated. Review or edit the values before sending.';
+      } catch (error) { status.textContent = error.message; }
+      finally { busy = false; setBusy(); }
+    });
+    if (!config.ai_sample_configured) generateButton.unavailable = function () { return true; };
+    generateButton.disabled = busy || Boolean(generateButton.unavailable());
+    button('Send template test', card, function () {
+      var variables = {};
+      Object.keys(fieldInputs).forEach(function (key) { variables[key] = fieldInputs[key].value; });
+      var alias = selected.alias, usedAi = generated;
+      mutate(function () {
+        return templateEdge('send_test', { alias: alias, variables: variables, aiSampleUsed: usedAi });
+      }, 'Send this rendered template only to the configured test inbox? It will be labeled as a template test and no member will be contacted.');
+    });
+  }
+
   function render() {
     content.replaceChildren();
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.section === current ? 'true' : 'false'); });
@@ -245,28 +333,40 @@
     el('h3', sectionTitles[current] || current.charAt(0).toUpperCase() + current.slice(1), content);
     if (current === 'overview') {
       var cards = el('div', null, content); cards.className = 'operations-cards';
-      var card = el('section', null, cards); el('h4', 'Integrations', card);
-      Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), card); });
-      card = el('section', null, cards); el('h4', 'Messaging', card);
-      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', card);
-      card = el('section', null, cards); el('h4', 'Cache', card);
-      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', card);
-      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', card);
-      card = el('section', null, cards); el('h4', 'Jobs', card);
-      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
+      var integrationsCard = el('section', null, cards); el('h4', 'Integrations', integrationsCard);
+      Object.keys(names).forEach(function (p) { el('p', names[p] + ': ' + health(providerRows(p)), integrationsCard); });
+      button('View integrations', integrationsCard, function () { selectSection('integrations'); });
+
+      var jobsCard = el('section', null, cards); el('h4', 'Jobs', jobsCard);
+      ['notification_dispatch', 'cache_cleanup', 'pinballmap_ingest', 'pintips_import', 'opdb_reference_sync', 'ipdb_reference_sync', 'membership_snapshot'].forEach(function (key) {
         var run = snapshot.jobs.find(function (j) { return j.job === key; });
-        el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), card);
+        el('p', key.replace(/_/g, ' ') + ': ' + (run ? run.status + ' | ' + date(run.started_at) : 'No recorded run'), jobsCard);
       });
-      button('View integrations', cards.children[0], function () { selectSection('integrations'); });
-      button((snapshot.messages.failed || 0) + ' failed messages', cards.children[1], function () { selectSection('messaging', 'failed'); });
-      button('View cache', cards.children[2], function () { selectSection('cache'); });
-      button('View jobs', cards.children[3], function () { selectSection('jobs'); });
+      button('View jobs', jobsCard, function () { selectSection('jobs'); });
+
+      var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
+      el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
+      button((snapshot.messages.failed || 0) + ' failed messages', messagingCard, function () { selectSection('messaging', 'failed'); });
+
       renderAiUsageSummary(cards);
+
       var publishingCard = el('section', null, cards); el('h4', 'Discord publishing', publishingCard);
       if(publishingDeliveries){var counts={pending:0,sending:0,failed:0,uncertain:0};publishingDeliveries.forEach(function(item){if(Object.prototype.hasOwnProperty.call(counts,item.status))counts[item.status]++;});el('p',counts.pending+' queued (includes scheduled) | '+counts.sending+' sending | '+counts.failed+' failed | '+counts.uncertain+' need a channel check',publishingCard);}
       else el('p','Discord queue unavailable. Check publishing access and deployment, then refresh.',publishingCard);
       el('p','Queue state only. Timer, delivery mode and webhook configuration are managed separately. Delivery attempts and results appear in Audit with automated activity enabled.',publishingCard);
       var publishingLink=el('a','Open Publishing',publishingCard);publishingLink.href='members.html?panel=publishing';
+
+      var storeCard = el('section', null, cards); el('h4', 'Store management', storeCard);
+      el('p', 'The Fourthwall store is managed separately. Products, orders, settings, and sales reports are in Fourthwall.', storeCard);
+      var storefrontLink = el('a', 'Open storefront ↗', storeCard);
+      storefrontLink.href = 'https://shop.snhpinballclub.com/';
+      storefrontLink.target = '_blank'; storefrontLink.rel = 'noopener noreferrer';
+      var fourthwallLinkParagraph = el('p', null, storeCard);
+      var fourthwallLink = el('a', 'Manage store in Fourthwall ↗', fourthwallLinkParagraph);
+      fourthwallLink.href = 'https://admin.fourthwall.com/';
+      fourthwallLink.target = '_blank'; fourthwallLink.rel = 'noopener noreferrer';
+      el('p', 'Store status is not monitored here.', storeCard);
+
       var analyticsCard = el('section', null, cards); el('h4', 'Website analytics', analyticsCard);
       el('p', 'Umami records page views on the public site and member portal in production. No Supabase member ID is sent; staging and preview traffic is excluded.', analyticsCard);
       if (!window.location || ['snhpinballclub.com', 'www.snhpinballclub.com'].indexOf(window.location.hostname.toLowerCase()) === -1) {
@@ -290,16 +390,34 @@
       analyticsDashboard.target = '_blank';
       analyticsDashboard.rel = 'noopener noreferrer';
       el('p', 'Detailed reports are in Umami. We can add a small summary here later.', analyticsCard);
-      var storeCard = el('section', null, cards); el('h4', 'Store management', storeCard);
-      el('p', 'The Fourthwall store is managed separately. Products, orders, settings, and sales reports are in Fourthwall.', storeCard);
-      var storefrontLink = el('a', 'Open storefront ↗', storeCard);
-      storefrontLink.href = 'https://shop.snhpinballclub.com/';
-      storefrontLink.target = '_blank'; storefrontLink.rel = 'noopener noreferrer';
-      var fourthwallLinkParagraph = el('p', null, storeCard);
-      var fourthwallLink = el('a', 'Manage store in Fourthwall ↗', fourthwallLinkParagraph);
-      fourthwallLink.href = 'https://admin.fourthwall.com/';
-      fourthwallLink.target = '_blank'; fourthwallLink.rel = 'noopener noreferrer';
-      el('p', 'Store status is not monitored here.', storeCard);
+
+      var card = el('section', null, cards); el('h4', 'Supabase usage & errors', card);
+      el('p', 'Review organization-wide utilization and inspect each project’s logs in Supabase.', card);
+      var usageLink = el('a', 'Organization usage ↗', card);
+      usageLink.href = 'https://supabase.com/dashboard/org/qmlpijvpdqpaceionmds/usage';
+      usageLink.target = '_blank'; usageLink.rel = 'noopener noreferrer';
+      var productionLinks = el('p', null, card);
+      el('strong', 'Production: ', productionLinks);
+      var productionProject = el('a', 'Project dashboard ↗', productionLinks);
+      productionProject.href = 'https://supabase.com/dashboard/project/dawypferbucqanrkcdkj';
+      productionProject.target = '_blank'; productionProject.rel = 'noopener noreferrer';
+      el('span', ' · ', productionLinks);
+      var productionLogs = el('a', 'Logs & errors ↗', productionLinks);
+      productionLogs.href = 'https://supabase.com/dashboard/project/dawypferbucqanrkcdkj/logs/explorer';
+      productionLogs.target = '_blank'; productionLogs.rel = 'noopener noreferrer';
+      var stagingLinks = el('p', null, card);
+      el('strong', 'Staging: ', stagingLinks);
+      var stagingProject = el('a', 'Project dashboard ↗', stagingLinks);
+      stagingProject.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv';
+      stagingProject.target = '_blank'; stagingProject.rel = 'noopener noreferrer';
+      el('span', ' · ', stagingLinks);
+      var stagingLogs = el('a', 'Logs & errors ↗', stagingLinks);
+      stagingLogs.href = 'https://supabase.com/dashboard/project/eptbdrwmcwogxcjleudv/logs/explorer';
+      stagingLogs.target = '_blank'; stagingLogs.rel = 'noopener noreferrer';
+      var cacheCard = el('section', null, cards); el('h4', 'Cache', cacheCard);
+      el('p', snapshot.cache.total + ' resources | ' + snapshot.cache.expired + ' expired | ' + snapshot.cache.cleanup_eligible + ' eligible for cleanup', cacheCard);
+      el('p', snapshot.integrations.filter(function (r) { return r.resource_type !== 'connection_test' && r.last_error_at && (!r.last_success_at || r.last_error_at >= r.last_success_at); }).length + ' resources with an unresolved request error', cacheCard);
+      button('View cache', cacheCard, function () { selectSection('cache'); });
       el('p', 'Health reflects the latest recorded requests, not continuous monitoring.', content);
     }
     if (current === 'ai-usage') {
@@ -365,18 +483,42 @@
       });
     }
     if (current === 'messaging') {
+      renderEmailTemplateTester(content);
       var label = el('label', 'Status ', content), select = el('select', null, label);
       ['', 'pending','sending','sent','failed','canceled'].forEach(function (s) { var option = el('option', s || 'All statuses', select); option.value = s; });
       select.value = filter; select.addEventListener('change', async function () {
         filter = select.value; cursor = null; route(); await loadMessages(false);
       });
       el('p', 'Retries keep the original recipient, content, message ID, and delivery deadline. Messages older than 23 hours or with a recorded delivery cannot be retried.', content);
+      var dispatcherConfig = configuration && configuration.dispatcher;
+      var pendingCount = Number(snapshot.messages.pending || 0);
+      if (dispatcherConfig && dispatcherConfig.is_staging && pendingCount > 0) {
+        button('Clear staging pending queue (' + pendingCount + ')', content, function () {
+          mutate(async function () {
+            var result = await edge('clear_staging_notification_queue');
+            return { message: result.message || 'Staging pending messages canceled.' };
+          }, 'Cancel all ' + pendingCount + ' pending staging notifications? They will remain in history as canceled and will not be sent.');
+        });
+      }
       var body = table(['Recipient / message', 'Status / attempts', 'Timestamps', 'Error / action']);
       messages.forEach(function (m) {
         var row = el('tr', null, body); var c = cell(row,m.recipient_email); el('p',m.kind + ': ' + m.subject,c);
+        var preview = el('details',null,c); el('summary','Preview message',preview);
+        var messageText = el('pre',m.body || '(No message body is available. Apply the queue preview migration.)',preview); messageText.setAttribute('style','white-space:pre-wrap;overflow-wrap:anywhere');
         cell(row,m.status + ' / ' + m.attempts);
         c = cell(row,'Created: ' + date(m.created_at)); el('p','Available: ' + date(m.available_at),c); el('p','Sent: ' + date(m.sent_at),c);
         c = cell(row,m.last_error || 'None');
+        if (m.status === 'pending') {
+          if (dispatcherConfig && dispatcherConfig.is_staging && dispatcherConfig.preview_email_configured) {
+            button('Send preview to test inbox',c,function () {
+              mutate(async function () {
+                var result = await edge('send_notification_preview',{notificationId:m.id});
+                return {message:result.message || 'Preview sent to the configured staging test inbox. The queued message remains pending.'};
+              },'Send the actual queued message content to the configured shared staging test inbox? It may include member names or email addresses. The email will be marked [STAGING PREVIEW]; the queued message remains pending and its intended recipient will not receive it.');
+            });
+          }
+          button('Cancel',c,function () { mutate(async function () { await rpc('snh_operations_cancel_notification',{p_id:m.id}); return {message:'Pending notification canceled.'}; },'Cancel this queued notification to ' + m.recipient_email + '? It will not be sent.'); });
+        }
         if (m.can_retry) button('Retry',c,function () { mutate(async function () { await rpc('snh_operations_retry',{p_id:m.id}); return {message:'Message queued for retry.'}; },'Queue this failed message for another delivery attempt?'); });
       });
       if (!messages.length) el('p','No messages match this status.',content);
@@ -384,7 +526,7 @@
     }
     if (current === 'jobs') {
       el('p','Schedules are managed by the existing scheduler. Import history starts when tracking was enabled.',content);
-      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'opdb_reference_sync',name:'OPDB reference archive'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
+      var jobs = [{key:'notification_dispatch',name:'Notification dispatcher'},{key:'cache_cleanup',name:'Cache cleanup'},{key:'pintips_import',name:'PinTips import'},{key:'opdb_reference_sync',name:'OPDB reference archive'},{key:'ipdb_reference_sync',name:'IPDB reference archive'},{key:'pinballmap_ingest',name:'Pinball Map ingest'},{key:'membership_snapshot',name:'Membership snapshots'}];
       snapshot.jobs.forEach(function (r) { if (!jobs.some(function (j) { return j.key === r.job; })) jobs.push({key:r.job,name:r.job}); });
       jobs.forEach(function (job) {
         var section = el('section',null,content); section.className='operations-provider'; el('h4',job.name,section);
@@ -395,8 +537,23 @@
         if (run) {
           if (job.key === 'cache_cleanup') el('p', run.status === 'succeeded' ? 'Removed ' + (run.result.removed || 0) + ' cache entries.' : 'No completed cleanup.', section);
           else if (job.key === 'notification_dispatch') {
-            var result = run.result;
-            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? 'Test mode. ' + (result.sent ? 'Sent to the configured test inbox.' : 'No test message sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' : 'No delivery result recorded.', section);
+            var result = run.result || {};
+            el('p', result.mode === 'preview' ? 'Preview only. No messages sent.' : result.mode === 'test' ? (result.sent ? 'Synthetic test sent to the configured test inbox. Queue unchanged.' : 'Synthetic test was not sent.') : result.mode === 'live' ? (result.sent || 0) + ' sent, ' + (result.failed || 0) + ' failed, ' + (result.canceled || 0) + ' canceled.' + (result.limited ? ' Rolling 24-hour limit reached.' : '') : 'No delivery result recorded.', section);
+            if (result.budget) {
+              var budget = result.budget;
+              el('p', 'Live-send allowance: ' + budget.remaining + ' of ' + budget.rolling_limit + ' messages remain in the rolling 24-hour window (' + budget.sent_last_24h + ' sent, ' + budget.in_flight + ' in flight).', section);
+              if (result.mode === 'preview') el('p', 'Queue: ' + budget.eligible_pending + ' eligible now, ' + budget.waiting_pending + ' waiting, ' + budget.expired_pending + ' expired.', section);
+            }
+            if (result.mode === 'preview') {
+              var preview = result.preview;
+              if (preview) {
+                el('p', 'Next pending message: ' + (preview.kind || 'notification') + (preview.subject ? ' — ' + preview.subject : ''), section);
+                var eligibility = preview.live_eligible === true ? 'Within the 24-hour live-delivery window.'
+                  : preview.live_eligible === false ? 'Older than 24 hours; live dispatch will expire it.'
+                  : 'Live-delivery eligibility could not be determined.';
+                el('p', 'Queued: ' + date(preview.created_at) + ' | ' + eligibility, section);
+              } else if (run.status === 'succeeded') el('p', 'No pending message to preview.', section);
+            }
           } else if (job.key === 'pintips_import' && run.status === 'succeeded') {
             var counts = run.result;
             el('p', counts.tips + ' tips; ' + counts.added + ' added, ' + counts.changed + ' changed, ' + counts.removed + ' removed.', section);
@@ -404,6 +561,16 @@
           } else if (job.key === 'opdb_reference_sync' && run.status === 'succeeded') {
             el('p', (run.result.entry_count || 0) + ' OPDB entries; ' + (run.result.ipdb_mapping_count || 0) + ' IPDB mappings; ' + (run.result.byte_size || 0).toLocaleString() + ' archive bytes.', section);
             if (run.result.content_sha256) el('p', 'SHA-256: ' + run.result.content_sha256, section);
+          } else if (job.key === 'ipdb_reference_sync' && run.status === 'succeeded') {
+            var refreshDate = run.result.source_refreshed_at ? date(run.result.source_refreshed_at) : 'Not recorded';
+            el('p', run.result.unchanged
+              ? (run.result.entry_count || 0) + ' IPDB entries; export unchanged; ' + (run.result.byte_size || 0).toLocaleString() + ' bytes checked.'
+              : (run.result.entry_count || 0) + ' IPDB entries imported; ' + (run.result.byte_size || 0).toLocaleString() + ' archive bytes.', section);
+            el('p', 'IPDB data refreshed: ' + refreshDate + ' | Last check: ' + date(run.result.checked_at || run.result.fetched_at || run.finished_at), section);
+            if (run.result.content_sha256) el('p', 'SHA-256: ' + run.result.content_sha256, section);
+          } else if (job.key === 'ipdb_reference_sync' && run.status === 'failed' && run.result.source_refreshed_at) {
+            el('p', (run.result.entry_count || 0) + ' IPDB entries remain available from the last successful archive.', section);
+            el('p', 'Last indexed IPDB data refresh: ' + date(run.result.source_refreshed_at) + '. The latest update check failed; the active archive was kept.', section);
           } if (run.error) el('p',run.error,section);
           if (run.status==='running') el('p','Completion has not been recorded. The worker may still be running or may have stopped.',section); }
         if (job.key==='opdb_reference_sync') {
@@ -413,14 +580,30 @@
           });
           else el('p','Manual refresh is unavailable until the OPDB scheduler secret is configured.',section);
         }
+        if (job.key==='ipdb_reference_sync') {
+          var ipdb = configuration && configuration.providers && configuration.providers.find(function (p) { return p.provider === 'ipdb'; });
+          if (ipdb && ipdb.configured) button('Check for updates',section,function () {
+            mutate(function () { return edge('run_ipdb_reference_sync'); },'Check the IPDB export for changes. The file is downloaded only when its ETag changes, and the current good archive stays active if the update fails.');
+          });
+          else el('p','Manual check is unavailable until the IPDB scheduler secret is configured.',section);
+        }
         if (job.key==='cache_cleanup') button('Run Now',section,function () { mutate(cleanup,'Run cache cleanup for search resources expired more than seven days ago?'); });
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;
           el('p','Delivery mode: ' + (dispatcher ? dispatcher.mode : 'Unknown'),section);
-          if (dispatcher && dispatcher.configured) button('Run Now',section,function () {
-            mutate(function () { return edge('dispatch'); },'Run the notification dispatcher in ' + dispatcher.mode + ' mode? Live mode sends queued messages; test mode sends to the configured test inbox.');
-          });
-          else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
+          if (dispatcher) el('p','Live-send limits: ' + (dispatcher.live_per_run_limit || 10) +
+            ' per run and ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.',section);
+          if (dispatcher && dispatcher.configured) {
+            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
+            var dispatchPrompt = dispatcher.mode === 'test'
+              ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
+              : dispatcher.mode === 'live'
+                ? 'Run live dispatch? It can send up to ' + (dispatcher.live_per_run_limit || 10) + ' messages to actual recipients, subject to a maximum of ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.'
+                : 'Preview the oldest pending notification? No email will be sent.';
+            button(dispatchLabel,section,function () {
+              mutate(function () { return edge('dispatch'); },dispatchPrompt);
+            });
+          } else el('p','Manual dispatch is unavailable until the Operations service and dispatcher are configured.',section);
         }
       });
     }
@@ -445,7 +628,7 @@
     try { pinballmap = await rpc('snh_operations_pinballmap'); pinballmapError=''; }
     catch { pinballmap=null; pinballmapError='Pinball Map import information could not load. Check access and deployment, then refresh.'; }
     try { configuration = await edge('configuration'); } catch { configuration=null; }
-    if (current==='messaging') await fetchMessages(false);
+    if (current==='messaging') { await loadTemplateTesterConfiguration(); await fetchMessages(false); }
     render();
   }
   async function load() {

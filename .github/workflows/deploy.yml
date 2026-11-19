@@ -20,7 +20,7 @@ jobs:
       SITE_ENV: ${{ github.ref_name == 'staging' && 'staging' || 'production' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Detect clean URL function changes
       id: clean-url
@@ -39,7 +39,7 @@ jobs:
         appendFileSync(process.env.GITHUB_OUTPUT, 'changed=' + String(changed) + '\n');
         NODE
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v7
       with:
         node-version: '22'
 
@@ -67,7 +67,7 @@ jobs:
       run: node scripts/build-site.mjs
 
     - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         role-to-assume: ${{ github.ref_name == 'staging' && 'arn:aws:iam::049145893448:role/GitHubActionsS3DeployStagingRole' || secrets.AWS_ROLE_ARN }}
         aws-region: ${{ env.AWS_REGION }}

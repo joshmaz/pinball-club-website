@@ -23,6 +23,12 @@ management remains in Member Tools; self-delete remains in My Account.
   Its Operations Run Now action is club-admin-only. Kineticist game responses are
   cached by exact OPDB ID for 24 hours; the evidence panel visibly attributes any
   displayed data to Kineticist.
+- IPDB reference sync checks the upstream JSON ETag monthly and downloads the
+  22 MB archive only when it changes. It stores validated snapshots and all
+  normalized IPDB records in the same private archive bucket. Jobs reports the
+  exporter `LastRefreshDateUtc` separately from the local check/import time.
+  The date is context about the source archive; it does not trigger an age
+  warning or block the use of validated records.
 - Cache edits persist in `external_api_cache_policies`. Only known provider/policy
   pairs and integer seconds from 1 to 604800 are accepted. Reset deletes an override.
   The additive migration removes seeded values equal to the original defaults,

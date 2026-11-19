@@ -21,15 +21,22 @@ All presets remain roughly **2–4 sentences**, plain text (no bullets in the st
 ## Voice
 
 - **Club voice (default):** friendly, community-oriented, mechanically informative; prefer present tense.
-- **Friendly with gentle wit:** allow a light turn of phrase when it fits; never force a joke.
+- **Friendly with pinball-aware wit:** look for one playful, pinball-aware turn of phrase, wordplay, or dry aside tied to supported game details. If the game offers no natural hook, keep it friendly without forcing a joke.
 - **More energetic:** use livelier, action-focused wording while remaining factual and avoiding hype.
 
 Voice affects phrasing only. It does not relax evidence or accuracy requirements. All voices avoid unsupported hype (`best ever`, `ultimate`, `must-play`) and empty “dynamic gameplay” filler.
+
+## Opening variety
+
+- Give the two options different opening structures and routes into the game, not just different wording.
+- Prefer a specific, supported gameplay or theme hook when one is available. An invitation such as “Experience the thrill of…” remains an option when it genuinely fits, but should not dominate the drafts by default.
+- Keep variation grounded in evidence; do not invent a hook just to make an opener sound different.
 
 ## Manufacturer and year in prose
 
 - **Convention:** Include **manufacturer** and **release year** in the paragraph when structured fields supply them (card copy aligns with metadata). The proposer warns if prose is missing them while metadata has values.
 - Repeating a fact that exists only in metadata is intentional here for skim-friendly cards.
+- Place these facts naturally; do not make them the default opening formula.
 
 ## Edition labels in prose
 
@@ -43,6 +50,8 @@ Voice affects phrasing only. It does not relax evidence or accuracy requirements
 
 ## Evidence and operator notes
 
+- Favor features that define the game or shape its play. Explain their gameplay role when evidence supports it.
+- Avoid catalog-like inventories of ordinary hardware or bare component counts. Include counts when they are distinctive and meaningful to the game.
 - Draft only when retrieved game-specific source text or concrete existing catalog copy provides gameplay evidence.
 - If the evidence is thin, ask the operator to add gameplay fragments and polish those notes without adding unsupported gameplay claims.
 - Keep source evidence and draft choices inside the collapsed assistant section so the editor remains scannable.

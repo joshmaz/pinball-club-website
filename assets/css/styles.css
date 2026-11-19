@@ -3406,3 +3406,29 @@ footer {
 .publishing-editor button { margin: .35rem .5rem .35rem 0; }
 .publishing-preview { padding: 1rem; border: 1px solid currentColor; margin: 1rem 0; }
 #public-announcements article { margin-bottom: 2rem; }
+
+
+/* Email template tester fields */
+.operations-email-template-tester input,
+.operations-email-template-tester select {
+  font: inherit;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.operations-email-template-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.operations-email-template-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+  line-height: 1.4;
+}
+.operations-email-template-field input {
+  width: 100%;
+}

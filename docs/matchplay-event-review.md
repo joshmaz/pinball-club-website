@@ -52,12 +52,21 @@ The operator can run the reconciliation again after the source is available.
 ## Event Management scan and approval
 
 The separate routine scan checks linked upcoming or in-progress club events
-and searches MatchPlay titles for current additions and updates. It uses the
-server-side cache and runs only when an editor asks for it. Its results may
-include possible additions, field changes, possible matches, and unchanged
-linked events. Editors approve proposed changes one field at a time. A
-date/time change can optionally be recorded as a reschedule. Any new event is
-created as an unpublished draft only after an explicit approval.
+and searches MatchPlay titles for current additions and updates. It retains
+future tournaments and tournaments from the past month; older dated search
+results are left to historical reconciliation. The scan stops requesting pages
+when every result on a page is older than that cutoff and the results have been
+consistently ordered newest first across at least two pages. If dates are
+missing or the order is inconsistent, it keeps the existing five-page limit
+instead of stopping early. This date window does not affect the historical
+reconciliation scan.
+
+The routine scan uses the server-side cache and runs only when an editor asks
+for it. Its results may include possible additions, field changes, possible
+matches, and unchanged linked events. Editors approve proposed changes one
+field at a time. A date/time change can optionally be recorded as a reschedule.
+Any new event is created as an unpublished draft only after an explicit
+approval.
 
 The MatchPlay tournament format is stored in the optional
 `events.matchplay_format` field and shown publicly when present. Format,
@@ -120,7 +129,9 @@ checks the invalid old filter and valid JSONB containment. Provider errors keep
 HTTP status and at most 240 characters of a credential-redacted message or text
 excerpt. Raw request/transport errors are not returned.
 
-These checks reproduce the code defect; they do not inspect production Edge
-Function logs or exercise an authenticated production review. After deploying,
-verify an individual review from the Events dashboard. The preview shares the
-production Supabase project, so deployment affects both environments.
+These checks reproduce the code defect; they do not inspect hosted Edge Function
+logs or exercise an authenticated review. After deploying the function, verify
+an individual review from Event Management in the intended environment. Before
+using a Netlify preview for any write-capable action, confirm its generated
+Supabase URL points to staging. A frontend preview does not deploy the matching
+Edge Function or database migration.

@@ -34,9 +34,10 @@ do not reconstruct older event or member edits.
 
 ## Migration verification
 
-After applying the migrations in timestamp order, use a club-admin account to
-edit and restore one low-impact event field. Confirm that **Member Tools → Recent
-changes** shows both entries with the expected actor and changed field. If a
+After applying the migrations to the intended environment, use a club-admin
+account to edit and restore one low-impact event field. Confirm that
+**Operations → Audit log** shows both entries with the expected actor and
+changed field. If a
 test member account is available, grant and revoke a non-admin role through
 Member Tools, then confirm those actions appear.
 Check that a non-club-admin account cannot call

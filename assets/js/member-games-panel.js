@@ -76,7 +76,6 @@
   var aiSourceApplyBtnEl = null;
   var aiProposalData = null;
   var aiDescriptionRegenCount = 0;
-  var aiOperatorVerifiedSourcesByGame = Object.create(null);
   var aiBusy = false;
   var filterAtClubOnly = false;
   var pinballMapIngestStatusRowEl = null;
@@ -2144,13 +2143,6 @@
     if (aiSourceStatusEl) aiSourceStatusEl.textContent = "";
   }
 
-  function currentAiOperatorVerifiedSources() {
-    var byProvider = aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {};
-    return Object.keys(byProvider).map(function (provider) {
-      return { provider: provider, url: byProvider[provider] };
-    });
-  }
-
   function renderAiProposal(proposal) {
     var isSourceAction = proposal && proposal.action === "sources";
     var isMetadataAction = proposal && (proposal.action === "metadata" || proposal.action === "metadata_review");
@@ -2170,15 +2162,13 @@
     if (evidence.length) {
       var evidenceDetails = el("details", { className: "member-games-ai-evidence" });
       var usableCount = evidence.filter(function (item) {
-        var confirmed = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider];
         return item.provider === "Operator context" || item.provider === "Current description"
-          || (item.verified && item.verificationMethod !== "operator") || confirmed === item.url;
+          || (item.verified && item.verificationMethod !== "operator");
       }).length;
       var catalogCount = evidence.filter(function (item) {
         return item.verified && (item.verificationMethod === "archive" || item.verificationMethod === "api");
       }).length;
-      var pageReadCount = evidence.filter(function (item) { return item.verified && item.verificationMethod === "fetch"; }).length;
-      var evidenceSummary = el("summary", { text: "Source evidence (" + usableCount + " usable; " + catalogCount + " catalog/API; " + pageReadCount + " pages read)" });
+      var evidenceSummary = el("summary", { text: "Source evidence (" + usableCount + " usable; " + catalogCount + " catalog/API)" });
       evidenceDetails.appendChild(evidenceSummary);
       evidenceDetails.open = usableCount === 0;
       evidence.forEach(function (item) {
@@ -2189,7 +2179,6 @@
         if (href && isValidHttpUrl(href)) {
           heading.appendChild(el("a", { href: href, target: "_blank", rel: "noopener noreferrer", className: "member-games-ai-external-link", text: href }));
         }
-        var priorOperatorConfirmation = (aiOperatorVerifiedSourcesByGame[String(currentGameId || "")] || {})[item.provider] === href;
         heading.appendChild(document.createTextNode(item.provider === "Operator context"
           ? " — supplied by operator"
           : item.provider === "Current description"
@@ -2198,9 +2187,9 @@
           ? " — Data provided by Kineticist"
           : item.provider === "OPDB" && item.verificationMethod === "archive"
           ? " — exact ID in validated OPDB archive"
-          : item.verificationMethod === "operator" || priorOperatorConfirmation
-          ? " — operator-confirmed match"
-          : item.verified ? " — page fetched; identity matched" : " — not used"));
+          : item.provider === "IPDB" && item.verificationMethod === "archive"
+          ? " — exact ID in validated IPDB reference archive"
+          : item.verified ? " — verified catalog evidence" : " — link needs manual review"));
         row.appendChild(heading);
         if (item.provider === "Operator context" || item.provider === "Current description") {
           var suppliedText = String(item.excerpt || "");
@@ -2215,46 +2204,6 @@
           row.appendChild(suppliedDetails);
         } else {
           row.appendChild(el("p", { className: "member-games-help", text: String(item.excerpt || item.reason || "") }));
-        }
-        if (href && isValidAiSourceUrl(item.field || ({ IPDB: "ipdbUrl", Pinside: "pinsideUrl", Kineticist: "kineticistUrl" })[item.provider], href)) {
-          var verifyId = "mg-ai-manual-verify-" + String(item.provider || "").toLowerCase();
-          var verifyCheckbox = el("input", { type: "checkbox", id: verifyId });
-          verifyCheckbox.checked = priorOperatorConfirmation || item.verificationMethod === "operator";
-          var verifyLabel = el("label", {
-            className: "member-games-help",
-            for: verifyId,
-            text: "I opened this page and confirmed it is for this game",
-          });
-          verifyCheckbox.addEventListener("change", function () {
-            var gameKey = String(currentGameId || "");
-            if (!aiOperatorVerifiedSourcesByGame[gameKey]) aiOperatorVerifiedSourcesByGame[gameKey] = Object.create(null);
-            if (verifyCheckbox.checked) aiOperatorVerifiedSourcesByGame[gameKey][item.provider] = href;
-            else if (aiOperatorVerifiedSourcesByGame[gameKey][item.provider] === href) delete aiOperatorVerifiedSourcesByGame[gameKey][item.provider];
-            var operatorUrl = (aiOperatorVerifiedSourcesByGame[gameKey] || {})[item.provider];
-            var count = evidence.filter(function (source) {
-              return (source.verified && source.verificationMethod !== "operator")
-                || ((aiOperatorVerifiedSourcesByGame[gameKey] || {})[source.provider] === source.url);
-            }).length;
-            var catalog = evidence.filter(function (source) {
-              return source.verified && (source.verificationMethod === "archive" || source.verificationMethod === "api");
-            }).length;
-            var pagesRead = evidence.filter(function (source) { return source.verified && source.verificationMethod === "fetch"; }).length;
-            evidenceSummary.textContent = "Source evidence (" + count + " usable; " + catalog + " catalog/API; " + pagesRead + " pages read)";
-            heading.lastChild.textContent = item.provider === "Operator context"
-              ? " — supplied by operator"
-              : operatorUrl === href
-              ? " — operator-confirmed match"
-              : item.verified && item.verificationMethod !== "operator" ? " — page fetched; identity matched" : " — not used";
-            if (verifyCheckbox.checked) {
-              if (aiProposalData && aiProposalData.action === "sources") {
-                var sourceWarning = aiSourceProposalBodyEl && aiSourceProposalBodyEl.querySelector(".member-games-ai-reason");
-                if (sourceWarning) sourceWarning.textContent = "You confirmed this link matches the game. Provider pages are not fetched or sent to enrichment.";
-              }
-              setAiStatus("Manual confirmation saved for this editing session. Provider page text is not fetched or used for enrichment.");
-            }
-          });
-          row.appendChild(verifyCheckbox);
-          row.appendChild(verifyLabel);
         }
         evidenceDetails.appendChild(row);
       });
@@ -2396,8 +2345,8 @@
     aiBusy = true;
     var labels = {
       sources: "Finding link suggestions…",
-      metadata: "Checking OPDB and Kineticist records for missing metadata…",
-      metadata_review: "Checking existing metadata…",
+      metadata: "Checking OPDB, IPDB, and Kineticist catalog records for missing metadata…",
+      metadata_review: "Checking existing metadata against OPDB, IPDB, and Kineticist…",
       description: "Drafting from source records and description notes…",
     };
     aiProposalData = { action: action };
@@ -2414,11 +2363,10 @@
         currentDescription: includeCurrentDescription && currentDescriptionEl ? String(currentDescriptionEl.value || "") : "",
         descriptionLength: action === "description" ? ((document.getElementById("mg-ai-description-length") || {}).value || "standard") : undefined,
         descriptionVoice: action === "description" ? ((document.getElementById("mg-ai-description-voice") || {}).value || "club") : undefined,
-        operatorVerifiedSources: currentAiOperatorVerifiedSources(),
       });
       renderAiProposal(proposal);
       if (action === "sources" && !(proposal.evidence || []).some(function (item) { return item.verified; })) {
-        setAiStatus("No OPDB or Kineticist record was available. Review the suggested URLs manually, then select and apply the links you confirm.");
+        setAiStatus("No OPDB, IPDB, or Kineticist record was available. Review the suggested URLs manually, then select and apply the links you want to keep.");
       } else if (action === "metadata" && proposal.status === "unavailable") {
         setAiStatus("No metadata suggestions are ready. Review the source evidence and fill any gaps manually if needed.");
       } else if (action === "metadata_review" && proposal.status === "unavailable") {
@@ -2530,7 +2478,7 @@
 
   function buildReviewScaffolds() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
-    panel.appendChild(el("p", { className: "member-games-help", text: "Use OPDB and Kineticist records to draft a short public description. Optional notes can add game facts or rough copy; review drafts before using them. Notes are sent to the AI provider, so don’t include secrets or private member information." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Use OPDB, IPDB, and Kineticist records to draft a short public description. Optional notes can add game facts or rough copy; review drafts before using them. Notes are sent to the AI provider, so don’t include secrets or private member information." }));
     var notes = textareaInput("mg-ai-notes", "");
     notes.setAttribute("rows", "4");
     notes.setAttribute("maxlength", String(MAX_AI_CONTEXT_CHARS));
@@ -2599,7 +2547,7 @@
     ], "standard");
     addDraftOptionSelect("Voice", "mg-ai-description-voice", [
       { value: "club", label: "Club voice (friendly and factual)" },
-      { value: "gentle_wit", label: "Friendly with gentle wit" },
+      { value: "gentle_wit", label: "Friendly with pinball-aware wit" },
       { value: "energetic", label: "More energetic" },
     ], "club");
     draftOptions.appendChild(draftOptionControls);
@@ -2617,7 +2565,7 @@
   function buildMetadataAssistantScaffold() {
     var panel = el("section", { className: "member-games-collapsible-panel" });
     aiMetadataWrapEl = panel;
-    panel.appendChild(el("p", { className: "member-games-help", text: "Suggest blank values or check existing metadata against exact OPDB and Kineticist catalog records. Review each result before applying; nothing is saved automatically." }));
+    panel.appendChild(el("p", { className: "member-games-help", text: "Suggest blank values or check existing metadata against the available OPDB, IPDB, and Kineticist catalog records. Review each result before applying; nothing is saved automatically." }));
     var actions = el("div", { className: "member-games-form-actions" });
     function addActionButton(id, label, action) {
       var button = el("button", { type: "button", className: "members-sidebar-link", id: id, text: label });
@@ -3092,6 +3040,21 @@
     focusFirstFormField();
   }
 
+  function addYearOnlyDateUpdate(fields, fieldName, enteredYear, existingDate, isNewGame) {
+    var year = String(enteredYear || "").trim();
+    var existingYear = String(existingDate || "").slice(0, 4);
+    if (!isNewGame && year === existingYear) return;
+    if (!/^\d{4}$/.test(year)) {
+      fields[fieldName] = null;
+      return;
+    }
+
+    var existingMonthAndDay = /^\d{4}-\d{2}-\d{2}$/.test(existingDate || "")
+      ? String(existingDate).slice(4)
+      : "-01-01";
+    fields[fieldName] = year + existingMonthAndDay;
+  }
+
   async function onSaveGame() {
     if (!window.SNHMemberPortal) return;
     if (gameSaveBusy) return;
@@ -3122,8 +3085,6 @@
         title: getVal("mg-title"),
         slug: getVal("mg-slug") || undefined,
         details: getVal("mg-details"),
-        releaseDate: /^\d{4}$/.test(releaseYear) ? releaseYear + "-01-01" : null,
-        manufactureDate: /^\d{4}$/.test(manufactureYear) ? manufactureYear + "-01-01" : null,
         manufacturer: getVal("mg-mfr") || null,
         manufacturerFullName: getVal("mg-mfrfull") || null,
         type: getVal("mg-type") || null,
@@ -3134,6 +3095,8 @@
         kineticistUrl: getVal("mg-kineticist") || null,
         // OPDB identity and match diagnostics are imported by the catalog integration, not edited here.
       };
+      addYearOnlyDateUpdate(fields, "releaseDate", releaseYear, editingGame && editingGame.releaseDate, mode === "new");
+      addYearOnlyDateUpdate(fields, "manufactureDate", manufactureYear, editingGame && editingGame.manufactureDate, mode === "new");
       var savedGameId = currentGameId;
       if (mode === "new") {
         fields.slug = getVal("mg-slug") || slugify(title);

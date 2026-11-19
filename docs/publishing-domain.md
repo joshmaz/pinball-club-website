@@ -1,8 +1,8 @@
 # Publishing authorization foundation
 
-This change adds an independent Publishing domain for homepage announcements
-(What's New) and featured activities (What's Happening). The authorization foundation is followed by the announcements workflow
-documented below. Featured activities remain a separate phase.
+The Website Publishing panel manages homepage announcements (What's New) and
+featured activities (What's Happening). This guide covers the current
+authorization, editing, publication, and delivery behavior.
 
 ## Roles and boundaries
 
@@ -23,9 +23,9 @@ Membership, Operations, or website-wide administrative permissions.
 The public helpers `snh_member_has_publishing_access()` and
 `snh_member_has_publishing_admin_access()` are caller-scoped, stable, restricted
 security-definer functions. The browser exposes `publishing.manage` and
-`publishing.delete` for presentation; future content writes must enforce the
-same distinction through RLS or restricted RPCs. Neither a hidden button nor
-the browser's role catalog is an authorization boundary.
+`publishing.delete` for presentation. Content writes enforce those
+capabilities through restricted RPCs. Neither a hidden button nor the browser's
+role catalog is an authorization boundary.
 
 ## Audit and migration behavior
 
@@ -37,8 +37,8 @@ triggers, and self/last-administrator protections remain in place.
 No roles are assigned or revoked by the migration. Role grant/revoke RPCs
 continue to create the existing `members` / `member_role` audit records with the
 actual authenticated actor. Duplicate grants and denied grants create no
-business-change audit entries. The future content change will use the same
-audit infrastructure under the Publishing module, with 12-month audit retention
+business-change audit entries. Publishing content changes use the same audit
+infrastructure under the Publishing module, with 12-month audit retention
 independent of retained content.
 
 ## Staging rollout
@@ -134,7 +134,7 @@ announcements default to off. A dedicated queue follows the existing notificatio
 worker pattern but does not reuse email recipients or email delivery semantics.
 
 Delivery is server-side. Immediate publish/withdraw tries the authenticated
-worker; a minute scheduler handles future publication and queued work. The
+worker; a two-minute scheduler handles future publication and queued work. The
 website save succeeds independently of delivery. The worker verifies an actual
 Publishing user or dedicated scheduler secret before any protected work, then
 checks the webhook's server and channel against its configured destination.
