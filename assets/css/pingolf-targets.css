@@ -1,0 +1,55 @@
+.pingolf-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: .75rem 1.25rem;
+}
+.pingolf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pingolf-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr);
+  gap: .5rem 1rem;
+  padding: .85rem 0;
+  border-top: 1px solid currentColor;
+}
+.pingolf-row h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.pingolf-target {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .25rem .65rem;
+  margin-bottom: .35rem;
+  overflow-wrap: anywhere;
+}
+.pingolf-editor {
+  margin-top: .75rem;
+}
+.pingolf-editor form {
+  display: grid;
+  gap: .55rem;
+  max-width: 35rem;
+}
+.pingolf-editor label:not(:has([type="checkbox"])) {
+  display: grid;
+  gap: .2rem;
+}
+@media (max-width: 600px) {
+  .pingolf-row { grid-template-columns: 1fr; }
+}
+.pingolf-fields {
+  display: grid;
+  gap: .55rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.pingolf-fields button {
+  justify-self: start;
+}

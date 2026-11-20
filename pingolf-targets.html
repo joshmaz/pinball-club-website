@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" class="clubhouse club-games">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f4f2eb">
+    <meta name="application-name" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-title" content="SNH Pinball">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="assets/pwa/manifest.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
+    <meta name="description" content="Find and copy Pingolf scores and objectives for machines on the floor at Southern New Hampshire Pinball Club.">
+    <title>SNHPC - Pingolf Targets</title>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/clubhouse.css">
+  <link rel="stylesheet" href="assets/css/club-games.css">
+  <link rel="stylesheet" href="assets/css/pingolf-targets.css">
+  <script defer src="/assets/js/umami-analytics.js"></script>
+</head>
+<body>
+<a class="club-skip" href="#games-main">Skip to content</a>
+    <header id="page-top" tabindex="-1">
+        <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+        <div class="club-header-links">
+<nav aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="events.html">Events</a>
+            <a href="games.html" aria-current="page">Games</a>
+            <a href="merch.html">Merch</a>
+            <a href="photos.html">Photos</a>
+            <a href="resources.html">Resources</a>
+            <a href="about.html">About</a>
+            <a href="signin.html" data-site-account-link>Members</a>
+        </nav>
+    <div class="club-header-utilities" aria-label="Appearance and account controls">
+      <label class="club-theme-label" for="club-theme">Appearance
+        <select id="club-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+      <span data-site-account-actions></span>
+    </div>
+  </div>
+    </header>
+    <main id="games-main">
+        <section class="club-page-heading games-page-heading">
+            <div>
+                <a href="games.html">← Back to Games</a>
+                <h1>Pingolf Targets</h1>
+                <p class="club-lead">Practice on today’s lineup or copy a score or objective into Match Play.</p>
+            </div>
+        </section>
+        <section class="content" aria-label="Floor lineup and targets">
+            <div class="games-collection-toolbar pingolf-controls">
+                <div class="club-field games-search">
+                    <label for="pingolf-search">Search games</label>
+                    <input id="pingolf-search" type="search" placeholder="Machine name">
+                </div>
+                <label><input id="pingolf-only" type="checkbox"> Only games with targets</label>
+                <label><input id="pingolf-all" type="checkbox"> Show all targets</label>
+                <label id="pingolf-missing-label" hidden><input id="pingolf-missing" type="checkbox"> Needs a club target</label>
+            </div>
+            <p id="pingolf-status" role="status">Loading today’s lineup…</p>
+            <ul id="pingolf-list" class="pingolf-list"></ul>
+        </section>
+    </main>
+
+    <footer>
+        <a href="#page-top" aria-label="Back to top of this page"><img src="assets/images/snhpc_logo_small_cropped.png" alt="SNH Pinball Club Logo" class="footer-logo"></a>
+        <p>©2026 Southern New Hampshire Pinball Club</p>
+    </footer>
+
+    <script src="assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="assets/js/supabase-init.js"></script>
+    <script src="assets/js/site-auth.js"></script>
+    <script src="assets/js/public-data.js"></script>
+    <script src="assets/js/game-image-delivery.js"></script>
+<script src="assets/js/games.js"></script>
+    <script src="assets/js/member-portal.js"></script>
+    <script src="assets/js/pingolf-targets.js"></script>
+    <script src="assets/js/site-account.js"></script>
+<script src="assets/js/clubhouse.js"></script>
+</body>
+</html>

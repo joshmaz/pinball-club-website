@@ -135,3 +135,51 @@ test('public targets put preferred first, render descriptions safely, and omit e
   context.renderGameMoreInfoSections({pingolfTargets:[]},empty,'play');
   assert.ok(!empty.children.some(n=>n.tag==='section'));
 });
+
+test('public floor reference filters, copies exact scores, and gates inline editing', async () => {
+  const source = await readFile(new URL('../assets/js/pingolf-targets.js', import.meta.url), 'utf8');
+  const {document, element, nodes} = dom();
+  for (const id of ['list', 'status', 'search', 'only', 'all', 'missing', 'missing-label']) {
+    element('div').setAttribute('id', 'pingolf-' + id);
+  }
+  function createNode(tag, text = '') {
+    const node = element(tag);
+    node.textContent = text;
+    node.append = (...children) => node.children.push(...children);
+    return node;
+  }
+  document.createElement = createNode;
+  const list = nodes.get('pingolf-list');
+  list.append = (...children) => list.children.push(...children);
+  let copied;
+  const clubTarget = {description:'Big score', targetType:'score', scoreThreshold:'9223372036854775807', isPreferred:true};
+  const games = [
+    {id:'1', title:'Godzilla (Pro)', opdbId:'GweeP-MW95j', active:true},
+    {id:'2', title:'Road Kings', active:true},
+    {id:'3', title:'Former game', active:false}
+  ];
+  const context = {
+    document, window:{}, profileText:createNode, setTimeout:()=>{},
+    navigator:{clipboard:{writeText:async value => { copied = value; }}},
+    fetchGamesCatalogPayload:async () => ({games}), enrichGamesPayload:()=>{},
+    todayIsoDate:()=> '2026-11-19', isSoftDeletedGame:()=>false,
+    isGameActiveOnDate:game=>game.active, gameHasCatalogUuid:()=>true,
+    gameProfileRpc:async (_, args)=>({pingolfTargets:args.p_game_id === '1' ? [clubTarget] : []}),
+    currentUserCanManageGames:async ()=>false
+  };
+  vm.runInNewContext(source, context);
+  await flush();
+  const lineup = nodes.get('pingolf-list').children;
+  assert.deepEqual(lineup.map(row=>row.children[0].textContent), ['Godzilla (Pro)', 'Road Kings']);
+  const [display, edit] = lineup[0].children[1].children;
+  assert.equal(edit.hidden, true);
+  assert.equal(display.children.length, 1);
+  await display.children[0].children.find(node=>node.textContent === 'Copy score').handlers.click();
+  assert.equal(copied, clubTarget.scoreThreshold);
+  nodes.get('pingolf-all').checked = true;
+  nodes.get('pingolf-all').handlers.change();
+  assert.equal(display.children.length, 3);
+  nodes.get('pingolf-only').checked = true;
+  nodes.get('pingolf-only').handlers.change();
+  assert.equal(lineup[1].hidden, true);
+});
