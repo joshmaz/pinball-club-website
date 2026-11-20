@@ -199,26 +199,108 @@ begin
   if tg_op = 'INSERT' then
     v_member_id := new.member_id;
     v_membership_id := new.id;
-    v_new_active := new.status = 'active';
+
+    select prior.status = 'active' into v_old_active
+      from public.memberships prior
+     where prior.member_id = new.member_id and prior.id <> new.id
+     order by prior.created_at desc, prior.id desc
+     limit 1;
+    v_old_active := coalesce(v_old_active, false);
+
+    select current_row.status = 'active' into v_new_active
+      from public.memberships current_row
+     where current_row.member_id = new.member_id
+     order by current_row.created_at desc, current_row.id desc
+     limit 1;
+
   elsif tg_op = 'DELETE' then
     v_member_id := old.member_id;
     v_membership_id := old.id;
-    v_old_active := old.status = 'active';
+
+    select prior.status = 'active' into v_old_active
+      from (
+        select m.status, m.created_at, m.id
+          from public.memberships m
+         where m.member_id = old.member_id
+        union all
+        select old.status, old.created_at, old.id
+      ) prior
+     order by prior.created_at desc, prior.id desc
+     limit 1;
+
+    select current_row.status = 'active' into v_new_active
+      from public.memberships current_row
+     where current_row.member_id = old.member_id
+     order by current_row.created_at desc, current_row.id desc
+     limit 1;
+    v_new_active := coalesce(v_new_active, false);
+
   else
     v_member_id := new.member_id;
     v_membership_id := new.id;
-    v_old_active := old.status = 'active';
-    v_new_active := new.status = 'active';
 
     if old.member_id is distinct from new.member_id then
-      if v_old_active then
-        perform private.snh_enqueue_full_access_change(old.member_id, false, old.id);
+      -- Moving a membership record can change both members' effective status.
+      select prior.status = 'active' into v_old_active
+        from (
+          select m.status, m.created_at, m.id
+            from public.memberships m
+           where m.member_id = old.member_id
+          union all
+          select old.status, old.created_at, old.id
+        ) prior
+       order by prior.created_at desc, prior.id desc
+       limit 1;
+
+      select current_row.status = 'active' into v_new_active
+        from public.memberships current_row
+       where current_row.member_id = old.member_id
+       order by current_row.created_at desc, current_row.id desc
+       limit 1;
+      v_new_active := coalesce(v_new_active, false);
+      if v_old_active is distinct from v_new_active then
+        perform private.snh_enqueue_full_access_change(old.member_id, v_new_active, old.id);
       end if;
-      if v_new_active then
-        perform private.snh_enqueue_full_access_change(new.member_id, true, new.id);
+
+      v_old_active := false;
+      v_new_active := false;
+      select prior.status = 'active' into v_old_active
+        from public.memberships prior
+       where prior.member_id = new.member_id and prior.id <> new.id
+       order by prior.created_at desc, prior.id desc
+       limit 1;
+      v_old_active := coalesce(v_old_active, false);
+
+      select current_row.status = 'active' into v_new_active
+        from public.memberships current_row
+       where current_row.member_id = new.member_id
+       order by current_row.created_at desc, current_row.id desc
+       limit 1;
+      v_new_active := coalesce(v_new_active, false);
+      if v_old_active is distinct from v_new_active then
+        perform private.snh_enqueue_full_access_change(new.member_id, v_new_active, new.id);
       end if;
       return new;
     end if;
+
+    select prior.status = 'active' into v_old_active
+      from (
+        select m.status, m.created_at, m.id
+          from public.memberships m
+         where m.member_id = old.member_id and m.id <> new.id
+        union all
+        select old.status, old.created_at, old.id
+      ) prior
+     order by prior.created_at desc, prior.id desc
+     limit 1;
+    v_old_active := coalesce(v_old_active, false);
+
+    select current_row.status = 'active' into v_new_active
+      from public.memberships current_row
+     where current_row.member_id = new.member_id
+     order by current_row.created_at desc, current_row.id desc
+     limit 1;
+    v_new_active := coalesce(v_new_active, false);
   end if;
 
   if v_old_active is distinct from v_new_active then
