@@ -1,22 +1,27 @@
 -- Move the targets previously shown by the public page into the game editor.
+-- Resolve games by slug because staging and production use different game UUIDs.
 do $$
 declare
   seed record;
   inserted public.pingolf_targets;
 begin
   for seed in
-    select * from (values
-      ('7c983960-bf4f-4958-b972-29715fc577da'::uuid, 'score', 'Score at least 80,000,000 points', 80000000::bigint, true),
-      ('7c983960-bf4f-4958-b972-29715fc577da'::uuid, 'score', 'Score at least 120,000,000 points', 120000000::bigint, false),
-      ('00918566-e29b-4f4e-8d8c-0089f4d62a0a'::uuid, 'feature', 'Lock a ball', null::bigint, false)
-    ) as targets(game_id, target_type, description, score_threshold, prefer_if_empty)
+    select g.id as game_id, targets.target_type, targets.description,
+           targets.score_threshold, targets.prefer_if_empty
+      from (values
+        ('godzilla-pro', 'score', 'Score at least 80,000,000 points', 80000000::bigint, true),
+        ('godzilla-pro', 'score', 'Score at least 120,000,000 points', 120000000::bigint, false),
+        ('world-cup-soccer', 'feature', 'Lock a ball', null::bigint, false)
+      ) as targets(game_slug, target_type, description, score_threshold, prefer_if_empty)
+      join public.games g on g.slug = targets.game_slug and g.deleted_at is null
+     order by g.slug, targets.description
+     for update of g
   loop
-    perform 1 from public.games where id = seed.game_id and deleted_at is null for update;
-    if not found then continue; end if;
-
     insert into public.pingolf_targets (game_id, target_type, description, score_threshold, is_preferred)
     select seed.game_id, seed.target_type, seed.description, seed.score_threshold,
-      seed.prefer_if_empty and not exists (select 1 from public.pingolf_targets where game_id = seed.game_id)
+      seed.prefer_if_empty and not exists (
+        select 1 from public.pingolf_targets where game_id = seed.game_id
+      )
     where (select count(*) from public.pingolf_targets where game_id = seed.game_id) < 10
       and not exists (
         select 1 from public.pingolf_targets as existing
