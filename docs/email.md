@@ -100,15 +100,39 @@ Notes do not send another notice. The template tester includes a grouped,
 fictional two-Note example.
 
 
+### Role and Full Access changes
+
+The `20261120180000_member_role_membership_change_notifications.sql`
+migration queues four transactional notices for the affected member:
+
+- `member_role_granted` and `member_role_revoked` fire only when an explicitly
+  assigned role is added, removed, or changed. Messages describe the assigned
+  role and its responsibilities; inherited role capabilities and derived
+  Website Volunteer status do not create separate messages. Role questions go
+  to the Webmaster at `webmaster@snhpinballclub.com`.
+- `full_access_activated` and `full_access_deactivated` fire only when a
+  membership record crosses the `active` boundary. A no-op status update does
+  not queue mail. These notices do not change or imply any website role.
+  Membership questions go to `support@snhpinballclub.com`.
+
+Only future database changes are queued; there is no backfill. A valid email on
+the affected member profile is required. The messages use the Resend templates
+`snhpc-member-role-granted-v1`, `snhpc-member-role-revoked-v1`,
+`snhpc-full-access-activated-v1`, and
+`snhpc-full-access-deactivated-v1`. They are registered in the Email template
+tester and follow the existing preview/test/live delivery safeguards.
+
 ## Activation
 
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
 2. Publish the `snhpc-member-signup-alert-v1`,
-   `snhpc-account-confirmation-reminder-v1`, and `snhpc-member-welcome-v1`
-   templates in Resend. Confirm the API key configured for each project can
-   access them.
+   `snhpc-account-confirmation-reminder-v1`, `snhpc-member-welcome-v1`,
+   `snhpc-member-role-granted-v1`, `snhpc-member-role-revoked-v1`,
+   `snhpc-full-access-activated-v1`, and
+   `snhpc-full-access-deactivated-v1` templates in Resend. Confirm the API key
+   configured for each project can access them.
 3. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
