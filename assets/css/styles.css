@@ -3432,3 +3432,51 @@ footer {
 .operations-email-template-field input {
   width: 100%;
 }
+
+.member-admin-tabs:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-block: 1rem;
+  border-bottom: 1px solid currentColor;
+}
+
+.member-admin-tabs button {
+  padding: .6rem .85rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.member-admin-tabs button[aria-selected="true"] {
+  border-bottom-color: currentColor;
+  font-weight: 700;
+}
+
+.member-dues-panel > label,
+.member-dues-panel > textarea {
+  display: block;
+}
+
+.member-dues-panel > textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 9rem;
+  padding: .75rem;
+  resize: vertical;
+}
+
+.member-dues-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .75rem;
+}
+
+.member-dues-actions > button {
+  width: auto;
+}

@@ -84,6 +84,9 @@
     const { data, error } = await window.snhSupabase.rpc("snh_reconcile_dues", {
       p_action: actionName, ...args
     });
+    if (error?.code === "PGRST202") {
+      throw new Error("Dues reconciliation is unavailable until its database migration is applied to this environment.");
+    }
     if (error) throw new Error(error.message);
     return data;
   }
@@ -190,12 +193,44 @@
   const preview = panel.querySelector("[data-dues-preview]");
   let groups = new Map();
   let generation = 0;
+  let authorized = false;
+  let loaded = false;
+  const directoryTab = document.getElementById("member-directory-tab");
+  const duesTab = document.getElementById("member-dues-tab");
+  const directory = document.getElementById("member-directory-panel");
+  const tabs = directoryTab.parentElement;
+
+  function selectTab(tab) {
+    const showDues = authorized && tab === duesTab;
+    for (const button of [directoryTab, duesTab]) {
+      const selected = button === (showDues ? duesTab : directoryTab);
+      button.setAttribute("aria-selected", String(selected));
+      button.tabIndex = selected ? 0 : -1;
+    }
+    directory.hidden = showDues;
+    panel.hidden = !showDues;
+    if (showDues && !loaded) render().catch(error => {
+      if (authorized && !panel.hidden) status.textContent = error.message;
+    });
+  }
+
+  for (const tab of [directoryTab, duesTab]) {
+    tab.addEventListener("click", () => selectTab(tab));
+    tab.addEventListener("keydown", event => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === "Home" || (event.key !== "End" && tab === duesTab) ? directoryTab : duesTab;
+      selectTab(next);
+      next.focus();
+    });
+  }
 
   async function render(message) {
     const current = ++generation;
     const open = new Set([...results.querySelectorAll("details[open]")].map(section => section.dataset.payer));
     const state = await request("load");
-    if (current !== generation || panel.hidden) return;
+    if (current !== generation || !authorized) return;
+    loaded = true;
     state.members.sort((a, b) => a.name.localeCompare(b.name));
     const payers = new Map(state.payers.map(payer => [payer.email, payer]));
     const visible = new Map(groups);
@@ -237,15 +272,20 @@
     clear();
     render("Pasted data cleared.").catch(error => { status.textContent = error.message; });
   });
-  panel.addEventListener("toggle", () => {
-    if (panel.open && !panel.hidden) render().catch(error => { status.textContent = error.message; });
-  });
-
   window.SNHDuesReconciliation = {
     setRoles(roles) {
-      panel.hidden = !roles.some(role => ["membership_admin", "club_admin"].includes(role));
-      if (panel.hidden) {
-        panel.open = false;
+      authorized = roles.some(role => ["membership_admin", "club_admin"].includes(role));
+      tabs.hidden = !authorized;
+      if (authorized) {
+        directory.setAttribute("role", "tabpanel");
+        directory.setAttribute("aria-labelledby", directoryTab.id);
+        directory.tabIndex = 0;
+      } else {
+        directory.removeAttribute("role");
+        directory.removeAttribute("aria-labelledby");
+        directory.removeAttribute("tabindex");
+        selectTab(directoryTab);
+        loaded = false;
         clear();
       }
     }
