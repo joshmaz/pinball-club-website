@@ -25,9 +25,9 @@ Two separate integration paths share the same Resend account and API key:
 | Path | Purpose | Where configured |
 |------|---------|------------------|
 | **Supabase Auth SMTP** | Password reset, signup confirm, magic links | Supabase Dashboard → Authentication → Email → SMTP Settings |
-| **Resend API** | One-off or app-triggered mail (scripts, future Edge Functions) | `.env` locally; `supabase secrets set` for hosted functions |
+| **Resend API** | One-off or app-triggered mail (scripts and deployed Edge Functions) | `.env` locally; `supabase secrets set` for hosted functions |
 
-## App notifications (first slice)
+## App notifications
 
 `20260924130000_notification_foundation.sql` adds a private-to-clients outbox.
 `20260925020000_queue_notifications_from_auth_signup.sql` connects it to the
@@ -148,8 +148,7 @@ tester and follow the existing preview/test/live delivery safeguards.
    message. Repeated test runs send additional copies to the test destination.
 5. Keep delivery mode at `preview` by default. Enable `live` only after the
    staging preview and production configuration review are complete. Scheduled
-   dispatch runs hourly; production `test` mode skips synthetic sends. Keep
-   dispatch secrets out of browser code and public build variables.
+   dispatch runs every 10 minutes; `test` mode skips synthetic sends. The deployed staging cron job is currently named `notification-dispatch-hourly` despite its ten-minute schedule. Keep dispatch secrets out of browser code and public build variables.
 
 ### Queue review and staging cleanup
 
@@ -203,11 +202,7 @@ group by kind, status order by kind, status;
 ```
 
 No addresses are hardcoded in the notification code. The queue is inaccessible
-to `anon` and `authenticated` clients. The first signup alert has no member
-preference toggle because it goes only to designated membership volunteers;
-future optional game and note alerts should get per-member opt-ins before they
-are queued. Wider member email campaigns need a separate consent and audience
-workflow.
+to `anon` and `authenticated` clients. Operational notifications currently target designated membership volunteers or the member whose role/access changed; these are not marketing campaigns. Any optional member-wide game or note alerts need per-member opt-ins before they are queued. Wider member email campaigns need a separate consent and audience workflow.
 
 Never put `RESEND_API_KEY` in browser code or `assets/js/config.js`.
 
