@@ -1,0 +1,253 @@
+(function () {
+  "use strict";
+
+  const headers = ["date", "time", "name", "type", "from email address"];
+  const paymentType = "subscription payment";
+
+  function parse(text) {
+    if (text.length > 500000) throw new Error("Paste at most 500 KB at a time.");
+    const lines = text.replace(/^\uFEFF/, "").trim().split(/\r?\n/);
+    const columns = lines.shift().split("\t").map(value => value.trim().toLowerCase());
+    const indexes = headers.map(header => columns.indexOf(header));
+    if (indexes.includes(-1)) throw new Error("Copy the five column headers and payment rows from the spreadsheet.");
+    if (lines.length > 10000) throw new Error("Paste at most 10,000 rows at a time.");
+
+    const groups = new Map();
+    let skipped = 0;
+    lines.forEach((line, index) => {
+      if (!line.trim()) return;
+      const values = line.split("\t");
+      if (values.length !== columns.length) throw new Error("Check the columns on row " + (index + 2) + ".");
+      const [date, time, name, type, rawEmail] = indexes.map(i => values[i].trim());
+      if (type.toLowerCase() !== paymentType) {
+        skipped++;
+        return;
+      }
+      const email = rawEmail.toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+$/.test(email) || email.length > 254) {
+        throw new Error("Check the payer email on row " + (index + 2) + ".");
+      }
+      const dateParts = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(date);
+      const timeParts = /^(\d{1,2}):(\d{2}):(\d{2})(?:\s*(AM|PM))?$/i.exec(time);
+      if (!dateParts || !timeParts) throw new Error("Check the date and time on row " + (index + 2) + ".");
+      const [, month, day, year] = dateParts;
+      const isoDate = [year, month.padStart(2, "0"), day.padStart(2, "0")].join("-");
+      const parsedDate = new Date(isoDate + "T00:00:00Z");
+      let hour = Number(timeParts[1]);
+      const [, , minute, second, meridiem] = timeParts;
+      if (!Number.isFinite(+parsedDate) || parsedDate.toISOString().slice(0, 10) !== isoDate
+          || +minute > 59 || +second > 59 || (meridiem ? hour < 1 || hour > 12 : hour > 23)) {
+        throw new Error("Check the date and time on row " + (index + 2) + ".");
+      }
+      if (meridiem) hour = hour % 12 + (meridiem.toUpperCase() === "PM" ? 12 : 0);
+      const received = isoDate + "T" + [String(hour).padStart(2, "0"), minute, second].join(":");
+      if (!groups.has(email)) groups.set(email, { email, name, dates: new Set(), duplicates: 0 });
+      const group = groups.get(email);
+      if (group.dates.has(received)) group.duplicates++;
+      group.dates.add(received);
+    });
+    return { groups, skipped };
+  }
+
+  function element(parent, tag, value) {
+    const node = document.createElement(tag);
+    if (value !== undefined) node.textContent = value;
+    parent.append(node);
+    return node;
+  }
+
+  function field(parent, title, tag, type) {
+    const label = element(parent, "label", title + " ");
+    const input = element(label, tag);
+    if (type) input.type = type;
+    return input;
+  }
+
+  function action(parent, title, handler, feedback) {
+    const button = element(parent, "button", title);
+    button.type = "button";
+    button.className = "members-sidebar-link";
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      try {
+        await handler();
+      } catch (error) {
+        feedback.textContent = error.message || "The change could not be saved.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+    return button;
+  }
+
+  async function request(actionName, args = {}) {
+    const { data, error } = await window.snhSupabase.rpc("snh_reconcile_dues", {
+      p_action: actionName, ...args
+    });
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  function overdue(payer) {
+    if (!payer.member_id || !payer.review_enabled || !payer.last_received || !payer.coverage_through) return false;
+    const last = new Date(payer.last_received + "T00:00:00Z");
+    const day = last.getUTCDate();
+    last.setUTCDate(1);
+    last.setUTCMonth(last.getUTCMonth() + 1);
+    const endOfMonth = new Date(Date.UTC(last.getUTCFullYear(), last.getUTCMonth() + 1, 0)).getUTCDate();
+    last.setUTCDate(Math.min(day, endOfMonth) + 7);
+    return payer.coverage_through >= last.toISOString().slice(0, 10);
+  }
+
+  function renderPayer(parent, group, state, payer, reload) {
+    const saved = new Set(state.receipts[group.email] || []);
+    const dates = [...group.dates].sort().filter(date => !saved.has(date));
+    const section = element(parent, "details");
+    const matches = state.members.filter(member => member.verifiedEmail === group.email);
+    const pending = state.holds[group.email];
+    const status = dates.length ? dates.length + " to review"
+      : pending ? "On hold" : payer?.roster_name ? "Account pending" : saved.size ? "Recorded" : "Follow-up";
+    element(section, "summary", [group.name, group.email, status].filter(Boolean).join(" · "));
+    const history = [...saved].sort();
+    if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
+    if (group.duplicates) element(section, "p", group.duplicates + " repeated timestamp rows grouped as duplicates. Check these against PayPal.");
+    if (matches.length === 1 && !payer?.member_id) element(section, "p", "Suggested by verified website email: " + matches[0].name);
+    if (overdue(payer || {})) element(section, "p", "Payment overdue for review.");
+    const feedback = element(section, "p");
+    feedback.setAttribute("role", "status");
+
+    const member = field(section, "Website member", "select");
+    element(member, "option", "Choose a member").value = "";
+    for (const entry of state.members) {
+      element(member, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
+    }
+    member.value = payer?.member_id || (matches.length === 1 ? matches[0].id : "");
+    member.disabled = Boolean(payer?.member_id);
+    if (dates.length) {
+      const name = field(section, "Name for pending account", "input", "text");
+      name.maxLength = 150;
+      name.value = payer?.roster_name || "";
+      const list = element(section, "ul");
+      const choices = dates.map(date => [date, field(element(list, "li"), date.replace("T", " "), "input", "checkbox")]);
+      action(section, "Select all payments for this payer", () => {
+        for (const [, input] of choices) input.checked = true;
+      }, feedback);
+      action(section, "Apply selected payments", async () => {
+        const selected = choices.filter(([, input]) => input.checked).map(([date]) => date);
+        if (!selected.length) throw new Error("Select the payments to apply.");
+        await request("apply", { p_email: group.email, p_dates: selected, p_member: member.value || null, p_name: name.value });
+        await reload("Selected payments recorded.");
+      }, feedback);
+    }
+
+    if (payer) {
+      if (payer.roster_name) element(section, "p", "Pending website account for " + payer.roster_name + ".");
+      if (payer.last_received) element(section, "p", "Last confirmed payment: " + payer.last_received);
+      const linking = element(section, "details");
+      element(linking, "summary", payer.member_id ? "Correct member link" : "Link pending account");
+      const target = field(linking, "Website member", "select");
+      for (const option of member.options) target.append(option.cloneNode(true));
+      target.value = member.value;
+      action(linking, "Save member link", async () => {
+        if (!target.value) throw new Error("Choose the correct website member.");
+        if (target.value === payer.member_id) throw new Error("Choose a different website member.");
+        if (!window.confirm("Move this payer’s entire recorded history to the selected member?")) return;
+        await request("relink", { p_email: group.email, p_member: target.value });
+        await reload("Member link saved.");
+      }, feedback);
+    }
+
+    if (dates.length || pending) {
+      const note = field(section, "Review note", "input", "text");
+      note.maxLength = 500;
+      note.value = pending || "";
+      action(section, "Save for review", async () => {
+        await request("hold", { p_email: group.email, p_note: note.value });
+        feedback.textContent = "Review note saved.";
+      }, feedback);
+    }
+
+    if (payer?.member_id) {
+      const enabled = field(section, "Monitor monthly renewal", "input", "checkbox");
+      enabled.checked = payer.review_enabled;
+      const coverage = field(section, "Payments checked through", "input", "date");
+      coverage.value = payer.coverage_through || "";
+      action(section, "Save renewal review settings", async () => {
+        await request("review_setting", {
+          p_email: group.email, p_review_enabled: enabled.checked, p_coverage: coverage.value || null
+        });
+        await reload("Renewal review settings saved.");
+      }, feedback);
+    }
+  }
+
+  const panel = document.getElementById("member-dues-reconciliation");
+  if (!panel) return;
+
+  const input = panel.querySelector("textarea");
+  const status = panel.querySelector("[data-dues-status]");
+  const results = panel.querySelector("[data-dues-results]");
+  const preview = panel.querySelector("[data-dues-preview]");
+  let groups = new Map();
+  let generation = 0;
+
+  async function render(message) {
+    const current = ++generation;
+    const open = new Set([...results.querySelectorAll("details[open]")].map(section => section.dataset.payer));
+    const state = await request("load");
+    if (current !== generation || panel.hidden) return;
+    state.members.sort((a, b) => a.name.localeCompare(b.name));
+    const payers = new Map(state.payers.map(payer => [payer.email, payer]));
+    const visible = new Map(groups);
+    for (const email of [...payers.keys(), ...Object.keys(state.holds)]) {
+      const payer = payers.get(email);
+      if (!visible.has(email)) visible.set(email, { email, name: payer?.roster_name, dates: [] });
+    }
+    results.replaceChildren();
+    for (const group of visible.values()) {
+      renderPayer(results, group, state, payers.get(group.email), render);
+      results.lastElementChild.dataset.payer = group.email;
+      results.lastElementChild.open = open.has(group.email);
+    }
+    status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
+  }
+
+  function clear() {
+    generation++;
+    groups = new Map();
+    input.value = "";
+    results.replaceChildren();
+    status.textContent = "";
+  }
+
+  preview.addEventListener("click", async () => {
+    preview.disabled = true;
+    try {
+      const parsed = parse(input.value);
+      groups = parsed.groups;
+      await render(groups.size + " payer groups. " + parsed.skipped + " non-subscription rows skipped.");
+      input.value = "";
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      preview.disabled = false;
+    }
+  });
+  panel.querySelector("[data-dues-clear]").addEventListener("click", () => {
+    clear();
+    render("Pasted data cleared.").catch(error => { status.textContent = error.message; });
+  });
+  panel.addEventListener("toggle", () => {
+    if (panel.open && !panel.hidden) render().catch(error => { status.textContent = error.message; });
+  });
+
+  window.SNHDuesReconciliation = {
+    setRoles(roles) {
+      panel.hidden = !roles.some(role => ["membership_admin", "club_admin"].includes(role));
+      if (panel.hidden) {
+        panel.open = false;
+        clear();
+      }
+    }
+  };
+})();

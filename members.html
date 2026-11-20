@@ -39,6 +39,7 @@
   <script src="assets/js/game-image-delivery.js"></script>
 <script src="assets/js/photo-conversion.js"></script>
 <script src="assets/js/member-portal.js"></script>
+<script src="assets/js/member-dues-reconciliation.js"></script>
 <script src="assets/js/member-events-workflow.js"></script>
 <script src="assets/js/member-account-deletion.js"></script>
 <script src="assets/js/member-membership-trends.js"></script>
@@ -316,6 +317,17 @@
           <p class="members-admin-toolbar">
             <button type="button" class="members-sidebar-link" id="member-admin-refresh">Refresh data</button>
           </p>
+
+          <details id="member-dues-reconciliation" hidden>
+            <summary>Reconcile dues</summary>
+            <label for="member-dues-input">Paste PayPal spreadsheet rows, including headers</label>
+            <textarea id="member-dues-input" rows="5" autocomplete="off" spellcheck="false"></textarea>
+            <p>Use Date, Time, Name, Type, and From Email Address. Payment history follows the date received.</p>
+            <button type="button" class="club-button" data-dues-preview>Preview payments</button>
+            <button type="button" class="members-sidebar-link" data-dues-clear>Clear pasted data</button>
+            <p data-dues-status role="status"></p>
+            <div data-dues-results></div>
+          </details>
 
           <h3>Directory &amp; roles</h3>
           <div class="members-admin-controls">
@@ -1063,6 +1075,7 @@
     }
 
     function setMemberAdminPanelIntro(userRolesList) {
+      window.SNHDuesReconciliation.setRoles(userRolesList);
       document.getElementById("member-admin-intro").textContent = window.SNHMemberRolePresentation.intro(userRolesList);
       var allowedRoles =
         (window.SNHMemberPortal &&
