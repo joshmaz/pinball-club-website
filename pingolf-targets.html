@@ -48,10 +48,14 @@
             <div>
                 <a href="games.html">← Back to Games</a>
                 <h1>Pingolf Targets</h1>
-                <p class="club-lead">Practice on today’s lineup or copy a score or objective into Match&nbsp;Play.</p>
+                <p class="club-lead">Practice on today’s lineup or copy an objective into Match&nbsp;Play.</p>
             </div>
         </section>
-        <section class="content" aria-label="Floor lineup and targets">
+        <div class="games-lineup-views pingolf-views" role="group" aria-label="Pingolf views">
+            <button id="pingolf-targets-view" type="button" aria-pressed="true" aria-controls="pingolf-browse">Targets</button>
+            <button id="pingolf-course-view" type="button" aria-pressed="false" aria-controls="pingolf-course">Select a course</button>
+        </div>
+        <section id="pingolf-browse" class="content" aria-label="Floor lineup and targets">
             <div class="pingolf-controls">
                 <div class="club-field games-search">
                     <label for="pingolf-search">Search games</label>
@@ -63,6 +67,28 @@
             </div>
             <p id="pingolf-status" role="status">Loading today’s lineup…</p>
             <ul id="pingolf-list" class="pingolf-list"></ul>
+        </section>
+        <section id="pingolf-course" class="content" aria-label="Nine-hole course" hidden>
+            <div id="pingolf-picker">
+                <h2>Pick nine machines</h2>
+                <p>Games without a saved target get a blank line on the scorecard.</p>
+                <p id="pingolf-course-count" role="status">0 of 9 selected</p>
+                <ul id="pingolf-course-choices" class="pingolf-course-choices"></ul>
+                <button id="pingolf-view-card" type="button" disabled>View course</button>
+            </div>
+            <div id="pingolf-card" hidden>
+                <h2 tabindex="-1" id="pingolf-card-title">Pingolf Practice Scorecard</h2>
+                <p>Player ________________________ &nbsp; Date ______________</p>
+                <table class="pingolf-card-table" aria-labelledby="pingolf-card-title">
+                    <thead><tr><th scope="col">Hole</th><th scope="col">Machine</th><th scope="col">Target</th><th scope="col">Strokes</th></tr></thead>
+                    <tbody id="pingolf-card-holes"></tbody>
+                    <tfoot><tr><th scope="row" colspan="3">Total</th><td><span class="pingolf-strokes"></span></td></tr></tfoot>
+                </table>
+                <div class="games-lineup-views pingolf-card-actions">
+                    <button id="pingolf-edit-course" type="button">Change machines</button>
+                    <button id="pingolf-print-card" type="button">Print scorecard</button>
+                </div>
+            </div>
         </section>
     </main>
 

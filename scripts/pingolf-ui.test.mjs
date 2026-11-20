@@ -189,3 +189,54 @@ test('public floor reference filters, copies exact scores, and gates inline edit
   nodes.get('pingolf-only').handlers.change();
   assert.equal(lineup[1].hidden, true);
 });
+
+test('course requires nine machines, preserves pick order, and prints the selected alternate', async () => {
+  const source = await readFile(new URL('../assets/js/pingolf-targets.js', import.meta.url), 'utf8');
+  const {document, element, nodes} = dom();
+  const ids = ['list', 'status', 'search', 'only', 'all', 'missing', 'missing-label', 'browse',
+    'course', 'targets-view', 'course-view', 'picker', 'course-choices', 'course-count',
+    'view-card', 'card', 'card-holes', 'card-title', 'edit-course', 'print-card'];
+  function make(tag, text = '') {
+    const node = element(tag);
+    node.textContent = text;
+    node.append = (...children) => node.children.push(...children);
+    return node;
+  }
+  document.createElement = make;
+  for (const id of ids) make('div').setAttribute('id', 'pingolf-' + id);
+  const get = id => nodes.get('pingolf-' + id);
+  get('card').hidden = true;
+  let prints = 0;
+  const games = Array.from({length:10}, (_, id) => ({id, title:`Machine ${id}`}));
+  const targets = [{id:'other', description:'Lock a ball', targetType:'feature'},
+    {id:'preferred', description:'Reach the score', targetType:'score', scoreThreshold:'80000000', isPreferred:true}];
+  vm.runInNewContext(source, {
+    document, window:{print:()=>prints++}, profileText:make,
+    fetchGamesCatalogPayload:async()=>({games}), enrichGamesPayload:()=>{},
+    todayIsoDate:()=>'', isSoftDeletedGame:()=>false, isGameActiveOnDate:()=>true,
+    gameHasCatalogUuid:()=>true, currentUserCanManageGames:async()=>false,
+    gameProfileRpc:async (_, {p_game_id})=>({pingolfTargets:p_game_id === 8 ? [] : targets})
+  });
+  await flush();
+  get('course-view').handlers.click();
+  const choices = get('course-choices').children.map(item=>item.children[0].children[0]);
+  for (const index of [1, 0, 2, 3, 4, 5, 6, 7, 8]) {
+    choices[index].checked = true;
+    choices[index].handlers.change();
+    if (index === 7) assert.equal(get('view-card').disabled, true);
+  }
+  assert.equal(get('view-card').disabled, false);
+  assert.equal(choices[9].disabled, true);
+  get('view-card').handlers.click();
+  const holes = get('card-holes').children;
+  assert.equal(holes.length, 9);
+  assert.equal(holes[0].children[1].textContent, 'Machine 1');
+  assert.equal(holes[8].children[2].children[0].textContent, '________________');
+  const [label, select] = holes[0].children[2].children;
+  assert.equal(label.textContent, '80,000,000 points');
+  select.value = 'other';
+  select.handlers.change();
+  assert.equal(label.textContent, 'Lock a ball');
+  get('print-card').handlers.click();
+  assert.equal(prints, 1);
+});

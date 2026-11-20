@@ -64,3 +64,61 @@
 .pingolf-fields button {
   justify-self: start;
 }
+
+.pingolf-course-choices {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: .4rem 1rem;
+}
+.pingolf-course-choices label {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+}
+.pingolf-card-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pingolf-card-table :is(td, th) {
+  border: 1px solid var(--club-control-line);
+  padding: .5rem;
+  text-align: left;
+}
+.pingolf-card-alternates {
+  max-width: 100%;
+}
+.pingolf-strokes {
+  display: block;
+  width: 2.5rem;
+  height: 1rem;
+  border-bottom: 1px solid currentColor;
+}
+.pingolf-card-actions {
+  margin-top: 1rem;
+}
+.pingolf-print-only {
+  display: none;
+}
+@media print {
+  body:has(#pingolf-course:not([hidden]) #pingolf-card:not([hidden])) {
+    background: white;
+    color: black;
+  }
+  body:has(#pingolf-course:not([hidden]) #pingolf-card:not([hidden])) :is(
+    #page-top, footer, .club-skip, .games-page-heading, .pingolf-views, .pingolf-card-actions, .pingolf-card-alternates
+  ) {
+    display: none !important;
+  }
+  #pingolf-card .pingolf-print-only {
+    display: inline;
+  }
+  .pingolf-card-table tr {
+    break-inside: avoid;
+  }
+  .pingolf-card-table :is(td, th) {
+    border-color: black;
+  }
+}

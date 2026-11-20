@@ -58,8 +58,12 @@
     return line;
   }
 
+  function orderedTargets(row) {
+    return [...row.targets].sort((a, b) => Number(Boolean(b.isPreferred)) - Number(Boolean(a.isPreferred)));
+  }
+
   function renderTargets(row) {
-    const targets = [...row.targets].sort((a, b) => Number(b.isPreferred) - Number(a.isPreferred));
+    const targets = orderedTargets(row);
     const shown = all.checked ? targets : targets.slice(0, 1);
     row.display.replaceChildren(...shown.map(targetLine));
     if (row.state === 'loading') row.display.append(profileText('small', 'Loading club targets…'));
@@ -68,6 +72,7 @@
         button('Retry', async () => { await loadTargets(row); updateFilters(); }));
     }
     if (row.state === 'loaded' && !shown.length) row.display.append(profileText('span', 'No target yet'));
+    updateCourseChoice(row);
     row.edit.textContent = row.targets.length ? 'Edit targets' : 'Add target';
   }
 
@@ -216,6 +221,133 @@
     list.append(item);
     renderTargets(row);
     return row;
+  }
+
+  const browse = document.getElementById('pingolf-browse');
+  const course = document.getElementById('pingolf-course');
+  const browseButton = document.getElementById('pingolf-targets-view');
+  const courseButton = document.getElementById('pingolf-course-view');
+  const picker = document.getElementById('pingolf-picker');
+  const choices = document.getElementById('pingolf-course-choices');
+  const count = document.getElementById('pingolf-course-count');
+  const viewCard = document.getElementById('pingolf-view-card');
+  const card = document.getElementById('pingolf-card');
+  const holes = document.getElementById('pingolf-card-holes');
+  const cardTitle = document.getElementById('pingolf-card-title');
+  const courseSize = 9;
+  const selected = new Map();
+  const choiceInputs = new Map();
+
+  function canSelect(row) {
+    return row.state === 'loaded';
+  }
+
+  function updateCourseControls() {
+    const full = selected.size === courseSize;
+    count.textContent = `${selected.size} of ${courseSize} selected`;
+    viewCard.disabled = !full || [...selected.keys()].some(row => !canSelect(row));
+    for (const [row, {input, hint}] of choiceInputs) {
+      input.disabled = !canSelect(row) || (full && !selected.has(row));
+      const hole = [...selected.keys()].indexOf(row) + 1;
+      hint.textContent = [hole ? `Hole ${hole}` : '', row.targets.length ? '' : 'Write-in target'].filter(Boolean).map(text => ' · ' + text).join('');
+    }
+  }
+
+  function updateCourseChoice(row) {
+    if (!choices) return;
+    let choice = choiceInputs.get(row);
+    if (!choice) {
+      const item = document.createElement('li');
+      const label = profileText('label', '');
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      const hint = profileText('span', '');
+      label.append(input, profileText('span', row.game.title), hint);
+      item.append(label);
+      choices.append(item);
+      choice = {input, hint, item};
+      choiceInputs.set(row, choice);
+      input.addEventListener('change', () => {
+        if (input.checked && selected.size < courseSize && canSelect(row)) selected.set(row, null);
+        if (!input.checked) selected.delete(row);
+        input.checked = selected.has(row);
+        updateCourseControls();
+      });
+    }
+    choice.item.hidden = !canSelect(row);
+    if (row.state === 'failed' && card.hidden) {
+      selected.delete(row);
+      choice.input.checked = false;
+    }
+    updateCourseControls();
+  }
+
+  function targetText(target) {
+    if (!target.scoreThreshold) return target.description;
+    const score = BigInt(target.scoreThreshold).toLocaleString('en-US') + ' points';
+    return target.targetType === 'score' ? score : `${score} · ${target.description}`;
+  }
+
+  function showCard() {
+    if (selected.size !== courseSize || [...selected.keys()].some(row => !canSelect(row))) return;
+    holes.replaceChildren();
+    let number = 0;
+    for (const [row, selectedId] of selected) {
+      const targets = orderedTargets(row);
+      const target = targets.find(entry => entry.id === selectedId) || targets[0];
+      const tr = document.createElement('tr');
+      const machine = profileText('th', row.game.title);
+      machine.scope = 'row';
+      const targetCell = document.createElement('td');
+      const targetLabel = target ? profileText('span', targetText(target)) : profileText('span', '________________');
+      targetCell.append(targetLabel);
+      if (targets.length > 1) {
+        const select = document.createElement('select');
+        select.className = 'pingolf-card-alternates';
+        select.setAttribute('aria-label', `Target for ${row.game.title}`);
+        for (const entry of targets) {
+          const option = profileText('option', targetText(entry));
+          option.value = entry.id;
+          select.append(option);
+        }
+        select.value = target.id;
+        select.addEventListener('change', () => {
+          selected.set(row, select.value);
+          targetLabel.textContent = targetText(targets.find(entry => entry.id === select.value));
+        });
+        targetLabel.className = 'pingolf-print-only';
+        targetCell.append(select);
+      }
+      const strokes = document.createElement('td');
+      strokes.append(profileText('span', '', 'pingolf-strokes'));
+      tr.append(profileText('td', String(++number)), machine, targetCell, strokes);
+      holes.append(tr);
+    }
+    picker.hidden = true;
+    card.hidden = false;
+    cardTitle.focus();
+  }
+
+  function showCourse(show) {
+    browse.hidden = show;
+    course.hidden = !show;
+    browseButton.setAttribute('aria-pressed', String(!show));
+    courseButton.setAttribute('aria-pressed', String(show));
+  }
+
+  if (course) {
+    browseButton.addEventListener('click', () => showCourse(false));
+    courseButton.addEventListener('click', () => showCourse(true));
+    viewCard.addEventListener('click', showCard);
+    document.getElementById('pingolf-edit-course').addEventListener('click', () => {
+      card.hidden = true;
+      picker.hidden = false;
+      for (const row of choiceInputs.keys()) updateCourseChoice(row);
+      count.tabIndex = -1;
+      count.focus();
+    });
+    const printButton = document.getElementById('pingolf-print-card');
+    printButton.addEventListener('click', () => window.print());
   }
 
   async function refreshAccess() {
