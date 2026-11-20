@@ -35,6 +35,7 @@
   <script src="assets/js/supabase-init.js"></script>
   <script src="assets/js/site-auth.js"></script>
   <script src="assets/js/member-routes.js"></script>
+  <script src="assets/js/member-club-documents.js"></script>
   <script src="assets/js/event-links.js"></script>
   <script src="assets/js/game-image-delivery.js"></script>
 <script src="assets/js/photo-conversion.js"></script>
@@ -102,6 +103,12 @@
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Notes</button>
           </li>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="club-documents" id="member-nav-club-documents" aria-controls="member-panel-club-documents">Club Documents</button>
+          </li>
+          <li>
+            <button type="button" class="members-sidebar-link" data-member-panel="board-staff" id="member-nav-board-staff" aria-controls="member-panel-board-staff">Board &amp; Staff</button>
+          </li>
         </ul>
         <div class="members-sidebar-group" id="member-volunteer-nav" hidden>
           <p class="members-sidebar-title" id="member-volunteer-nav-title">Volunteer tools</p>
@@ -147,7 +154,7 @@
       <div class="members-panels">
         <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
           <h2>Profile</h2>
-          <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. Anything you save here stays with the club and isn't shared with other members yet.</p>
+          <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. The Board &amp; Staff directory shows the names of people designated as Board or Staff, using their display name when available.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
 
           <form id="profile-form" class="members-profile-form">
@@ -300,6 +307,46 @@
             <button type="submit">Save new code</button>
             <p id="door-code-admin-status" role="status" aria-live="polite"></p>
           </form>
+        </div>
+
+        <div id="member-panel-club-documents" class="member-panel" role="region" aria-labelledby="member-nav-club-documents" tabindex="-1" aria-hidden="true">
+          <h2>Club Documents</h2>
+          <p class="member-panel-intro">Links open in Google Drive. If a document is restricted, request access there.</p>
+          <p id="club-documents-status" class="members-page-status" role="status"></p>
+          <div id="club-documents-tools" class="members-admin-controls" hidden>
+            <a id="club-documents-folder" target="_blank" rel="noopener noreferrer">Open board folder</a>
+            <button type="button" id="club-documents-add" class="club-button">Add link</button>
+          </div>
+          <details id="club-documents-folder-settings" hidden>
+            <summary>Manage board folder shortcut</summary>
+            <form id="club-documents-folder-form" class="members-admin-editor-form">
+              <label for="club-documents-folder-url">Google Drive folder URL</label>
+              <input id="club-documents-folder-url" type="url" maxlength="2048">
+              <button type="submit" class="club-button">Save shortcut</button>
+              <p class="member-panel-helper">Leave blank to remove the shortcut. Drive controls who can open the folder.</p>
+            </form>
+          </details>
+          <form id="club-documents-form" class="members-profile-form" hidden>
+            <fieldset class="club-form-section">
+              <legend id="club-documents-form-title">Add link</legend>
+              <div class="club-field"><label for="club-document-title">Title</label><input id="club-document-title" required maxlength="160"></div>
+              <div class="club-field"><label for="club-document-url">Google Drive link</label><input id="club-document-url" type="url" required maxlength="2048"></div>
+              <div class="club-field"><label for="club-document-date">Meeting date (optional)</label><input id="club-document-date" type="date"></div>
+              <label><input type="checkbox" id="club-document-pinned"> Pin to the top</label>
+              <p class="member-panel-helper">Use the link to the copy intended for members. Check its sharing settings in Drive.</p>
+              <div class="members-admin-controls">
+                <button type="submit" class="club-button">Save link</button>
+                <button type="button" id="club-documents-cancel" class="club-button">Cancel</button>
+              </div>
+            </fieldset>
+          </form>
+          <ul id="club-documents-list"></ul>
+        </div>
+
+        <div id="member-panel-board-staff" class="member-panel" role="region" aria-labelledby="member-nav-board-staff" tabindex="-1" aria-hidden="true">
+          <h2>Board &amp; Staff</h2>
+          <p id="board-staff-status" class="members-page-status" role="status"></p>
+          <div id="board-staff-roster"></div>
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
@@ -943,6 +990,7 @@
       if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
         onMemberAdminPanelShown();
       }
+      if (id === "club-documents" || id === "board-staff") void window.SNHMemberClubDocuments.load(id);
       if (id === "publishing" && window.SNHMemberPublishingPanel) void window.SNHMemberPublishingPanel.load(userRoles);
       if (id === "operations" && window.SNHMemberOperationsPanel) void window.SNHMemberOperationsPanel.load();
       if (id === "events" && !options.skipPanelLoad && typeof onEventsPanelShown === "function") {
@@ -1532,6 +1580,10 @@
         finally { adminSaving = false; adminRender(); }
       });
       box.appendChild(form);
+      if (window.SNHMemberClubDocuments) window.SNHMemberClubDocuments.renderDesignation(box, row, userRoles, async function () {
+        await onMemberAdminPanelShown(true);
+        memberAdminStatus.textContent = "Club designation saved for " + adminMemberName(row) + ".";
+      });
       var rolesTitle = document.createElement("h4"); rolesTitle.textContent = "Website permissions · assigned roles"; box.appendChild(rolesTitle);
       var roleList = document.createElement("ul"); roleList.className = "members-admin-role-list";
       rolePresentation.assignments(row.role_slugs || []).forEach(function (slug) {
