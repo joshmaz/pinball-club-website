@@ -86,7 +86,7 @@
         button('Retry', async () => { await loadTargets(row); updateFilters(); }));
     }
     if (row.state === 'loaded' && !shown.length) row.display.append(profileText('span', 'No target yet'));
-    row.edit.textContent = row.targets.length ? 'Edit targets' : 'Add target';
+    row.edit.textContent = row.targets.length || row.examples.length ? 'Edit targets' : 'Add target';
   }
 
   async function loadTargets(row) {
@@ -208,7 +208,15 @@
     row.editor.replaceChildren(loading);
     try {
       const records = await portal.pingolfTargetsListEditor(row.game.id);
-      if (canEdit && loading.isConnected) renderEditor(row, records, records[0]);
+      if (!canEdit || !loading.isConnected) return;
+      const example = row.examples[0];
+      const starter = example && {
+        description: example.scoreThreshold ? `Score at least ${example.scoreThreshold} points` : example.description,
+        targetType: example.scoreThreshold ? 'score' : 'feature',
+        scoreThreshold: example.scoreThreshold,
+        notes: `Published example: ${example.source}`
+      };
+      renderEditor(row, records, records[0] || starter);
     } catch (error) {
       if (loading.isConnected) loading.textContent = portal.getFriendlyAuthErrorMessage(error);
     }

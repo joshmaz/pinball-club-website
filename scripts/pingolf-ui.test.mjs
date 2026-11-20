@@ -156,7 +156,8 @@ test('public floor reference filters, copies exact scores, and gates inline edit
   const games = [
     {id:'1', title:'Godzilla (Pro)', opdbId:'GweeP-MW95j', active:true},
     {id:'2', title:'Road Kings', active:true},
-    {id:'3', title:'Former game', active:false}
+    {id:'3', title:'Former game', active:false},
+    {id:'4', title:'World Cup Soccer', opdbId:'G42E2-MQP9e', active:true}
   ];
   const context = {
     document, window:{}, profileText:createNode, setTimeout:()=>{},
@@ -170,7 +171,9 @@ test('public floor reference filters, copies exact scores, and gates inline edit
   vm.runInNewContext(source, context);
   await flush();
   const lineup = nodes.get('pingolf-list').children;
-  assert.deepEqual(lineup.map(row=>row.children[0].textContent), ['Godzilla (Pro)', 'Road Kings']);
+  assert.deepEqual(lineup.map(row=>row.children[0].textContent), ['Godzilla (Pro)', 'Road Kings', 'World Cup Soccer']);
+  assert.equal(lineup[1].children[1].children[1].textContent, 'Add target');
+  assert.equal(lineup[2].children[1].children[1].textContent, 'Edit targets');
   const [display, edit] = lineup[0].children[1].children;
   assert.equal(edit.hidden, true);
   assert.equal(display.children.length, 1);
