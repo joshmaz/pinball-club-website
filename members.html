@@ -317,42 +317,60 @@
             <button type="button" class="members-sidebar-link" id="member-admin-refresh">Refresh data</button>
           </p>
 
-          <h3>Directory &amp; roles</h3>
-          <div class="members-admin-controls">
-            <div class="members-admin-directory-field members-admin-directory-search">
-              <label for="member-admin-search">Search name or email</label>
-              <span class="members-admin-search-wrap">
-                <input id="member-admin-search" type="search" autocomplete="off">
-                <button type="button" id="member-admin-search-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear member search" hidden>×</button>
-              </span>
-            </div>
-            <div class="members-admin-directory-field">
-              <label for="member-admin-directory-filter">Show</label>
-              <select id="member-admin-directory-filter">
-                <option value="all">All members</option>
-                <option value="with-roles">Members with roles</option>
-                <option value="active">Full Access Members</option>
-                <option value="inactive">Basic Members</option>
-                <option value="unverified">Unverified Accounts</option>
-              </select>
-            </div>
-            <div class="members-admin-directory-field">
-              <label for="member-admin-directory-sort">Sort by</label>
-              <select id="member-admin-directory-sort">
-                <option value="default">Default order</option>
-                <option value="recent">Most recent sign-in first</option>
-                <option value="oldest">Oldest sign-in first</option>
-              </select>
-            </div>
+          <div class="member-admin-tabs" role="tablist" aria-label="Member management" hidden>
+            <button type="button" role="tab" id="member-directory-tab" aria-controls="member-directory-panel" aria-selected="true">Directory &amp; roles</button>
+            <button type="button" role="tab" id="member-dues-tab" aria-controls="member-dues-reconciliation" aria-selected="false" tabindex="-1">Reconcile dues</button>
           </div>
-          <div class="members-admin-table-wrap">
-            <table class="members-admin-table members-admin-directory">
-              <caption class="visually-hidden">Club member directory</caption>
-              <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Assigned roles</th><th scope="col">Last sign-in</th></tr></thead>
-              <tbody id="member-admin-table-body"></tbody>
-            </table>
-          </div>
-          <div id="member-admin-pagination" class="members-admin-controls" aria-live="polite"></div>
+          <section id="member-dues-reconciliation" class="member-dues-panel" role="tabpanel" aria-labelledby="member-dues-tab" tabindex="0" hidden>
+            <label for="member-dues-input">Paste PayPal spreadsheet rows, including headers</label>
+            <p id="member-dues-format">Use Date, Time, Name, Type, and From Email Address. Payment history follows the date received.</p>
+            <textarea id="member-dues-input" rows="8" wrap="off" autocomplete="off" spellcheck="false" aria-describedby="member-dues-format"></textarea>
+            <div class="member-dues-actions">
+              <button type="button" class="club-button" data-dues-preview>Preview payments</button>
+              <button type="button" class="members-sidebar-link" data-dues-clear>Clear pasted data</button>
+            </div>
+            <p data-dues-status role="status"></p>
+            <div data-dues-results></div>
+          </section>
+
+          <section id="member-directory-panel">
+            <h3>Directory &amp; roles</h3>
+            <div class="members-admin-controls">
+              <div class="members-admin-directory-field members-admin-directory-search">
+                <label for="member-admin-search">Search name or email</label>
+                <span class="members-admin-search-wrap">
+                  <input id="member-admin-search" type="search" autocomplete="off">
+                  <button type="button" id="member-admin-search-clear" class="members-admin-search-clear" title="Clear search" aria-label="Clear member search" hidden>×</button>
+                </span>
+              </div>
+              <div class="members-admin-directory-field">
+                <label for="member-admin-directory-filter">Show</label>
+                <select id="member-admin-directory-filter">
+                  <option value="all">All members</option>
+                  <option value="with-roles">Members with roles</option>
+                  <option value="active">Full Access Members</option>
+                  <option value="inactive">Basic Members</option>
+                  <option value="unverified">Unverified Accounts</option>
+                </select>
+              </div>
+              <div class="members-admin-directory-field">
+                <label for="member-admin-directory-sort">Sort by</label>
+                <select id="member-admin-directory-sort">
+                  <option value="default">Default order</option>
+                  <option value="recent">Most recent sign-in first</option>
+                  <option value="oldest">Oldest sign-in first</option>
+                </select>
+              </div>
+            </div>
+            <div class="members-admin-table-wrap">
+              <table class="members-admin-table members-admin-directory">
+                <caption class="visually-hidden">Club member directory</caption>
+                <thead><tr><th scope="col">Member</th><th scope="col">Membership</th><th scope="col">Assigned roles</th><th scope="col">Last sign-in</th></tr></thead>
+                <tbody id="member-admin-table-body"></tbody>
+              </table>
+            </div>
+            <div id="member-admin-pagination" class="members-admin-controls" aria-live="polite"></div>
+          </section>
         </div>
 
         <div id="member-panel-operations" class="member-panel" role="region" aria-labelledby="member-nav-operations" tabindex="-1" aria-hidden="true">
@@ -636,6 +654,7 @@
   <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
 
+<script src="assets/js/member-dues-reconciliation.js"></script>
 <script>
   (async function () {
     var pageStatus = document.getElementById("member-page-status");
@@ -1063,6 +1082,7 @@
     }
 
     function setMemberAdminPanelIntro(userRolesList) {
+      if (window.SNHDuesReconciliation) window.SNHDuesReconciliation.setRoles(userRolesList);
       document.getElementById("member-admin-intro").textContent = window.SNHMemberRolePresentation.intro(userRolesList);
       var allowedRoles =
         (window.SNHMemberPortal &&
