@@ -165,7 +165,10 @@ test('public floor reference filters, copies exact scores, and gates inline edit
     fetchGamesCatalogPayload:async () => ({games}), enrichGamesPayload:()=>{},
     todayIsoDate:()=> '2026-11-19', isSoftDeletedGame:()=>false,
     isGameActiveOnDate:game=>game.active, gameHasCatalogUuid:()=>true,
-    gameProfileRpc:async (_, args)=>({pingolfTargets:args.p_game_id === '1' ? [clubTarget] : []}),
+    gameProfileRpc:async (_, {p_game_id})=>({pingolfTargets:({
+      '1': [clubTarget, {description:'Lower score', targetType:'score', scoreThreshold:'80000000'}],
+      '4': [{description:'Lock a ball', targetType:'feature'}]
+    })[p_game_id] || []}),
     currentUserCanManageGames:async ()=>false
   };
   vm.runInNewContext(source, context);
@@ -181,7 +184,7 @@ test('public floor reference filters, copies exact scores, and gates inline edit
   assert.equal(copied, clubTarget.scoreThreshold);
   nodes.get('pingolf-all').checked = true;
   nodes.get('pingolf-all').handlers.change();
-  assert.equal(display.children.length, 3);
+  assert.equal(display.children.length, 2);
   nodes.get('pingolf-only').checked = true;
   nodes.get('pingolf-only').handlers.change();
   assert.equal(lineup[1].hidden, true);

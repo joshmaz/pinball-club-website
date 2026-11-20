@@ -1,13 +1,4 @@
 (function () {
-  const examples = {
-    'GweeP-MW95j': [
-      { scoreThreshold: '80000000', description: 'Reported for a Godzilla Premium course', source: 'https://www.tiltforums.com/t/pingolf-score-suggestions/9057/5' },
-      { scoreThreshold: '120000000', description: 'Godzilla Premium suggestion · 3 balls', source: 'https://www.tiltforums.com/t/pingolf-score-suggestions/9057/2' }
-    ],
-    'G42E2-MQP9e': [
-      { description: 'Lock a ball', context: '5 balls · 4.09 average strokes', source: 'https://tiltforums.com/t/pingolf-example-goals-and-setting-advice/3159/' }
-    ]
-  };
   const list = document.getElementById('pingolf-list');
   const status = document.getElementById('pingolf-status');
   const search = document.getElementById('pingolf-search');
@@ -31,7 +22,7 @@
     let count = 0;
     for (const row of rows) {
       row.item.hidden = !row.game.title.toLowerCase().includes(query)
-        || (only.checked && !row.targets.length && !row.examples.length)
+        || (only.checked && !row.targets.length)
         || (canEdit && missing.checked && row.state === 'loaded' && row.targets.length > 0);
       if (!row.item.hidden) count++;
     }
@@ -44,17 +35,10 @@
     const line = profileText('div', '', 'pingolf-target');
     const score = target.scoreThreshold;
     const objective = target.description;
-    const objectiveTarget = objective && (target.source ? !score : target.targetType !== 'score');
+    const objectiveTarget = objective && target.targetType !== 'score';
     if (score) line.append(profileText('strong', score.replace(/\B(?=(\d{3})+(?!\d))/g, ',')));
     if (objective) line.append(profileText('span', objective));
-    if (target.source) {
-      const source = profileText('a', 'Published example');
-      source.href = target.source;
-      line.append(source);
-    } else {
-      line.append(profileText('small', target.isPreferred ? 'Preferred club target' : 'Club target'));
-    }
-    if (target.context) line.append(profileText('small', target.context));
+    line.append(profileText('small', target.isPreferred ? 'Preferred club target' : 'Club target'));
     function copyControl(label, value) {
       const control = button(label, async () => {
         try {
@@ -77,7 +61,6 @@
 
   function renderTargets(row) {
     const targets = [...row.targets].sort((a, b) => Number(b.isPreferred) - Number(a.isPreferred));
-    targets.push(...row.examples);
     const shown = all.checked ? targets : targets.slice(0, 1);
     row.display.replaceChildren(...shown.map(targetLine));
     if (row.state === 'loading') row.display.append(profileText('small', 'Loading club targets…'));
@@ -86,7 +69,7 @@
         button('Retry', async () => { await loadTargets(row); updateFilters(); }));
     }
     if (row.state === 'loaded' && !shown.length) row.display.append(profileText('span', 'No target yet'));
-    row.edit.textContent = row.targets.length || row.examples.length ? 'Edit targets' : 'Add target';
+    row.edit.textContent = row.targets.length ? 'Edit targets' : 'Add target';
   }
 
   async function loadTargets(row) {
@@ -208,15 +191,7 @@
     row.editor.replaceChildren(loading);
     try {
       const records = await portal.pingolfTargetsListEditor(row.game.id);
-      if (!canEdit || !loading.isConnected) return;
-      const example = row.examples[0];
-      const starter = example && {
-        description: example.scoreThreshold ? `Score at least ${example.scoreThreshold} points` : example.description,
-        targetType: example.scoreThreshold ? 'score' : 'feature',
-        scoreThreshold: example.scoreThreshold,
-        notes: `Published example: ${example.source}`
-      };
-      renderEditor(row, records, records[0] || starter);
+      if (canEdit && loading.isConnected) renderEditor(row, records, records[0]);
     } catch (error) {
       if (loading.isConnected) loading.textContent = portal.getFriendlyAuthErrorMessage(error);
     }
@@ -232,7 +207,7 @@
     editor.hidden = true;
     const feedback = profileText('small', '');
     feedback.setAttribute('role', 'status');
-    const row = { game, item, display, editor, feedback, targets: [], examples: examples[game.opdbId] || [], state: 'loading' };
+    const row = { game, item, display, editor, feedback, targets: [], state: 'loading' };
     row.edit = button('Add target', () => { if (canEdit) void openEditor(row); });
     row.edit.hidden = !canEdit || !gameHasCatalogUuid(game);
     row.edit.setAttribute('aria-controls', editor.id);
