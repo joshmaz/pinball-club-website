@@ -246,7 +246,7 @@
 
   async function render(message) {
     const current = ++generation;
-    const open = new Set([...results.querySelectorAll("details[open]")].map(section => section.dataset.payer));
+    const open = new Set([...results.querySelectorAll("details[data-payer][open]")].map(section => section.dataset.payer));
     const state = await request("load");
     if (current !== generation || !authorized) return;
     loaded = true;
@@ -258,10 +258,24 @@
       if (!visible.has(email)) visible.set(email, { email, name: payer?.roster_name, dates: [] });
     }
     results.replaceChildren();
+    const unlinkedGroups = [];
+    function showPayer(container, group, payer) {
+      renderPayer(container, group, state, payer, render);
+      container.lastElementChild.dataset.payer = group.email;
+      container.lastElementChild.open = open.has(group.email);
+    }
+
     for (const group of visible.values()) {
-      renderPayer(results, group, state, payers.get(group.email), render);
-      results.lastElementChild.dataset.payer = group.email;
-      results.lastElementChild.open = open.has(group.email);
+      const payer = payers.get(group.email);
+      if (payer && !payer.member_id) unlinkedGroups.push(group);
+      else showPayer(results, group, payer);
+    }
+
+    if (unlinkedGroups.length) {
+      const section = element(results, "section");
+      element(section, "h3", "Saved payments awaiting a member link");
+      element(section, "p", "These payments are already recorded. When the person has a website account, expand their entry and choose Link payments to a member to attach their saved payment history.");
+      for (const group of unlinkedGroups) showPayer(section, group, payers.get(group.email));
     }
     status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
   }
