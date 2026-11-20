@@ -3480,3 +3480,18 @@ footer {
 .member-dues-actions > button {
   width: auto;
 }
+
+.member-dues-field {
+  display: grid;
+  gap: .35rem;
+  width: min(100%, 32rem);
+  margin-block: .85rem;
+}
+
+.member-dues-field > :is(input, select) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: .4rem .55rem;
+  font: inherit;
+}

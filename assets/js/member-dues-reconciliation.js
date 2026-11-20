@@ -3,6 +3,7 @@
 
   const headers = ["date", "time", "name", "type", "from email address"];
   const paymentType = "subscription payment";
+  const unlinked = "unlinked";
 
   function parse(text) {
     if (text.length > 500000) throw new Error("Paste at most 500 KB at a time.");
@@ -58,6 +59,7 @@
 
   function field(parent, title, tag, type) {
     const label = element(parent, "label", title + " ");
+    if (type !== "checkbox") label.className = "member-dues-field";
     const input = element(label, tag);
     if (type) input.type = type;
     return input;
@@ -109,7 +111,7 @@
     const matches = state.members.filter(member => member.verifiedEmail === group.email);
     const pending = state.holds[group.email];
     const status = dates.length ? dates.length + " to review"
-      : pending ? "On hold" : payer?.roster_name ? "Account pending" : saved.size ? "Recorded" : "Follow-up";
+      : pending ? "On hold" : payer?.roster_name ? "Unlinked payments" : saved.size ? "Recorded" : "Follow-up";
     element(section, "summary", [group.name, group.email, status].filter(Boolean).join(" · "));
     const history = [...saved].sort();
     if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
@@ -121,15 +123,24 @@
 
     const member = field(section, "Website member", "select");
     element(member, "option", "Choose a member").value = "";
+    if (dates.length && !payer?.member_id) {
+      element(member, "option", "Save payments without linking a member").value = unlinked;
+    }
     for (const entry of state.members) {
       element(member, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
     }
-    member.value = payer?.member_id || (matches.length === 1 ? matches[0].id : "");
+    member.value = payer?.member_id || (matches.length === 1 ? matches[0].id : payer?.roster_name && dates.length ? unlinked : "");
     member.disabled = Boolean(payer?.member_id);
     if (dates.length) {
-      const name = field(section, "Name for pending account", "input", "text");
+      const unlinkedFields = element(section, "div");
+      const name = field(unlinkedFields, "Member name to help identify these payments later", "input", "text");
       name.maxLength = 150;
       name.value = payer?.roster_name || "";
+      name.readOnly = Boolean(payer?.roster_name);
+      element(unlinkedFields, "p", "Payments are saved for later linking. No website account or invitation is created.");
+      const updateUnlinkedFields = () => { unlinkedFields.hidden = member.value !== unlinked; };
+      member.addEventListener("change", updateUnlinkedFields);
+      updateUnlinkedFields();
       const list = element(section, "ul");
       const choices = dates.map(date => [date, field(element(list, "li"), date.replace("T", " "), "input", "checkbox")]);
       action(section, "Select all payments for this payer", () => {
@@ -138,19 +149,27 @@
       action(section, "Apply selected payments", async () => {
         const selected = choices.filter(([, input]) => input.checked).map(([date]) => date);
         if (!selected.length) throw new Error("Select the payments to apply.");
-        await request("apply", { p_email: group.email, p_dates: selected, p_member: member.value || null, p_name: name.value });
+        if (!member.value) throw new Error("Choose a website member or select Save payments without linking a member.");
+        if (member.value === unlinked && !name.value.trim()) throw new Error("Enter the member’s name so you can identify the payments later.");
+        await request("apply", {
+          p_email: group.email, p_dates: selected,
+          p_member: member.value === unlinked ? null : member.value,
+          p_name: member.value === unlinked ? name.value.trim() : null
+        });
         await reload("Selected payments recorded.");
       }, feedback);
     }
 
     if (payer) {
-      if (payer.roster_name) element(section, "p", "Pending website account for " + payer.roster_name + ".");
+      if (payer.roster_name) element(section, "p", "Unlinked payments for " + payer.roster_name + ".");
       if (payer.last_received) element(section, "p", "Last confirmed payment: " + payer.last_received);
       const linking = element(section, "details");
-      element(linking, "summary", payer.member_id ? "Correct member link" : "Link pending account");
+      element(linking, "summary", payer.member_id ? "Correct member link" : "Link payments to a member");
       const target = field(linking, "Website member", "select");
-      for (const option of member.options) target.append(option.cloneNode(true));
-      target.value = member.value;
+      for (const option of member.options) {
+        if (option.value !== unlinked) target.append(option.cloneNode(true));
+      }
+      target.value = member.value === unlinked ? "" : member.value;
       action(linking, "Save member link", async () => {
         if (!target.value) throw new Error("Choose the correct website member.");
         if (target.value === payer.member_id) throw new Error("Choose a different website member.");
