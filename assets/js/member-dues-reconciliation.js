@@ -183,12 +183,15 @@
     }
 
     if (dates.length || pending) {
+      if (pending && !dates.length) {
+        element(section, "p", "To resume this review, paste the original spreadsheet rows with their headers and click Preview payments. Then select the payments to record and click Apply selected payments.");
+      }
       const note = field(section, "Review note", "input", "text");
       note.maxLength = 500;
       note.value = pending || "";
-      action(section, "Save for review", async () => {
+      action(section, "Save review note", async () => {
         await request("hold", { p_email: group.email, p_note: note.value });
-        feedback.textContent = "Review note saved.";
+        feedback.textContent = "Review note saved for this payer. To resume after leaving this page, preview the original rows again.";
       }, feedback);
     }
 
