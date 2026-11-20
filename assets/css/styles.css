@@ -3495,3 +3495,11 @@ footer {
   padding: .4rem .55rem;
   font: inherit;
 }
+
+[data-dues-results] > section > details[data-payer] > :not(summary) {
+  margin-inline-start: 1.25rem;
+}
+
+[data-dues-results] > section > details[data-payer] > .member-dues-field {
+  max-inline-size: calc(100% - 1.25rem);
+}
