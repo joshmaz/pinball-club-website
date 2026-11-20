@@ -1626,10 +1626,7 @@ async function loadGames() {
   const dateForm = document.getElementById("games-date-form");
   const dateApplyButton = dateForm?.querySelector("button");
   const showAllCheckbox = document.getElementById("games-show-all");
-  if (!container) {
-    console.error("Games list container was not found.");
-    return;
-  }
+  if (!container) return;
 
   try {
     const data = await fetchGamesCatalogPayload();

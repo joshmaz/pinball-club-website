@@ -3,7 +3,7 @@
 .club-games .games-page-heading h1 { margin: 0 0 .4rem; }
 .club-games .games-page-heading .club-lead { margin: 0; font-size: 1rem; max-width: 55ch; }
 .games-lineup-views { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
-.games-lineup-views button,
+.games-lineup-views :is(button, a),
 .games-era-disclosure summary {
   min-height: 44px;
   padding: .5rem .85rem;
@@ -14,6 +14,8 @@
   font: inherit;
   cursor: pointer;
 }
+.games-lineup-views a { display: inline-flex; align-items: center; text-decoration: none; }
+.games-lineup-views a:hover { text-decoration: underline; }
 .games-lineup-views button[aria-pressed="true"] {
   background: var(--club-soft);
   border-color: var(--club-teal);

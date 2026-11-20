@@ -1,0 +1,124 @@
+.pingolf-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: .75rem 1.25rem;
+  margin-bottom: .85rem;
+}
+.pingolf-controls .games-search {
+  flex: 0 1 20rem;
+  min-width: min(100%, 16rem);
+}
+.pingolf-controls > label {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 44px;
+}
+.pingolf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pingolf-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr);
+  gap: .5rem 1rem;
+  padding: .85rem 0;
+  border-top: 1px solid currentColor;
+}
+.pingolf-row h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.pingolf-target {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .25rem .65rem;
+  margin-bottom: .35rem;
+  overflow-wrap: anywhere;
+}
+.pingolf-editor {
+  margin-top: .75rem;
+}
+.pingolf-editor form {
+  display: grid;
+  gap: .55rem;
+  max-width: 35rem;
+}
+.pingolf-editor label:not(:has([type="checkbox"])) {
+  display: grid;
+  gap: .2rem;
+}
+@media (max-width: 600px) {
+  .pingolf-row { grid-template-columns: 1fr; }
+}
+.pingolf-fields {
+  display: grid;
+  gap: .55rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.pingolf-fields button {
+  justify-self: start;
+}
+
+.pingolf-course-choices {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: .4rem 1rem;
+}
+.pingolf-course-choices label {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+}
+.pingolf-card-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pingolf-card-table :is(td, th) {
+  border: 1px solid var(--club-control-line);
+  padding: .5rem;
+  text-align: left;
+}
+.pingolf-card-alternates {
+  max-width: 100%;
+}
+.pingolf-strokes {
+  display: block;
+  width: 2.5rem;
+  height: 1rem;
+  border-bottom: 1px solid currentColor;
+}
+.pingolf-card-actions {
+  margin-top: 1rem;
+}
+.pingolf-print-only {
+  display: none;
+}
+@media print {
+  body:has(#pingolf-course:not([hidden]) #pingolf-card:not([hidden])) {
+    background: white;
+    color: black;
+  }
+  body:has(#pingolf-course:not([hidden]) #pingolf-card:not([hidden])) :is(
+    #page-top, footer, .club-skip, .games-page-heading, .pingolf-views, .pingolf-card-actions, .pingolf-card-alternates
+  ) {
+    display: none !important;
+  }
+  #pingolf-card .pingolf-print-only {
+    display: inline;
+  }
+  .pingolf-card-table tr {
+    break-inside: avoid;
+  }
+  .pingolf-card-table :is(td, th) {
+    border-color: black;
+  }
+}

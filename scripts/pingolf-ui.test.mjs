@@ -135,3 +135,108 @@ test('public targets put preferred first, render descriptions safely, and omit e
   context.renderGameMoreInfoSections({pingolfTargets:[]},empty,'play');
   assert.ok(!empty.children.some(n=>n.tag==='section'));
 });
+
+test('public floor reference filters, copies exact scores, and gates inline editing', async () => {
+  const source = await readFile(new URL('../assets/js/pingolf-targets.js', import.meta.url), 'utf8');
+  const {document, element, nodes} = dom();
+  for (const id of ['list', 'status', 'search', 'only', 'all', 'missing', 'missing-label']) {
+    element('div').setAttribute('id', 'pingolf-' + id);
+  }
+  function createNode(tag, text = '') {
+    const node = element(tag);
+    node.textContent = text;
+    node.append = (...children) => node.children.push(...children);
+    return node;
+  }
+  document.createElement = createNode;
+  const list = nodes.get('pingolf-list');
+  list.append = (...children) => list.children.push(...children);
+  let copied;
+  const clubTarget = {description:'Big score', targetType:'score', scoreThreshold:'9223372036854775807', isPreferred:true};
+  const games = [
+    {id:'1', title:'Godzilla (Pro)', opdbId:'GweeP-MW95j', active:true},
+    {id:'2', title:'Road Kings', active:true},
+    {id:'3', title:'Former game', active:false},
+    {id:'4', title:'World Cup Soccer', opdbId:'G42E2-MQP9e', active:true}
+  ];
+  const context = {
+    document, window:{}, profileText:createNode, setTimeout:()=>{},
+    navigator:{clipboard:{writeText:async value => { copied = value; }}},
+    fetchGamesCatalogPayload:async () => ({games}), enrichGamesPayload:()=>{},
+    todayIsoDate:()=> '2026-11-19', isSoftDeletedGame:()=>false,
+    isGameActiveOnDate:game=>game.active, gameHasCatalogUuid:()=>true,
+    gameProfileRpc:async (_, {p_game_id})=>({pingolfTargets:({
+      '1': [clubTarget, {description:'Lower score', targetType:'score', scoreThreshold:'80000000'}],
+      '4': [{description:'Lock a ball', targetType:'feature'}]
+    })[p_game_id] || []}),
+    currentUserCanManageGames:async ()=>false
+  };
+  vm.runInNewContext(source, context);
+  await flush();
+  const lineup = nodes.get('pingolf-list').children;
+  assert.deepEqual(lineup.map(row=>row.children[0].textContent), ['Godzilla (Pro)', 'Road Kings', 'World Cup Soccer']);
+  assert.equal(lineup[1].children[1].children[1].textContent, 'Add target');
+  assert.equal(lineup[2].children[1].children[1].textContent, 'Edit targets');
+  const [display, edit] = lineup[0].children[1].children;
+  assert.equal(edit.hidden, true);
+  assert.equal(display.children.length, 1);
+  await display.children[0].children.find(node=>node.textContent === 'Copy score').handlers.click();
+  assert.equal(copied, clubTarget.scoreThreshold);
+  nodes.get('pingolf-all').checked = true;
+  nodes.get('pingolf-all').handlers.change();
+  assert.equal(display.children.length, 2);
+  nodes.get('pingolf-only').checked = true;
+  nodes.get('pingolf-only').handlers.change();
+  assert.equal(lineup[1].hidden, true);
+});
+
+test('course requires nine machines, preserves pick order, and prints the selected alternate', async () => {
+  const source = await readFile(new URL('../assets/js/pingolf-targets.js', import.meta.url), 'utf8');
+  const {document, element, nodes} = dom();
+  const ids = ['list', 'status', 'search', 'only', 'all', 'missing', 'missing-label', 'browse',
+    'course', 'targets-view', 'course-view', 'picker', 'course-choices', 'course-count',
+    'view-card', 'card', 'card-holes', 'card-title', 'edit-course', 'print-card'];
+  function make(tag, text = '') {
+    const node = element(tag);
+    node.textContent = text;
+    node.append = (...children) => node.children.push(...children);
+    return node;
+  }
+  document.createElement = make;
+  for (const id of ids) make('div').setAttribute('id', 'pingolf-' + id);
+  const get = id => nodes.get('pingolf-' + id);
+  get('card').hidden = true;
+  let prints = 0;
+  const games = Array.from({length:10}, (_, id) => ({id, title:`Machine ${id}`}));
+  const targets = [{id:'other', description:'Lock a ball', targetType:'feature'},
+    {id:'preferred', description:'Reach the score', targetType:'score', scoreThreshold:'80000000', isPreferred:true}];
+  vm.runInNewContext(source, {
+    document, window:{print:()=>prints++}, profileText:make,
+    fetchGamesCatalogPayload:async()=>({games}), enrichGamesPayload:()=>{},
+    todayIsoDate:()=>'', isSoftDeletedGame:()=>false, isGameActiveOnDate:()=>true,
+    gameHasCatalogUuid:()=>true, currentUserCanManageGames:async()=>false,
+    gameProfileRpc:async (_, {p_game_id})=>({pingolfTargets:p_game_id === 8 ? [] : targets})
+  });
+  await flush();
+  get('course-view').handlers.click();
+  const choices = get('course-choices').children.map(item=>item.children[0].children[0]);
+  for (const index of [1, 0, 2, 3, 4, 5, 6, 7, 8]) {
+    choices[index].checked = true;
+    choices[index].handlers.change();
+    if (index === 7) assert.equal(get('view-card').disabled, true);
+  }
+  assert.equal(get('view-card').disabled, false);
+  assert.equal(choices[9].disabled, true);
+  get('view-card').handlers.click();
+  const holes = get('card-holes').children;
+  assert.equal(holes.length, 9);
+  assert.equal(holes[0].children[1].textContent, 'Machine 1');
+  assert.equal(holes[8].children[2].children[0].textContent, '________________');
+  const [label, select] = holes[0].children[2].children;
+  assert.equal(label.textContent, '80,000,000 points');
+  select.value = 'other';
+  select.handlers.change();
+  assert.equal(label.textContent, 'Lock a ball');
+  get('print-card').handlers.click();
+  assert.equal(prints, 1);
+});

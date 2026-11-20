@@ -135,3 +135,28 @@ test('game targets: migration, limits, preferences, validation, audit, authoriza
     assert.equal(await value('select count(*)::int value from pingolf_targets'), 0, 'physical deletion cascades');
   } finally { await db.close(); }
 });
+
+test('page targets become editable records and preserve existing targets on repeat', async () => {
+  const db = await fixture();
+  const godzilla = '7c983960-bf4f-4958-b972-29715fc577da';
+  const soccer = '00918566-e29b-4f4e-8d8c-0089f4d62a0a';
+  try {
+    await db.exec(migration);
+    await db.exec(`insert into games(id, slug, title) values
+      ('${godzilla}', 'godzilla-pro', 'Godzilla (Pro)'),
+      ('${soccer}', 'world-cup-soccer', 'World Cup Soccer');
+      insert into pingolf_targets(game_id, target_type, description, is_preferred)
+        values ('${soccer}', 'feature', 'Existing objective', true);`);
+    const seed = await readMigration('20261120032000_seed_pingolf_reference_targets.sql');
+    await db.exec(seed);
+    await db.exec(seed);
+    const {rows} = await db.query(`select description, score_threshold::text, is_preferred from pingolf_targets
+      order by description`);
+    assert.deepEqual(rows, [
+      {description:'Existing objective', score_threshold:null, is_preferred:true},
+      {description:'Lock a ball', score_threshold:null, is_preferred:false},
+      {description:'Score at least 120,000,000 points', score_threshold:'120000000', is_preferred:false},
+      {description:'Score at least 80,000,000 points', score_threshold:'80000000', is_preferred:true}
+    ]);
+  } finally { await db.close(); }
+});
