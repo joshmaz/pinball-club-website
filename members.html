@@ -39,7 +39,6 @@
   <script src="assets/js/game-image-delivery.js"></script>
 <script src="assets/js/photo-conversion.js"></script>
 <script src="assets/js/member-portal.js"></script>
-<script src="assets/js/member-dues-reconciliation.js"></script>
 <script src="assets/js/member-events-workflow.js"></script>
 <script src="assets/js/member-account-deletion.js"></script>
 <script src="assets/js/member-membership-trends.js"></script>
@@ -648,6 +647,7 @@
   <p>©2026 Southern New Hampshire Pinball Club</p>
 </footer>
 
+<script src="assets/js/member-dues-reconciliation.js"></script>
 <script>
   (async function () {
     var pageStatus = document.getElementById("member-page-status");
@@ -1075,7 +1075,7 @@
     }
 
     function setMemberAdminPanelIntro(userRolesList) {
-      window.SNHDuesReconciliation.setRoles(userRolesList);
+      if (window.SNHDuesReconciliation) window.SNHDuesReconciliation.setRoles(userRolesList);
       document.getElementById("member-admin-intro").textContent = window.SNHMemberRolePresentation.intro(userRolesList);
       var allowedRoles =
         (window.SNHMemberPortal &&
