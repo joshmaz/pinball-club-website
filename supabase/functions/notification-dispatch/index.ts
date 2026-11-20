@@ -176,10 +176,48 @@ function noteCreatedTemplate(kind: string, values: unknown, stagingPreview = fal
 }
 
 
+function memberChangeTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
+  const aliases: Record<string, string> = {
+    member_role_granted: "snhpc-member-role-granted-v1",
+    member_role_revoked: "snhpc-member-role-revoked-v1",
+    full_access_activated: "snhpc-full-access-activated-v1",
+    full_access_deactivated: "snhpc-full-access-deactivated-v1",
+  };
+  const id = aliases[kind];
+  if (!id) return null;
+  const data = asRecord(values) || {};
+  const read = (key: string, fallback: string, max: number) =>
+    typeof data[key] === "string" && String(data[key]).trim()
+      ? String(data[key]).trim().slice(0, max) : fallback;
+  const variables: Record<string, string> = {
+    SUBJECT_PREFIX: stagingPreview ? "[STAGING PREVIEW] " : "",
+    PREVIEW_BANNER: stagingPreview
+      ? "STAGING PREVIEW — This copy was sent only to the configured test inbox. The queued message remains pending; its intended recipient was not contacted."
+      : "",
+    WEBMASTER_EMAIL: "webmaster@snhpinballclub.com",
+    SUPPORT_EMAIL: "support@snhpinballclub.com",
+  };
+  if (kind === "member_role_granted" || kind === "member_role_revoked") {
+    const name = read("ROLE_NAME", "Website role", 100);
+    const description = read("ROLE_DESCRIPTION", "Responsibilities depend on the assigned website role.", 600);
+    const accessNote = read("ROLE_ACCESS_NOTE", "Review your assigned access in your member profile.", 400);
+    Object.assign(variables, {
+      ROLE_NAME: name,
+      ROLE_NAME_HTML: escapeHtml(name),
+      ROLE_DESCRIPTION: description,
+      ROLE_DESCRIPTION_HTML: escapeHtml(description),
+      ROLE_ACCESS_NOTE: accessNote,
+      ROLE_ACCESS_NOTE_HTML: escapeHtml(accessNote),
+    });
+  }
+  return { id, variables };
+}
+
 function notificationTemplate(kind: string, values: unknown, stagingPreview = false): ResendTemplatePayload | null {
   return signupNoticeTemplate(kind, values, stagingPreview)
     || gameChangesTemplate(kind, values, stagingPreview)
     || onboardingTemplate(kind, stagingPreview)
+    || memberChangeTemplate(kind, values, stagingPreview)
     || noteCreatedTemplate(kind, values, stagingPreview);
 }
 
