@@ -121,17 +121,24 @@
     const feedback = element(section, "p");
     feedback.setAttribute("role", "status");
 
-    const member = field(section, "Website member", "select");
-    element(member, "option", "Choose a member").value = "";
-    if (dates.length && !payer?.member_id) {
-      element(member, "option", "Save payments without linking a member").value = unlinked;
+    function memberPicker(container, label, allowUnlinked) {
+      const select = field(container, label, "select");
+      element(select, "option", "Choose a member").value = "";
+      if (allowUnlinked) {
+        element(select, "option", "Save payments without linking a member").value = unlinked;
+      }
+      for (const entry of state.members) {
+        element(select, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
+      }
+      select.value = payer?.member_id || (matches.length === 1 ? matches[0].id : "");
+      return select;
     }
-    for (const entry of state.members) {
-      element(member, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
-    }
-    member.value = payer?.member_id || (matches.length === 1 ? matches[0].id : payer?.roster_name && dates.length ? unlinked : "");
-    member.disabled = Boolean(payer?.member_id);
+
     if (dates.length) {
+      const member = memberPicker(section, "Member for this payer", !payer?.member_id);
+      if (!member.value && payer?.roster_name) member.value = unlinked;
+      member.disabled = Boolean(payer?.member_id);
+      element(section, "p", "Select which new payments to record. Choosing a member links this payer’s full saved history.");
       const unlinkedFields = element(section, "div");
       const name = field(unlinkedFields, "Member name to help identify these payments later", "input", "text");
       name.maxLength = 150;
@@ -165,11 +172,7 @@
       if (payer.last_received) element(section, "p", "Last confirmed payment: " + payer.last_received);
       const linking = element(section, "details");
       element(linking, "summary", payer.member_id ? "Correct member link" : "Link payments to a member");
-      const target = field(linking, "Website member", "select");
-      for (const option of member.options) {
-        if (option.value !== unlinked) target.append(option.cloneNode(true));
-      }
-      target.value = member.value === unlinked ? "" : member.value;
+      const target = memberPicker(linking, "Member for all saved payments", false);
       action(linking, "Save member link", async () => {
         if (!target.value) throw new Error("Choose the correct website member.");
         if (target.value === payer.member_id) throw new Error("Choose a different website member.");
