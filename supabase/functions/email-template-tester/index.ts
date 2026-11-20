@@ -57,6 +57,45 @@ const TEMPLATE_TESTS: Record<string, TemplateDefinition> = {
     description: "One-time welcome after a member first signs in with a confirmed email address.",
     fields: [],
   },
+  "snhpc-member-role-granted-v1": {
+    alias: "snhpc-member-role-granted-v1",
+    name: "Website role granted",
+    description: "Notify a member that a website role was assigned and explain its responsibilities and question contact.",
+    fields: [
+      { key: "ROLE_NAME", htmlKey: "ROLE_NAME_HTML", label: "Assigned role",
+        description: "A current assignable website role name.", sample: "Games Editor" },
+      { key: "ROLE_DESCRIPTION", htmlKey: "ROLE_DESCRIPTION_HTML", label: "Role responsibilities",
+        description: "A concise, factual description of the role's responsibilities.", sample: "Maintain games, game images, metadata, data tools, and Pingolf targets." },
+      { key: "ROLE_ACCESS_NOTE", htmlKey: "ROLE_ACCESS_NOTE_HTML", label: "Access note",
+        description: "A concise note about inherited or reserved capabilities.", sample: "Normal Games upkeep; permanent deletion is reserved for Games Admin." },
+    ],
+  },
+  "snhpc-member-role-revoked-v1": {
+    alias: "snhpc-member-role-revoked-v1",
+    name: "Website role revoked",
+    description: "Notify a member that a website role was removed and explain how to ask the Webmaster questions.",
+    fields: [
+      { key: "ROLE_NAME", htmlKey: "ROLE_NAME_HTML", label: "Removed role",
+        description: "A current assignable website role name.", sample: "Games Editor" },
+      { key: "ROLE_DESCRIPTION", htmlKey: "ROLE_DESCRIPTION_HTML", label: "Role responsibilities",
+        description: "A concise, factual description of the role's responsibilities.", sample: "Maintain games, game images, metadata, data tools, and Pingolf targets." },
+      { key: "ROLE_ACCESS_NOTE", htmlKey: "ROLE_ACCESS_NOTE_HTML", label: "Access note",
+        description: "A concise note about inherited or reserved capabilities.", sample: "Normal Games upkeep; permanent deletion is reserved for Games Admin." },
+    ],
+  },
+  "snhpc-full-access-activated-v1": {
+    alias: "snhpc-full-access-activated-v1",
+    name: "Full Access membership activated",
+    description: "Notify a member that their Full Access membership is active, separately from website roles.",
+    fields: [],
+  },
+  "snhpc-full-access-deactivated-v1": {
+    alias: "snhpc-full-access-deactivated-v1",
+    name: "Full Access membership deactivated",
+    description: "Notify a member that their Full Access membership is inactive without implying account or role removal.",
+    fields: [],
+  },
+
   "snhpc-pinballmap-game-changes-v1": {
     alias: "snhpc-pinballmap-game-changes-v1",
     name: "Pinball Map game changes",
@@ -103,6 +142,8 @@ function buildTemplate(definition: TemplateDefinition, values: Record<string, st
     SIGNIN_URL: siteRoot + "/signin.html",
     GAMES_URL: siteRoot + "/games.html?view=all",
     EVENTS_URL: siteRoot + "/events.html",
+    WEBMASTER_EMAIL: "webmaster@snhpinballclub.com",
+    SUPPORT_EMAIL: "support@snhpinballclub.com",
   };
   for (const field of definition.fields) {
     variables[field.key] = values[field.key];
