@@ -38,7 +38,6 @@
     const objectiveTarget = objective && target.targetType !== 'score';
     if (score) line.append(profileText('strong', score.replace(/\B(?=(\d{3})+(?!\d))/g, ',')));
     if (objective) line.append(profileText('span', objective));
-    line.append(profileText('small', target.isPreferred ? 'Preferred club target' : 'Club target'));
     function copyControl(label, value) {
       const control = button(label, async () => {
         try {
