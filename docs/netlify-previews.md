@@ -119,10 +119,15 @@ not sign a user into another origin.
 ### Hosted migration history
 
 The staging project was restored from a database snapshot before repository
-migration history was fully reconciled. On November 17, 2026, its migration
-ledger contained nine entries, including the recent IPDB reference-data
-migration. This is a partial history, not a clean record of every migration
-already represented in the restored schema. The production ledger also includes
+migration history was fully reconciled. In a read-only check on November 20, 2026,
+its migration ledger contained 22 entries. This remains a partial history, not a
+clean record of every migration already represented in the restored schema. The
+recent Pingolf target seed and role/membership notification migrations appear under
+ledger versions that differ from their repository filenames: `20261120032643` for
+`20261120032000_seed_pingolf_reference_targets.sql` and `20261120035259` for
+`20261120180000_member_role_membership_change_notifications.sql`. The
+`20261120050612` queue preview message body ledger version matches its repository
+migration filename. Do not infer full parity from the count or names. The production ledger also includes
 historical version aliases. A matching migration name or list entry alone does
 not prove that the hosted SQL state matches the current repository migration.
 
@@ -147,21 +152,25 @@ migration chain.
 
 ### Staging Edge Function availability
 
-The following inventory was read from Supabase on November 17, 2026. It records
+The following inventory was read from Supabase on November 20, 2026. It records
 whether a function name was deployed, not whether its code matches the branch,
 its secrets are configured, or its authenticated flow works.
 
-| Function absent from staging at review time | Affected check |
+| Function absent from current staging | Affected capability |
 | --- | --- |
-| `account-delete` | Account deletion |
 | `opdb-image-sync` | Manual OPDB image refresh |
 | `photo-purge` | Photo unpublish and permanent-delete operations |
 | `pintips-import` | PinTips import and refresh |
 
 The staging project also had a `fourthwall-connection-test` function with no
 matching function source in this repository. Confirm its owner and lifecycle
-before relying on it. Recheck the deployed function list before every release
-that depends on one of these capabilities.
+before relying on it. The read-only inventory found these deployed staging function
+names: `account-delete`, `ai-game-enrich-propose`, `email-template-tester`,
+`fourthwall-connection-test`, `ipdb-reference-sync`, `matchplay-event-review`,
+`notification-dispatch`, `opdb-reference-sync`, `operations`, `photo-finalize`,
+`photo-publish`, `photo-upload-intent`, `pinballmap-ingest`,
+`publishing-discord-dispatch`, and `publishing-media`. Recheck the deployed function
+list before every release that depends on a capability.
 
 ## Failure and recovery references
 

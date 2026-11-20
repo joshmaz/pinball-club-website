@@ -28,7 +28,7 @@ state. Deleting a preferred target does not select a replacement.
 Soft deletion retains targets, hides them from public game detail, and blocks target
 maintenance until the game is restored. Physical game deletion cascades to targets.
 
-## Production inspection and migration decision
+## Historical inspection and migration decision
 
 Read-only inspection on September 29, 2026 found one session and one target:
 
@@ -46,27 +46,37 @@ The migration aborts if additional targets exist or the reviewed target's game,
 description, or value has changed. It locks both legacy tables during the transition.
 There is no heuristic classification or numeric backfill.
 
-The migration replaces the target RPCs and public game detail function, then drops
+The migration replaced the target RPCs and public game detail function, then dropped
 session RPCs, the target's session/value/order columns, and the session table. The
-session table's event FK disappears; event records remain untouched. Historical
-audit entries remain intact. No session replacement is introduced.
+session table's event FK disappeared; event records remained untouched. Historical
+audit entries remain intact. No session replacement was introduced. Current staging
+schema verification confirms `public.pingolf_targets` exists and `public.pingolf_sessions`
+does not.
 
-## Deployment
+## Current staging data
 
-This change requires a coordinated database and static-site release because the
-target RPC argument lists change. Schedule the release when target editors are idle,
-apply the forward migration, then publish the matching assets. Editors with an old
-page must reload. Public responses remain compatible with old display code, though
-the old UI will not show new preferred/type metadata.
+The later seed migration adds ordinary editable targets for Godzilla Pro (80M
+preferred and 120M) and World Cup Soccer (Lock a ball). These are club target
+records, not tournament sessions or special published examples.
 
-Before deployment, recheck legacy rows and linked migration history. If the guard
-fails, inspect the changed data and update the reviewed migration decision before
-retrying. Do not remove the guard merely to force the migration through.
+## Current user experience
 
-Run `node --test scripts/pingolf-db.test.mjs scripts/pingolf-ui.test.mjs` and the
-repository regression suite (`node --experimental-strip-types --test --test-concurrency=2 scripts/*.test.mjs`).
-After deployment, verify target creation/editing,
-preferred selection, admin deletion, and the public Play information for a game.
-The local tests use PostgreSQL through PGlite; they do not simulate concurrent
-database connections. Concurrency protection comes from the shared parent-row lock
-and unique index and should also be smoke-tested on staging.
+The public Pingolf Targets page is searchable and filterable. Visitors can review a
+machine's objectives and copy a target. **Select a course** lets a visitor pick nine
+machines and choose a target for each; the preferred target is the default when one
+exists. A machine without a target gets a blank write-in line. **Print scorecard**
+produces a paper practice sheet. These are practice aids; tournament scoring and
+course management remain with external platforms.
+
+Games Editors can add and edit targets and set or clear the preferred target.
+Permanent target deletion is restricted to Games Admins and Club Admins.
+
+## Deployment and verification history
+
+The database and static site required a coordinated release because the target RPC
+argument lists changed. The current staging baseline has the corresponding target
+schema and UI. The migration guard and reviewed-data decision above remain relevant
+for a new or lagging environment; verify schema and hosted migration history before
+applying anything. Never replay the migration blindly against a database with unknown
+target data. Verification commands for the original rollout are not repeated here. Staging
+status does not establish parity in other environments.

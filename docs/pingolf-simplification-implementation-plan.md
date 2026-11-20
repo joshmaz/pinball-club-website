@@ -1,6 +1,6 @@
 # Pingolf Simplification Implementation Plan
 
-**Status:** Implemented locally; deployment pending  
+**Status:** Implemented in the current staging source; current staging schema includes `public.pingolf_targets` and does not include `public.pingolf_sessions`. Staging is the current documentation baseline; verify other environments independently.
 **Purpose:** Simplify SNHPC Pingolf functionality into a curated library of reusable targets associated directly with games, while leaving tournament operation, player scoring, courses, rounds, and standings to dedicated tournament platforms such as Match Play.
 
 ## Implementation decision (September 29, 2026)

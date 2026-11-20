@@ -2,21 +2,11 @@
 
 This document tracks moving the games catalog from `data/games.json` into Supabase while keeping the public site and Pinball Map ingest working.
 
-## Current status (where we are)
+## Current status (staging baseline)
 
-**Phase 2 is implemented in-repo:** migrations (see below), `games_catalog_v1`, member editor RPCs, public read toggle (`GAMES_CATALOG_SOURCE` / `gamesCatalogSource`), Pinball Map Edge ingest (`pinballmap-ingest`), JSON import and DB→JSON export scripts, and docs/README/CI wiring.
+**The relational catalog and the former Phase 3 work are implemented in the current staging source.** The current scope includes `games_catalog_v1`, editor RPCs, the `GAMES_CATALOG_SOURCE=db` public read path, Pinball Map ingestion, owner/party relationships, club issues, high-score fields, game-enrichment assistants, and game-owned Pingolf targets. The staging baseline is the documentation source of truth for this pass; this statement does not certify production deployment parity.
 
-**Production:** The hosted site reads the catalog from Supabase (`games_catalog_v1` / `GAMES_CATALOG_SOURCE=db`).
-
-**Phase 3 sequencing:** **Near-term** — extended catalog data (high scores, Pingolf, club issues) and **game owners / parties** (see [Phase 3 (future)](#phase-3-future)). **Parked (later)** — Edge **editor-assistant** work (AI description drafts, resource-link search as propose-only flows); pick up after extended data + owners unless priorities change.
-
-**Intentionally not in Phase 2:** game **owners / parties** — no legacy owner data was migrated from JSON; direction is under [Game owners / parties](#game-owners--parties) in Phase 3.
-
-**Operational checklist** (per environment): apply migrations (`supabase db push`), run one-shot import if needed, deploy Edge function + secrets + cron, set GitHub secret `GAMES_CATALOG_SOURCE=db` when the hosted project is ready, regenerate `assets/js/config.js` via deploy. (Prod cutover for this club is complete; the checklist below remains for other environments or re-validation.)
-
-**Follow-up delivered after Phase 2:** game soft-delete + restore. Deleted games are excluded from `games_catalog_v1` (public), while member editor still shows them with delete metadata and restore controls.
-
-**Content follow-up:** Populate PinGolf targets for more games through the existing member games editor so the public game profile’s Play tab appears on those games. Use verified targets; no new schema or behavior is needed.
+The remaining sections retain implementation history and operational detail. Headings that say “future” or describe rollout steps refer to the earlier plan and should be read as historical unless explicitly marked current. Per-environment schema and function deployment must still be checked using [staging, migration, and release workflow](netlify-previews.md).
 
 ## Implemented (Phase 2 baseline)
 
@@ -128,9 +118,9 @@ The tests use local mocks and source assertions, not live credentials or ingesti
 
 Compatibility fields on `data/games.json` (`mapAtClub`, `manualAtClubOverride`, resolved `atClub`) remain supported for static-json mode and for the Python merge script until you fully switch ingest to the Edge path.
 
-## Phase 3 (future)
+## Phase 3 (historical plan; delivered in the staging baseline)
 
-### Near-term: extended catalog data
+### Extended catalog data (historical planning)
 
 Ship first when scoped (tables + RPCs + portal/public surfaces as product rules dictate):
 
@@ -153,7 +143,7 @@ Implementation is intentionally incremental; track migrations and RLS with the s
 
 Revisit when product rules are clear (public names vs. members-only, edit permissions, and whether multiple concurrent parties per game are required).
 
-### Later (parked): Edge editor-assistant
+### Edge editor-assistant (historical planning; implemented)
 
 **Not** in the same delivery wave as extended data + owners:
 

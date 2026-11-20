@@ -32,7 +32,7 @@ A future adapter must resolve the member's subscription from trusted provider id
 
 ## Trends
 
-Capture daily at **04:00 America/New_York**, including daylight saving time. The cron job runs at 08:00 and 09:00 UTC, but a local-hour guard executes the snapshot only at 04:00 Eastern. No midnight job is used and no global cron timezone setting changes. One row per local date, first successful capture wins; retries do not overwrite it. Missed days are not backfilled with invented historical counts.
+The intended capture cadence is daily at **04:00 America/New_York**, including daylight saving time. The scheduler uses UTC ticks at 08:00 and 09:00 with a local-hour guard so the snapshot runs only at 04:00 Eastern; no midnight job or global cron timezone change is used. **Current staging verification found no `snh-membership-snapshot-daily` cron registration**, so this cadence describes the implementation, not an active staging schedule. Confirm the hosted scheduler before relying on new snapshots. One row per local date, first successful capture wins; retries do not overwrite it. Missed days are not backfilled with invented historical counts.
 
 Snapshots retain only aggregate counts, capture timestamp and definition version, indefinitely. Definitions match the existing overview: all registered Auth accounts; Full Access from the latest membership's active status, ignoring legacy end dates; Basic from verified accounts without Full Access; unverified without Full Access as a separate reconciliation category; Website Volunteers from recognized roles, counted once per account. Volunteers overlap membership categories. A signup and deletion between captures may not appear; this is a net-size trend, not a join/leave ledger.
 
@@ -40,19 +40,23 @@ The existing Member Tools page has an expandable 12-month graph and accessible t
 
 Operations → Jobs shows a compact Membership snapshots panel: the last recorded run/outcome and registered, Full Access and volunteer counts from that capture. The existing Operations ledger records each actual capture attempt; the UTC tick that falls outside 04:00 Eastern creates no run. Retried captures keep the original daily counts and report an existing snapshot. Normal capture/audit failures roll back new points while recording a failed outcome with a fixed safe error summary. Transaction cancellation or database unavailability remains visible through cron run details.
 
-Successful and failed capture attempts write `members` audit entries with `metadata.automated=true`, the run ID, and aggregate-only data. They are hidden by default and shown through the existing Show automated activity checkbox. Filtering happens before pagination; the prior empty Pinball Map import rule is preserved. No new Edge Function is required for this job reporting. Apply `20261014210000_membership_snapshot_operations.sql` and deploy the frontend; existing runs are not reconstructed.
+Successful and failed capture attempts write `members` audit entries with `metadata.automated=true`, the run ID, and aggregate-only data. They are hidden by default and shown through the existing Show automated activity checkbox. Filtering happens before pagination; the prior empty Pinball Map import rule is preserved. No new Edge Function is required for this job reporting. The reporting migration is present in the current staging ledger; its migration does not itself register the daily cron job. Existing runs are not reconstructed.
 
 The private tables are explicitly scoped to this single-club installation. Future multi-tenant deployment must add club/tenant scope to their keys, authorization and scheduler before sharing a database.
 
-## Deployment after PR review
+## Current staging status and environment checks
 
-1. Back up and verify migration parity against the deployed schema. The base members/memberships tables predate the repository migration history; do not assume a blank database can replay every migration.
-2. Run the read-only verification inventory below, then apply the five new forward migrations through the normal reviewed deployment process, including `20261016120000_require_verified_access_grants.sql`. The account-existence changes, database deletion guard and verified-access prerequisite should precede enabling the UI. If the first four migrations are already applied, only the new verification migration remains.
-3. Deploy the `account-delete` Edge Function with the existing Supabase URL and service credentials. It validates Auth itself; gateway `verify_jwt=false` permits post-deletion receipt checks. Do not log request bodies or receipts. Keep billing mode manual until a cancellation adapter is ready.
-4. Deploy the static site. Test deletion only with disposable accounts in a non-production environment, including a contribution owner, role changes during confirmation, last-admin/self-admin denial, wrong password, invalid/expired receipts, rollback on an unexpected FK blocker, and a lost success response.
-5. Verify `snh-membership-snapshot-daily` and `snh-account-deletion-receipts-cleanup` in `cron.job`, and inspect `cron.job_run_details` after execution. The first real trend point appears after the next 04:00 capture. No historical backfill is claimed.
+The staging project currently has the `account-delete` Edge Function and the `snh-account-deletion-receipts-cleanup` cron job. The `snh-membership-snapshot-daily` cron job was not present in the read-only staging inventory, so trend capture is not confirmed active. Function-name presence does not prove code parity, secrets, or end-to-end behavior; verify the deployed project before relying on these paths. No secrets were read during this documentation review.
 
-Local checks: `node --test --test-concurrency=1 scripts/account-deletion-db.test.mjs scripts/account-deletion-edge.test.mjs scripts/account-deletion-ui.test.mjs`. Database tests use disposable PGlite with the production migrations; cron registration is stubbed, so hosted Auth API and the scheduler still need non-production end-to-end validation before rollout.
+Before using or changing these features in any environment:
+
+1. Confirm the linked project reference and verify migration/schema parity. The base members/memberships tables predate the repository migration history; do not assume a blank database can replay every migration or that the partial hosted ledger is complete.
+2. Run the read-only verification inventory below. Apply only the reviewed forward migrations that are actually pending; do not replay an already represented schema or use migration-history repair as a schema change.
+3. Verify the `account-delete` Edge Function deployment and its configuration through the normal protected operations process. It validates Auth itself; gateway `verify_jwt=false` permits post-deletion receipt checks. Do not log request bodies or receipts. Keep billing mode manual until a cancellation adapter is ready.
+4. Test deletion only with disposable accounts in a non-production environment, including contribution ownership, role changes during confirmation, last-admin/self-admin denial, wrong password, invalid/expired receipts, rollback on an unexpected FK blocker, and a lost success response.
+5. Verify `snh-account-deletion-receipts-cleanup` and, if daily trends are expected, `snh-membership-snapshot-daily` in `cron.job`; inspect `cron.job_run_details` after execution. The first real trend point appears after a successful 04:00 capture. No historical backfill is claimed.
+
+For a genuinely new environment, first establish a separately reviewed baseline or ordered initialization plan because core member tables predate this repository's migration chain.
 
 ## Verification prerequisite for access grants
 
