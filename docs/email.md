@@ -111,7 +111,7 @@ migration queues four transactional notices for the affected member:
   Website Volunteer status do not create separate messages. Role questions go
   to the Webmaster at `webmaster@snhpinballclub.com`.
 - `full_access_activated` and `full_access_deactivated` fire only when a
-  membership record crosses the `active` boundary. A no-op status update does
+  member's latest membership record crosses the `active` boundary (using the same latest-record rule as Full Access authorization). A no-op status update does
   not queue mail. These notices do not change or imply any website role.
   Membership questions go to `support@snhpinballclub.com`.
 
