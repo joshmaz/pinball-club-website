@@ -14,7 +14,7 @@ begin
         ('world-cup-soccer', 'feature', 'Lock a ball', null::bigint, false)
       ) as targets(game_slug, target_type, description, score_threshold, prefer_if_empty)
       join public.games g on g.slug = targets.game_slug and g.deleted_at is null
-     order by g.slug, targets.description
+     order by g.slug, targets.prefer_if_empty desc, targets.description
      for update of g
   loop
     insert into public.pingolf_targets (game_id, target_type, description, score_threshold, is_preferred)
