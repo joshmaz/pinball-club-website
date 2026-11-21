@@ -313,27 +313,35 @@
           <div id="board-staff-roster"></div>
 
           <h3>Club Documents</h3>
-          <p class="member-panel-intro">Links open in Google Drive. If a document is restricted, request access there.</p>
+          <p class="member-panel-intro">We use Google Drive to manage document access, discuss changes in comments, and collaborate on files. If a document is restricted, you can request access in Drive.</p>
           <p id="club-documents-status" class="members-page-status" role="status"></p>
-          <div id="club-documents-tools" hidden>
-            <h4>Board &amp; Staff tools</h4>
+          <section id="club-documents-tools" aria-labelledby="club-documents-tools-heading" hidden>
+            <h4 id="club-documents-tools-heading">Board &amp; Staff tools</h4>
+            <p class="member-panel-helper">Only Board and Staff members see these tools.</p>
+            <a id="club-documents-folder" target="_blank" rel="noopener noreferrer">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="#00832d" d="M8 2h7L7 16l-4 6-3-6z"/>
+                <path fill="#ffba00" d="M8 2h7l9 14h-7z"/>
+                <path fill="#0066da" d="M7 16h17l-4 6H3z"/>
+              </svg>
+              Open shared board folder in Google Drive <span aria-hidden="true">↗</span>
+            </a>
+            <details id="club-documents-folder-settings" hidden>
+              <summary>Manage board folder shortcut</summary>
+              <form id="club-documents-folder-form" class="members-admin-editor-form">
+                <label for="club-documents-folder-url">Google Drive folder URL</label>
+                <input id="club-documents-folder-url" type="url" maxlength="2048">
+                <button type="submit" class="club-button">Save shortcut</button>
+                <p class="member-panel-helper">Leave blank to remove the shortcut. Drive controls who can open the folder.</p>
+              </form>
+            </details>
             <div class="members-admin-controls">
-            <a id="club-documents-folder" target="_blank" rel="noopener noreferrer">Open board folder</a>
-            <button type="button" id="club-documents-add" class="club-button">Add link</button>
+              <button type="button" id="club-documents-add" class="club-button">Add document link</button>
             </div>
-          </div>
-          <details id="club-documents-folder-settings" hidden>
-            <summary>Manage board folder shortcut</summary>
-            <form id="club-documents-folder-form" class="members-admin-editor-form">
-              <label for="club-documents-folder-url">Google Drive folder URL</label>
-              <input id="club-documents-folder-url" type="url" maxlength="2048">
-              <button type="submit" class="club-button">Save shortcut</button>
-              <p class="member-panel-helper">Leave blank to remove the shortcut. Drive controls who can open the folder.</p>
-            </form>
-          </details>
+          </section>
           <form id="club-documents-form" class="members-profile-form" hidden>
             <fieldset class="club-form-section">
-              <legend id="club-documents-form-title">Add link</legend>
+              <legend id="club-documents-form-title">Add document link</legend>
               <div class="club-field"><label for="club-document-title">Title</label><input id="club-document-title" required maxlength="160"></div>
               <div class="club-field"><label for="club-document-url">Google Drive link</label><input id="club-document-url" type="url" required maxlength="2048"></div>
               <div class="club-field"><label for="club-document-date">Meeting date (optional)</label><input id="club-document-date" type="date"></div>
