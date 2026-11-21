@@ -1,6 +1,6 @@
 (function () {
   var PANEL_IDS = Object.freeze([
-    "profile", "membership", "door", "club-issues", "club-documents", "board-staff", "member-admin", "operations", "audit-log", "publishing", "events", "photos", "games"
+    "profile", "membership", "door", "club-issues", "executive", "member-admin", "operations", "audit-log", "publishing", "events", "photos", "games"
   ]);
   var OPERATIONS_SECTIONS = ["overview", "integrations", "cache", "messaging", "jobs", "audit"];
   function operationsSection(value) { return OPERATIONS_SECTIONS.indexOf(value) !== -1 ? value : "overview"; }
@@ -8,6 +8,7 @@
 
   function validPanel(value) {
     var panel = String(value || "").trim();
+    if (panel === "club-documents" || panel === "board-staff") return "executive";
     return PANEL_IDS.indexOf(panel) !== -1 ? panel : "";
   }
 

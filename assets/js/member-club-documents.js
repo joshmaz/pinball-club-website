@@ -1,3 +1,4 @@
+0	258	assets/js/member-club-documents.js
 (function () {
   "use strict";
 
@@ -95,7 +96,7 @@
   var editingId = null;
   var initialized = false;
   var pending = false;
-  var loadRequests = { "club-documents": 0, "board-staff": 0 };
+  var loadRequest = 0;
   var dom;
 
   function setEditor(link) {
@@ -120,7 +121,7 @@
     try {
       await rpc(name, args);
       dom.form.hidden = true;
-      await load("club-documents", message);
+      await load(message);
     } catch (error) {
       dom.status.textContent = error.code === "23514"
         ? (invalidMessage || "Enter a title and a direct Google Drive file link.")
@@ -223,34 +224,27 @@
       people.forEach(function (person) {
         list.appendChild(element("li", person.name + " · " + (person.title || group[2])));
       });
-      dom.roster.append(element("h3", group[1]), list);
+      dom.roster.append(element("h4", group[1]), list);
     });
   }
 
-  async function load(panel, message) {
+  async function load(message) {
     mount();
-    var documents = panel === "club-documents";
-    var status = documents ? dom.status : dom.rosterStatus;
-    var request = ++loadRequests[panel];
-    status.textContent = "Loading…";
-    if (documents) {
-      dom.tools.hidden = dom.folderSettings.hidden = dom.form.hidden = true;
-      dom.list.replaceChildren();
-    } else {
-      dom.roster.replaceChildren();
-    }
+    var request = ++loadRequest;
+    dom.status.textContent = "Loading…";
+    dom.rosterStatus.textContent = "";
+    dom.tools.hidden = dom.folderSettings.hidden = dom.form.hidden = true;
+    dom.list.replaceChildren();
+    dom.roster.replaceChildren();
     try {
       var data = await rpc("snh_club_documents");
-      if (request !== loadRequests[panel]) return;
-      if (documents) renderLinks(data);
-      else renderRoster(data.roster);
-      var empty = documents ? !data.links.length : !data.roster.length;
-      status.textContent = message || (empty
-        ? (documents ? "No document links have been added yet." : "No board or staff members have been listed yet.")
-        : "");
+      if (request !== loadRequest) return;
+      renderLinks(data);
+      renderRoster(data.roster);
+      dom.status.textContent = message || (data.links.length ? "" : "No document links have been added yet.");
+      dom.rosterStatus.textContent = data.roster.length ? "" : "No board or staff members have been listed yet.";
     } catch (error) {
-      if (request === loadRequests[panel]) status.textContent = documents
-        ? "Could not load club documents." : "Could not load the Board & Staff directory.";
+      if (request === loadRequest) dom.status.textContent = "Could not load the roster or club documents.";
     }
   }
 

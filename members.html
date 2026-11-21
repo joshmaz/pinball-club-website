@@ -104,10 +104,7 @@
             <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Notes</button>
           </li>
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="club-documents" id="member-nav-club-documents" aria-controls="member-panel-club-documents">Club Documents</button>
-          </li>
-          <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="board-staff" id="member-nav-board-staff" aria-controls="member-panel-board-staff">Board &amp; Staff</button>
+            <button type="button" class="members-sidebar-link" data-member-panel="executive" id="member-nav-executive" aria-controls="member-panel-executive">Executive</button>
           </li>
         </ul>
         <div class="members-sidebar-group" id="member-volunteer-nav" hidden>
@@ -309,13 +306,21 @@
           </form>
         </div>
 
-        <div id="member-panel-club-documents" class="member-panel" role="region" aria-labelledby="member-nav-club-documents" tabindex="-1" aria-hidden="true">
-          <h2>Club Documents</h2>
+        <div id="member-panel-executive" class="member-panel" role="region" aria-labelledby="member-nav-executive" tabindex="-1" aria-hidden="true">
+          <h2>Executive</h2>
+          <h3>Board &amp; Staff</h3>
+          <p id="board-staff-status" class="members-page-status" role="status"></p>
+          <div id="board-staff-roster"></div>
+
+          <h3>Club Documents</h3>
           <p class="member-panel-intro">Links open in Google Drive. If a document is restricted, request access there.</p>
           <p id="club-documents-status" class="members-page-status" role="status"></p>
-          <div id="club-documents-tools" class="members-admin-controls" hidden>
+          <div id="club-documents-tools" hidden>
+            <h4>Board &amp; Staff tools</h4>
+            <div class="members-admin-controls">
             <a id="club-documents-folder" target="_blank" rel="noopener noreferrer">Open board folder</a>
             <button type="button" id="club-documents-add" class="club-button">Add link</button>
+            </div>
           </div>
           <details id="club-documents-folder-settings" hidden>
             <summary>Manage board folder shortcut</summary>
@@ -341,12 +346,6 @@
             </fieldset>
           </form>
           <ul id="club-documents-list"></ul>
-        </div>
-
-        <div id="member-panel-board-staff" class="member-panel" role="region" aria-labelledby="member-nav-board-staff" tabindex="-1" aria-hidden="true">
-          <h2>Board &amp; Staff</h2>
-          <p id="board-staff-status" class="members-page-status" role="status"></p>
-          <div id="board-staff-roster"></div>
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
@@ -990,7 +989,7 @@
       if (id === "member-admin" && typeof onMemberAdminPanelShown === "function") {
         onMemberAdminPanelShown();
       }
-      if (id === "club-documents" || id === "board-staff") void window.SNHMemberClubDocuments.load(id);
+      if (id === "executive" && window.SNHMemberClubDocuments) void window.SNHMemberClubDocuments.load();
       if (id === "publishing" && window.SNHMemberPublishingPanel) void window.SNHMemberPublishingPanel.load(userRoles);
       if (id === "operations" && window.SNHMemberOperationsPanel) void window.SNHMemberOperationsPanel.load();
       if (id === "events" && !options.skipPanelLoad && typeof onEventsPanelShown === "function") {
