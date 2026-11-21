@@ -64,6 +64,7 @@ test('club documents enforce roster, profile and link permissions at the databas
     await db.exec(await readFile(new URL('../supabase/migrations/20261120210000_club_documents.sql', import.meta.url), 'utf8'));
     await db.exec(await readFile(new URL('../supabase/migrations/20261121150000_club_designation_admin_update.sql', import.meta.url), 'utf8'));
     await db.exec(await readFile(new URL('../supabase/migrations/20261121180000_club_roster_private_names.sql', import.meta.url), 'utf8'));
+    await db.exec(await readFile(new URL('../supabase/migrations/20261121181000_club_roster_email_local_part.sql', import.meta.url), 'utf8'));
 
     await db.exec('set role anon');
     await assert.rejects(load(), denied);
@@ -107,7 +108,7 @@ test('club documents enforce roster, profile and link permissions at the databas
     assert.equal(basicData.links[0].pinned, true);
     assert.deepEqual(basicData.roster, [
       { name: 'board', designation: 'board', title: 'President' },
-      { name: 'Club volunteer', designation: 'staff', title: null }
+      { name: 'staff', designation: 'staff', title: null }
     ]);
     await assert.rejects(db.query('select snh_remove_club_document($1)', [link.id]), denied);
 
