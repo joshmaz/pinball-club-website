@@ -145,6 +145,8 @@
       folderInput: byId("club-documents-folder-url"),
       folderSave: byId("club-documents-folder-form").querySelector("button"),
       add: byId("club-documents-add"),
+      actions: byId("club-documents-actions"),
+      manage: byId("club-documents-manage"),
       list: byId("club-documents-list"),
       form: byId("club-documents-form"),
       formTitle: byId("club-documents-form-title"),
@@ -156,6 +158,15 @@
       roster: byId("board-staff-roster")
     };
     dom.add.addEventListener("click", function () { if (!pending) setEditor(null); });
+    dom.manage.addEventListener("click", function () {
+      if (pending) return;
+      var managing = dom.manage.getAttribute("aria-pressed") !== "true";
+      dom.manage.setAttribute("aria-pressed", String(managing));
+      dom.list.querySelectorAll(".club-document-link-actions").forEach(function (controls) {
+        controls.hidden = !managing;
+      });
+      if (!managing && editingId) dom.form.hidden = true;
+    });
     dom.linkStatus = element("p");
     dom.linkStatus.className = "members-page-status";
     dom.linkStatus.setAttribute("role", "status");
@@ -191,6 +202,8 @@
   function renderLinks(data) {
     var canEdit = data.can_edit;
     dom.tools.hidden = dom.folderSettings.hidden = !canEdit;
+    dom.actions.hidden = !canEdit;
+    dom.manage.hidden = data.links.length === 0;
     dom.folder.hidden = !data.board_folder_url;
     dom.folderInput.value = data.board_folder_url || "";
     if (data.board_folder_url) dom.folder.href = data.board_folder_url;
@@ -220,7 +233,11 @@
         });
         remove.setAttribute("aria-label", "Remove link for " + link.title);
         controls.append(edit, remove);
-        row.appendChild(controls);
+        var actions = element("div");
+        actions.className = "club-document-link-actions";
+        actions.hidden = dom.manage.getAttribute("aria-pressed") !== "true";
+        actions.appendChild(controls);
+        row.appendChild(actions);
       }
       dom.list.appendChild(row);
     });
@@ -245,6 +262,8 @@
     dom.status.textContent = "Loading…";
     dom.rosterStatus.textContent = "";
     dom.tools.hidden = dom.folderSettings.hidden = dom.form.hidden = true;
+    dom.actions.hidden = true;
+    if (!message) dom.manage.setAttribute("aria-pressed", "false");
     dom.list.replaceChildren();
     dom.roster.replaceChildren();
     try {
