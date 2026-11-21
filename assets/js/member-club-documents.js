@@ -101,6 +101,7 @@
   function setEditor(link) {
     editingId = link ? link.id : null;
     dom.form.reset();
+    dom.linkStatus.textContent = "";
     dom.formTitle.textContent = link ? "Edit link" : "Add link";
     if (link) {
       dom.title.value = link.title;
@@ -114,16 +115,17 @@
 
   async function saveChange(name, args, message, invalidMessage) {
     if (pending) return;
+    var status = name === "snh_save_club_document" ? dom.linkStatus : dom.status;
     pending = true;
     dom.form.querySelector("fieldset").disabled = dom.folderSave.disabled = true;
-    dom.status.textContent = "Saving…";
+    status.textContent = "Saving…";
     try {
       await rpc(name, args);
       dom.form.hidden = true;
       await load(message);
     } catch (error) {
-      dom.status.textContent = error.code === "23514"
-        ? (invalidMessage || "Enter a title and a direct Google Drive file link.")
+      status.textContent = error.code === "23514"
+        ? (invalidMessage || "Enter a direct Google Drive file link. Open the file and choose Share → Copy link.")
         : error.message || "Could not save the change.";
     } finally {
       pending = false;
@@ -154,16 +156,26 @@
       roster: byId("board-staff-roster")
     };
     dom.add.addEventListener("click", function () { if (!pending) setEditor(null); });
+    dom.linkStatus = element("p");
+    dom.linkStatus.className = "members-page-status";
+    dom.linkStatus.setAttribute("role", "status");
+    dom.form.querySelector("fieldset").appendChild(dom.linkStatus);
     byId("club-documents-cancel").addEventListener("click", function () {
       dom.form.hidden = true;
       dom.add.focus();
     });
     dom.form.addEventListener("submit", function (event) {
       event.preventDefault();
+      if (pending) return;
+      var url = dom.url.value.trim();
+      if (/^https:\/\/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\//i.test(url)) {
+        dom.linkStatus.textContent = "This is a folder link. Open the file inside Drive, then choose Share → Copy link.";
+        return;
+      }
       void saveChange("snh_save_club_document", {
         p_id: editingId,
         p_title: dom.title.value.trim(),
-        p_url: dom.url.value.trim(),
+        p_url: url,
         p_meeting_date: dom.date.value || null,
         p_pinned: dom.pinned.checked
       }, "Link saved.");
