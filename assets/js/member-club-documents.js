@@ -102,7 +102,7 @@
     editingId = link ? link.id : null;
     dom.form.reset();
     dom.linkStatus.textContent = "";
-    dom.formTitle.textContent = link ? "Edit link" : "Add link";
+    dom.formTitle.textContent = link ? "Edit document link" : "Add document link";
     if (link) {
       dom.title.value = link.title;
       dom.url.value = link.url;
