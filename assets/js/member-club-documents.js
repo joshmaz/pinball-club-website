@@ -1,4 +1,3 @@
-0	258	assets/js/member-club-documents.js
 (function () {
   "use strict";
 

@@ -8,7 +8,6 @@
 
   function validPanel(value) {
     var panel = String(value || "").trim();
-    if (panel === "club-documents" || panel === "board-staff") return "executive";
     return PANEL_IDS.indexOf(panel) !== -1 ? panel : "";
   }
 
