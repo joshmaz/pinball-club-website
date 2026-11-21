@@ -1,14 +1,13 @@
 # Operations
 
 Operations is a club-admin-only section of My Account, with Overview, Integrations,
-Cache, Messaging, Jobs, and Audit. Legacy Audit links redirect into Operations. Section and message-status
+AI Usage, Cache, Messaging, Jobs, and Audit. Legacy Audit links redirect into Operations. Section and message-status
 links survive refreshes and can be shared. Ordinary member
 management remains in Member Tools; self-delete remains in My Account.
 
 ## Implemented
 
-- Overview aggregates cache row counts, expired/search-cleanup counts, unresolved
-  integration request errors, queue counts, and the latest run of each job.
+- Overview summarizes current integration health, AI usage, cache row counts, expired/search-cleanup counts, unresolved integration request errors, queue counts, and the latest run of each job. It also links to Discord publishing, Store management, Website analytics, and environment-specific Supabase usage/error views.
 - Integrations shows current server configuration booleans, per-resource attempt,
   success, error and latency, and a conservative provider summary. Match Play has
   Test Connection using its uncached profile endpoint; the response is discarded.
@@ -44,7 +43,7 @@ management remains in Member Tools; self-delete remains in My Account.
   that scope. Both Cache and Jobs call the same audited RPC.
 - Messaging shows counts and pages of 50 records, filterable by status, including
   recipient, kind, subject, created/available/sent times, attempts and safe errors.
-  Pagination uses `(created_at,id)`. Bodies and provider response payloads are omitted.
+  Pagination uses `(created_at,id)`. Club Administrators can expand **Preview message** to inspect queued message text and recipient; provider response payloads and credentials remain omitted.
 - Retry locks the failed row, retains ID/content/recipient/attempt count and the
   original creation time, and grants one claim beyond the automatic attempt cap.
   Only failed rows younger than 23 hours, without a provider ID or active lease,
@@ -73,26 +72,17 @@ The Operations Edge Function independently validates the session and club-admin
 membership before configuration or provider access. All exposed mutations write
 `module = operations` audit entries; database changes and their audit records are
 atomic. Connection tests record integration status without creating audit noise.
-Raw cache data, credentials, dispatch secrets and message bodies are not exposed.
+Raw cache data, credentials and dispatch secrets are not exposed. Queued message text and recipient are available only through the Club Admin messaging preview.
 
 ## Deployment and migration safety
 
-The AI usage feature adds one additive migration and changes the existing `ai-game-enrich-propose` and `operations` Edge Functions. Tracking begins when the migration is applied; earlier OpenAI usage is not backfilled. No provider credentials or notification settings change.
-
-1. Recheck linked migration history from the staging checkout.
-2. Apply the new `ai_usage_budget` migration to staging.
-3. Deploy `ai-game-enrich-propose` and `operations` to staging. The AI function blocks paid requests if the budget reservation or usage settlement cannot be recorded.
-4. Deploy the frontend and verify the club-admin Operations card, an ordinary member's denied access, the $4 warning, cap enforcement, and monthly reset behavior.
-5. Follow the normal review and merge path before applying the migration and deploying the functions to production.
-
-PR previews contain the frontend only; they cannot exercise migration-backed usage controls until the migration and Edge Functions have been deployed to staging. Outbound notifications remain deferred until the notification feature is mature.
+The current staging implementation includes migration-backed AI usage tracking, the `ai-game-enrich-propose` budget guard, and the Operations UI. Tracking begins when the usage migration is present; earlier OpenAI usage is not backfilled. Current email notifications and Operations Messaging are implemented; delivery mode and scheduler configuration remain environment-specific and must be checked in the owning Supabase project before release. Static builds do not apply migrations or deploy Edge Functions. Use the reviewed migration workflow in [staging, migrations, and release workflow](netlify-previews.md) and the notification setup in [email](email.md).
 
 ## Deliberately deferred
 
 Tournament standings, IFPA adapters, arbitrary
-cache purges/refreshes, dangerous account tools, scheduler editing/next-run reporting,
-provider delivery webhooks, job-run history pagination/retention, and richer cache
-hit/miss metrics. The generic job ledger accepts future server-side job names;
+cache purges/refreshes, scheduler editing/next-run reporting, provider delivery
+webhooks, job-run history pagination/retention, and richer cache hit/miss metrics. The generic job ledger accepts future server-side job names;
 unknown jobs appear without a manual action.
 
 ## Verification
@@ -124,6 +114,6 @@ The cleanup-failure migration and updated Operations function have been deployed
 
 ## Membership snapshots
 
-The compact Membership snapshots entry under Jobs shows the daily 04:00 Eastern cadence, last recorded outcome/time, and registered account, Full Access and volunteer counts. There is no manual run control. It uses the existing Operations job ledger and snapshot RPC. Apply `20261014210000_membership_snapshot_operations.sql` after the membership trend migrations, then deploy the frontend; no Operations Edge Function change is needed. Before its first capture it says Awaiting first run. Failures report no new captured counts. Snapshot retries preserve the first saved daily count.
+The compact Membership snapshots entry under Jobs shows the intended daily 04:00 Eastern cadence, last recorded outcome/time, and registered account, Full Access and volunteer counts. There is no manual run control. It uses the Operations job ledger and snapshot RPC. The current staging project has the reporting migration but no registered `snh-membership-snapshot-daily` cron job, so a daily capture must not be assumed to be running. Before relying on new points, verify or register the scheduler through a reviewed database change. Before the first capture it says Awaiting first run. Failures report no new captured counts. Snapshot retries preserve the first saved daily count.
 
 Each attempt writes an audit entry tagged `metadata.automated=true`, which the existing Show automated activity checkbox reveals. The filter preserves its existing empty Pinball Map import behavior and filters before pagination. No personal member information is logged.

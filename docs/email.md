@@ -25,9 +25,9 @@ Two separate integration paths share the same Resend account and API key:
 | Path | Purpose | Where configured |
 |------|---------|------------------|
 | **Supabase Auth SMTP** | Password reset, signup confirm, magic links | Supabase Dashboard → Authentication → Email → SMTP Settings |
-| **Resend API** | One-off or app-triggered mail (scripts, future Edge Functions) | `.env` locally; `supabase secrets set` for hosted functions |
+| **Resend API** | One-off or app-triggered mail (scripts and deployed Edge Functions) | `.env` locally; `supabase secrets set` for hosted functions |
 
-## App notifications (first slice)
+## App notifications
 
 `20260924130000_notification_foundation.sql` adds a private-to-clients outbox.
 `20260925020000_queue_notifications_from_auth_signup.sql` connects it to the
@@ -100,15 +100,39 @@ Notes do not send another notice. The template tester includes a grouped,
 fictional two-Note example.
 
 
+### Role and Full Access changes
+
+The `20261120180000_member_role_membership_change_notifications.sql`
+migration queues four transactional notices for the affected member:
+
+- `member_role_granted` and `member_role_revoked` fire only when an explicitly
+  assigned role is added, removed, or changed. Messages describe the assigned
+  role and its responsibilities; inherited role capabilities and derived
+  Website Volunteer status do not create separate messages. Role questions go
+  to the Webmaster at `webmaster@snhpinballclub.com`.
+- `full_access_activated` and `full_access_deactivated` fire only when a
+  member's latest membership record crosses the `active` boundary (using the same latest-record rule as Full Access authorization). A no-op status update does
+  not queue mail. These notices do not change or imply any website role.
+  Membership questions go to `support@snhpinballclub.com`.
+
+Only future database changes are queued; there is no backfill. A valid email on
+the affected member profile is required. The messages use the Resend templates
+`snhpc-member-role-granted-v1`, `snhpc-member-role-revoked-v1`,
+`snhpc-full-access-activated-v1`, and
+`snhpc-full-access-deactivated-v1`. They are registered in the Email template
+tester and follow the existing preview/test/live delivery safeguards.
+
 ## Activation
 
 1. Apply the migration and deploy `notification-dispatch` with its configured
    `verify_jwt = false` setting. Until the dispatcher is deployed and called,
    the migration only queues messages.
 2. Publish the `snhpc-member-signup-alert-v1`,
-   `snhpc-account-confirmation-reminder-v1`, and `snhpc-member-welcome-v1`
-   templates in Resend. Confirm the API key configured for each project can
-   access them.
+   `snhpc-account-confirmation-reminder-v1`, `snhpc-member-welcome-v1`,
+   `snhpc-member-role-granted-v1`, `snhpc-member-role-revoked-v1`,
+   `snhpc-full-access-activated-v1`, and
+   `snhpc-full-access-deactivated-v1` templates in Resend. Confirm the API key
+   configured for each project can access them.
 3. Configure project-specific Edge Function secrets:
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
@@ -124,8 +148,7 @@ fictional two-Note example.
    message. Repeated test runs send additional copies to the test destination.
 5. Keep delivery mode at `preview` by default. Enable `live` only after the
    staging preview and production configuration review are complete. Scheduled
-   dispatch runs hourly; production `test` mode skips synthetic sends. Keep
-   dispatch secrets out of browser code and public build variables.
+   dispatch runs every 10 minutes; `test` mode skips synthetic sends. The deployed staging cron job is currently named `notification-dispatch-hourly` despite its ten-minute schedule. Keep dispatch secrets out of browser code and public build variables.
 
 ### Queue review and staging cleanup
 
@@ -179,11 +202,7 @@ group by kind, status order by kind, status;
 ```
 
 No addresses are hardcoded in the notification code. The queue is inaccessible
-to `anon` and `authenticated` clients. The first signup alert has no member
-preference toggle because it goes only to designated membership volunteers;
-future optional game and note alerts should get per-member opt-ins before they
-are queued. Wider member email campaigns need a separate consent and audience
-workflow.
+to `anon` and `authenticated` clients. Operational notifications currently target designated membership volunteers or the member whose role/access changed; these are not marketing campaigns. Any optional member-wide game or note alerts need per-member opt-ins before they are queued. Wider member email campaigns need a separate consent and audience workflow.
 
 Never put `RESEND_API_KEY` in browser code or `assets/js/config.js`.
 

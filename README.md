@@ -1,10 +1,10 @@
 # Pinball Club Website
 
-Official site for the Southern New Hampshire Pinball Club, including public pages and an in-progress member portal.
+Official site for the Southern New Hampshire Pinball Club, including public pages and the member portal.
 
 ## What is live now
 
-- Public club pages (`index.html`, `events.html`, `games.html`, `about.html`, etc.)
+- Public club pages (`index.html`, `events.html`, `games.html`, `about.html`, etc.), including the searchable Pingolf Targets library and printable nine-machine practice scorecard (`pingolf-targets.html`).
 - Home page "Right now" messaging (new venue lease update + Discord as the club's day-to-day chat)
 - Games page history explorer with:
   - timeline slider (`Now` -> `Origins`)
@@ -14,6 +14,8 @@ Official site for the Southern New Hampshire Pinball Club, including public page
   - per-machine PinTips links to Match Play Events when available
 - Supabase-backed sign up and sign in
 - Member dashboard (`members.html`) with:
+  - role-gated Operations Overview for Club Administrators, including integrations, AI usage, cache, messaging, jobs and audit; deployment-specific details are in `docs/operations.md`
+  - Website Publishing tools for authorized editors and administrators
   - profile editing grouped into Account (name basics + avatar URL), Pinball profiles (IFPA, Stern Insider, MatchPlay player ID), privacy information, and Password
   - live IFPA profile link preview based on entered IFPA player number
   - current membership status display (status, tier, renews/ends) plus a phase-0 writeup of how membership works today (treasurer-tracked, $40/month or $480/year, pay via cash or PayPal at [paypal.me/snhpinball](https://paypal.me/snhpinball))
@@ -214,6 +216,6 @@ Game cards include a read-only Tips tab backed by the official daily PinTips exp
 
 ## Account deletion and membership trends
 
-The reviewed account deletion policy, billing boundary, daily 4 a.m. Eastern snapshots, weekly Member Tools graph with monthly divisions, and deployment checks are documented in [account deletion and membership trends](docs/account-deletion-and-membership-trends.md). The new migrations and `account-delete` Edge Function must be deployed before using the deletion controls.
+The account deletion policy, billing boundary, membership trend definitions, and environment-specific deployment checks are documented in [account deletion and membership trends](docs/account-deletion-and-membership-trends.md). The current staging baseline has the `account-delete` function and receipt-cleanup job; the daily membership snapshot job is not registered there, so trend capture must be verified before relying on new points.
 
 New website roles and Full Access grants require a verified Auth email after applying `20261016120000_require_verified_access_grants.sql`. Verified Basic Members can volunteer. Authorized removal and deactivation remain available for unverified accounts. See the [read-only verification inventory and deployment order](docs/account-deletion-and-membership-trends.md#verification-prerequisite-for-access-grants).
