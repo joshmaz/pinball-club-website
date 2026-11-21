@@ -335,26 +335,28 @@
                 <p class="member-panel-helper">Leave blank to remove the shortcut. Drive controls who can open the folder.</p>
               </form>
             </details>
-            <div class="members-admin-controls">
-              <button type="button" id="club-documents-add" class="club-button">Add document link</button>
-            </div>
-            <form id="club-documents-form" class="members-profile-form" hidden>
-              <fieldset class="club-form-section">
-                <legend id="club-documents-form-title">Add document link</legend>
-                <div class="club-field"><label for="club-document-title">Title</label><input id="club-document-title" required maxlength="160"></div>
-                <div class="club-field"><label for="club-document-url">Google Drive link</label><input id="club-document-url" type="url" required maxlength="2048"></div>
-                <div class="club-field"><label for="club-document-date">Meeting date (optional)</label><input id="club-document-date" type="date"></div>
-                <label><input type="checkbox" id="club-document-pinned"> Pin to the top</label>
-                <p class="member-panel-helper">Use the link to the copy intended for members. Check its sharing settings in Drive.</p>
-                <div class="members-admin-controls">
-                  <button type="submit" class="club-button">Save link</button>
-                  <button type="button" id="club-documents-cancel" class="club-button">Cancel</button>
-                </div>
-              </fieldset>
-            </form>
-            <hr>
           </section>
           <h4>Documents for members</h4>
+          <div id="club-documents-actions" hidden>
+            <div class="members-admin-controls">
+              <button type="button" id="club-documents-add" class="club-button">Add document link</button>
+              <button type="button" id="club-documents-manage" class="club-button" aria-pressed="false" aria-controls="club-documents-list">Manage links</button>
+            </div>
+          </div>
+          <form id="club-documents-form" class="members-profile-form" hidden>
+            <fieldset class="club-form-section">
+              <legend id="club-documents-form-title">Add document link</legend>
+              <div class="club-field"><label for="club-document-title">Title</label><input id="club-document-title" required maxlength="160"></div>
+              <div class="club-field"><label for="club-document-url">Google Drive link</label><input id="club-document-url" type="url" required maxlength="2048"></div>
+              <div class="club-field"><label for="club-document-date">Meeting date (optional)</label><input id="club-document-date" type="date"></div>
+              <label><input type="checkbox" id="club-document-pinned"> Pin to the top</label>
+              <p class="member-panel-helper">Use the link to the copy intended for members. Check its sharing settings in Drive.</p>
+              <div class="members-admin-controls">
+                <button type="submit" class="club-button">Save link</button>
+                <button type="button" id="club-documents-cancel" class="club-button">Cancel</button>
+              </div>
+            </fieldset>
+          </form>
           <ul id="club-documents-list"></ul>
         </div>
 
