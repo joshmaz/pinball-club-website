@@ -21,10 +21,11 @@ test('club documents enforce roster, profile and link permissions at the databas
   const denied = (error) => error.code === '42501';
 
   try {
-    await db.exec(`create role anon; create role authenticated; create schema auth; create schema private;
+    await db.exec(`create role anon; create role authenticated; create role service_role; create schema auth; create schema private;
       create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz,
         created_at timestamptz, last_sign_in_at timestamptz);
-      create table members(id uuid primary key, user_id uuid, first_name text, last_name text, display_name text);
+      create table members(id uuid primary key, user_id uuid, email text, first_name text, last_name text,
+        display_name text, created_at timestamptz default now(), updated_at timestamptz default now());
       create table external_accounts(member_id uuid, provider_slug text, account_handle text);
       create table member_roles(member_id uuid, role_slug text);
       create table memberships(id int, member_id uuid, status text, tier text, end_date date, created_at timestamptz);
@@ -41,7 +42,27 @@ test('club documents enforce roster, profile and link permissions at the databas
         ('${unverified}','unverified@example.com',null);
       insert into members(id,user_id,display_name) select id,id,split_part(email,'@',1) from auth.users;
     `);
+    await db.exec(`create function private.snh_canonical_member_identity() returns trigger
+      language plpgsql security definer set search_path = '' as $$
+      declare v_existing public.members; v_email text;
+      begin
+        if current_setting('role', true) in ('anon', 'authenticated') then
+          if auth.uid() is null or new.user_id is distinct from auth.uid() then
+            raise exception 'Profile must belong to the signed-in account' using errcode='42501';
+          end if;
+          if tg_op = 'UPDATE' and (new.id is distinct from old.id or new.user_id is distinct from old.user_id
+             or new.created_at is distinct from old.created_at) then
+            raise exception 'Account identity fields cannot be changed' using errcode='42501';
+          end if;
+          new.updated_at := now();
+        end if;
+        if new.user_id is not null then select u.email into v_email from auth.users u where u.id=new.user_id; new.email := v_email; end if;
+        return new;
+      end $$;
+      create trigger snh_members_canonical_identity before insert or update on members
+        for each row execute function private.snh_canonical_member_identity();`);
     await db.exec(await readFile(new URL('../supabase/migrations/20261120210000_club_documents.sql', import.meta.url), 'utf8'));
+    await db.exec(await readFile(new URL('../supabase/migrations/20261121150000_club_designation_admin_update.sql', import.meta.url), 'utf8'));
 
     await db.exec('set role anon');
     await assert.rejects(load(), denied);
@@ -56,6 +77,7 @@ test('club documents enforce roster, profile and link permissions at the databas
     await actingAs(admin);
     await assign(board, 'board', ' President ');
     await assign(staff, 'staff', null);
+    await assert.rejects(db.query("update members set display_name = 'Admin edit' where id = $1", [board]), denied);
     await assert.rejects(assign(unverified, 'staff', null), /verified email/);
     const adminRows = (await db.query('select snh_list_members_for_admin() as rows')).rows[0].rows;
     assert.equal(adminRows.find(row => row.member_id === board).club_title, 'President');
