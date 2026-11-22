@@ -24,7 +24,7 @@
     if (!panel && String(loc.hash || "").indexOf("type=recovery") === -1) {
       panel = validPanel(String(loc.hash || "").replace(/^#/, ""));
     }
-    panel = panel || "profile";
+    panel = panel || "membership";
     var route = {
       panel: panel === "audit-log" ? "operations" : panel,
       gameId: panel === "games" ? validUuid(params.get("game")) : "",
@@ -42,14 +42,14 @@
   function build(panelId, options, locationLike) {
     options = options || {};
     var loc = locationLike || window.location;
-    var panel = validPanel(panelId) || "profile";
+    var panel = validPanel(panelId) || "membership";
     var params = new URLSearchParams(loc.search || "");
 
     var legacyAudit = panel === "audit-log" || (panel === "operations" && (params.get("panel") === "audit-log" || loc.hash === "#audit-log"));
     if (panel === "audit-log") panel = "operations";
     if (panel === "operations") params.set("section", legacyAudit ? "audit" : operationsSection(options.section || params.get("section")));
     else { params.delete("section"); params.delete("messageStatus"); }
-    if (panel === "profile") params.delete("panel");
+    if (panel === "membership") params.delete("panel");
     else params.set("panel", panel);
 
     if (panel !== "games") {

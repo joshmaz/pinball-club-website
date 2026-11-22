@@ -92,10 +92,10 @@
         <p class="members-sidebar-title" id="member-account-nav-title">My account</p>
         <ul class="members-sidebar-list" aria-labelledby="member-account-nav-title">
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">Membership</button>
+            <button type="button" class="members-sidebar-link is-active" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership" aria-current="page">Membership</button>
           </li>
           <li>
-            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">Profile</button>
+            <button type="button" class="members-sidebar-link" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile">Profile</button>
           </li>
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Notes</button>
@@ -146,7 +146,7 @@
       </nav>
 
       <div class="members-panels">
-        <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
+        <div id="member-panel-profile" class="member-panel" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="true">
           <h2>Profile</h2>
           <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. The Board &amp; Staff directory shows the names of people designated as Board or Staff, using their display name when available.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
@@ -256,7 +256,7 @@
           <section id="account-deletion-controls" aria-label="Account deletion"></section>
         </div>
 
-        <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
+        <div id="member-panel-membership" class="member-panel is-active" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="false">
           <h2>Membership</h2>
           <div class="membership-card">
             <p><strong>Current membership:</strong> <span id="membership-status" role="status">Loading…</span></p>
