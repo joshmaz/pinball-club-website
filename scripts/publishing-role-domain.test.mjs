@@ -29,7 +29,7 @@ test('Publishing is independent, Admin inherits Editor, and Website Administrato
 
 test('Publishing roles are assignable only by Membership Admin or Website Administrator',()=>{
   const roles=Object.keys(auth.ROLE_CATALOG).filter(slug=>auth.ROLE_CATALOG[slug].assignable);
-  assert.equal(roles.length,11);
+  assert.equal(roles.length,12);
   for (const actor of roles) for (const target of ['publishing_editor','publishing_admin']) {
     assert.equal(auth.canAssignMemberRole([actor],target),['club_admin','membership_admin'].includes(actor));
   }
