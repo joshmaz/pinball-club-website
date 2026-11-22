@@ -1,0 +1,20 @@
+.game-offers { max-width: 60rem; margin-inline: auto; }
+.game-offers > *, #member-offers > section { margin-block: 1.5rem; }
+.game-offers [hidden] { display: none; }
+.offer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.offer-list { display: grid; gap: 1rem; }
+.offer-list article { overflow-wrap: anywhere; }
+.offer-list dd { margin-inline-start: 0; white-space: pre-wrap; }
+.offer-list dt { margin-top: .65rem; font-weight: 650; }
+.game-offers :is(textarea, select) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: .6rem .7rem;
+  border: 1px solid var(--club-control-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  color: var(--club-ink);
+  font: inherit;
+}
+.game-offers textarea { resize: vertical; }

@@ -192,6 +192,7 @@
   function getRedirectTarget() {
     var params = new URLSearchParams(window.location.search);
     var next = String(params.get("next") || "").trim();
+    if (next === "bring-a-game.html") return next;
     if (next === "members.html" || !/^members\.html(?:[?#].*)?$/.test(next)) return "members.html?panel=membership";
     return next;
   }
