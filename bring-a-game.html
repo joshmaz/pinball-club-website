@@ -34,6 +34,7 @@
       <a href="#published-offers">Published candidates</a>
       <a href="#offer-review" id="offer-review-link" hidden>Review offers</a>
       <a href="#rotation-plans" id="rotation-plans-link" hidden>Rotation plans</a>
+      <a href="#placement-history" id="placement-history-link" hidden>Placement history</a>
     </nav>
     <div id="member-offers" hidden>
       <section id="new-offer" class="membership-card" aria-labelledby="offer-form-title">
@@ -64,7 +65,7 @@
     </section>
     <section id="rotation-plans" aria-labelledby="rotation-plans-title" hidden>
       <h2 id="rotation-plans-title">Rotation plans</h2>
-      <p class="member-panel-intro">Plan tentative arrivals and departures. Plans leave the live lineup and loans unchanged.</p>
+      <p class="member-panel-intro">Confirm moves after they happen. Confirmations update cabinet placement history and leave public lineup and loan records unchanged.</p>
       <p id="rotation-status" class="members-page-status" role="status"></p>
       <div id="rotation-controls" class="offer-list" hidden>
         <form id="cabinet-form" class="membership-card members-profile-form">
@@ -85,6 +86,11 @@
         </form>
       </div>
       <div id="rotation-plan-list" class="offer-list"></div>
+    </section>
+    <section id="placement-history" aria-labelledby="placement-history-title" hidden>
+      <h2 id="placement-history-title">Placement history</h2>
+      <p id="placement-status" class="members-page-status" role="status"></p>
+      <div id="placement-list" class="offer-list"></div>
     </section>
   </div>
 </main>

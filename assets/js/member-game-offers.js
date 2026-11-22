@@ -14,6 +14,7 @@
   let editingId = null;
   let eligible = false;
   let canReview = false;
+  let canCorrect = false;
   let canReadReview = false;
 
   function showStatus(message, tone = "") {
@@ -246,6 +247,66 @@
       editingId ? "Offer updated and returned to review." : "Offer submitted for review.", resetForm);
   });
 
+  async function refreshPlacements() {
+    let placements;
+    try {
+      placements = await rpc("snh_cabinet_placement_history");
+    } catch (error) {
+      if (error.code === "PGRST202") return null;
+      throw error;
+    }
+    byId("placement-history").hidden = false;
+    byId("placement-history-link").hidden = false;
+    fillList("placement-list", placements, placement => {
+      const article = card(placement.title + " · " + placement.label);
+      article.append(node("p", placement.departure_confirmed_at ? "Departed" : "Currently placed"),
+        details(placement, [["location", "Location"], ["arrived_on", "Arrival date"], ["departed_on", "Departure date"]]));
+      if (!canCorrect) return article;
+      const disclosure = node("details");
+      const editor = node("form");
+      editor.className = "members-profile-form";
+      const location = node("input");
+      const arrival = node("input");
+      const departure = node("input");
+      const reason = node("input");
+      location.required = true;
+      reason.required = true;
+      arrival.type = "date";
+      departure.type = "date";
+      departure.disabled = !placement.departure_confirmed_at;
+      editor.append(reviewField("Location", location, placement.location, 160),
+        reviewField("Arrival date", arrival, placement.arrived_on || "", 10),
+        reviewField("Departure date", departure, placement.departed_on || "", 10),
+        reviewField("Correction reason", reason, "", 250));
+      const submit = node("button", "Save correction");
+      editor.append(submit);
+      editor.addEventListener("submit", async event => {
+        event.preventDefault();
+        const status = byId("placement-status");
+        submit.disabled = true;
+        try {
+          await rpc("snh_correct_cabinet_placement", {
+            p_id: placement.id, p_location: location.value.trim(),
+            p_arrived_on: arrival.value || null, p_departed_on: departure.value || null,
+            p_reason: reason.value.trim()
+          });
+          status.textContent = "Placement corrected.";
+          status.dataset.tone = "success";
+          await refreshPlacements();
+        } catch {
+          status.textContent = "Could not save or refresh the correction. Verify the dates and reload before retrying.";
+          status.dataset.tone = "error";
+        } finally {
+          submit.disabled = false;
+        }
+      });
+      disclosure.append(node("summary", "Correct placement"), editor);
+      article.append(disclosure);
+      return article;
+    }, "No cabinet placements have been confirmed.");
+    return placements;
+  }
+
   function startRotationPlanner(games) {
     const cabinetForm = byId("cabinet-form");
     const planForm = byId("rotation-plan-form");
@@ -262,6 +323,7 @@
     function clearPlan() {
       planId = null;
       planForm.reset();
+      for (const name of ["incoming", "arrival", "outgoing", "departure"]) planForm.elements[name].disabled = false;
       byId("rotation-form-title").textContent = "New plan";
       cancelEdit.hidden = true;
     }
@@ -273,13 +335,19 @@
       planForm.elements.arrival.value = plan.arrival_on || "";
       planForm.elements.departure.value = plan.departure_on || "";
       planForm.elements.note.value = plan.note || "";
+      planForm.elements.incoming.disabled = planForm.elements.arrival.disabled = Boolean(plan.arrival_placement_id);
+      planForm.elements.outgoing.disabled = planForm.elements.departure.disabled = Boolean(plan.departure_placement_id);
       byId("rotation-form-title").textContent = "Edit plan";
       cancelEdit.hidden = false;
-      planForm.elements.incoming.focus();
+      (planForm.elements.incoming.disabled ? planForm.elements.outgoing : planForm.elements.incoming).focus();
     }
 
     async function refreshPlans() {
-      const { cabinets, plans } = await rpc("snh_rotation_workspace");
+      const [{ cabinets, plans }, placements] = await Promise.all([
+        rpc("snh_rotation_workspace"), refreshPlacements()
+      ]);
+      const open = new Map((placements || []).filter(placement => !placement.departure_confirmed_at)
+        .map(placement => [placement.cabinet_id, placement]));
       const labels = new Map(cabinets.map(cabinet => [cabinet.id, cabinet.title + " · " + cabinet.label]));
       for (const field of [planForm.elements.incoming, planForm.elements.outgoing]) {
         const previous = field.value;
@@ -287,16 +355,25 @@
         field.value = labels.has(previous) ? previous : "";
       }
       fillList("rotation-plan-list", plans, plan => {
-        const article = card(plan.canceled_at ? "Canceled plan" : "Tentative move");
+        const pendingArrival = plan.incoming_cabinet_id && !plan.arrival_placement_id;
+        const pendingDeparture = plan.outgoing_cabinet_id && !plan.departure_placement_id;
+        const pending = pendingArrival || pendingDeparture;
+        const article = card(plan.canceled_at ? "Canceled plan" : pending ? "Tentative move" : "Confirmed move");
         const parts = [
-          [plan.incoming_cabinet_id, plan.arrival_on, "Arrival"],
-          [plan.outgoing_cabinet_id, plan.departure_on, "Departure"]
+          [plan.incoming_cabinet_id, plan.arrival_on, "arrival", plan.arrival_placement_id],
+          [plan.outgoing_cabinet_id, plan.departure_on, "departure", plan.departure_placement_id]
         ];
-        for (const [id, date, label] of parts) {
-          if (id) article.append(node("p", label + " · " + labels.get(id) + (date ? " · " + date : " · Date open")));
+        for (const [id, date, direction, confirmed] of parts) {
+          if (!id) continue;
+          const title = direction === "arrival" ? "Arrival" : "Departure";
+          article.append(node("p", title + " · " + labels.get(id)
+            + (confirmed ? " · Confirmed" : date ? " · " + date : " · Date open")));
+          if (canReview && placements && !plan.canceled_at && !confirmed) {
+            article.append(confirmationForm(plan, direction, id, open.get(id)));
+          }
         }
         if (plan.note) article.append(details(plan, [["note", "Private note"]]));
-        if (canReview && !plan.canceled_at) {
+        if (canReview && pending && !plan.canceled_at) {
           const actions = node("div");
           actions.className = "offer-actions members-profile-form";
           const cancel = button("Cancel plan", () => {
@@ -312,6 +389,39 @@
       }, "There are no rotation plans yet.");
     }
 
+    function confirmationForm(plan, direction, cabinet, placement) {
+      if (direction === "departure" && !placement) {
+        return node("p", "Confirm an arrival for this cabinet before recording its departure.");
+      }
+      const disclosure = node("details");
+      const editor = node("form");
+      editor.className = "members-profile-form";
+      const date = node("input");
+      date.type = "date";
+      editor.append(reviewField("Observed date (optional)", date, "", 10));
+      const location = node("input");
+      if (direction === "arrival") {
+        location.required = true;
+        editor.append(reviewField("Placement location", location, "", 160));
+      } else {
+        editor.append(node("p", "Departing from " + placement.location));
+      }
+      const submit = node("button", direction === "arrival" ? "Record arrival" : "Record departure");
+      editor.append(submit);
+      editor.addEventListener("submit", event => {
+        event.preventDefault();
+        save(submit, () => rpc("snh_confirm_rotation_move", {
+          p_plan: plan.id, p_direction: direction, p_observed_on: date.value || null,
+          p_location: location.value.trim() || null, p_expected_cabinet: cabinet,
+          p_expected_placement: direction === "departure" ? placement.id : null
+        }), direction === "arrival" ? "Arrival confirmed." : "Departure confirmed.", () => {
+          if (planId === plan.id) clearPlan();
+        });
+      });
+      disclosure.append(node("summary", direction === "arrival" ? "Confirm arrival" : "Confirm departure"), editor);
+      return disclosure;
+    }
+
     async function save(control, action, message, after) {
       control.disabled = true;
       try {
@@ -325,7 +435,7 @@
         }
       } catch (error) {
         feedback(error.code === "23505"
-          ? "That cabinet already has an active plan for this direction."
+          ? "That cabinet already has an active plan or placement that conflicts with this change."
           : "The change could not be saved. Check your access and try again.", "error");
       } finally {
         control.disabled = false;
@@ -384,6 +494,7 @@
     ]);
     eligible = allowed === true;
     canReview = auth.memberHasAnyRole(roles, "game_coordinator");
+    canCorrect = auth.memberHasAnyRole(roles, "games_admin");
     canReadReview = canReview || membership?.club_designation === "board";
     byId("offer-review-mode").textContent = canReview
       ? "Review private submissions and choose what to publish for member feedback."
@@ -391,7 +502,7 @@
 
     await refresh();
     byId("member-offers").hidden = !eligible;
-    byId("offer-nav").hidden = !eligible;
+    byId("offer-nav").hidden = !eligible && !canReadReview && !canCorrect;
     byId("offer-review-link").hidden = !canReadReview;
     byId("offer-review").hidden = !canReadReview;
     showStatus(eligible ? "" : "An active, email-confirmed website account is required to submit or browse offers.");
@@ -411,6 +522,7 @@
       }
     }
     if (canReadReview) startRotationPlanner(games);
+    else if (canCorrect) await refreshPlacements();
   }
 
   init().catch(() => showStatus("Game offers could not load. Reload the page to try again.", "error"));

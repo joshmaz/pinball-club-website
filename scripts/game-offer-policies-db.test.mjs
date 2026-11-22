@@ -66,7 +66,8 @@ try {
   '20261017180000_publishing_role_domain.sql',
   '20261122225245_game_rotation_cabinets_and_loans.sql',
   '20261122225737_game_offer_policies.sql',
-  '20261122233621_game_rotation_plans.sql'
+  '20261122233621_game_rotation_plans.sql',
+  '20261122235352_game_rotation_confirm_moves.sql'
 ]) await migration(name);
   for (let n = 1; n <= 14; n++) {
     await query('insert into auth.users (id,email_confirmed_at) values ($1,$2)', [uid(100+n), n === 14 ? null : new Date()]);
@@ -132,6 +133,48 @@ try {
   assert.equal(rotation.plans[0].arrival_on,null);
   assert.ok(rotation.plans[1].canceled_at);
   await db.exec('reset role');
+  const confirm = (planId, direction, cabinet, placement = null) => query(
+    "select public.snh_confirm_rotation_move($1,$2,null,$3,$4,$5) id",
+    [planId,direction,direction === 'arrival' ? 'Club floor' : null,cabinet,placement]);
+  const history = () => query('select * from public.snh_cabinet_placement_history()');
+  const correct = (placement, reason) => query(
+    'select public.snh_correct_cabinet_placement($1,$2,$3,null,$4)',
+    [placement,'Back room','2026-11-01',reason]);
+  await actor(11);
+  await assert.rejects(confirm(replacement,'arrival',incoming), denied);
+  await actor(10);
+  await assert.rejects(confirm(replacement,'arrival',outgoing), {code:'22023'});
+  const [{id:placement}] = await confirm(replacement,'arrival',incoming);
+  assert.deepEqual(await confirm(replacement,'arrival',incoming), [{id:placement}]);
+  await assert.rejects(savePlan(replacement,outgoing,null,null), {code:'22023'});
+  await assert.rejects(cancel(replacement), {code:'22023'});
+  await assert.rejects(correct(placement,'Correction'), denied);
+  assert.equal((await history())[0].arrived_on,null);
+
+  const [{id: swap}] = await savePlan(null,outgoing,incoming,'Swap');
+  await assert.rejects(confirm(swap,'departure',incoming,uid(999)), {code:'22023'});
+  await actor(1);
+  await confirm(swap,'departure',incoming,placement);
+  await cancel(swap);
+  assert.deepEqual(await confirm(swap,'departure',incoming,placement), [{id:placement}]);
+  await assert.rejects(confirm(swap,'arrival',outgoing), {code:'22023'});
+  await actor(11);
+  assert.ok((await history())[0].departure_confirmed_at);
+  assert.equal((await history())[0].departed_on,null);
+  await assert.rejects(correct(placement,'Correction'), denied);
+  await actor(8);
+  await assert.rejects(history(), denied);
+  await assert.rejects(correct(placement,'Correction'), denied);
+  await actor(9);
+  await assert.rejects(workspace(), denied);
+  await assert.rejects(correct(placement,''), {code:'22023'});
+  await correct(placement,'Verified against floor log');
+  assert.equal((await history())[0].location,'Back room');
+  assert.ok((await history())[0].departure_confirmed_at);
+
+  await db.exec('reset role');
+  assert.deepEqual(await query("select action from public.audit_log where entity_type='game_cabinet_placement' and entity_id=$1 order by action", [placement]),
+    [{action:'confirm_arrival'},{action:'confirm_departure'},{action:'correct'}]);
   assert.deepEqual(await query('select * from private.game_loans'), []);
   assert.deepEqual(await query("select action from public.audit_log where entity_type='game_rotation_plan' and entity_id=$1 and action='cancel'", [plan]), [{action:'cancel'}]);
 
