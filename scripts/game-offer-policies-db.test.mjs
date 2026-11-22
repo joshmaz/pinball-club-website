@@ -35,9 +35,13 @@ try {
     create table cron.jobs (command text);
     create function cron.schedule(text,text,text) returns bigint language sql as $$
       insert into cron.jobs values ($3) returning 1::bigint $$;
-    create function public.snh_account_exists() returns boolean language sql security definer as $$
-      select exists(select 1 from auth.users where id = auth.uid()) $$;
-    create table public.games(id uuid primary key, deleted_at timestamptz);
+    alter table public.audit_log add foreign key(actor_user_id) references auth.users(id);
+    create table public.games(id uuid primary key, deleted_at timestamptz, deleted_by uuid references auth.users(id));
+    create table public.game_high_scores(created_by uuid references auth.users(id));
+    create table public.game_custom_mods(created_by uuid references auth.users(id));
+    create table public.club_issues(created_by uuid references auth.users(id));
+    create table public.notification_outbox(kind text, event_key text, body text, status text,
+      lease_id uuid, locked_until timestamptz);
     create table public.owner_parties(id uuid primary key);
     grant usage on schema auth to authenticated;
     grant select on public.members to authenticated;
@@ -57,6 +61,7 @@ try {
   '20260928235000_domain_helpers_use_effective_roles.sql',
   '20260928235800_notification_enqueue_authorization.sql',
   '20260921121000_audit_member_admin_changes.sql',
+  '20261014180000_account_deletion.sql',
   '20261016120000_require_verified_access_grants.sql',
   '20261017180000_publishing_role_domain.sql',
   '20261122225245_game_rotation_cabinets_and_loans.sql',
@@ -123,7 +128,13 @@ try {
   await query("insert into private.game_cabinets (id,game_id,label) values ($1,$2,'Cabinet')", [uid(203), uid(201)]);
   await query(`insert into private.game_loans (cabinet_id,lender_party_id,lender_user_id,terms)
     values ($1,$2,$3,'Private terms')`, [uid(203), uid(202), uid(112)]);
-  await query('delete from auth.users where id = $1', [uid(112)]);
+  const remove = () => query('delete from auth.users where id = $1', [uid(112)]);
+  await assert.rejects(remove(), denied);
+  assert.equal((await query('select published_title from private.game_offers where id=$1',[id]))[0].published_title,
+    'Approved title');
+  const [{receipt}] = await query("select public.snh_prepare_account_deletion($1,null,'Self-service deletion') receipt", [uid(112)]);
+  await query('select public.snh_activate_account_deletion($1,$2)', [receipt, uid(112)]);
+  await remove();
   assert.deepEqual(await query('select submitter_user_id,published_title,close_reason from private.game_offers where id=$1',[id]),
     [{submitter_user_id:null,published_title:null,close_reason:'account_deleted'}]);
   assert.deepEqual(await query('select user_id from private.game_offer_interest'), []);
@@ -140,7 +151,7 @@ try {
     ('Expired',now()-interval '12 months','withdrawn',false),
     ('Preserved',now()-interval '12 months','declined',true),
     ('Recent',now()-interval '1 month','declined',false)`);
-  const [{command}] = await query('select command from cron.jobs');
+  const [{command}] = await query("select command from cron.jobs where command like '%private.game_offers%'");
   await db.exec(command);
   assert.deepEqual(await query('select title from private.game_offers order by title'),
     [{title:'Offer from deleted account'},{title:'Preserved'},{title:'Recent'}]);
