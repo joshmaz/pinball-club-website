@@ -54,7 +54,8 @@
   align-items: stretch;
 }
 .club-merch .merch-item { display: flex; flex-direction: column; gap: .6rem; }
-.club-merch .merch-item-image { aspect-ratio: 5 / 4; margin-bottom: .35rem; }
+.club-merch .merch-image-link { display: block; margin-bottom: .35rem; }
+.club-merch .merch-item-image { aspect-ratio: 5 / 4; margin-bottom: 0; }
 .club-merch .merch-item h3 { margin: 0; }
 .club-merch .merch-item p { font-size: 1rem; }
 .club-merch .merch-item .merch-price { color: var(--club-ink); font-weight: 750; }

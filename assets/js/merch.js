@@ -92,12 +92,16 @@
     const card = element('article', 'merch-item');
 
     if (typeof product.image === 'string' && product.image.startsWith('https://')) {
+      const imageLink = element('a', 'merch-image-link');
+      imageLink.href = link.href;
+      imageLink.setAttribute('aria-label', `View ${title} in store`);
       const image = element('img', 'merch-item-image');
       image.src = product.image;
       image.alt = '';
       image.loading = 'lazy';
       image.decoding = 'async';
-      card.append(image);
+      imageLink.append(image);
+      card.append(imageLink);
     }
 
     const heading = element('h3', null, title);
