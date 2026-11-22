@@ -8,7 +8,7 @@
       domain: "website",
       level: "admin",
       assignable: true,
-      inherits: Object.freeze(["membership_admin", "events_admin", "photos_admin", "games_admin", "publishing_admin"])
+      inherits: Object.freeze(["membership_admin", "events_admin", "photos_admin", "games_admin", "publishing_admin", "game_coordinator"])
     }),
     membership_editor: Object.freeze({
       displayName: "Membership Editor",
@@ -79,6 +79,13 @@
       level: "admin",
       assignable: true,
       inherits: Object.freeze(["publishing_editor"])
+    }),
+    game_coordinator: Object.freeze({
+      displayName: "Game Coordinator",
+      domain: "rotation",
+      level: "volunteer",
+      assignable: true,
+      inherits: Object.freeze([])
     }),
     website_volunteer: Object.freeze({
       displayName: "Website Volunteer",
