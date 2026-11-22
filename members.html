@@ -92,13 +92,10 @@
         <p class="members-sidebar-title" id="member-account-nav-title">My account</p>
         <ul class="members-sidebar-list" aria-labelledby="member-account-nav-title">
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership">Membership</button>
+            <button type="button" class="members-sidebar-link is-active" data-member-panel="membership" id="member-nav-membership" aria-controls="member-panel-membership" aria-current="page">Membership</button>
           </li>
           <li>
-            <button type="button" class="members-sidebar-link" data-member-panel="door" id="member-nav-door" aria-controls="member-panel-door">Door code</button>
-          </li>
-          <li>
-            <button type="button" class="members-sidebar-link is-active" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile" aria-current="page">Profile</button>
+            <button type="button" class="members-sidebar-link" data-member-panel="profile" id="member-nav-profile" aria-controls="member-panel-profile">Profile</button>
           </li>
           <li>
             <button type="button" class="members-sidebar-link" data-member-panel="club-issues" id="member-nav-club-issues" aria-controls="member-panel-club-issues">Notes</button>
@@ -149,7 +146,7 @@
       </nav>
 
       <div class="members-panels">
-        <div id="member-panel-profile" class="member-panel is-active" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="false">
+        <div id="member-panel-profile" class="member-panel" role="region" aria-labelledby="member-nav-profile" tabindex="-1" aria-hidden="true">
           <h2>Profile</h2>
           <p class="member-panel-intro">Your account basics, the optional pinball profiles you want connected to your club account, and your sign-in password. The Board &amp; Staff directory shows the names of people designated as Board or Staff, using their display name when available.</p>
           <p id="member-page-status" aria-live="polite" class="members-page-status"></p>
@@ -259,17 +256,39 @@
           <section id="account-deletion-controls" aria-label="Account deletion"></section>
         </div>
 
-        <div id="member-panel-membership" class="member-panel" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="true">
+        <div id="member-panel-membership" class="member-panel is-active" role="region" aria-labelledby="member-nav-membership" tabindex="-1" aria-hidden="false">
           <h2>Membership</h2>
           <div class="membership-card">
             <p><strong>Current membership:</strong> <span id="membership-status" role="status">Loading…</span></p>
             <p id="membership-basic-next" hidden>Your free website account gives you Basic Member access. <a href="mailto:info@snhpinballclub.com">Contact the club about Full Access</a>.</p>
-            <div id="membership-full-next" hidden>
-              <p>Your Full Access membership includes 24/7 access to the club.</p>
-              <button type="button" class="club-button" id="membership-door-button">Go to Door code</button>
-            </div>
             <p class="membership-card-note">Something off in your record? Email <a href="mailto:info@snhpinballclub.com">info@snhpinballclub.com</a> and we will help sort it out.</p>
           </div>
+
+          <section id="membership-access" aria-labelledby="membership-access-heading">
+            <h3 id="membership-access-heading">Access</h3>
+            <div id="membership-event-pass" class="membership-card" hidden>
+              <h4>$10 event day pass</h4>
+              <p>Basic Members can attend events at the $10 non-member day rate.</p>
+              <p><a class="club-button" href="https://www.paypal.com/ncp/payment/5579CX4JWHAEY" target="_blank" rel="noopener noreferrer">Pay $10 with PayPal</a></p>
+            </div>
+            <div id="membership-lockbox" class="membership-card door-access-card" hidden>
+              <p class="door-access-eyebrow">Club entry</p>
+              <h4>Key lockbox</h4>
+              <p class="door-access-intro">Full Access Members can reveal the code for the key lockbox mounted beside the club entrance. The code opens the box, not the door itself.</p>
+              <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal lockbox code</button>
+              <p id="door-code-value" class="door-code-value" role="status" aria-live="polite"></p>
+              <p id="door-code-reminder" class="membership-card-note door-code-reminder">Please keep this code private. Don’t share it, post it online, or let others use your access. Make sure the entrance closes and locks behind you.</p>
+              <p class="door-lock-update">We’re working on a digitally enabled door lock. We’ll share an update when we have news.</p>
+            </div>
+            <form id="door-code-admin" class="members-profile-form door-code-admin" hidden>
+              <h4>Update lockbox code</h4>
+              <p class="member-panel-helper">Use this when the key lockbox combination changes.</p>
+              <label for="door-code-new">New lockbox code</label>
+              <input id="door-code-new" type="password" autocomplete="new-password" maxlength="100" required>
+              <button type="submit">Save new code</button>
+              <p id="door-code-admin-status" role="status" aria-live="polite"></p>
+            </form>
+          </section>
 
           <h3>How Full Access membership works</h3>
           <p>Full Access Members choose monthly or annual recurring PayPal billing. The treasurer checks subscriptions and updates membership by hand.</p>
@@ -283,27 +302,6 @@
           <p>Full Access Members have 24/7 access to the club's pinball room on Bridge St in Nashua, with every game on free-play. Just stopping by for an event? Visitors can grab an all-day guest pass for $10 per visit.</p>
 
           <p class="membership-card-note">Memberships help keep this nonprofit pinball club afloat. If you want to push the club ahead in bigger ways, a <a href="donate/">donation</a> is the most direct boost.</p>
-        </div>
-
-        <div id="member-panel-door" class="member-panel" role="region" aria-labelledby="member-nav-door" tabindex="-1" aria-hidden="true">
-          <h2>Door code</h2>
-          <div class="membership-card door-access-card">
-            <p class="door-access-eyebrow">Club entry</p>
-            <h3>Key lockbox</h3>
-            <p class="door-access-intro">Full Access Members can reveal the code for the key lockbox mounted beside the club entrance. The code opens the box, not the door itself.</p>
-            <button type="button" id="door-code-reveal" aria-controls="door-code-value" aria-expanded="false">Reveal lockbox code</button>
-            <p id="door-code-value" class="door-code-value" role="status" aria-live="polite"></p>
-            <p id="door-code-reminder" class="membership-card-note door-code-reminder">Please keep this code private. Don’t share it, post it online, or let others use your access. Make sure the entrance closes and locks behind you.</p>
-            <p class="door-lock-update">We’re working on a digitally enabled door lock. We’ll share an update when we have news.</p>
-          </div>
-          <form id="door-code-admin" class="members-profile-form door-code-admin" hidden>
-            <h3>Update lockbox code</h3>
-            <p class="member-panel-helper">Use this when the key lockbox combination changes.</p>
-            <label for="door-code-new">New lockbox code</label>
-            <input id="door-code-new" type="password" autocomplete="new-password" maxlength="100" required>
-            <button type="submit">Save new code</button>
-            <p id="door-code-admin-status" role="status" aria-live="polite"></p>
-          </form>
         </div>
 
         <div id="member-panel-executive" class="member-panel" role="region" aria-labelledby="member-nav-executive" tabindex="-1" aria-hidden="true">
@@ -1054,9 +1052,6 @@
           openMemberPanelFromControl(this.getAttribute("data-member-panel"));
         });
       }
-      document.getElementById("membership-door-button").addEventListener("click", function () {
-        openMemberPanelFromControl("door");
-      });
     }
 
     function applyRbacNav(userRoles) {
@@ -1305,7 +1300,7 @@
     }
 
     function isPanelNavAvailable(panelId) {
-      if (panelId === "profile" || panelId === "membership" || panelId === "door") return true;
+      if (panelId === "profile" || panelId === "membership") return true;
       var btn = document.querySelector('button[data-member-panel="' + panelId + '"]');
       if (!btn) return false;
       var li = btn.closest("li");
@@ -2726,10 +2721,11 @@
     }
 
     var membership = await window.SNHMemberPortal.fetchMembership(session.user.id);
-    var hasFullAccess = membership && membership.status === "active";
+    var hasFullAccess = membership?.status === "active";
     membershipStatus.textContent = hasFullAccess ? "Full Access Member" : "Basic Member";
     document.getElementById("membership-basic-next").hidden = hasFullAccess;
-    document.getElementById("membership-full-next").hidden = !hasFullAccess;
+    document.getElementById("membership-event-pass").hidden = hasFullAccess;
+    document.getElementById("membership-lockbox").hidden = !hasFullAccess;
     var doorReveal = document.getElementById("door-code-reveal");
     var doorValue = document.getElementById("door-code-value");
     var doorReminder = document.getElementById("door-code-reminder");
