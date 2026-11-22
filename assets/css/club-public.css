@@ -29,8 +29,44 @@
 .club-public .resource-card-permalink-anchor { min-width: 44px; min-height: 44px; }
 /* Show complete product artwork, including printed club branding. */
 .club-public .merch-item-image { object-fit: contain; height: auto; aspect-ratio: 4 / 3; padding: .5rem; background: var(--club-logo-surface); border-color: var(--club-line); }
-.club-public .merch-intro { max-width: 75ch; }
-.club-public .merch-steps { max-width: 70ch; }
+/* The live catalog keeps the club's public-page styling. */
+.club-merch .merch-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding: 1rem 0;
+  border-block: 1px solid var(--club-line);
+}
+.club-merch .merch-categories[hidden], .club-merch .merch-status:empty { display: none; }
+.club-merch .merch-categories a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: .35rem .85rem;
+  border: 1px solid var(--club-control-line);
+  border-radius: 999px;
+  font-weight: 650;
+}
+.club-merch .merch-category { margin-top: 2rem; scroll-margin-top: 1rem; }
+.club-merch .merch-category h2 { margin: 0; color: var(--club-ink); }
+.club-merch .merch-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+.club-merch .merch-item { display: flex; flex-direction: column; gap: .6rem; }
+.club-merch .merch-item-image { aspect-ratio: 5 / 4; margin-bottom: .35rem; }
+.club-merch .merch-item h3 { margin: 0; }
+.club-merch .merch-item p { font-size: 1rem; }
+.club-merch .merch-item .merch-price { color: var(--club-ink); font-weight: 750; }
+.club-merch .merch-stock { display: inline-block; margin-inline-start: .75rem; font-size: .875rem; color: var(--club-muted); }
+.club-merch .merch-description { padding-bottom: .6rem; }
+.club-merch .merch-product-link { align-self: flex-start; margin-top: auto; }
+@media (max-width: 900px) {
+  .club-merch .merch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 580px) {
+  .club-merch .merch-grid { grid-template-columns: minmax(0, 1fr); }
+}
 .club-about .content > p { max-width: 75ch; }
 .club-about .home-highlights-grid { margin: 1.5rem 0 2rem; gap: 1.25rem; }
 .club-about .home-highlight-card { padding: 0; }
@@ -40,44 +76,8 @@
 .club-donate .content > p, .club-donate .donate-levels { max-width: 75ch; }
 
 
-/* Merch page: Fourthwall stays authoritative; these cards are editorial examples. */
-.club-public .merch-feature {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(1.25rem, 4vw, 3rem);
-  max-width: 980px;
-  margin: 2rem 0;
-  overflow: hidden;
-  border: 1px solid var(--club-line);
-  border-radius: var(--club-radius);
-  background: var(--club-surface);
-}
-.club-public .merch-feature-figure { margin: 0; padding: clamp(.75rem, 2vw, 1.25rem); }
-.club-public .merch-feature-image {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 30rem;
-  object-fit: contain;
-  background: var(--club-logo-surface);
-}
-.club-public .merch-feature-figure figcaption { margin-top: .6rem; color: var(--club-muted); font-size: .8rem; text-align: center; }
-.club-public .merch-feature-copy { padding: clamp(1rem, 2vw, 2rem); }
-.club-public .merch-feature-copy h2 { color: var(--club-ink); font-size: clamp(1.7rem, 3vw, 2.2rem); letter-spacing: -.035em; }
-.club-public .merch-feature-copy p:not(.club-eyebrow) { max-width: 48ch; }
-.club-public .merch-more { max-width: 980px; margin: 2.5rem 0; }
-.club-public .merch-more > h2 { color: var(--club-ink); font-size: 1.5rem; letter-spacing: -.03em; }
-.club-public .merch-item .club-button { margin-top: .75rem; }
 .club-public .merch-club-gear { max-width: 75ch; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--club-line); }
 .club-public .merch-club-gear h2 { color: var(--club-ink); font-size: 1.3rem; letter-spacing: -.025em; }
-@media (max-width: 700px) {
-  .club-public .merch-feature { grid-template-columns: 1fr; }
-  .club-public .merch-feature-image { max-height: 24rem; }
-}
-
-
 /* Donation appeal: clear impact, generous spacing, and a prominent path to give. */
 .club-donate .donate-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: center; }
 .club-donate .donate-heading-copy { max-width: 64ch; }
