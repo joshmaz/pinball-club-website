@@ -24,6 +24,12 @@ function loadRoutes(locationOverrides = {}) {
   return { routes: context.window.SNHMemberRoutes, replacedUrl: () => replacedUrl };
 }
 
+test("defaults to Membership and keeps explicit Profile links", () => {
+  assert.equal(loadRoutes().routes.read().panel, "membership");
+  assert.equal(loadRoutes({ search: "?panel=profile" }).routes.read().panel, "profile");
+  assert.equal(loadRoutes({ search: "?panel=door" }).routes.read().panel, "membership");
+});
+
 test("reads a canonical game editor route", () => {
   const fixture = loadRoutes({ search: `?panel=games&game=${GAME_ID}` });
   assert.deepEqual(JSON.parse(JSON.stringify(fixture.routes.read())), {
@@ -37,7 +43,7 @@ test("accepts legacy panel hashes but ignores invalid panels and item ids", () =
   assert.equal(loadRoutes({ hash: "#events" }).routes.read().panel, "events");
   const invalid = loadRoutes({ search: "?panel=admin&game=not-a-uuid", hash: "#nope" });
   assert.deepEqual(JSON.parse(JSON.stringify(invalid.routes.read())), {
-    panel: "profile",
+    panel: "membership",
     gameId: "",
     eventId: ""
   });
@@ -81,7 +87,7 @@ test("builds canonical routes and removes item parameters outside their panel", 
   const fixture = loadRoutes({ search: `?panel=games&game=${GAME_ID}` });
   assert.equal(fixture.routes.build("games"), `/members.html?panel=games&game=${GAME_ID}`);
   assert.equal(fixture.routes.build("events"), "/members.html?panel=events");
-  assert.equal(fixture.routes.build("profile"), "/members.html");
+  assert.equal(fixture.routes.build("profile"), "/members.html?panel=profile");
 });
 
 test("setGame updates history with a validated UUID", () => {
@@ -119,7 +125,7 @@ test("Operations section routes survive reload and legacy hashes", () => {
   const f = loadRoutes({ search: "?panel=operations&section=cache" });
   assert.equal(f.routes.read().operationsSection, "cache");
   assert.equal(f.routes.build("operations"), "/members.html?panel=operations&section=cache");
-  assert.equal(f.routes.build("profile"), "/members.html");
+  assert.equal(f.routes.build("profile"), "/members.html?panel=profile");
   assert.equal(loadRoutes({ hash: "#audit-log" }).routes.read().operationsSection, "audit");
   assert.equal(loadRoutes({ search: "?panel=operations&section=invalid" }).routes.read().operationsSection, "overview");
 });
@@ -140,7 +146,7 @@ test('issue reporting context survives sign-in return route and is removed outsi
  const fixture=loadRoutes({search:`?panel=club-issues&issueGame=${GAME_ID}`});
  assert.equal(fixture.routes.read().issueGameId,GAME_ID);
  assert.equal(fixture.routes.build('club-issues'),`/members.html?panel=club-issues&issueGame=${GAME_ID}`);
- assert.equal(fixture.routes.build('profile'),'/members.html');
+ assert.equal(fixture.routes.build('profile'),'/members.html?panel=profile');
  assert.equal(loadRoutes({search:'?panel=club-issues&issueGame=bad'}).routes.build('club-issues'),'/members.html?panel=club-issues');
 });
 
