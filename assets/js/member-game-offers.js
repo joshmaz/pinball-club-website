@@ -246,6 +246,129 @@
       editingId ? "Offer updated and returned to review." : "Offer submitted for review.", resetForm);
   });
 
+  function startRotationPlanner(games) {
+    const cabinetForm = byId("cabinet-form");
+    const planForm = byId("rotation-plan-form");
+    const planStatus = byId("rotation-status");
+    const controls = byId("rotation-controls");
+    const cancelEdit = byId("cancel-plan-edit");
+    let planId = null;
+
+    function feedback(message, tone = "") {
+      planStatus.textContent = message;
+      planStatus.dataset.tone = tone;
+    }
+
+    function clearPlan() {
+      planId = null;
+      planForm.reset();
+      byId("rotation-form-title").textContent = "New plan";
+      cancelEdit.hidden = true;
+    }
+
+    function editPlan(plan) {
+      planId = plan.id;
+      planForm.elements.incoming.value = plan.incoming_cabinet_id || "";
+      planForm.elements.outgoing.value = plan.outgoing_cabinet_id || "";
+      planForm.elements.arrival.value = plan.arrival_on || "";
+      planForm.elements.departure.value = plan.departure_on || "";
+      planForm.elements.note.value = plan.note || "";
+      byId("rotation-form-title").textContent = "Edit plan";
+      cancelEdit.hidden = false;
+      planForm.elements.incoming.focus();
+    }
+
+    async function refreshPlans() {
+      const { cabinets, plans } = await rpc("snh_rotation_workspace");
+      const labels = new Map(cabinets.map(cabinet => [cabinet.id, cabinet.title + " · " + cabinet.label]));
+      for (const field of [planForm.elements.incoming, planForm.elements.outgoing]) {
+        const previous = field.value;
+        field.replaceChildren(field.options[0], ...Array.from(labels, ([id, label]) => new Option(label, id)));
+        field.value = labels.has(previous) ? previous : "";
+      }
+      fillList("rotation-plan-list", plans, plan => {
+        const article = card(plan.canceled_at ? "Canceled plan" : "Tentative move");
+        const parts = [
+          [plan.incoming_cabinet_id, plan.arrival_on, "Arrival"],
+          [plan.outgoing_cabinet_id, plan.departure_on, "Departure"]
+        ];
+        for (const [id, date, label] of parts) {
+          if (id) article.append(node("p", label + " · " + labels.get(id) + (date ? " · " + date : " · Date open")));
+        }
+        if (plan.note) article.append(details(plan, [["note", "Private note"]]));
+        if (canReview && !plan.canceled_at) {
+          const actions = node("div");
+          actions.className = "offer-actions members-profile-form";
+          const cancel = button("Cancel plan", () => {
+            if (!window.confirm("Cancel this tentative rotation plan?")) return;
+            save(cancel, () => rpc("snh_cancel_rotation_plan", { p_id: plan.id }), "Plan canceled.", () => {
+              if (planId === plan.id) clearPlan();
+            });
+          });
+          actions.append(button("Edit plan", () => editPlan(plan)), cancel);
+          article.append(actions);
+        }
+        return article;
+      }, "There are no rotation plans yet.");
+    }
+
+    async function save(control, action, message, after) {
+      control.disabled = true;
+      try {
+        await action();
+        after?.();
+        feedback(message, "success");
+        try {
+          await refreshPlans();
+        } catch {
+          feedback(message + " Reload the page to refresh the plans.", "error");
+        }
+      } catch (error) {
+        feedback(error.code === "23505"
+          ? "That cabinet already has an active plan for this direction."
+          : "The change could not be saved. Check your access and try again.", "error");
+      } finally {
+        control.disabled = false;
+      }
+    }
+
+    for (const game of games) cabinetForm.elements.game_id.add(new Option(game.title, game.id));
+    cabinetForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const label = cabinetForm.elements.label.value.trim();
+      if (!label) {
+        feedback("Enter a cabinet label.", "error");
+        return;
+      }
+      save(event.submitter || cabinetForm.querySelector('button[type="submit"]'),
+        () => rpc("snh_register_game_cabinet", { p_game_id: cabinetForm.elements.game_id.value, p_label: label }),
+        "Cabinet registered.", () => cabinetForm.reset());
+    });
+    cancelEdit.addEventListener("click", clearPlan);
+    planForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const { incoming, outgoing, arrival, departure, note } = planForm.elements;
+      if ((!incoming.value && !outgoing.value) || (incoming.value && incoming.value === outgoing.value)
+        || (arrival.value && !incoming.value) || (departure.value && !outgoing.value)) {
+        feedback("Choose at least one cabinet, use different cabinets for a swap, and enter dates only for selected moves.", "error");
+        return;
+      }
+      save(event.submitter || planForm.querySelector('button[type="submit"]'), () => rpc("snh_save_rotation_plan", {
+        p_id: planId, p_incoming: incoming.value || null, p_outgoing: outgoing.value || null,
+        p_arrival: arrival.value || null, p_departure: departure.value || null, p_note: note.value.trim() || null
+      }), "Rotation plan saved.", clearPlan);
+    });
+
+    byId("rotation-plans").hidden = false;
+    byId("rotation-plans-link").hidden = false;
+    refreshPlans().then(() => {
+      controls.hidden = !canReview;
+      if (canReview && !games.length) feedback("The catalog is unavailable. Existing cabinets can still be used in plans.");
+    }).catch(error => feedback(error.code === "PGRST202"
+      ? "Rotation planning is unavailable until the planning migration is applied."
+      : "Rotation plans could not load. Reload the page to try again.", "error"));
+  }
+
   async function init() {
     if (!client || !auth) throw new Error("Account service unavailable");
     const session = await auth.requireAuth({ redirectToSignin: true, next: "bring-a-game.html" });
@@ -273,10 +396,12 @@
     byId("offer-review").hidden = !canReadReview;
     showStatus(eligible ? "" : "An active, email-confirmed website account is required to submit or browse offers.");
 
-    if (eligible) {
+    let games = [];
+    if (eligible || canReview) {
       try {
-        const games = await result(client.from("games_catalog_v1").select("id:game->>id,title:game->>title").order("slug"));
-        for (const game of games.filter(game => game.id && game.title).sort((a, b) => a.title.localeCompare(b.title))) {
+        const rows = await result(client.from("games_catalog_v1").select("id:game->>id,title:game->>title").order("slug"));
+        games = rows.filter(game => game.id && game.title).sort((a, b) => a.title.localeCompare(b.title));
+        for (const game of games) {
           const existing = Array.from(catalog.options).find(option => option.value === game.id);
           if (existing) existing.textContent = game.title;
           else catalog.add(new Option(game.title, game.id));
@@ -285,6 +410,7 @@
         catalog.options[0].textContent = "Catalog unavailable · enter a title manually";
       }
     }
+    if (canReadReview) startRotationPlanner(games);
   }
 
   init().catch(() => showStatus("Game offers could not load. Reload the page to try again.", "error"));

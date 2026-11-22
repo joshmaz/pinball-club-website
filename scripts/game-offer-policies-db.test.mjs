@@ -65,7 +65,8 @@ try {
   '20261016120000_require_verified_access_grants.sql',
   '20261017180000_publishing_role_domain.sql',
   '20261122225245_game_rotation_cabinets_and_loans.sql',
-  '20261122225737_game_offer_policies.sql'
+  '20261122225737_game_offer_policies.sql',
+  '20261122233621_game_rotation_plans.sql'
 ]) await migration(name);
   for (let n = 1; n <= 14; n++) {
     await query('insert into auth.users (id,email_confirmed_at) values ($1,$2)', [uid(100+n), n === 14 ? null : new Date()]);
@@ -97,6 +98,42 @@ try {
     await actor(n);
     await assert.rejects(save(), denied);
   }
+
+  await db.exec('reset role');
+  await query('alter table public.games add column title text');
+  await query("insert into public.games (id,title) values ($1,'Example')", [uid(200)]);
+  const register = label => query('select public.snh_register_game_cabinet($1,$2) id', [uid(200), label]);
+  const savePlan = (id, incoming, outgoing, note) => query(
+    'select public.snh_save_rotation_plan($1,$2,$3,null,null,$4) id', [id,incoming,outgoing,note]);
+  const workspace = () => query('select public.snh_rotation_workspace() workspace');
+  const cancel = id => query('select public.snh_cancel_rotation_plan($1)', [id]);
+  await actor(12);
+  await assert.rejects(workspace(), denied);
+  await actor(10);
+  const [{id: incoming}] = await register('First cabinet');
+  const [{id: outgoing}] = await register('Second cabinet');
+  assert.notEqual(incoming, outgoing);
+  assert.deepEqual(await register(' first cabinet '), [{id:incoming}]);
+  await assert.rejects(savePlan(null,incoming,incoming,null), {code:'23514'});
+  const [{id: plan}] = await savePlan(null,incoming,outgoing,'Private planning note');
+  await assert.rejects(savePlan(null,incoming,null,null), {code:'23505'});
+  await savePlan(plan,incoming,outgoing,'Edited private note');
+  await actor(11);
+  assert.equal((await workspace())[0].workspace.plans[0].note,'Edited private note');
+  await assert.rejects(register('Unauthorized'), denied);
+  await assert.rejects(savePlan(plan,incoming,outgoing,null), denied);
+  await assert.rejects(cancel(plan), denied);
+  await actor(1);
+  await cancel(plan);
+  await cancel(plan);
+  const [{id: replacement}] = await savePlan(null,incoming,null,null);
+  const [{workspace: rotation}] = await workspace();
+  assert.equal(rotation.plans[0].id,replacement);
+  assert.equal(rotation.plans[0].arrival_on,null);
+  assert.ok(rotation.plans[1].canceled_at);
+  await db.exec('reset role');
+  assert.deepEqual(await query('select * from private.game_loans'), []);
+  assert.deepEqual(await query("select action from public.audit_log where entity_type='game_rotation_plan' and entity_id=$1 and action='cancel'", [plan]), [{action:'cancel'}]);
 
   await actor(12);
   const [{id}] = await save();
