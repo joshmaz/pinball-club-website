@@ -17,14 +17,6 @@
 @media(max-width:800px) { .signin-layout { grid-template-columns: minmax(0, 1fr); } }
 @media(max-width:480px) { .signin-access { padding: 1rem; } }
 
-/* Keep auth errors close to the form, with a softer visual treatment. */
-.club-signin .members-auth-form #login-error:not([hidden]) {
-  margin: 0 0 .25rem;
-  border-color: var(--club-line);
-  border-left: 3px solid var(--club-danger);
-  background: var(--club-danger-surface);
-  color: var(--club-ink);
-}
 .club-signin-status[data-state="error"] {
   border-color: var(--club-line);
   border-left-color: var(--club-danger);
