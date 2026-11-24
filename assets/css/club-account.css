@@ -596,3 +596,56 @@
 .operations-ai-feature-stat { min-width: 0; }
 .operations-ai-feature-stats dt { color: var(--club-muted); font-size: .72rem; line-height: 1.4; }
 .operations-ai-feature-stats dd { margin: .15rem 0 0; font-size: .88rem; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+.club-account .executive-section { margin-block: 1.75rem; }
+.club-account .executive-section > h3 { margin: 0 0 .65rem; }
+.club-account .executive-section .members-page-status:empty { display: none; }
+.club-account .executive-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: .85rem;
+  align-items: start;
+}
+.club-account .executive-tool {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--club-line);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+.club-account .executive-tool h4 { margin: 0 0 .55rem; }
+.club-account .executive-tool p { margin: 0 0 .5rem; color: var(--club-muted); font-size: .9rem; }
+.club-account #club-documents-folder:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  font-weight: 650;
+}
+.club-account #club-documents-folder svg { flex: none; }
+.club-account #club-documents-folder-settings summary {
+  width: fit-content;
+  padding-block: .65rem;
+  color: var(--club-teal);
+  font-size: .9rem;
+  cursor: pointer;
+}
+.club-account #club-documents-folder-form { margin-block: .35rem 0; }
+.club-account :is(.executive-inboxes, #club-documents-list, #board-staff-roster ul) {
+  margin: .5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.club-account .executive-inboxes li { padding-block: .5rem; }
+.club-account .executive-inboxes li + li { border-top: 1px solid var(--club-line); }
+.club-account .executive-inboxes a { font-weight: 650; }
+.club-account .executive-inboxes li > span {
+  display: block;
+  color: var(--club-muted);
+  font-size: .9rem;
+}
+.club-account :is(#club-documents-list, #board-staff-roster ul) li {
+  padding-block: .35rem;
+  overflow-wrap: anywhere;
+}
+.club-account #board-staff-roster h4 { margin: .85rem 0 .2rem; }
