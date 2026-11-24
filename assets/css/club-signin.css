@@ -16,3 +16,42 @@
 .club-signin .members-signin-callout { border-radius: var(--club-radius); }
 @media(max-width:800px) { .signin-layout { grid-template-columns: minmax(0, 1fr); } }
 @media(max-width:480px) { .signin-access { padding: 1rem; } }
+
+/* Keep sign-in errors close to the form and visibly distinct in both themes. */
+.club-signin .members-auth-form #login-error:not([hidden]) {
+  margin: 0 0 .25rem;
+  border-color: var(--club-danger);
+  border-left-color: var(--club-danger);
+  background: var(--club-danger-surface);
+  color: var(--club-ink);
+}
+.club-signin-status[data-state="error"] {
+  border-color: var(--club-danger);
+  border-left-color: var(--club-danger);
+  background: var(--club-danger-surface);
+  color: var(--club-ink);
+}
+.club-signin .members-auth-form #login-btn[aria-busy="true"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  cursor: progress;
+}
+.club-signin .members-auth-form #login-btn[aria-busy="true"]::before {
+  content: "";
+  width: .9rem;
+  height: .9rem;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: signin-spin .8s linear infinite;
+}
+@keyframes signin-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .club-signin .members-auth-form #login-btn[aria-busy="true"]::before {
+    animation: none;
+    border-top-color: currentColor;
+  }
+}
