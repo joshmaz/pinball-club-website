@@ -306,56 +306,73 @@
 
         <div id="member-panel-executive" class="member-panel" role="region" aria-labelledby="member-nav-executive" tabindex="-1" aria-hidden="true">
           <h2>Executive</h2>
-          <h3>Board &amp; Staff</h3>
-          <p id="board-staff-status" class="members-page-status" role="status"></p>
-          <div id="board-staff-roster"></div>
-
-          <h3>Club Documents</h3>
-          <p class="member-panel-intro">We use Google Drive to manage document access, discuss changes in comments, and collaborate on files. If a document is restricted, you can request access in Drive.</p>
-          <p id="club-documents-status" class="members-page-status" role="status"></p>
-          <section id="club-documents-tools" aria-labelledby="club-documents-tools-heading" hidden>
-            <h4 id="club-documents-tools-heading">Board &amp; Staff tools</h4>
-            <p class="member-panel-helper">Only Board and Staff members see these tools.</p>
-            <a id="club-documents-folder" target="_blank" rel="noopener noreferrer">
-              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path fill="#00832d" d="M8 2h7L7 16l-4 6-3-6z"/>
-                <path fill="#ffba00" d="M8 2h7l9 14h-7z"/>
-                <path fill="#0066da" d="M7 16h17l-4 6H3z"/>
-              </svg>
-              Open shared board folder in Google Drive <span aria-hidden="true">↗</span>
-            </a>
-            <details id="club-documents-folder-settings" hidden>
-              <summary>Manage board folder shortcut</summary>
-              <form id="club-documents-folder-form" class="members-admin-editor-form">
-                <label for="club-documents-folder-url">Google Drive folder URL</label>
-                <input id="club-documents-folder-url" type="url" maxlength="2048">
-                <button type="submit" class="club-button">Save shortcut</button>
-                <p class="member-panel-helper">Leave blank to remove the shortcut. Drive controls who can open the folder.</p>
-              </form>
-            </details>
-          </section>
-          <h4>Documents for members</h4>
-          <div id="club-documents-actions" hidden>
-            <div class="members-admin-controls">
-              <button type="button" id="club-documents-add" class="club-button">Add document link</button>
-              <button type="button" id="club-documents-manage" class="club-button" aria-pressed="false" aria-controls="club-documents-list">Manage links</button>
+          <section id="club-documents-tools" class="executive-section" aria-labelledby="club-documents-tools-heading" hidden>
+            <h3 id="club-documents-tools-heading">Board &amp; Staff tools</h3>
+            <div class="executive-tools">
+              <section class="executive-tool" aria-labelledby="executive-drive-heading">
+                <h4 id="executive-drive-heading">Shared board folder</h4>
+                <a id="club-documents-folder" target="_blank" rel="noopener noreferrer">
+                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="#00832d" d="M8 2h7L7 16l-4 6-3-6z"/>
+                    <path fill="#ffba00" d="M8 2h7l9 14h-7z"/>
+                    <path fill="#0066da" d="M7 16h17l-4 6H3z"/>
+                  </svg>
+                  Open in Google Drive <span aria-hidden="true">↗</span>
+                </a>
+                <details id="club-documents-folder-settings" hidden>
+                  <summary>Manage board folder shortcut</summary>
+                  <form id="club-documents-folder-form" class="members-admin-editor-form">
+                    <label for="club-documents-folder-url">Google Drive folder URL</label>
+                    <input id="club-documents-folder-url" type="url" maxlength="2048">
+                    <button type="submit" class="club-button">Save shortcut</button>
+                    <p class="member-panel-helper">Leave blank to remove the shortcut. Drive controls who can open the folder.</p>
+                  </form>
+                </details>
+              </section>
+              <section class="executive-tool" aria-labelledby="club-inboxes-heading">
+                <h4 id="club-inboxes-heading">Club Inboxes</h4>
+                <p>Sign in to Resend to read and reply.</p>
+                <ul class="executive-inboxes">
+                  <li><a href="https://resend.com/inboxes/info@snhpinballclub.com" target="_blank" rel="noopener noreferrer">Info <span aria-hidden="true">↗</span></a><span>General inquiries, visits, and events</span></li>
+                  <li><a href="https://resend.com/inboxes/support@snhpinballclub.com" target="_blank" rel="noopener noreferrer">Support <span aria-hidden="true">↗</span></a><span>Member questions, account access, and welcome email replies</span></li>
+                  <li><a href="https://resend.com/inboxes/webmaster@snhpinballclub.com" target="_blank" rel="noopener noreferrer">Webmaster <span aria-hidden="true">↗</span></a><span>Website issues and technical correspondence</span></li>
+                </ul>
+              </section>
             </div>
-          </div>
-          <form id="club-documents-form" class="members-profile-form" hidden>
-            <fieldset class="club-form-section">
-              <legend id="club-documents-form-title">Add document link</legend>
-              <div class="club-field"><label for="club-document-title">Title</label><input id="club-document-title" required maxlength="160"></div>
-              <div class="club-field"><label for="club-document-url">Google Drive link</label><input id="club-document-url" type="url" required maxlength="2048"></div>
-              <div class="club-field"><label for="club-document-date">Meeting date (optional)</label><input id="club-document-date" type="date"></div>
-              <label><input type="checkbox" id="club-document-pinned"> Pin to the top</label>
-              <p class="member-panel-helper">Use the link to the copy intended for members. Check its sharing settings in Drive.</p>
+          </section>
+
+          <section class="executive-section" aria-labelledby="executive-documents-heading">
+            <h3 id="executive-documents-heading">Club Documents</h3>
+            <p class="member-panel-intro">Open club documents in Google Drive. If a file is restricted, you can request access there.</p>
+            <p id="club-documents-status" class="members-page-status" role="status"></p>
+            <div id="club-documents-actions" hidden>
               <div class="members-admin-controls">
-                <button type="submit" class="club-button">Save link</button>
-                <button type="button" id="club-documents-cancel" class="club-button">Cancel</button>
+                <button type="button" id="club-documents-add" class="club-button">Add document link</button>
+                <button type="button" id="club-documents-manage" class="club-button" aria-pressed="false" aria-controls="club-documents-list">Manage links</button>
               </div>
-            </fieldset>
-          </form>
-          <ul id="club-documents-list"></ul>
+            </div>
+            <form id="club-documents-form" class="members-profile-form" hidden>
+              <fieldset class="club-form-section">
+                <legend id="club-documents-form-title">Add document link</legend>
+                <div class="club-field"><label for="club-document-title">Title</label><input id="club-document-title" required maxlength="160"></div>
+                <div class="club-field"><label for="club-document-url">Google Drive link</label><input id="club-document-url" type="url" required maxlength="2048"></div>
+                <div class="club-field"><label for="club-document-date">Meeting date (optional)</label><input id="club-document-date" type="date"></div>
+                <label><input type="checkbox" id="club-document-pinned"> Pin to the top</label>
+                <p class="member-panel-helper">Use the link to the copy intended for members. Check its sharing settings in Drive.</p>
+                <div class="members-admin-controls">
+                  <button type="submit" class="club-button">Save link</button>
+                  <button type="button" id="club-documents-cancel" class="club-button">Cancel</button>
+                </div>
+              </fieldset>
+            </form>
+            <ul id="club-documents-list"></ul>
+          </section>
+
+          <section class="executive-section" aria-labelledby="executive-roster-heading">
+            <h3 id="executive-roster-heading">Board &amp; Staff</h3>
+            <p id="board-staff-status" class="members-page-status" role="status"></p>
+            <div id="board-staff-roster"></div>
+          </section>
         </div>
 
         <div id="member-panel-member-admin" class="member-panel" role="region" aria-labelledby="member-nav-member-admin" tabindex="-1" aria-hidden="true">
