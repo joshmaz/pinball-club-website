@@ -75,6 +75,7 @@
 
 <div class="signin-layout">
 <section class="signin-access" aria-label="Sign in or create a free account">
+  <p class="club-signin-status" id="status" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"></p>
   <form id="auth-form" class="members-auth-form">
     <div class="club-field">
       <label for="email">Email</label>
@@ -114,7 +115,6 @@
     </div>
     <button id="reset-password-btn" type="submit">Set New Password</button>
   </form>
-  <p class="club-signin-status" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
   <div id="account-deletion-recovery"></div>
 </section>
 <section class="content signin-prose">
@@ -161,7 +161,7 @@
     if (signupBtn) signupBtn.disabled = !enabled;
     if (forgotPasswordBtn) forgotPasswordBtn.disabled = !enabled;
     if (resendConfirmationBtn) resendConfirmationBtn.disabled = !enabled;
-    if (status && message) status.innerText = message;
+    if (status && message) setStatusMessage(message, "error");
   }
 
   function getUnavailableMessage() {
@@ -183,10 +183,23 @@
   function setStatusMessage(message, state) {
     var status = document.getElementById("status");
     if (status) {
+      var isError = state === "error";
+      status.setAttribute("role", isError ? "alert" : "status");
+      status.setAttribute("aria-live", isError ? "assertive" : "polite");
       status.innerText = message;
       if (state) status.dataset.state = state;
       else delete status.dataset.state;
+      if (isError) status.focus();
     }
+  }
+
+  function clearAuthError() {
+    var status = document.getElementById("status");
+    if (status && status.dataset.state === "error") setStatusMessage("");
+  }
+
+  function setLoginError(message) {
+    setStatusMessage(message, "error");
   }
 
   function getRedirectTarget() {
@@ -221,7 +234,7 @@
     if (passwordResetForm) passwordResetForm.hidden = !enabled;
   }
 
-  async function runAuthAction(action) {
+  async function runAuthAction(action, onError) {
     try {
       await action();
     } catch (err) {
@@ -239,24 +252,23 @@
         fallbackMessage =
           "Cannot reach member login services right now. Check your connection, disable blockers for this site, and try again.";
       }
-      setStatusMessage(
-        err && err.message ? err.message : fallbackMessage
-      );
-      if (isFetchFailure) {
-        setStatusMessage(fallbackMessage);
-      }
+      var userMessage = err && err.message ? err.message : fallbackMessage;
+      if (isFetchFailure) userMessage = fallbackMessage;
+      if (typeof onError === "function") onError(userMessage);
+      else setStatusMessage(userMessage, "error");
       console.error("[SNH] Auth action failed:", err);
     }
   }
 
   async function signup() {
+    clearAuthError();
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var creds = getCredentials();
     if (!creds.email || !creds.password) {
-      setStatusMessage("Enter email and password.");
+      setStatusMessage("Enter email and password.", "error");
       return;
     }
 
@@ -276,7 +288,7 @@
         });
 
         if (result.error) {
-          setStatusMessage(result.error.message);
+          setStatusMessage(result.error.message, "error");
           return;
         }
         if (result.data.session) {
@@ -308,38 +320,61 @@
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
+    var authForm = document.getElementById("auth-form");
+    var loginBtn = document.getElementById("login-btn");
+    if (authForm && authForm.getAttribute("aria-busy") === "true") return;
+
     var creds = getCredentials();
+    clearAuthError();
+    setStatusMessage("");
     if (!creds.email || !creds.password) {
-      setStatusMessage("Enter email and password.");
+      setLoginError("Enter email and password.");
       return;
     }
 
-    await runAuthAction(async function () {
-      var result = await window.snhSupabase.auth.signInWithPassword({
-        email: creds.email,
-        password: creds.password,
-      });
+    if (authForm) authForm.setAttribute("aria-busy", "true");
+    if (loginBtn) {
+      loginBtn.disabled = true;
+      loginBtn.setAttribute("aria-busy", "true");
+      loginBtn.textContent = "Signing in…";
+    }
 
-      if (result.error) {
-        setStatusMessage(result.error.message);
-        return;
+    try {
+      await runAuthAction(async function () {
+        var result = await window.snhSupabase.auth.signInWithPassword({
+          email: creds.email,
+          password: creds.password,
+        });
+
+        if (result.error) {
+          setLoginError("Email or password is incorrect.");
+          return;
+        }
+        if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
+          window.location.href = "members.html";
+          return;
+        }
+        window.location.href = getRedirectTarget();
+      }, setLoginError);
+    } finally {
+      if (authForm) authForm.removeAttribute("aria-busy");
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.removeAttribute("aria-busy");
+        loginBtn.textContent = "Login";
       }
-      if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
-        window.location.href = "members.html";
-        return;
-      }
-      window.location.href = getRedirectTarget();
-    });
+    }
   }
 
   async function resendConfirmation() {
+    clearAuthError();
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var email = document.getElementById("email").value.trim();
     if (!email) {
-      setStatusMessage("Enter the email address you used to sign up, then choose Resend Confirmation Email.");
+      setStatusMessage("Enter the email address you used to sign up, then choose Resend Confirmation Email.", "error");
       return;
     }
 
@@ -356,12 +391,12 @@
         options: { emailRedirectTo: window.location.origin + window.location.pathname }
       });
       if (result.error) {
-        setStatusMessage(result.error.message);
+        setStatusMessage(result.error.message, "error");
         return;
       }
       setStatusMessage("If this address has an account awaiting confirmation, another confirmation email is on its way.", "confirmation");
     } catch (err) {
-      setStatusMessage(err && err.message ? err.message : "Could not request a confirmation email. Please try again.");
+      setStatusMessage(err && err.message ? err.message : "Could not request a confirmation email. Please try again.", "error");
     } finally {
       if (button) {
         button.disabled = false;
@@ -372,13 +407,14 @@
   }
 
   async function sendPasswordReset() {
+    clearAuthError();
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
     var email = document.getElementById("email").value.trim();
     if (!email) {
-      setStatusMessage("Enter your email first, then click Forgot Password.");
+      setStatusMessage("Enter your email first, then click Forgot Password.", "error");
       return;
     }
 
@@ -387,22 +423,22 @@
         redirectTo: getPasswordRecoveryRedirect()
       });
       if (result.error) {
-        setStatusMessage(result.error.message);
+        setStatusMessage(result.error.message, "error");
         return;
       }
-      setStatusMessage("Password reset email sent. Open the link in your email to set a new password.");
+      setStatusMessage("Password reset email sent. Open the link in your email to set a new password.", "confirmation");
     });
   }
 
   async function submitRecoveredPassword() {
     if (!window.SNHMemberPortal) {
-      setStatusMessage("Password reset is temporarily unavailable. Please refresh and try again.");
+      setStatusMessage("Password reset is temporarily unavailable. Please refresh and try again.", "error");
       return;
     }
     var session = await window.SNHSiteAuth.getSession();
     if (!session || !session.user) {
       setRecoveryMode(false);
-      setStatusMessage("Please sign in to continue password reset.");
+      setStatusMessage("Please sign in to continue password reset.", "error");
       return;
     }
     var newPasswordEl = document.getElementById("reset-password");
@@ -411,15 +447,15 @@
     var confirmPassword = confirmEl ? confirmEl.value : "";
 
     if (!newPassword || !confirmPassword) {
-      setStatusMessage("Enter and confirm your new password.");
+      setStatusMessage("Enter and confirm your new password.", "error");
       return;
     }
     if (newPassword.length < 8) {
-      setStatusMessage("Password must be at least 8 characters.");
+      setStatusMessage("Password must be at least 8 characters.", "error");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setStatusMessage("Password confirmation does not match.");
+      setStatusMessage("Password confirmation does not match.", "error");
       return;
     }
 
@@ -442,6 +478,10 @@
       login();
     });
   }
+  ["email", "password"].forEach(function (id) {
+    var input = document.getElementById(id);
+    if (input) input.addEventListener("input", clearAuthError);
+  });
   var signupBtn = document.getElementById("signup-btn");
   if (signupBtn) {
     signupBtn.addEventListener("click", function () {
