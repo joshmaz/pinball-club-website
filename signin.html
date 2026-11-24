@@ -75,6 +75,7 @@
 
 <div class="signin-layout">
 <section class="signin-access" aria-label="Sign in or create a free account">
+  <p class="club-signin-status" id="status" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"></p>
   <form id="auth-form" class="members-auth-form">
     <p id="login-error" class="club-signin-status" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" hidden></p>
     <div class="club-field">
@@ -115,7 +116,6 @@
     </div>
     <button id="reset-password-btn" type="submit">Set New Password</button>
   </form>
-  <p class="club-signin-status" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
   <div id="account-deletion-recovery"></div>
 </section>
 <section class="content signin-prose">
@@ -162,7 +162,7 @@
     if (signupBtn) signupBtn.disabled = !enabled;
     if (forgotPasswordBtn) forgotPasswordBtn.disabled = !enabled;
     if (resendConfirmationBtn) resendConfirmationBtn.disabled = !enabled;
-    if (status && message) status.innerText = message;
+    if (status && message) setStatusMessage(message, "error");
   }
 
   function getUnavailableMessage() {
@@ -187,6 +187,7 @@
       status.innerText = message;
       if (state) status.dataset.state = state;
       else delete status.dataset.state;
+      if (state === "error") status.focus();
     }
   }
 
@@ -277,7 +278,7 @@
     }
     var creds = getCredentials();
     if (!creds.email || !creds.password) {
-      setStatusMessage("Enter email and password.");
+      setStatusMessage("Enter email and password.", "error");
       return;
     }
 
@@ -297,7 +298,7 @@
         });
 
         if (result.error) {
-          setStatusMessage(result.error.message);
+          setStatusMessage(result.error.message, "error");
           return;
         }
         if (result.data.session) {
@@ -383,7 +384,7 @@
     }
     var email = document.getElementById("email").value.trim();
     if (!email) {
-      setStatusMessage("Enter the email address you used to sign up, then choose Resend Confirmation Email.");
+      setStatusMessage("Enter the email address you used to sign up, then choose Resend Confirmation Email.", "error");
       return;
     }
 
@@ -400,12 +401,12 @@
         options: { emailRedirectTo: window.location.origin + window.location.pathname }
       });
       if (result.error) {
-        setStatusMessage(result.error.message);
+        setStatusMessage(result.error.message, "error");
         return;
       }
       setStatusMessage("If this address has an account awaiting confirmation, another confirmation email is on its way.", "confirmation");
     } catch (err) {
-      setStatusMessage(err && err.message ? err.message : "Could not request a confirmation email. Please try again.");
+      setStatusMessage(err && err.message ? err.message : "Could not request a confirmation email. Please try again.", "error");
     } finally {
       if (button) {
         button.disabled = false;
@@ -423,7 +424,7 @@
     }
     var email = document.getElementById("email").value.trim();
     if (!email) {
-      setStatusMessage("Enter your email first, then click Forgot Password.");
+      setStatusMessage("Enter your email first, then click Forgot Password.", "error");
       return;
     }
 
@@ -432,22 +433,22 @@
         redirectTo: getPasswordRecoveryRedirect()
       });
       if (result.error) {
-        setStatusMessage(result.error.message);
+        setStatusMessage(result.error.message, "error");
         return;
       }
-      setStatusMessage("Password reset email sent. Open the link in your email to set a new password.");
+      setStatusMessage("Password reset email sent. Open the link in your email to set a new password.", "confirmation");
     });
   }
 
   async function submitRecoveredPassword() {
     if (!window.SNHMemberPortal) {
-      setStatusMessage("Password reset is temporarily unavailable. Please refresh and try again.");
+      setStatusMessage("Password reset is temporarily unavailable. Please refresh and try again.", "error");
       return;
     }
     var session = await window.SNHSiteAuth.getSession();
     if (!session || !session.user) {
       setRecoveryMode(false);
-      setStatusMessage("Please sign in to continue password reset.");
+      setStatusMessage("Please sign in to continue password reset.", "error");
       return;
     }
     var newPasswordEl = document.getElementById("reset-password");
@@ -456,15 +457,15 @@
     var confirmPassword = confirmEl ? confirmEl.value : "";
 
     if (!newPassword || !confirmPassword) {
-      setStatusMessage("Enter and confirm your new password.");
+      setStatusMessage("Enter and confirm your new password.", "error");
       return;
     }
     if (newPassword.length < 8) {
-      setStatusMessage("Password must be at least 8 characters.");
+      setStatusMessage("Password must be at least 8 characters.", "error");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setStatusMessage("Password confirmation does not match.");
+      setStatusMessage("Password confirmation does not match.", "error");
       return;
     }
 
