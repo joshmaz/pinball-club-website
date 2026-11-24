@@ -76,6 +76,7 @@
 <div class="signin-layout">
 <section class="signin-access" aria-label="Sign in or create a free account">
   <form id="auth-form" class="members-auth-form">
+    <p id="login-error" class="club-signin-status" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1" hidden></p>
     <div class="club-field">
       <label for="email">Email</label>
     <input id="email" type="email" autocomplete="email" placeholder="Email" />
@@ -189,6 +190,27 @@
     }
   }
 
+  function clearLoginError() {
+    var error = document.getElementById("login-error");
+    if (error) {
+      error.textContent = "";
+      error.hidden = true;
+    }
+  }
+
+  function setLoginError(message) {
+    var error = document.getElementById("login-error");
+    if (!error) {
+      setStatusMessage(message, "error");
+      return;
+    }
+    error.textContent = message;
+    error.hidden = false;
+    var status = document.getElementById("status");
+    if (status) status.innerText = "";
+    error.focus();
+  }
+
   function getRedirectTarget() {
     var params = new URLSearchParams(window.location.search);
     var next = String(params.get("next") || "").trim();
@@ -239,17 +261,16 @@
         fallbackMessage =
           "Cannot reach member login services right now. Check your connection, disable blockers for this site, and try again.";
       }
-      setStatusMessage(
-        err && err.message ? err.message : fallbackMessage
-      );
-      if (isFetchFailure) {
-        setStatusMessage(fallbackMessage);
-      }
+      var userMessage = err && err.message ? err.message : fallbackMessage;
+      if (isFetchFailure) userMessage = fallbackMessage;
+      if (typeof onError === "function") onError(userMessage);
+      else setStatusMessage(userMessage, "error");
       console.error("[SNH] Auth action failed:", err);
     }
   }
 
   async function signup() {
+    clearLoginError();
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
@@ -308,31 +329,54 @@
       setAuthEnabled(false, getUnavailableMessage());
       return;
     }
+    var authForm = document.getElementById("auth-form");
+    var loginBtn = document.getElementById("login-btn");
+    if (authForm && authForm.getAttribute("aria-busy") === "true") return;
+
     var creds = getCredentials();
+    clearLoginError();
+    setStatusMessage("");
     if (!creds.email || !creds.password) {
-      setStatusMessage("Enter email and password.");
+      setLoginError("Enter email and password.");
       return;
     }
 
-    await runAuthAction(async function () {
-      var result = await window.snhSupabase.auth.signInWithPassword({
-        email: creds.email,
-        password: creds.password,
-      });
+    if (authForm) authForm.setAttribute("aria-busy", "true");
+    if (loginBtn) {
+      loginBtn.disabled = true;
+      loginBtn.setAttribute("aria-busy", "true");
+      loginBtn.textContent = "Signing in…";
+    }
 
-      if (result.error) {
-        setStatusMessage(result.error.message);
-        return;
+    try {
+      await runAuthAction(async function () {
+        var result = await window.snhSupabase.auth.signInWithPassword({
+          email: creds.email,
+          password: creds.password,
+        });
+
+        if (result.error) {
+          setLoginError("Email or password is incorrect.");
+          return;
+        }
+        if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
+          window.location.href = "members.html";
+          return;
+        }
+        window.location.href = getRedirectTarget();
+      }, setLoginError);
+    } finally {
+      if (authForm) authForm.removeAttribute("aria-busy");
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.removeAttribute("aria-busy");
+        loginBtn.textContent = "Login";
       }
-      if (window.SNHMemberPortal && window.SNHMemberPortal.isPasswordRecoveryIntentActive && window.SNHMemberPortal.isPasswordRecoveryIntentActive()) {
-        window.location.href = "members.html";
-        return;
-      }
-      window.location.href = getRedirectTarget();
-    });
+    }
   }
 
   async function resendConfirmation() {
+    clearLoginError();
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
@@ -372,6 +416,7 @@
   }
 
   async function sendPasswordReset() {
+    clearLoginError();
     if (!window.snhSupabase) {
       setAuthEnabled(false, getUnavailableMessage());
       return;
@@ -442,6 +487,10 @@
       login();
     });
   }
+  ["email", "password"].forEach(function (id) {
+    var input = document.getElementById(id);
+    if (input) input.addEventListener("input", clearLoginError);
+  });
   var signupBtn = document.getElementById("signup-btn");
   if (signupBtn) {
     signupBtn.addEventListener("click", function () {
