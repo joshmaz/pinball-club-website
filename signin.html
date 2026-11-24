@@ -243,7 +243,7 @@
     if (passwordResetForm) passwordResetForm.hidden = !enabled;
   }
 
-  async function runAuthAction(action) {
+  async function runAuthAction(action, onError) {
     try {
       await action();
     } catch (err) {
