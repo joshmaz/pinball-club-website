@@ -109,16 +109,9 @@
     return payer.coverage_through >= last.toISOString().slice(0, 10);
   }
 
-  function renderPayer(parent, group, state, payer, reload) {
-    const saved = new Set(state.receipts[group.email] || []);
-    const dates = [...group.dates].sort().filter(date => !saved.has(date));
+  function renderPayer(parent, group, state, payer, review, reload) {
+    const { saved, dates, matches, pending, status } = review;
     const section = element(parent, "details");
-    const matches = state.members.filter(member =>
-      member.verifiedEmail === group.email || state.paymentEmails[member.id] === group.email
-    );
-    const pending = state.holds[group.email];
-    const status = dates.length ? dates.length + " to review"
-      : pending ? "On hold" : payer?.roster_name ? "Unlinked payments" : saved.size ? "Recorded" : "Follow-up";
     element(section, "summary", [group.name, group.email, status].filter(Boolean).join(" · "));
     const history = [...saved].sort();
     if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
@@ -176,7 +169,7 @@
           p_member: member.value === unlinked ? null : member.value,
           p_name: member.value === unlinked ? name.value.trim() : null
         });
-        await reload("Selected payments recorded.", member.value === unlinked ? group.email : undefined);
+        await reload("Selected payments recorded.");
       }, feedback);
     }
 
@@ -189,7 +182,10 @@
       action(linking, "Save member link", async () => {
         if (!target.value) throw new Error("Choose the correct website member.");
         if (target.value === payer.member_id) throw new Error("Choose a different website member.");
-        if (!window.confirm("Move this payer’s entire recorded history to the selected member?")) return;
+        const prompt = payer.member_id
+          ? "Move this payer’s entire recorded history to the selected member?"
+          : "Link this payer’s entire recorded history to the selected member?";
+        if (!window.confirm(prompt)) return;
         await request("relink", { p_email: group.email, p_member: target.value });
         await reload("Member link saved.");
       }, feedback);
@@ -220,6 +216,7 @@
         await reload("Renewal review settings saved.");
       }, feedback);
     }
+    return section;
   }
 
   const panel = document.getElementById("member-dues-reconciliation");
@@ -263,14 +260,13 @@
     });
   }
 
-  async function render(message, savedUnlinkedEmail) {
+  async function render(message) {
     const current = ++generation;
-    const open = new Set([...results.querySelectorAll("details[data-payer][open]")].map(section => section.dataset.payer));
+    const open = results.querySelector("details[data-payer][open]");
     const [state, paymentEmails] = await Promise.all([
       request("load"),
       window.snhSupabase.rpc("snh_dues_payment_email_suggestions")
     ]);
-    state.paymentEmails = paymentEmails.data || {};
     if (current !== generation || !authorized) return;
     loaded = true;
     state.members.sort((a, b) => a.name.localeCompare(b.name));
@@ -280,29 +276,77 @@
       const payer = payers.get(email);
       if (!visible.has(email)) visible.set(email, { email, name: payer?.roster_name, dates: [] });
     }
-    results.replaceChildren();
-    const unlinkedGroups = [];
-    function showPayer(container, group, payer, isUnlinked = false) {
-      renderPayer(container, group, state, payer, render);
-      const details = container.lastElementChild;
-      details.dataset.payer = group.email;
-      if (isUnlinked) details.setAttribute("name", "dues-saved-unlinked-payers");
-      details.open = isUnlinked && savedUnlinkedEmail
-        ? group.email === savedUnlinkedEmail
-        : open.has(group.email);
+    const queue = [];
+    const waiting = [];
+    const completed = [];
+    const membersByEmail = new Map();
+    for (const member of state.members) {
+      const emails = new Set([member.verifiedEmail, paymentEmails.data?.[member.id]]);
+      for (const email of emails) {
+        if (!email) continue;
+        const matches = membersByEmail.get(email) || [];
+        matches.push(member);
+        membersByEmail.set(email, matches);
+      }
     }
 
     for (const group of visible.values()) {
       const payer = payers.get(group.email);
-      if (payer && !payer.member_id) unlinkedGroups.push(group);
-      else showPayer(results, group, payer);
+      const saved = new Set(state.receipts[group.email] || []);
+      const dates = [...group.dates].sort().filter(date => !saved.has(date));
+      const matches = membersByEmail.get(group.email) || [];
+      const pending = state.holds[group.email];
+      const review = { saved, dates, matches, pending };
+      const entry = { group, payer, review };
+      if (dates.length) {
+        review.status = dates.length + " to review";
+        queue.push(entry);
+      } else if (payer && !payer.member_id && matches.length === 1) {
+        review.status = "Needs member link";
+        queue.push(entry);
+      } else if (payer && !payer.member_id) {
+        review.status = "Waiting for member link";
+        waiting.push(entry);
+      } else if (pending) {
+        review.status = "Review on hold";
+        waiting.push(entry);
+      } else {
+        review.status = "Recorded";
+        completed.push(entry);
+      }
     }
 
-    if (unlinkedGroups.length) {
-      const section = element(results, "section");
-      element(section, "h3", "Saved payments awaiting a member link");
-      element(section, "p", "These payments are already recorded. When the person has a website account, expand their entry and choose Link payments to a member to attach their saved payment history.");
-      for (const group of unlinkedGroups) showPayer(section, group, payers.get(group.email), true);
+    const openSections = new Set([...results.querySelectorAll("details[data-dues-section][open]")]
+      .map(section => section.dataset.duesSection));
+    results.replaceChildren();
+
+    function showEntries(container, entries) {
+      for (const { group, payer, review } of entries) {
+        const section = renderPayer(container, group, state, payer, review, render);
+        section.dataset.payer = group.email;
+        section.setAttribute("name", "dues-payers");
+        section.open = open?.dataset.payer === group.email
+          && open.parentElement.dataset.duesSection === container.dataset.duesSection;
+      }
+    }
+
+    function showSection(key, title, entries) {
+      if (!entries.length) return;
+      const section = element(results, "details");
+      section.dataset.duesSection = key;
+      section.open = openSections.has(key);
+      element(section, "summary", title + " (" + entries.length + ")");
+      showEntries(section, entries);
+    }
+
+    if (visible.size) {
+      const active = element(results, "section");
+      active.dataset.duesSection = "active";
+      element(active, "h3", "Ready to review (" + queue.length + ")");
+      if (!queue.length) element(active, "p", "No payers need review right now.");
+      showEntries(active, queue);
+      showSection("waiting", "Waiting", waiting);
+      showSection("completed", "Completed", completed);
     }
     status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
   }
