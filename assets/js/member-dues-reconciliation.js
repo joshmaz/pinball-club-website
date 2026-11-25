@@ -112,7 +112,11 @@
   function renderPayer(parent, group, state, payer, review, reload) {
     const { saved, dates, matches, status } = review;
     const section = element(parent, "details");
-    element(section, "summary", [group.name, group.email, status].filter(Boolean).join(" · "));
+    const linkedMember = payer?.member_id ? state.members.find(member => member.id === payer.member_id) : null;
+    const linkLabel = linkedMember?.name
+      ? "Linked to " + linkedMember.name
+      : payer?.member_id ? "Linked member" : "";
+    element(section, "summary", [group.name, group.email, linkLabel, status].filter(Boolean).join(" · "));
     const history = [...saved].sort();
     if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
     if (group.duplicates) element(section, "p", group.duplicates + " repeated timestamp rows grouped as duplicates. Check these against PayPal.");
