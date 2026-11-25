@@ -110,7 +110,7 @@
   }
 
   function renderPayer(parent, group, state, payer, review, reload) {
-    const { saved, dates, matches, pending, status } = review;
+    const { saved, dates, matches, status } = review;
     const section = element(parent, "details");
     element(section, "summary", [group.name, group.email, status].filter(Boolean).join(" · "));
     const history = [...saved].sort();
@@ -191,19 +191,6 @@
       }, feedback);
     }
 
-    if (dates.length || pending) {
-      if (pending && !dates.length) {
-        element(section, "p", "To resume this review, paste the original spreadsheet rows with their headers and click Preview payments. Then select the payments to record and click Apply selected payments.");
-      }
-      const note = field(section, "Review note", "input", "text");
-      note.maxLength = 500;
-      note.value = pending || "";
-      action(section, "Save review note", async () => {
-        await request("hold", { p_email: group.email, p_note: note.value });
-        feedback.textContent = "Review note saved for this payer. To resume after leaving this page, preview the original rows again.";
-      }, feedback);
-    }
-
     if (payer?.member_id) {
       const enabled = field(section, "Monitor monthly renewal", "input", "checkbox");
       enabled.checked = payer.review_enabled;
@@ -272,7 +259,7 @@
     state.members.sort((a, b) => a.name.localeCompare(b.name));
     const payers = new Map(state.payers.map(payer => [payer.email, payer]));
     const visible = new Map(groups);
-    for (const email of [...payers.keys(), ...Object.keys(state.holds)]) {
+    for (const email of payers.keys()) {
       const payer = payers.get(email);
       if (!visible.has(email)) visible.set(email, { email, name: payer?.roster_name, dates: [] });
     }
@@ -295,8 +282,7 @@
       const saved = new Set(state.receipts[group.email] || []);
       const dates = [...group.dates].sort().filter(date => !saved.has(date));
       const matches = membersByEmail.get(group.email) || [];
-      const pending = state.holds[group.email];
-      const review = { saved, dates, matches, pending };
+      const review = { saved, dates, matches };
       const entry = { group, payer, review };
       if (dates.length) {
         review.status = dates.length + " to review";
@@ -306,9 +292,6 @@
         queue.push(entry);
       } else if (payer && !payer.member_id) {
         review.status = "Waiting for member link";
-        waiting.push(entry);
-      } else if (pending) {
-        review.status = "Review on hold";
         waiting.push(entry);
       } else {
         review.status = "Recorded";
