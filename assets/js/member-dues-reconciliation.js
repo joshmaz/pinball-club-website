@@ -168,7 +168,7 @@
           p_member: member.value === unlinked ? null : member.value,
           p_name: member.value === unlinked ? name.value.trim() : null
         });
-        await reload("Selected payments recorded.");
+        await reload("Selected payments recorded.", member.value === unlinked ? group.email : undefined);
       }, feedback);
     }
 
@@ -255,7 +255,7 @@
     });
   }
 
-  async function render(message) {
+  async function render(message, savedUnlinkedEmail) {
     const current = ++generation;
     const open = new Set([...results.querySelectorAll("details[data-payer][open]")].map(section => section.dataset.payer));
     const state = await request("load");
@@ -270,10 +270,14 @@
     }
     results.replaceChildren();
     const unlinkedGroups = [];
-    function showPayer(container, group, payer) {
+    function showPayer(container, group, payer, isUnlinked = false) {
       renderPayer(container, group, state, payer, render);
-      container.lastElementChild.dataset.payer = group.email;
-      container.lastElementChild.open = open.has(group.email);
+      const details = container.lastElementChild;
+      details.dataset.payer = group.email;
+      if (isUnlinked) details.setAttribute("name", "dues-saved-unlinked-payers");
+      details.open = isUnlinked && savedUnlinkedEmail
+        ? group.email === savedUnlinkedEmail
+        : open.has(group.email);
     }
 
     for (const group of visible.values()) {
@@ -286,7 +290,7 @@
       const section = element(results, "section");
       element(section, "h3", "Saved payments awaiting a member link");
       element(section, "p", "These payments are already recorded. When the person has a website account, expand their entry and choose Link payments to a member to attach their saved payment history.");
-      for (const group of unlinkedGroups) showPayer(section, group, payers.get(group.email));
+      for (const group of unlinkedGroups) showPayer(section, group, payers.get(group.email), true);
     }
     status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
   }
