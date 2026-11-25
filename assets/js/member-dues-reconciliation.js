@@ -50,6 +50,11 @@
     return { groups, skipped };
   }
 
+  function formatPayerName(name) {
+    if (name !== name.toLowerCase()) return name;
+    return name.replace(/(^|[\s\p{Pd}'’])(\p{Ll})/gu, (_, prefix, letter) => prefix + letter.toUpperCase());
+  }
+
   function element(parent, tag, value) {
     const node = document.createElement(tag);
     if (value !== undefined) node.textContent = value;
@@ -142,7 +147,7 @@
       const unlinkedFields = element(section, "div");
       const name = field(unlinkedFields, "Member name to help identify these payments later", "input", "text");
       name.maxLength = 150;
-      name.value = payer?.roster_name || group.name || "";
+      name.value = payer?.roster_name || formatPayerName(group.name || "");
       name.readOnly = Boolean(payer?.roster_name);
       element(unlinkedFields, "p", "Payments are saved for later linking. No website account or invitation is created.");
       const updateUnlinkedFields = () => { unlinkedFields.hidden = member.value !== unlinked; };
