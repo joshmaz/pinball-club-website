@@ -113,7 +113,9 @@
     const saved = new Set(state.receipts[group.email] || []);
     const dates = [...group.dates].sort().filter(date => !saved.has(date));
     const section = element(parent, "details");
-    const matches = state.members.filter(member => member.verifiedEmail === group.email);
+    const matches = state.members.filter(member =>
+      member.verifiedEmail === group.email || state.paymentEmails[member.id] === group.email
+    );
     const pending = state.holds[group.email];
     const status = dates.length ? dates.length + " to review"
       : pending ? "On hold" : payer?.roster_name ? "Unlinked payments" : saved.size ? "Recorded" : "Follow-up";
@@ -121,7 +123,13 @@
     const history = [...saved].sort();
     if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
     if (group.duplicates) element(section, "p", group.duplicates + " repeated timestamp rows grouped as duplicates. Check these against PayPal.");
-    if (matches.length === 1 && !payer?.member_id) element(section, "p", "Suggested by verified website email: " + matches[0].name);
+    if (matches.length === 1 && !payer?.member_id) {
+      const source = matches[0].verifiedEmail === group.email ? "verified website email" : "member-provided PayPal email";
+      element(section, "p", "Suggested by " + source + ": " + matches[0].name);
+    }
+    if (matches.length > 1 && !payer?.member_id) {
+      element(section, "p", "Multiple members match this email. Verify the correct member before linking.");
+    }
     if (overdue(payer || {})) element(section, "p", "Payment overdue for review.");
     const feedback = element(section, "p");
     feedback.setAttribute("role", "status");
@@ -135,7 +143,7 @@
       for (const entry of state.members) {
         element(select, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
       }
-      select.value = payer?.member_id || (matches.length === 1 ? matches[0].id : "");
+      select.value = payer?.member_id || (matches.length === 1 && matches[0].verifiedEmail === group.email ? matches[0].id : "");
       return select;
     }
 
@@ -258,7 +266,11 @@
   async function render(message, savedUnlinkedEmail) {
     const current = ++generation;
     const open = new Set([...results.querySelectorAll("details[data-payer][open]")].map(section => section.dataset.payer));
-    const state = await request("load");
+    const [state, paymentEmails] = await Promise.all([
+      request("load"),
+      window.snhSupabase.rpc("snh_dues_payment_email_suggestions")
+    ]);
+    state.paymentEmails = paymentEmails.data || {};
     if (current !== generation || !authorized) return;
     loaded = true;
     state.members.sort((a, b) => a.name.localeCompare(b.name));

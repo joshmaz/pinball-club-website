@@ -220,6 +220,17 @@
             <div class="account-save"><button type="submit">Save profile</button></div>
           </form>
 
+          <form id="dues-payment-email-form" class="members-profile-form" hidden>
+            <fieldset class="club-form-section">
+              <legend>Help us match your dues</legend>
+              <label for="dues-payment-email">PayPal email for dues (optional)</label>
+              <input id="dues-payment-email" type="email" inputmode="email" maxlength="254" aria-describedby="dues-payment-email-help">
+              <p class="member-form-hint" id="dues-payment-email-help">Give us an assist! Enter the PayPal email used to pay your club dues, even if someone else pays for you. Only you and the membership team can see it.</p>
+              <button type="submit">Save dues email</button>
+              <p id="dues-payment-email-status" role="status"></p>
+            </fieldset>
+          </form>
+
           <form id="password-form" class="members-profile-form">
             <fieldset class="club-form-section"><legend>Password</legend>
             <p class="member-panel-helper" id="password-help">Use at least 8 characters. Your current password is required unless you’re using a password-reset link.</p>
@@ -2707,6 +2718,35 @@
         setPageStatus("Signed in. Profile syncing will be enabled once profile table access is configured.");
       }
     }
+
+    var duesEmailForm = document.getElementById("dues-payment-email-form");
+    var duesEmailInput = document.getElementById("dues-payment-email");
+    var duesEmailStatus = document.getElementById("dues-payment-email-status");
+    if (!recoveryMode) {
+      window.snhSupabase.rpc("snh_my_dues_payment_email").then(function (result) {
+        if (result.error) return;
+        duesEmailInput.value = result.data || "";
+        duesEmailForm.hidden = false;
+      });
+    }
+    duesEmailForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      var fields = duesEmailForm.querySelector("fieldset");
+      fields.disabled = true;
+      duesEmailStatus.textContent = "Saving…";
+      try {
+        var result = await window.snhSupabase.rpc("snh_my_dues_payment_email", {
+          p_email: duesEmailInput.value.trim()
+        });
+        if (result.error) throw result.error;
+        duesEmailInput.value = result.data || "";
+        duesEmailStatus.textContent = result.data ? "Dues email saved." : "Dues email cleared.";
+      } catch (error) {
+        duesEmailStatus.textContent = "Could not save your dues email. Please try again.";
+      } finally {
+        fields.disabled = false;
+      }
+    });
 
     if (ifpaNumberInput) {
       ifpaNumberInput.addEventListener("input", syncIfpaProfileLink);
