@@ -3496,6 +3496,10 @@ footer {
   font: inherit;
 }
 
+[data-dues-results] > details + section {
+  margin-block-start: 1rem;
+}
+
 [data-dues-results] > section > details[data-payer] > :not(summary) {
   margin-inline-start: 1.25rem;
 }
