@@ -3496,10 +3496,23 @@ footer {
   font: inherit;
 }
 
-[data-dues-results] > section > details[data-payer] > :not(summary) {
+[data-dues-results] > [data-dues-section] + [data-dues-section] {
+  margin-block-start: 1.25rem;
+}
+
+[data-dues-results] > details[data-dues-section] > summary {
+  font-weight: 600;
+}
+
+[data-dues-results] > details[data-dues-section] > details[data-payer],
+[data-dues-results] details[data-payer] > :not(summary) {
   margin-inline-start: 1.25rem;
 }
 
-[data-dues-results] > section > details[data-payer] > .member-dues-field {
+[data-dues-results] > details[data-dues-section] > details[data-payer]:first-of-type {
+  margin-block-start: .5rem;
+}
+
+[data-dues-results] details[data-payer] > .member-dues-field {
   max-inline-size: calc(100% - 1.25rem);
 }
