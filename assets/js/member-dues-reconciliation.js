@@ -50,6 +50,11 @@
     return { groups, skipped };
   }
 
+  function formatPayerName(name) {
+    if (name !== name.toLowerCase()) return name;
+    return name.replace(/(^|[\s\p{Pd}'’])(\p{Ll})/gu, (_, prefix, letter) => prefix + letter.toUpperCase());
+  }
+
   function element(parent, tag, value) {
     const node = document.createElement(tag);
     if (value !== undefined) node.textContent = value;
@@ -108,7 +113,9 @@
     const saved = new Set(state.receipts[group.email] || []);
     const dates = [...group.dates].sort().filter(date => !saved.has(date));
     const section = element(parent, "details");
-    const matches = state.members.filter(member => member.verifiedEmail === group.email);
+    const matches = state.members.filter(member =>
+      member.verifiedEmail === group.email || state.paymentEmails[member.id] === group.email
+    );
     const pending = state.holds[group.email];
     const status = dates.length ? dates.length + " to review"
       : pending ? "On hold" : payer?.roster_name ? "Unlinked payments" : saved.size ? "Recorded" : "Follow-up";
@@ -116,7 +123,13 @@
     const history = [...saved].sort();
     if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
     if (group.duplicates) element(section, "p", group.duplicates + " repeated timestamp rows grouped as duplicates. Check these against PayPal.");
-    if (matches.length === 1 && !payer?.member_id) element(section, "p", "Suggested by verified website email: " + matches[0].name);
+    if (matches.length === 1 && !payer?.member_id) {
+      const source = matches[0].verifiedEmail === group.email ? "verified website email" : "member-provided PayPal email";
+      element(section, "p", "Suggested by " + source + ": " + matches[0].name);
+    }
+    if (matches.length > 1 && !payer?.member_id) {
+      element(section, "p", "Multiple members match this email. Verify the correct member before linking.");
+    }
     if (overdue(payer || {})) element(section, "p", "Payment overdue for review.");
     const feedback = element(section, "p");
     feedback.setAttribute("role", "status");
@@ -130,7 +143,7 @@
       for (const entry of state.members) {
         element(select, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
       }
-      select.value = payer?.member_id || (matches.length === 1 ? matches[0].id : "");
+      select.value = payer?.member_id || (matches.length === 1 && matches[0].verifiedEmail === group.email ? matches[0].id : "");
       return select;
     }
 
@@ -142,7 +155,7 @@
       const unlinkedFields = element(section, "div");
       const name = field(unlinkedFields, "Member name to help identify these payments later", "input", "text");
       name.maxLength = 150;
-      name.value = payer?.roster_name || "";
+      name.value = payer?.roster_name || formatPayerName(group.name || "");
       name.readOnly = Boolean(payer?.roster_name);
       element(unlinkedFields, "p", "Payments are saved for later linking. No website account or invitation is created.");
       const updateUnlinkedFields = () => { unlinkedFields.hidden = member.value !== unlinked; };
@@ -163,7 +176,7 @@
           p_member: member.value === unlinked ? null : member.value,
           p_name: member.value === unlinked ? name.value.trim() : null
         });
-        await reload("Selected payments recorded.");
+        await reload("Selected payments recorded.", member.value === unlinked ? group.email : undefined);
       }, feedback);
     }
 
@@ -250,10 +263,14 @@
     });
   }
 
-  async function render(message) {
+  async function render(message, savedUnlinkedEmail) {
     const current = ++generation;
     const open = new Set([...results.querySelectorAll("details[data-payer][open]")].map(section => section.dataset.payer));
-    const state = await request("load");
+    const [state, paymentEmails] = await Promise.all([
+      request("load"),
+      window.snhSupabase.rpc("snh_dues_payment_email_suggestions")
+    ]);
+    state.paymentEmails = paymentEmails.data || {};
     if (current !== generation || !authorized) return;
     loaded = true;
     state.members.sort((a, b) => a.name.localeCompare(b.name));
@@ -265,10 +282,14 @@
     }
     results.replaceChildren();
     const unlinkedGroups = [];
-    function showPayer(container, group, payer) {
+    function showPayer(container, group, payer, isUnlinked = false) {
       renderPayer(container, group, state, payer, render);
-      container.lastElementChild.dataset.payer = group.email;
-      container.lastElementChild.open = open.has(group.email);
+      const details = container.lastElementChild;
+      details.dataset.payer = group.email;
+      if (isUnlinked) details.setAttribute("name", "dues-saved-unlinked-payers");
+      details.open = isUnlinked && savedUnlinkedEmail
+        ? group.email === savedUnlinkedEmail
+        : open.has(group.email);
     }
 
     for (const group of visible.values()) {
@@ -281,7 +302,7 @@
       const section = element(results, "section");
       element(section, "h3", "Saved payments awaiting a member link");
       element(section, "p", "These payments are already recorded. When the person has a website account, expand their entry and choose Link payments to a member to attach their saved payment history.");
-      for (const group of unlinkedGroups) showPayer(section, group, payers.get(group.email));
+      for (const group of unlinkedGroups) showPayer(section, group, payers.get(group.email), true);
     }
     status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
   }
