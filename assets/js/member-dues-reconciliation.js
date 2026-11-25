@@ -251,7 +251,7 @@
     });
   }
 
-  async function render(message) {
+  async function render(message, previewImport) {
     const current = ++generation;
     const open = results.querySelector("details[data-payer][open]");
     const [state, paymentEmails] = await Promise.all([
@@ -281,11 +281,13 @@
       }
     }
 
+    let newPayments = 0;
     for (const group of visible.values()) {
       const payer = payers.get(group.email);
       const saved = new Set(state.receipts[group.email] || []);
       const dates = [...group.dates].sort().filter(date => !saved.has(date));
       const matches = membersByEmail.get(group.email) || [];
+      if (previewImport?.groups.has(group.email)) newPayments += dates.length;
       const review = { saved, dates, matches };
       const entry = { group, payer, review };
       if (dates.length) {
@@ -335,7 +337,17 @@
       showSection("waiting", "Waiting", waiting);
       showSection("completed", "Completed", completed);
     }
-    status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
+    if (previewImport) {
+      const payerCount = previewImport.groups.size;
+      const skipped = previewImport.skipped;
+      const outcome = !payerCount ? "No subscription payments found in the pasted data."
+        : !newPayments ? "All subscription payments in the pasted data are already recorded."
+        : newPayments + (newPayments === 1 ? " new payment to review." : " new payments to review.");
+      status.textContent = outcome + " " + payerCount + (payerCount === 1 ? " payer group." : " payer groups.")
+        + " " + skipped + (skipped === 1 ? " non-subscription row skipped." : " non-subscription rows skipped.");
+    } else {
+      status.textContent = message || (visible.size ? "" : "No saved reconciliation records.");
+    }
   }
 
   function clear() {
@@ -351,7 +363,7 @@
     try {
       const parsed = parse(input.value);
       groups = parsed.groups;
-      await render(groups.size + " payer groups. " + parsed.skipped + " non-subscription rows skipped.");
+      await render(undefined, parsed);
       input.value = "";
     } catch (error) {
       status.textContent = error.message;
