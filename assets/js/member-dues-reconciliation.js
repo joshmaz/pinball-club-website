@@ -50,6 +50,11 @@
     return { groups, skipped };
   }
 
+  function formatPayerName(name) {
+    if (name !== name.toLowerCase()) return name;
+    return name.replace(/(^|[\s\p{Pd}'’])(\p{Ll})/gu, (_, prefix, letter) => prefix + letter.toUpperCase());
+  }
+
   function element(parent, tag, value) {
     const node = document.createElement(tag);
     if (value !== undefined) node.textContent = value;
@@ -111,7 +116,13 @@
     const history = [...saved].sort();
     if (history.length) element(section, "p", "Recorded payments: " + history.map(date => date.slice(0, 10)).join(", "));
     if (group.duplicates) element(section, "p", group.duplicates + " repeated timestamp rows grouped as duplicates. Check these against PayPal.");
-    if (matches.length === 1 && !payer?.member_id) element(section, "p", "Suggested by verified website email: " + matches[0].name);
+    if (matches.length === 1 && !payer?.member_id) {
+      const source = matches[0].verifiedEmail === group.email ? "verified website email" : "member-provided PayPal email";
+      element(section, "p", "Suggested by " + source + ": " + matches[0].name);
+    }
+    if (matches.length > 1 && !payer?.member_id) {
+      element(section, "p", "Multiple members match this email. Verify the correct member before linking.");
+    }
     if (overdue(payer || {})) element(section, "p", "Payment overdue for review.");
     const feedback = element(section, "p");
     feedback.setAttribute("role", "status");
@@ -125,7 +136,7 @@
       for (const entry of state.members) {
         element(select, "option", entry.name + (entry.verifiedEmail ? " (" + entry.verifiedEmail + ")" : "")).value = entry.id;
       }
-      select.value = payer?.member_id || (matches.length === 1 ? matches[0].id : "");
+      select.value = payer?.member_id || (matches.length === 1 && matches[0].verifiedEmail === group.email ? matches[0].id : "");
       return select;
     }
 
@@ -137,7 +148,7 @@
       const unlinkedFields = element(section, "div");
       const name = field(unlinkedFields, "Member name to help identify these payments later", "input", "text");
       name.maxLength = 150;
-      name.value = payer?.roster_name || "";
+      name.value = payer?.roster_name || formatPayerName(group.name || "");
       name.readOnly = Boolean(payer?.roster_name);
       element(unlinkedFields, "p", "Payments are saved for later linking. No website account or invitation is created.");
       const updateUnlinkedFields = () => { unlinkedFields.hidden = member.value !== unlinked; };
@@ -251,8 +262,11 @@
 
   async function render(message) {
     const current = ++generation;
-    const open = new Set([...results.querySelectorAll("details[data-payer][open]")].map(section => section.dataset.payer));
-    const state = await request("load");
+    const open = results.querySelector("details[data-payer][open]");
+    const [state, paymentEmails] = await Promise.all([
+      request("load"),
+      window.snhSupabase.rpc("snh_dues_payment_email_suggestions")
+    ]);
     if (current !== generation || !authorized) return;
     loaded = true;
     state.members.sort((a, b) => a.name.localeCompare(b.name));
@@ -267,9 +281,13 @@
     const completed = [];
     const membersByEmail = new Map();
     for (const member of state.members) {
-      const matches = membersByEmail.get(member.verifiedEmail) || [];
-      matches.push(member);
-      membersByEmail.set(member.verifiedEmail, matches);
+      const emails = new Set([member.verifiedEmail, paymentEmails.data?.[member.id]]);
+      for (const email of emails) {
+        if (!email) continue;
+        const matches = membersByEmail.get(email) || [];
+        matches.push(member);
+        membersByEmail.set(email, matches);
+      }
     }
 
     for (const group of visible.values()) {
@@ -306,7 +324,9 @@
       for (const { group, payer, review } of entries) {
         const section = renderPayer(container, group, state, payer, review, render);
         section.dataset.payer = group.email;
-        section.open = open.has(group.email);
+        section.setAttribute("name", "dues-payers");
+        section.open = open?.dataset.payer === group.email
+          && open.parentElement.dataset.duesSection === container.dataset.duesSection;
       }
     }
 
@@ -321,6 +341,7 @@
 
     if (visible.size) {
       const active = element(results, "section");
+      active.dataset.duesSection = "active";
       element(active, "h3", "Ready to review (" + queue.length + ")");
       if (!queue.length) element(active, "p", "No payers need review right now.");
       showEntries(active, queue);
