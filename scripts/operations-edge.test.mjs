@@ -15,7 +15,8 @@ function setup(t,name,options={}) {
   const url=new URL(input); calls.push({url,init});
   if(url.pathname==='/auth/v1/user') return Response.json({id:'user'});
   if(url.pathname==='/rest/v1/members') return Response.json(options.denied ? [] : [{id:'member'}]);
-  if(url.pathname==='/rest/v1/rpc/snh_notification_live_status') return Response.json({rolling_limit:10,per_run_limit:10,sent_last_24h:0,in_flight:0,used:0,remaining:10,eligible_pending:1,waiting_pending:0,expired_pending:0});
+  if(url.pathname==='/rest/v1/rpc/snh_notification_live_status') return Response.json({rolling_limit:100,per_run_limit:10,sent_last_24h:0,in_flight:0,used:0,remaining:100,eligible_pending:1,waiting_pending:0,expired_pending:0});
+  if(url.pathname==='/rest/v1/rpc/snh_observe_notification_backlog') return Response.json(null);
   if(url.pathname==='/rest/v1/integration_status') return new Response(null,{status:201});
   if(url.pathname==='/rest/v1/rpc/snh_operations_dispatch_request') {
    assert.equal(init.headers.get('Authorization'),'Bearer user-session');
@@ -41,7 +42,8 @@ test('Operations rejects non-admins before configuration or tests',async t=>{
 });
 test('configuration contains booleans, no credentials',async t=>{
  const f=setup(t,'operations'); const response=await f.request({action:'configuration'});
- assert.equal(response.status,200); const body=await response.text(); assert.ok(!body.includes('private-'));
+ assert.equal(response.status,200); const body=await response.json(); assert.ok(!JSON.stringify(body).includes('private-'));
+ assert.equal(body.dispatcher.live_rolling_24h_limit,100);
 });
 test('connection test records safe success and error without returning provider data',async t=>{
  const f=setup(t,'operations',{providerFails:true}); const response=await f.request({action:'test_matchplay'});
@@ -76,4 +78,22 @@ for (const [result, expected] of [
  const f=setup(t,'operations',{dispatchResult:result});const response=await f.request({action:'dispatch'});
  const body=await response.json();assert.equal(body.message,expected);assert.ok(!JSON.stringify(body).includes('private-message'));
  assert.equal(body.ok,!result.failed);
+});
+
+test('scheduled test mode observes the queue and records a heartbeat without sending email', async t => {
+ const f = setup(t, 'notification-dispatch', {env:{NOTIFICATION_DELIVERY_MODE:'test'}});
+ const result = await f.request({}, {'x-notification-secret':'private-dispatch','x-notification-scheduled':'true'});
+ assert.equal((await result.json()).skipped,true);
+ assert.equal(f.calls.filter(c=>c.url.pathname.endsWith('snh_observe_notification_backlog')).length,2);
+ assert.equal(JSON.parse(f.calls.find(c=>c.init.method==='PATCH').init.body).status,'succeeded');
+ assert.ok(!f.calls.some(c=>c.url.hostname==='api.resend.com' || c.url.pathname.endsWith('snh_claim_notification')));
+});
+
+test('staging rejects live dispatch before claiming or sending', async t => {
+ const f = setup(t, 'notification-dispatch', {env:{
+  SUPABASE_URL:'https://eptbdrwmcwogxcjleudv.supabase.co',NOTIFICATION_DELIVERY_MODE:'live',
+ }});
+ const result = await f.request({}, {'x-notification-secret':'private-dispatch'});
+ assert.equal(result.status,409);
+ assert.ok(!f.calls.some(c=>c.url.hostname==='api.resend.com' || c.url.pathname.endsWith('snh_claim_notification')));
 });

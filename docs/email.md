@@ -55,7 +55,7 @@ the body; live delivery is rejected in staging before any queued message is
 claimed. Production test messages use `[TEST]`.
 `live` is selected with `NOTIFICATION_DELIVERY_MODE=live`. Claims are
 serialized in Postgres and reserve capacity for in-flight sends, enforcing a
-maximum of ten messages per run and ten per rolling 24-hour window across
+maximum of ten messages per run and 100 per rolling 24-hour window across
 repeated or concurrent runs. Operations shows remaining capacity and
 pending/expired counts. Staging rejects live mode. Live sends go to the queued
 recipient and record the provider ID or a safe error summary. Recipient
@@ -65,6 +65,22 @@ queued mail; removing it before the next signup prevents new mail for that
 recipient. The dispatcher retries failures at most three times during the first
 24 hours. Resend's idempotency key uses the outbox ID for safe short-term
 retries; delivery beyond that window is held for manual review.
+
+Both sending limits leave unclaimed messages pending. The existing delivery
+deadline still applies when capacity returns. Most app messages get 24 hours
+from enqueue. Confirmation reminders get 24 hours from their scheduled time.
+The active delivery lease remains valid long enough to record an in-flight
+result, even when the deadline passes. An expired pending row becomes a visible
+failure when claims resume. The deadline alone cannot tell whether an unattempted
+message is still relevant after a capacity delay.
+
+Before production activation, decide how long each kind of message remains useful
+before its first attempt, and how to handle previously expired rows. The proposed
+policy preserves still-relevant unattempted mail across capacity delays, keeps a
+bounded retry window for attempted deliveries, and uses current account or event
+state where it can establish that a message is obsolete. Confirmed-account
+reminders already have such a check. Supabase Auth SMTP delivery is separate.
+
 
 ### Member account onboarding
 

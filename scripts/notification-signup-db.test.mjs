@@ -115,10 +115,20 @@ try {
   await db.exec(`insert into auth.users (id,email) values ('${uid(401)}','signup401@example.com')`);
   assert.equal(await count(), 3, 'Role removal before the next event prevents new mail');
 
-  // Load the current production claim function without unrelated Operations schema.
-  await db.exec('alter table notification_outbox add column manual_retry_allowance boolean not null default false');
-  const operations = await readFile(new URL('../supabase/migrations/20260928160000_operations.sql', import.meta.url), 'utf8');
-  await db.exec(operations.match(/create or replace function public\.snh_claim_notification\(\)[\s\S]*?end; \$\$;/)[0]);
+  // Use the deployed SQL for queue claims, budget, completion and backlog history.
+  await db.exec(`
+    alter table auth.users add column email_confirmed_at timestamptz,
+      add column last_sign_in_at timestamptz;
+    create schema cron;
+    create function cron.schedule(text, text, text) returns bigint language sql as $$ select 1::bigint $$;
+    -- The signup fixture uses imported recipients without corresponding Auth rows.
+    create function private.snh_cancel_mismatched_notification_recipients() returns void
+      language plpgsql as $$ begin end; $$;
+  `);
+  await migration('20260928150000_external_api_cache.sql');
+  await migration('20260928160000_operations.sql');
+  await migration('20261118000000_member_onboarding_emails.sql');
+  await migration('20261127163333_notification_dispatch_readiness.sql');
   const source = await readFile(new URL('../supabase/functions/notification-dispatch/index.ts', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /membership_editor|membership_admin|club_admin|member_roles/);
   const js = ts.transpileModule(source.replace(/^import .*;\n/gm, ''), {
@@ -145,18 +155,11 @@ try {
       return Response.json((await db.query('select * from public.snh_claim_notification()')).rows);
     }
     if (url.pathname === '/rest/v1/rpc/snh_notification_live_status') {
-      const counts = (await db.query(`select
-        count(*) filter (where status='sent' and sent_at>now()-interval '24 hours')::integer sent,
-        count(*) filter (where status='sending' and locked_until>now())::integer in_flight,
-        count(*) filter (where (status='pending' and available_at<=now() or status='sending' and locked_until<now())
-          and created_at>now()-interval '24 hours' and (attempts<3 or manual_retry_allowance))::integer eligible,
-        count(*) filter (where status='pending' and available_at>now() and created_at>now()-interval '24 hours')::integer waiting,
-        count(*) filter (where status in ('pending','sending') and created_at<=now()-interval '24 hours')::integer expired
-        from notification_outbox`)).rows[0];
-      const sent = Number(counts.sent), inFlight = Number(counts.in_flight), used = sent + inFlight;
-      return Response.json({rolling_limit:10,per_run_limit:10,sent_last_24h:sent,in_flight:inFlight,
-        used,remaining:Math.max(0,10-used),eligible_pending:Number(counts.eligible),
-        waiting_pending:Number(counts.waiting),expired_pending:Number(counts.expired)});
+      return Response.json((await db.query('select public.snh_notification_live_status() status')).rows[0].status);
+    }
+    if (url.pathname === '/rest/v1/rpc/snh_observe_notification_backlog') {
+      await db.exec('select public.snh_observe_notification_backlog()');
+      return Response.json(null);
     }
     if (url.pathname === '/rest/v1/rpc/snh_finish_notification') {
       if (finishError) return Response.json(false);
@@ -183,7 +186,7 @@ try {
   assert.equal(sentResult.mode, 'live');
   assert.deepEqual({sent:sentResult.sent,canceled:sentResult.canceled,failed:sentResult.failed,limited:sentResult.limited},
     {sent:3,canceled:0,failed:0,limited:false});
-  assert.deepEqual(sentResult.budget,{rolling_limit:10,per_run_limit:10,sent_last_24h:3,in_flight:0,used:3,remaining:7,eligible_pending:0,waiting_pending:0,expired_pending:0});
+  assert.deepEqual(sentResult.budget,{rolling_limit:100,per_run_limit:10,sent_last_24h:3,in_flight:0,used:3,remaining:97,eligible_pending:0,waiting_pending:0,expired_pending:0,pending_count:0,oldest_pending_age_seconds:null,backlog_status:'clear'});
   assert.deepEqual(delivered.map(d => d.body.to[0]).sort(), queued.map(q => q.recipient_email).sort());
   for (const message of queued) {
     const delivery = delivered.find(d => d.key === message.id);
@@ -219,5 +222,75 @@ try {
   finishError = true;
   assert.equal((await dispatch()).status, 500, 'A lost lease/completion failure is not reported as success');
   assert.equal((await db.query('select status from notification_outbox where id=$1', [queued[0].id])).rows[0].status, 'sending');
+  finishError = false;
+  await db.exec(`delete from notification_outbox;
+    insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body,status,sent_at)
+    select 'sent-'||i,'member_signup','${uid(1)}','admin@example.com','subject','message','sent',now()
+    from generate_series(1,89) i;
+    insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body)
+    select 'pending-'||i,'member_signup','${uid(1)}','admin@example.com','subject','message'
+    from generate_series(1,13) i;`);
+  const health = async () => (await db.query('select public.snh_notification_live_status() health')).rows[0].health;
+  const incident = async () => (await db.query('select * from private.notification_backlog_state')).rows[0];
+  assert.equal((await (await dispatch()).json()).sent, 10);
+  assert.equal((await health()).pending_count, 3);
+  assert.equal((await health()).backlog_status, 'clear', 'Batch size alone does not create a backlog');
+  assert.equal((await incident()).last_detected_at, null);
+  assert.equal((await (await dispatch()).json()).sent, 1);
+  assert.equal((await health()).backlog_status, 'daily_limit');
+  assert.equal((await incident()).peak_depth, 2);
+  assert.equal((await (await dispatch()).json()).sent, 0);
+  assert.equal((await db.query("select count(*)::int n from notification_outbox where status='pending' and attempts=0 and lease_id is null")).rows[0].n, 2);
+  assert.equal((await db.query('select * from public.snh_claim_notification()')).rows.length, 0, 'Database enforces the cap independently');
+
+  await db.exec(`insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body)
+    values ('extra','member_signup','${uid(1)}','admin@example.com','subject','message');`);
+  await dispatch();
+  assert.equal((await incident()).peak_depth, 3);
+  await db.exec("update notification_outbox set sent_at=now()-interval '24 hours' where event_key in ('sent-1','sent-2','sent-3')");
+  assert.equal((await (await dispatch()).json()).sent, 3);
+  assert.equal((await health()).pending_count, 0);
+  const recovered = await incident();
+  assert.equal(recovered.active, false);
+  assert.ok(recovered.last_detected_at && recovered.last_cleared_at);
+  assert.equal(recovered.peak_depth, 3);
+
+  // The cap includes in-flight reservations, while the displayed send volume does not.
+  await db.exec(`update notification_outbox set status='sending',sent_at=null, locked_until=now()+interval '5 minutes',
+      lease_id=gen_random_uuid(),delivery_deadline_at=now()-interval '1 minute' where event_key='sent-4';
+    insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body,available_at,delivery_deadline_at)
+    values ('expired','member_signup','${uid(1)}','admin@example.com','subject','message',now()-interval '25 hours',now()-interval '1 minute'),
+           ('delayed','member_signup','${uid(1)}','admin@example.com','subject','message',now()-interval '30 minutes',now()+interval '1 hour'),
+           ('scheduled','member_signup','${uid(1)}','admin@example.com','subject','message',now()+interval '1 hour',now()+interval '25 hours');`);
+  assert.equal((await health()).remaining, 0);
+  assert.equal((await health()).sent_last_24h, 99);
+  assert.equal((await health()).backlog_status, 'delayed');
+  assert.equal((await db.query('select * from public.snh_claim_notification()')).rows.length, 0);
+  await db.exec("update notification_outbox set sent_at=now()-interval '25 hours' where event_key='sent-5'");
+  assert.equal((await (await dispatch()).json()).sent, 1);
+  assert.deepEqual((await db.query("select event_key,status,last_error from notification_outbox where event_key in ('delayed','expired','scheduled','sent-4') order by event_key")).rows, [
+    {event_key:'delayed',status:'sent',last_error:null},
+    {event_key:'expired',status:'failed',last_error:'Delivery window expired'},
+    {event_key:'scheduled',status:'pending',last_error:null},
+    {event_key:'sent-4',status:'sending',last_error:null},
+  ]);
+  assert.equal((await health()).backlog_status, 'clear');
+
+  await db.exec(`insert into member_roles values ('${uid(1)}','club_admin');
+    insert into operations_job_runs (job,status,started_at,finished_at,result) values
+      ('notification_dispatch','succeeded',now()-interval '32 minutes',now()-interval '31 minutes','{"mode":"preview"}'),
+      ('notification_dispatch','failed',now()-interval '2 minutes',now()-interval '1 minute','{"mode":"preview"}');
+    set role authenticated; set request.jwt.claim.sub='${uid(101)}';`);
+  const overview = async () => (await db.query('select public.snh_operations_snapshot() snapshot')).rows[0].snapshot.notification_health;
+  assert.equal((await overview()).dispatcher_stale, true, 'A newer failure cannot hide a stopped dispatcher');
+  assert.equal((await overview()).last_successful_run_mode, 'preview');
+  assert.ok((await overview()).last_backlog_cleared_at);
+  await assert.rejects(db.query('select public.snh_observe_notification_backlog()'), /permission denied/);
+  await db.exec(`reset role;
+    insert into operations_job_runs (job,status,finished_at,result) values ('notification_dispatch','succeeded',now(),'{"mode":"test"}');
+    set role authenticated;`);
+  assert.equal((await overview()).dispatcher_stale, false);
+  assert.equal((await overview()).last_successful_run_mode, 'test');
+  await db.exec('reset role');
   console.log('PASS: real Auth trigger path without JWT, audit coexistence, recipient filtering, deduplication, profile edits, imports, no backfill, signed-in fallback, helper permissions, enqueue-only authorization, post-revocation delivery, and dispatch retry boundaries.');
 } finally { await db.close(); }
