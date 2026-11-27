@@ -250,7 +250,8 @@ Deno.serve(async (req) => {
   const next = summary.mode === "preview" && summary.next && typeof summary.next === "object" ? summary.next : null;
   const parsedCreatedAt = typeof next?.created_at === "string" ? Date.parse(next.created_at) : NaN;
   const availableAt = typeof next?.available_at === "string" ? Date.parse(next.available_at) : NaN;
-  const deadlineAt = typeof next?.delivery_deadline_at === "string" ? Date.parse(next.delivery_deadline_at) : NaN;
+  const deadlineAt = next?.delivery_deadline_at === "infinity" ? Infinity
+    : typeof next?.delivery_deadline_at === "string" ? Date.parse(next.delivery_deadline_at) : NaN;
   const ageSeconds = Number.isFinite(parsedCreatedAt)
     ? Math.max(0, Math.floor((Date.now() - parsedCreatedAt) / 1000)) : null;
   const preview = next ? {
@@ -258,9 +259,9 @@ Deno.serve(async (req) => {
     subject: typeof next.subject === "string" ? next.subject.slice(0, 180) : "",
     created_at: typeof next.created_at === "string" ? next.created_at : null,
     age_seconds: ageSeconds,
-    live_eligible: Number.isFinite(availableAt) && Number.isFinite(deadlineAt)
+    live_eligible: Number.isFinite(availableAt) && !Number.isNaN(deadlineAt)
       ? availableAt <= Date.now() && deadlineAt > Date.now()
-      : ageSeconds === null ? null : ageSeconds < 24 * 60 * 60,
+      : null,
   } : null;
   const rawBudget = summary.budget && typeof summary.budget === "object" ? summary.budget : null;
   const safeCount = (value: unknown) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : 0;

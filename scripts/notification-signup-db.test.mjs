@@ -128,7 +128,9 @@ try {
   await migration('20260928150000_external_api_cache.sql');
   await migration('20260928160000_operations.sql');
   await migration('20261118000000_member_onboarding_emails.sql');
+  await db.query("update notification_outbox set created_at=now()-interval '3 days', available_at=now()-interval '3 days', delivery_deadline_at=now()-interval '2 days' where id=$1", [queued[0].id]);
   await migration('20261127163333_notification_dispatch_readiness.sql');
+  assert.equal((await db.query("select count(*)::int n from notification_outbox where delivery_deadline_at='infinity'")).rows[0].n, 3, 'Previously queued first attempts adopt the new policy');
   const source = await readFile(new URL('../supabase/functions/notification-dispatch/index.ts', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /membership_editor|membership_admin|club_admin|member_roles/);
   const js = ts.transpileModule(source.replace(/^import .*;\n/gm, ''), {
@@ -184,6 +186,7 @@ try {
   assert.equal(result.status, 200);
   const sentResult = await result.json();
   assert.equal(sentResult.mode, 'live');
+  assert.equal((await db.query("select count(*)::int n from notification_outbox where delivery_deadline_at between now()+interval '23 hours' and now()+interval '24 hours'")).rows[0].n, 3);
   assert.deepEqual({sent:sentResult.sent,canceled:sentResult.canceled,failed:sentResult.failed,limited:sentResult.limited},
     {sent:3,canceled:0,failed:0,limited:false});
   assert.deepEqual(sentResult.budget,{rolling_limit:100,per_run_limit:10,sent_last_24h:3,in_flight:0,used:3,remaining:97,eligible_pending:0,waiting_pending:0,expired_pending:0,pending_count:0,oldest_pending_age_seconds:null,backlog_status:'clear'});
@@ -208,7 +211,7 @@ try {
   assert.equal(delivered.length, 3, 'Claim errors cannot send mail');
   claimError = false;
   // Delivery failure still uses the production retry state transition.
-  await db.query("update notification_outbox set status='pending',attempts=0 where id=$1", [queued[0].id]);
+  await db.query("update notification_outbox set status='pending',attempts=0,delivery_deadline_at='infinity' where id=$1", [queued[0].id]);
   failProvider = true;
   const failedResult = await (await dispatch()).json();
   assert.equal(failedResult.mode, 'live'); assert.equal(failedResult.sent, 0);
@@ -217,11 +220,14 @@ try {
   assert.equal(retry.status, 'pending');
   assert.equal(retry.last_error, 'Resend HTTP 503');
   assert.equal(retry.lease_id, null);
+  assert.ok(Date.parse(retry.delivery_deadline_at) > Date.now() + 23*60*60*1000);
   failProvider = false;
   await db.query('update notification_outbox set available_at=now() where id=$1', [queued[0].id]);
   finishError = true;
   assert.equal((await dispatch()).status, 500, 'A lost lease/completion failure is not reported as success');
-  assert.equal((await db.query('select status from notification_outbox where id=$1', [queued[0].id])).rows[0].status, 'sending');
+  const reclaimed = (await db.query('select status,delivery_deadline_at from notification_outbox where id=$1', [queued[0].id])).rows[0];
+  assert.equal(reclaimed.status, 'sending');
+  assert.deepEqual(reclaimed.delivery_deadline_at, retry.delivery_deadline_at);
   finishError = false;
   await db.exec(`delete from notification_outbox;
     insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body,status,sent_at)
@@ -232,13 +238,15 @@ try {
     from generate_series(1,13) i;`);
   const health = async () => (await db.query('select public.snh_notification_live_status() health')).rows[0].health;
   const incident = async () => (await db.query('select * from private.notification_backlog_state')).rows[0];
+  const priorIncident = await incident();
   assert.equal((await (await dispatch()).json()).sent, 10);
   assert.equal((await health()).pending_count, 3);
   assert.equal((await health()).backlog_status, 'clear', 'Batch size alone does not create a backlog');
-  assert.equal((await incident()).last_detected_at, null);
+  assert.deepEqual(await incident(), priorIncident);
   assert.equal((await (await dispatch()).json()).sent, 1);
   assert.equal((await health()).backlog_status, 'daily_limit');
   assert.equal((await incident()).peak_depth, 2);
+  await db.exec("update notification_outbox set created_at=now()-interval '3 days', available_at=now()-interval '3 days' where status='pending'");
   assert.equal((await (await dispatch()).json()).sent, 0);
   assert.equal((await db.query("select count(*)::int n from notification_outbox where status='pending' and attempts=0 and lease_id is null")).rows[0].n, 2);
   assert.equal((await db.query('select * from public.snh_claim_notification()')).rows.length, 0, 'Database enforces the cap independently');
@@ -261,16 +269,19 @@ try {
     insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body,available_at,delivery_deadline_at)
     values ('expired','member_signup','${uid(1)}','admin@example.com','subject','message',now()-interval '25 hours',now()-interval '1 minute'),
            ('delayed','member_signup','${uid(1)}','admin@example.com','subject','message',now()-interval '30 minutes',now()+interval '1 hour'),
-           ('scheduled','member_signup','${uid(1)}','admin@example.com','subject','message',now()+interval '1 hour',now()+interval '25 hours');`);
+           ('scheduled','member_signup','${uid(1)}','admin@example.com','subject','message',now()+interval '1 hour',now()+interval '25 hours'),
+           ('irrelevant-reminder','member_confirmation_reminder','${uid(1)}','admin@example.com','subject','message',now()-interval '25 hours',now()-interval '1 hour');
+    update notification_outbox set attempts=1 where event_key='expired';`);
   assert.equal((await health()).remaining, 0);
   assert.equal((await health()).sent_last_24h, 99);
   assert.equal((await health()).backlog_status, 'delayed');
   assert.equal((await db.query('select * from public.snh_claim_notification()')).rows.length, 0);
   await db.exec("update notification_outbox set sent_at=now()-interval '25 hours' where event_key='sent-5'");
   assert.equal((await (await dispatch()).json()).sent, 1);
-  assert.deepEqual((await db.query("select event_key,status,last_error from notification_outbox where event_key in ('delayed','expired','scheduled','sent-4') order by event_key")).rows, [
+  assert.deepEqual((await db.query("select event_key,status,last_error from notification_outbox where event_key in ('delayed','expired','irrelevant-reminder','scheduled','sent-4') order by event_key")).rows, [
     {event_key:'delayed',status:'sent',last_error:null},
-    {event_key:'expired',status:'failed',last_error:'Delivery window expired'},
+    {event_key:'expired',status:'failed',last_error:'Delivery retry window expired'},
+    {event_key:'irrelevant-reminder',status:'failed',last_error:'Notification relevance window expired'},
     {event_key:'scheduled',status:'pending',last_error:null},
     {event_key:'sent-4',status:'sending',last_error:null},
   ]);

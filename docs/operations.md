@@ -59,7 +59,8 @@ management remains in Member Tools; self-delete remains in My Account.
 - Retry locks the failed row, retains ID/content/recipient/attempt count and the
   original creation time, and grants one claim beyond the automatic attempt cap.
   Only failed rows still within their delivery deadline, without a provider ID
-  or active lease, qualify. The worker enforces the per-message deadline,
+  or active lease, qualify. Ordinary messages get a deadline on first claim,
+  and confirmation reminders also have a relevance deadline. The worker enforces the deadline,
   provider idempotency key, and enqueue-time recipient authorization. A second concurrent retry
   fails because the first changes the state. Expired exhausted leases become failed
   rather than permanently stuck in sending. Old messages are never re-created.

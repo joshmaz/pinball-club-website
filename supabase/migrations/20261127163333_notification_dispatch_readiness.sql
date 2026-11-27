@@ -1,5 +1,14 @@
 begin;
 
+-- Ordinary messages have no age-only cutoff before their first claim.
+-- Confirmation reminders keep the explicit relevance deadline set at enqueue.
+alter table public.notification_outbox
+  alter column delivery_deadline_at set default 'infinity'::timestamptz;
+
+update public.notification_outbox
+set delivery_deadline_at='infinity'::timestamptz
+where status='pending' and attempts=0 and kind<>'member_confirmation_reminder';
+
 create function private.snh_notification_rolling_limit() returns integer
 language sql immutable set search_path = '' as $$ select 100 $$;
 revoke all on function private.snh_notification_rolling_limit() from public, anon, authenticated;
@@ -21,7 +30,10 @@ begin
   perform private.snh_cancel_mismatched_notification_recipients();
 
   update public.notification_outbox n
-  set status='failed', last_error='Delivery window expired', locked_until=null, lease_id=null
+  set status='failed',
+      last_error=case when n.attempts=0 then 'Notification relevance window expired'
+                      else 'Delivery retry window expired' end,
+      locked_until=null, lease_id=null
   where (n.status='pending' or n.status='sending' and n.locked_until<=now())
     and n.delivery_deadline_at<=now();
 
@@ -39,6 +51,9 @@ begin
   )
   update public.notification_outbox n
   set status='sending', attempts=n.attempts+1,
+      delivery_deadline_at=case when n.attempts=0
+        then least(n.delivery_deadline_at, now()+interval '24 hours')
+        else n.delivery_deadline_at end,
       locked_until=now()+interval '5 minutes', lease_id=gen_random_uuid(),
       manual_retry_allowance=false
   from next_job where n.id=next_job.id returning n.*;

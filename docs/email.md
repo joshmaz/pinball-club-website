@@ -45,8 +45,8 @@ the website account and does not imply paid membership.
 The `notification-dispatch` Edge Function reads the outbox and sends through
 Resend. It requires an independent `NOTIFICATION_DISPATCH_SECRET` header. Its
 default mode is `preview`, which reports a safe summary of the
-oldest pending message (kind, subject, queued time, and whether it is within the
-24-hour live-delivery window). It does not expose the message body or recipient
+oldest pending message (kind, subject, queued time, and whether it is currently
+eligible for live delivery). It does not expose the message body or recipient
 in job history and does not consume the queue. `test` sends a synthetic test
 message only to `NOTIFICATION_TEST_EMAIL`; it does not read or change the
 outbox. Each test run sends another copy to that test destination. Staging test
@@ -62,25 +62,19 @@ recipient and record the provider ID or a safe error summary. Recipient
 authorization occurs only at enqueue, using the canonical effective Membership
 Editor role. Removing a qualifying role afterward does not suppress already
 queued mail; removing it before the next signup prevents new mail for that
-recipient. The dispatcher retries failures at most three times during the first
-24 hours. Resend's idempotency key uses the outbox ID for safe short-term
-retries; delivery beyond that window is held for manual review.
+recipient. Both sending limits leave unclaimed messages pending. Ordinary app
+messages can wait for their first attempt across capacity delays. The first
+claim starts a 24-hour retry window and subsequent attempts keep the same
+deadline and Resend idempotency key. A job with an active lease can record its
+in-flight result after the deadline. Pending retries whose deadline has passed
+become visible failures when claims resume.
 
-Both sending limits leave unclaimed messages pending. The existing delivery
-deadline still applies when capacity returns. Most app messages get 24 hours
-from enqueue. Confirmation reminders get 24 hours from their scheduled time.
-The active delivery lease remains valid long enough to record an in-flight
-result, even when the deadline passes. An expired pending row becomes a visible
-failure when claims resume. The deadline alone cannot tell whether an unattempted
-message is still relevant after a capacity delay.
-
-Before production activation, decide how long each kind of message remains useful
-before its first attempt, and how to handle previously expired rows. The proposed
-policy preserves still-relevant unattempted mail across capacity delays, keeps a
-bounded retry window for attempted deliveries, and uses current account or event
-state where it can establish that a message is obsolete. Confirmed-account
-reminders already have such a check. Supabase Auth SMTP delivery is separate.
-
+Confirmation reminders have a relevance deadline 24 hours after their scheduled
+send time. A retry cannot extend that deadline, and the dispatcher still checks
+whether the account has already confirmed. The migration gives existing
+never-attempted pending messages the new policy, except confirmation reminders.
+Previously attempted messages retain their deadlines. Failed and canceled rows
+retain their recorded status. Supabase Auth SMTP delivery is separate.
 
 ### Member account onboarding
 

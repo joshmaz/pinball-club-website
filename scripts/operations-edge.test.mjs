@@ -24,7 +24,7 @@ function setup(t,name,options={}) {
   }
   if(url.pathname==='/functions/v1/notification-dispatch') return Response.json(options.dispatchResult || {next:{body:'private-message'}});
   if(url.pathname==='/rest/v1/operations_job_runs') return init.method==='POST' ? Response.json({id:'run'}) : new Response(null,{status:204});
-  if(url.pathname==='/rest/v1/notification_outbox') return Response.json([{id:'message',body:'private-message',subject:'Subject'}]);
+  if(url.pathname==='/rest/v1/notification_outbox') return Response.json(options.queue || [{id:'message',body:'private-message',subject:'Subject'}]);
   throw new Error('Unexpected fetch '+url);
  };
  t.mock.method(globalThis,'fetch',fakeFetch);
@@ -96,4 +96,15 @@ test('staging rejects live dispatch before claiming or sending', async t => {
  const result = await f.request({}, {'x-notification-secret':'private-dispatch'});
  assert.equal(result.status,409);
  assert.ok(!f.calls.some(c=>c.url.hostname==='api.resend.com' || c.url.pathname.endsWith('snh_claim_notification')));
+});
+
+test('preview reports an old never-attempted notification as eligible', async t => {
+ const threeDaysAgo = new Date(Date.now()-3*24*60*60*1000).toISOString();
+ const f = setup(t, 'notification-dispatch', {queue:[{
+  kind:'member_signup', subject:'Subject', created_at:threeDaysAgo, available_at:threeDaysAgo,
+  delivery_deadline_at:'infinity',
+ }]});
+ const result = await f.request({}, {'x-notification-secret':'private-dispatch'});
+ assert.equal(result.status,200);
+ assert.equal(JSON.parse(f.calls.find(c=>c.init.method==='PATCH').init.body).result.preview.live_eligible,true);
 });
