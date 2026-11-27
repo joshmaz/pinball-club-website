@@ -130,6 +130,7 @@ try {
   await migration('20261118000000_member_onboarding_emails.sql');
   await db.query("update notification_outbox set created_at=now()-interval '3 days', available_at=now()-interval '3 days', delivery_deadline_at=now()-interval '2 days' where id=$1", [queued[0].id]);
   await migration('20261127163333_notification_dispatch_readiness.sql');
+  await migration('20261127171727_notification_backlog_singleton_updates.sql');
   assert.equal((await db.query("select count(*)::int n from notification_outbox where delivery_deadline_at='infinity'")).rows[0].n, 3, 'Previously queued first attempts adopt the new policy');
   const source = await readFile(new URL('../supabase/functions/notification-dispatch/index.ts', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /membership_editor|membership_admin|club_admin|member_roles/);
