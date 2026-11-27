@@ -330,9 +330,12 @@ async function sendPreview(db: SupabaseClient, notificationId: unknown): Promise
 async function dispatch(db: SupabaseClient): Promise<Response> {
   const mode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
   const isStaging = isStagingProject();
-  if (!["preview", "test", "live"].includes(mode)) return response({ mode, error: "Invalid delivery mode" }, 500);
+  if (!["preview", "test", "queue_test", "live"].includes(mode)) return response({ mode, error: "Invalid delivery mode" }, 500);
   if (isStaging && mode === "live") {
     return response({ mode, error: "Live delivery is disabled for staging" }, 409);
+  }
+  if (!isStaging && mode === "queue_test") {
+    return response({ mode, error: "Queue test delivery is available only in staging" }, 409);
   }
   // Preview reports only safe metadata for the oldest pending message. Tests use
   // a synthetic payload so they never expose, consume, or repeatedly resend queue content.
@@ -366,7 +369,16 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const from = Deno.env.get("NOTIFICATION_FROM");
-  if (!apiKey || !from) return response({ mode, error: "Live delivery configuration missing" }, 500);
+  let route: QueueDeliveryRoute = { mode: "live" };
+  if (mode === "queue_test") {
+    const inbox = configuredQueueTestInbox();
+    if (!inbox) return response({ mode, error: "Queue test requires a single valid test inbox" }, 409);
+    route = { mode, inbox };
+  }
+  if (!apiKey || !from) return response({ mode, error: "Queue delivery configuration missing" }, 500);
+
+  const cleanup = await db.rpc("snh_expire_notification_jobs");
+  if (cleanup.error) return response({ mode, error: "Could not expire notification jobs" }, 503);
 
   const budgetResult = await db.rpc("snh_notification_live_status");
   if (budgetResult.error || !budgetResult.data) return response({ mode, error: "Could not check live-send budget" }, 503);
@@ -416,9 +428,9 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
       }
     }
 
-    // Recipient is fixed by the trusted outbox record.
+    // Eligibility and message data are based on the original outbox record.
     const template = notificationTemplate(job.kind, job.template_variables);
-    const result = await send(apiKey, from, job.recipient_email, job.subject, job.body, job.id, template || undefined);
+    const result = await sendQueued(apiKey, from, job, template || undefined, route);
     const status = result.ok ? "sent" : "failed";
     const providerId = result.id || null;
     const failure = result.error || null;
@@ -439,6 +451,23 @@ async function dispatch(db: SupabaseClient): Promise<Response> {
   };
   return response({ mode, sent, canceled, failed,
     limited: Number(finalBudget.remaining || 0) === 0, budget: finalBudget });
+}
+
+function configuredQueueTestInbox(): string | null {
+  const value = Deno.env.get("NOTIFICATION_TEST_EMAIL")?.trim();
+  if (!value || value.length > 254) return null;
+  const match = /^([a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*)@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.exec(value);
+  return match && match[1].length <= 64 ? value : null;
+}
+
+type QueueDeliveryRoute = { mode: "queue_test"; inbox: string } | { mode: "live" };
+
+function sendQueued(apiKey: string, from: string, job: Job, template: ResendTemplatePayload | undefined,
+  route: QueueDeliveryRoute) {
+  if (route.mode === "queue_test") {
+    return send(apiKey, from, route.inbox, job.subject, job.body, `staging-queue-test/${job.id}`, template);
+  }
+  return send(apiKey, from, job.recipient_email, job.subject, job.body, job.id, template);
 }
 
 async function send(apiKey: string, from: string, to: string, subject: string,

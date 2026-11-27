@@ -185,6 +185,7 @@ Deno.serve(async req => {
       const message = !response.ok ? "Dispatcher failed. See Jobs for the recorded error."
         : result.mode === "preview" ? "Preview completed. No messages were sent."
         : result.mode === "test" ? (result.sent ? "Test message sent to the configured test inbox. The queue was not consumed." : "Test completed. No message was sent; the queue is empty.")
+        : result.mode === "queue_test" ? `Queue test completed: ${count(result.sent)} sent to the test inbox, ${count(result.failed)} failed, ${count(result.canceled)} canceled.`
         : result.mode === "live" ? `Dispatch completed: ${count(result.sent)} sent, ${count(result.failed)} failed, ${count(result.canceled)} canceled.`
         : "Dispatcher completed. See Jobs for the result.";
       return json({ ok: response.ok && !count(result.failed), message });

@@ -131,13 +131,14 @@ try {
   await db.query("update notification_outbox set created_at=now()-interval '3 days', available_at=now()-interval '3 days', delivery_deadline_at=now()-interval '2 days' where id=$1", [queued[0].id]);
   await migration('20261127163333_notification_dispatch_readiness.sql');
   await migration('20261127171727_notification_backlog_singleton_updates.sql');
+  await migration('20261127194807_notification_expiration_cleanup.sql');
   assert.equal((await db.query("select count(*)::int n from notification_outbox where delivery_deadline_at='infinity'")).rows[0].n, 3, 'Previously queued first attempts adopt the new policy');
   const source = await readFile(new URL('../supabase/functions/notification-dispatch/index.ts', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /membership_editor|membership_admin|club_admin|member_roles/);
   const js = ts.transpileModule(source.replace(/^import .*;\n/gm, ''), {
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
   }).outputText;
-  const delivered = [], logs = [];
+  const delivered = [], logs = [], accepted = new Map();
   let handler, clients = 0, failProvider = false, claimError = false, finishError = false;
   const env = { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'service-key',
     NOTIFICATION_DISPATCH_SECRET: 'dispatch-secret', NOTIFICATION_DELIVERY_MODE: 'live',
@@ -145,14 +146,22 @@ try {
   const transport = async (input, init = {}) => {
     const url = new URL(input);
     if (url.hostname === 'api.resend.com') {
-      delivered.push({ body: JSON.parse(init.body), key: init.headers['Idempotency-Key'] });
-      return failProvider ? Response.json({}, { status: 503 }) : Response.json({ id: 'provider-id' });
+      const body = JSON.parse(init.body), key = init.headers['Idempotency-Key'];
+      delivered.push({ body, key });
+      if (failProvider) return Response.json({}, { status: 503 });
+      if (accepted.has(key)) assert.deepEqual(body, accepted.get(key), 'A repeated key uses the same provider payload');
+      else accepted.set(key, body);
+      return Response.json({ id: 'provider-id' });
     }
     if (url.pathname === '/rest/v1/operations_job_runs') {
       logs.push(JSON.parse(init.body));
       return init.method === 'POST' ? Response.json({ id: uid(500) }) : new Response(null, { status: 204 });
     }
     assert.equal(init.headers.get('Authorization'), 'Bearer service-key');
+    if (url.pathname === '/rest/v1/rpc/snh_expire_notification_jobs') {
+      await db.exec('select public.snh_expire_notification_jobs()');
+      return Response.json(null);
+    }
     if (url.pathname === '/rest/v1/rpc/snh_claim_notification') {
       if (claimError) return Response.json({ message: 'claim failed' }, { status: 500 });
       return Response.json((await db.query('select * from public.snh_claim_notification()')).rows);
@@ -177,8 +186,8 @@ try {
     (url, key, options) => { clients++; return createClient(url, key, {
       ...options, global: { fetch: transport },
     }); }, transport);
-  const dispatch = (secret = 'dispatch-secret', method = 'POST') => handler(new Request('https://function.test', {
-    method, headers: { 'x-notification-secret': secret },
+  const dispatch = (secret = 'dispatch-secret', method = 'POST', scheduled = false) => handler(new Request('https://function.test', {
+    method, headers: { 'x-notification-secret': secret, 'x-notification-scheduled': String(scheduled) },
   }));
   assert.equal((await dispatch('wrong')).status, 401);
   assert.equal((await dispatch('', 'GET')).status, 405);
@@ -211,11 +220,18 @@ try {
   assert.equal((await dispatch()).status, 500);
   assert.equal(delivered.length, 3, 'Claim errors cannot send mail');
   claimError = false;
+  // Switch to the staging transport for retries and the scheduled queue workload.
+  env.SUPABASE_URL = 'https://eptbdrwmcwogxcjleudv.supabase.co';
+  env.NOTIFICATION_DELIVERY_MODE = 'queue_test';
+  env.NOTIFICATION_TEST_EMAIL = '  queue-tests+staging@example.com  ';
+  const stagingAttemptStart = delivered.length;
+  const testKey = 'staging-queue-test/' + queued[0].id;
+  const scheduledDispatch = () => dispatch('dispatch-secret', 'POST', true);
   // Delivery failure still uses the production retry state transition.
   await db.query("update notification_outbox set status='pending',attempts=0,delivery_deadline_at='infinity' where id=$1", [queued[0].id]);
   failProvider = true;
   const failedResult = await (await dispatch()).json();
-  assert.equal(failedResult.mode, 'live'); assert.equal(failedResult.sent, 0);
+  assert.equal(failedResult.mode, 'queue_test'); assert.equal(failedResult.sent, 0);
   assert.equal(failedResult.canceled, 0); assert.equal(failedResult.failed, 1);
   const retry = (await db.query('select * from notification_outbox where id=$1', [queued[0].id])).rows[0];
   assert.equal(retry.status, 'pending');
@@ -230,6 +246,15 @@ try {
   assert.equal(reclaimed.status, 'sending');
   assert.deepEqual(reclaimed.delivery_deadline_at, retry.delivery_deadline_at);
   finishError = false;
+  await db.query('update notification_outbox set locked_until=now() where id=$1', [queued[0].id]);
+  const acceptedBeforeRetry = accepted.size;
+  assert.equal((await (await scheduledDispatch()).json()).sent, 1);
+  assert.equal(accepted.size, acceptedBeforeRetry, 'A replay after provider acceptance reuses the accepted send');
+  assert.deepEqual(delivered.slice(stagingAttemptStart).map(d => d.key), [testKey, testKey, testKey]);
+  const recoveredSend = (await db.query('select * from notification_outbox where id=$1', [queued[0].id])).rows[0];
+  assert.equal(recoveredSend.status, 'sent');
+  assert.equal(recoveredSend.provider_id, 'provider-id');
+  assert.equal(recoveredSend.recipient_email, queued[0].recipient_email);
   await db.exec(`delete from notification_outbox;
     insert into notification_outbox (event_key,kind,recipient_member_id,recipient_email,subject,body,status,sent_at)
     select 'sent-'||i,'member_signup','${uid(1)}','admin@example.com','subject','message','sent',now()
@@ -240,7 +265,7 @@ try {
   const health = async () => (await db.query('select public.snh_notification_live_status() health')).rows[0].health;
   const incident = async () => (await db.query('select * from private.notification_backlog_state')).rows[0];
   const priorIncident = await incident();
-  assert.equal((await (await dispatch()).json()).sent, 10);
+  assert.equal((await (await scheduledDispatch()).json()).sent, 10);
   assert.equal((await health()).pending_count, 3);
   assert.equal((await health()).backlog_status, 'clear', 'Batch size alone does not create a backlog');
   assert.deepEqual(await incident(), priorIncident);
@@ -276,6 +301,12 @@ try {
   assert.equal((await health()).remaining, 0);
   assert.equal((await health()).sent_last_24h, 99);
   assert.equal((await health()).backlog_status, 'delayed');
+  const fullRun = await (await scheduledDispatch()).json();
+  assert.equal(fullRun.sent, 0);
+  assert.equal(fullRun.limited, true);
+  assert.equal(fullRun.budget.expired_pending, 1, 'The expired row with an active lease stays untouched');
+  assert.deepEqual((await db.query("select event_key,status from notification_outbox where event_key in ('expired','irrelevant-reminder') order by event_key")).rows,
+    [{event_key:'expired',status:'failed'},{event_key:'irrelevant-reminder',status:'failed'}]);
   assert.equal((await db.query('select * from public.snh_claim_notification()')).rows.length, 0);
   await db.exec("update notification_outbox set sent_at=now()-interval '25 hours' where event_key='sent-5'");
   assert.equal((await (await dispatch()).json()).sent, 1);
@@ -287,6 +318,9 @@ try {
     {event_key:'sent-4',status:'sending',last_error:null},
   ]);
   assert.equal((await health()).backlog_status, 'clear');
+  assert.ok(delivered.slice(stagingAttemptStart).every(d =>
+    d.body.to.length === 1 && d.body.to[0] === 'queue-tests+staging@example.com' && !d.body.cc && !d.body.bcc));
+  assert.ok(logs.some(r => r.result?.mode === 'queue_test' && r.result.sent === 10));
 
   await db.exec(`insert into member_roles values ('${uid(1)}','club_admin');
     insert into operations_job_runs (job,status,started_at,finished_at,result) values
@@ -298,6 +332,7 @@ try {
   assert.equal((await overview()).last_successful_run_mode, 'preview');
   assert.ok((await overview()).last_backlog_cleared_at);
   await assert.rejects(db.query('select public.snh_observe_notification_backlog()'), /permission denied/);
+  await assert.rejects(db.query('select public.snh_expire_notification_jobs()'), /permission denied/);
   await db.exec(`reset role;
     insert into operations_job_runs (job,status,finished_at,result) values ('notification_dispatch','succeeded',now(),'{"mode":"test"}');
     set role authenticated;`);

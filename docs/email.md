@@ -67,7 +67,7 @@ messages can wait for their first attempt across capacity delays. The first
 claim starts a 24-hour retry window and subsequent attempts keep the same
 deadline and Resend idempotency key. A job with an active lease can record its
 in-flight result after the deadline. Pending retries whose deadline has passed
-become visible failures when claims resume.
+become visible failures during queued dispatch, even when the rolling budget is exhausted.
 
 Confirmation reminders have a relevance deadline 24 hours after their scheduled
 send time. A retry cannot extend that deadline, and the dispatcher still checks
@@ -97,8 +97,18 @@ on membership history or send marketing announcements.
 The dispatcher runs every 10 minutes through pg_cron. Scheduler calls use a dedicated
 header and matching Vault secret `snh_notification_dispatch_scheduler_secret`;
 the Edge Function secret remains `NOTIFICATION_DISPATCH_SECRET`. Scheduled
-calls do not send synthetic messages when delivery mode is `test`. Staging
-continues to reject `live` delivery.
+calls do not send synthetic messages when delivery mode is `test`.
+
+`queue_test` runs only on staging, both on the 10-minute schedule and when an
+administrator chooses **Run queue test** in Operations → Jobs. It processes
+real staging outbox rows through the same delivery lifecycle as `live`.
+The dispatcher requires a single valid `NOTIFICATION_TEST_EMAIL` address before
+processing the queue and sends every queued email solely to that address.
+Original recipients remain on the outbox for eligibility and administrator
+review. Resend retries use an idempotency key derived from the job ID with a
+staging prefix. Operations records the run as `queue_test` and counts successful
+sends toward the staging budget. Production rejects `queue_test`, and staging
+rejects `live`.
 
 New Note creation notices use the `club_note_created` queue kind and the
 `snhpc-club-note-created-v1` Resend template. A Note submitted through the site
@@ -130,7 +140,7 @@ the affected member profile is required. The messages use the Resend templates
 `snhpc-member-role-granted-v1`, `snhpc-member-role-revoked-v1`,
 `snhpc-full-access-activated-v1`, and
 `snhpc-full-access-deactivated-v1`. They are registered in the Email template
-tester and follow the existing preview/test/live delivery safeguards.
+tester and follow the dispatcher delivery safeguards.
 
 ## Activation
 
@@ -147,7 +157,7 @@ tester and follow the existing preview/test/live delivery safeguards.
    `NOTIFICATION_DISPATCH_SECRET` (a unique, random high-entropy value per
    project), `RESEND_API_KEY` (Sending access, restricted to the verified
    sending domain), `NOTIFICATION_FROM` (a sender on the verified domain),
-   and `NOTIFICATION_TEST_EMAIL` (a controlled test inbox or group).
+   and `NOTIFICATION_TEST_EMAIL` (a single controlled test mailbox).
    For the scheduled caller, store the exact `NOTIFICATION_DISPATCH_SECRET`
    value in Vault as `snh_notification_dispatch_scheduler_secret`; use the
    existing project URL and anon-key Vault entries for transport headers.
@@ -156,8 +166,9 @@ tester and follow the existing preview/test/live delivery safeguards.
    inbox. The item remains pending and its intended recipient is not contacted.
    Use **Send test email** separately to verify the dispatcher with a synthetic
    message. Repeated test runs send additional copies to the test destination.
-5. Keep delivery mode at `preview` by default. Enable `live` only after the
-   staging preview and production configuration review are complete. Scheduled
+5. Keep delivery mode at `preview` by default. Activate staging `queue_test`
+   separately after review. Enable production `live` only after staging queue
+   testing and production configuration review are complete. Scheduled
    dispatch runs every 10 minutes; `test` mode skips synthetic sends. The deployed staging cron job is currently named `notification-dispatch-hourly` despite its ten-minute schedule. Keep dispatch secrets out of browser code and public build variables.
 
 ### Queue review and staging cleanup
@@ -202,7 +213,7 @@ safe example values in `supabase/functions/email-template-tester/index.ts`; incl
 labeled, and map any HTML-specific escaped variables. The tester only sends
 templates from this allowlist.
 
-Staging intentionally rejects live delivery. Test mode sends a synthetic message to the configured test inbox and never reads or changes queued messages. Use queue preview to verify the event and message content, then cancel or clear staging items when finished.
+Use `preview` and **Send preview** to verify individual queued messages without consuming them. Review the staging queue and verify ownership of the configured test inbox before separately activating `queue_test`. Scheduled runs can start consuming the staging queue as soon as the mode is active.
 
 Inspect queue totals in the Supabase SQL editor:
 
