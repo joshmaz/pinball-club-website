@@ -41,13 +41,26 @@ management remains in Member Tools; self-delete remains in My Account.
 - Cleanup removes only search rows expired more than seven days ago, retaining
   recent stale fallback data and all event/results rows. The confirmation names
   that scope. Both Cache and Jobs call the same audited RPC.
+- Overview → Messaging shows pending count and oldest pending age, confirmed
+  sends against the rolling 24-hour limit, and the last successful dispatcher run
+  with its mode. A dispatcher is stale after 30 minutes without a successful
+  run. Scheduled test-mode calls record a heartbeat without sending test mail.
+- The provisional backlog threshold is 30 minutes since a still-eligible
+  message became available. Eligible work also counts as backlogged as soon as
+  the rolling sending allowance is exhausted. A full ten-message batch alone
+  is normal. Future-scheduled work and expired rows do not trigger an incident.
+  Queue health uses a current snapshot. The worker samples incidents before and
+  after each run and retains the last detection and clearance times and the
+  highest observed pending count for the latest incident, including after
+  recovery. Preview-mode staging can show a backlog because it holds the queue.
 - Messaging shows counts and pages of 50 records, filterable by status, including
   recipient, kind, subject, created/available/sent times, attempts and safe errors.
   Pagination uses `(created_at,id)`. Club Administrators can expand **Preview message** to inspect queued message text and recipient; provider response payloads and credentials remain omitted.
 - Retry locks the failed row, retains ID/content/recipient/attempt count and the
   original creation time, and grants one claim beyond the automatic attempt cap.
-  Only failed rows younger than 23 hours, without a provider ID or active lease,
-  qualify. The worker still enforces the original 24-hour delivery deadline,
+  Only failed rows still within their delivery deadline, without a provider ID
+  or active lease, qualify. Ordinary messages get a deadline on first claim,
+  and confirmation reminders also have a relevance deadline. The worker enforces the deadline,
   provider idempotency key, and enqueue-time recipient authorization. A second concurrent retry
   fails because the first changes the state. Expired exhausted leases become failed
   rather than permanently stuck in sending. Old messages are never re-created.

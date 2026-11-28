@@ -45,8 +45,8 @@ the website account and does not imply paid membership.
 The `notification-dispatch` Edge Function reads the outbox and sends through
 Resend. It requires an independent `NOTIFICATION_DISPATCH_SECRET` header. Its
 default mode is `preview`, which reports a safe summary of the
-oldest pending message (kind, subject, queued time, and whether it is within the
-24-hour live-delivery window). It does not expose the message body or recipient
+oldest pending message (kind, subject, queued time, and whether it is currently
+eligible for live delivery). It does not expose the message body or recipient
 in job history and does not consume the queue. `test` sends a synthetic test
 message only to `NOTIFICATION_TEST_EMAIL`; it does not read or change the
 outbox. Each test run sends another copy to that test destination. Staging test
@@ -55,16 +55,26 @@ the body; live delivery is rejected in staging before any queued message is
 claimed. Production test messages use `[TEST]`.
 `live` is selected with `NOTIFICATION_DELIVERY_MODE=live`. Claims are
 serialized in Postgres and reserve capacity for in-flight sends, enforcing a
-maximum of ten messages per run and ten per rolling 24-hour window across
+maximum of ten messages per run and 100 per rolling 24-hour window across
 repeated or concurrent runs. Operations shows remaining capacity and
 pending/expired counts. Staging rejects live mode. Live sends go to the queued
 recipient and record the provider ID or a safe error summary. Recipient
 authorization occurs only at enqueue, using the canonical effective Membership
 Editor role. Removing a qualifying role afterward does not suppress already
 queued mail; removing it before the next signup prevents new mail for that
-recipient. The dispatcher retries failures at most three times during the first
-24 hours. Resend's idempotency key uses the outbox ID for safe short-term
-retries; delivery beyond that window is held for manual review.
+recipient. Both sending limits leave unclaimed messages pending. Ordinary app
+messages can wait for their first attempt across capacity delays. The first
+claim starts a 24-hour retry window and subsequent attempts keep the same
+deadline and Resend idempotency key. A job with an active lease can record its
+in-flight result after the deadline. Pending retries whose deadline has passed
+become visible failures when claims resume.
+
+Confirmation reminders have a relevance deadline 24 hours after their scheduled
+send time. A retry cannot extend that deadline, and the dispatcher still checks
+whether the account has already confirmed. The migration gives existing
+never-attempted pending messages the new policy, except confirmation reminders.
+Previously attempted messages retain their deadlines. Failed and canceled rows
+retain their recorded status. Supabase Auth SMTP delivery is separate.
 
 ### Member account onboarding
 

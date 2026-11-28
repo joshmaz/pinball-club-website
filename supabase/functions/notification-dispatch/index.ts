@@ -235,20 +235,23 @@ Deno.serve(async (req) => {
   const request = await req.json().catch(() => ({}));
   if (request && request.action === "send_preview") return sendPreview(db, request.notification_id);
   const scheduled = req.headers.get("x-notification-scheduled") === "true";
-  if (scheduled && (Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview") === "test") {
-    return response({ mode: "test", sent: 0, skipped: true, reason: "Scheduled dispatch does not send synthetic test emails" });
-  }
   const run = await db.from("operations_job_runs").insert({ job: "notification_dispatch" }).select("id").single();
   if (run.error) return response({ error: "Could not record job start" }, 503);
+  await observeBacklog(db);
   let outcome: Response;
-  try { outcome = await dispatch(db); }
-  catch { outcome = response({ error: "Dispatcher failed unexpectedly" }, 500); }
+  try {
+    outcome = scheduled && (Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview") === "test"
+      ? response({ mode: "test", sent: 0, skipped: true, reason: "Scheduled dispatch does not send synthetic test emails" })
+      : await dispatch(db);
+  } catch { outcome = response({ error: "Dispatcher failed unexpectedly" }, 500); }
+  await observeBacklog(db);
   const summary = await outcome.clone().json();
   const configuredMode = Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview";
   const next = summary.mode === "preview" && summary.next && typeof summary.next === "object" ? summary.next : null;
   const parsedCreatedAt = typeof next?.created_at === "string" ? Date.parse(next.created_at) : NaN;
   const availableAt = typeof next?.available_at === "string" ? Date.parse(next.available_at) : NaN;
-  const deadlineAt = typeof next?.delivery_deadline_at === "string" ? Date.parse(next.delivery_deadline_at) : NaN;
+  const deadlineAt = next?.delivery_deadline_at === "infinity" ? Infinity
+    : typeof next?.delivery_deadline_at === "string" ? Date.parse(next.delivery_deadline_at) : NaN;
   const ageSeconds = Number.isFinite(parsedCreatedAt)
     ? Math.max(0, Math.floor((Date.now() - parsedCreatedAt) / 1000)) : null;
   const preview = next ? {
@@ -256,9 +259,9 @@ Deno.serve(async (req) => {
     subject: typeof next.subject === "string" ? next.subject.slice(0, 180) : "",
     created_at: typeof next.created_at === "string" ? next.created_at : null,
     age_seconds: ageSeconds,
-    live_eligible: Number.isFinite(availableAt) && Number.isFinite(deadlineAt)
+    live_eligible: Number.isFinite(availableAt) && !Number.isNaN(deadlineAt)
       ? availableAt <= Date.now() && deadlineAt > Date.now()
-      : ageSeconds === null ? null : ageSeconds < 24 * 60 * 60,
+      : null,
   } : null;
   const rawBudget = summary.budget && typeof summary.budget === "object" ? summary.budget : null;
   const safeCount = (value: unknown) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : 0;
@@ -288,6 +291,15 @@ Deno.serve(async (req) => {
   if (finish.error) return response({ error: "Could not record job completion" }, 503);
   return outcome;
 });
+
+async function observeBacklog(db: SupabaseClient): Promise<void> {
+  try {
+    const { error } = await db.rpc("snh_observe_notification_backlog");
+    if (error) console.error("Could not record notification backlog observation", error.code);
+  } catch {
+    console.error("Could not record notification backlog observation");
+  }
+}
 
 async function sendPreview(db: SupabaseClient, notificationId: unknown): Promise<Response> {
   if (!isStagingProject()) return response({ error: "Queued-message previews are available only in staging" }, 409);
