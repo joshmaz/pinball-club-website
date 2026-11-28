@@ -41,13 +41,26 @@ management remains in Member Tools; self-delete remains in My Account.
 - Cleanup removes only search rows expired more than seven days ago, retaining
   recent stale fallback data and all event/results rows. The confirmation names
   that scope. Both Cache and Jobs call the same audited RPC.
+- Overview → Messaging shows pending count and oldest pending age, confirmed
+  sends against the rolling 24-hour limit, and the last successful dispatcher run
+  with its mode. A dispatcher is stale after 30 minutes without a successful
+  run. Scheduled test-mode calls record a heartbeat without sending test mail.
+- The provisional backlog threshold is 30 minutes since a still-eligible
+  message became available. Eligible work also counts as backlogged as soon as
+  the rolling sending allowance is exhausted. A full ten-message batch alone
+  is normal. Future-scheduled work and expired rows do not trigger an incident.
+  Queue health uses a current snapshot. The worker samples incidents before and
+  after each run and retains the last detection and clearance times and the
+  highest observed pending count for the latest incident, including after
+  recovery. Preview-mode staging can show a backlog because it holds the queue.
 - Messaging shows counts and pages of 50 records, filterable by status, including
   recipient, kind, subject, created/available/sent times, attempts and safe errors.
   Pagination uses `(created_at,id)`. Club Administrators can expand **Preview message** to inspect queued message text and recipient; provider response payloads and credentials remain omitted.
 - Retry locks the failed row, retains ID/content/recipient/attempt count and the
   original creation time, and grants one claim beyond the automatic attempt cap.
-  Only failed rows younger than 23 hours, without a provider ID or active lease,
-  qualify. The worker still enforces the original 24-hour delivery deadline,
+  Only failed rows still within their delivery deadline, without a provider ID
+  or active lease, qualify. Ordinary messages get a deadline on first claim,
+  and confirmation reminders also have a relevance deadline. The worker enforces the deadline,
   provider idempotency key, and enqueue-time recipient authorization. A second concurrent retry
   fails because the first changes the state. Expired exhausted leases become failed
   rather than permanently stuck in sending. Old messages are never re-created.
@@ -60,12 +73,16 @@ management remains in Member Tools; self-delete remains in My Account.
   callers must treat -1 as failure. Failures that prevent recording the run or audit
   itself still fail the whole transaction. Unfinished worker runs remain
   explicitly “running”, with a warning that completion is unknown.
-- Run Now uses the existing dispatcher secret exclusively server-side. It audits
-  the authenticated actor before invoking the worker, and uses the configured
-  preview/test/live mode. Preview does not claim mail; test sends only to the test
-  inbox; live processes up to ten messages. No preview message body is forwarded
-  through the Operations endpoint. An HTTP timeout leaves the run outcome unknown;
-  inspect Jobs before trying again.
+- Manual dispatch audits the administrator before invoking the worker with the
+  server-side dispatcher secret. **Preview queue** reports metadata without
+  claiming mail. **Send test email** sends a synthetic message. **Run queue
+  test** processes staging rows and sends only to the configured test inbox.
+  **Run live dispatch** processes production rows and sends to the queued
+  recipients. Both queue-processing modes handle up to ten jobs per run.
+  Operations Overview shows the staging queue-test destination policy, the
+  last successful mode, and backlog detection and clearance. The manual
+  response omits the preview body. After an HTTP timeout, inspect Jobs to
+  determine the run outcome before retrying.
 
 All browser RPCs check `club_admin` server-side with a fixed empty search path.
 The Operations Edge Function independently validates the session and club-admin

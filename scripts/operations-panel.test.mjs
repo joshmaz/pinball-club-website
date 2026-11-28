@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 const source=await readFile(new URL('../assets/js/member-operations-panel.js',import.meta.url),'utf8');
-function fixture(pinballmap=null, jobs=[]) {
+function fixture(pinballmap=null, jobs=[], notificationHealth=null, mode='preview') {
  function el(tag='div') {return {tag,children:[],dataset:{},attrs:{},listeners:{},textContent:'',
  appendChild(n){this.children.push(n);},replaceChildren(){this.children=[];},setAttribute(k,v){this.attrs[k]=v;},
  addEventListener(k,v){this.listeners[k]=v;},reportValidity(){return true;},checkValidity(){return true;},
@@ -11,12 +11,12 @@ function fixture(pinballmap=null, jobs=[]) {
  const nodes=new Map(['member-panel-operations','operations-content','operations-status','operations-sections','operations-refresh','operations-audit'].map(id=>[id,el()]));
  const root=nodes.get('member-panel-operations'); for(const [id,n] of nodes) if(id!=='member-panel-operations') root.appendChild(n);
  const calls=[]; let confirmation=true;
- const data={integrations:[],messages:{failed:2},cache:{total:3,expired:1,cleanup_eligible:0},jobs:jobs,policies:[
+ const data={integrations:[],messages:{pending:4,failed:2},notification_health:notificationHealth,cache:{total:3,expired:1,cleanup_eligible:0},jobs:jobs,policies:[
  {provider:'matchplay',policy:'event',default_seconds:7200,seconds:7200,overridden:true}]};
  const window={SNHMemberAuditPanel:{load:async()=>{calls.push({name:'audit'});}},confirm:()=>confirmation,snhSupabase:{rpc:async(name,args)=>{
  calls.push({name,args}); return {data:name==='snh_publishing_discord_status'?[{status:'pending'},{status:'uncertain'},{status:'failed'}]:name==='snh_operations_snapshot'?data:name==='snh_operations_pinballmap'?pinballmap:name==='snh_operations_messages'?[
  {id:'id',kind:'signup',recipient_email:'<img src=x onerror=evil()>',subject:'Subject',status:'failed',attempts:3,can_retry:true}]:null};
- },functions:{invoke:async(name)=>{calls.push({name});return {data:name==='pinballmap-ingest'?{ok:true}:{providers:[],dispatcher:{configured:true,mode:'preview'}}};}}}};
+ },functions:{invoke:async(name)=>{calls.push({name});return {data:name==='pinballmap-ingest'?{ok:true}:{providers:[],dispatcher:{configured:true,mode}}};}}}};
  vm.runInNewContext(source,{window,document:{createElement:el,getElementById:id=>nodes.get(id)}});
  return {panel:window.SNHMemberOperationsPanel,nodes,calls,confirm:v=>{confirmation=v;},buttons:()=>root.querySelectorAll('button'),
  click:async text=>{const b=root.querySelectorAll('button').find(n=>n.textContent===text);assert.ok(b,text);await b.listeners.click();await new Promise(r=>setImmediate(r));}};
@@ -81,4 +81,35 @@ test('membership snapshot job stays compact and shows first run, success counts,
    else if(run.status==='failed'){assert.match(text(card),/Failed.*Last run:/);assert.match(text(card),/No new snapshot was retained/);assert.doesNotMatch(text(card),/registered accounts/);}
    else {assert.match(text(card),new RegExp(run.result.account_count+' registered accounts'));assert.match(text(card),/Succeeded.*Last run:/);if(run.result.already_captured)assert.match(text(card),/existing daily snapshot/);}
  }
+});
+
+test('Messaging overview shows current queue health and the last recovered incident', async () => {
+ const health = {oldest_pending_age_seconds:3700,sent_last_24h:98,rolling_limit:100,dispatcher_stale:true,
+  last_successful_run_at:'2026-11-27T13:00:00Z',last_successful_run_mode:'preview',backlog_status:'clear',
+  last_backlog_detected_at:'2026-11-26T13:00:00Z',last_backlog_cleared_at:'2026-11-26T14:00:00Z',peak_backlog_depth:23};
+ const f = fixture(null, [], health);
+ f.panel.init(['club_admin']);
+ await f.panel.load();
+ const text = node => [node.textContent, ...node.children.flatMap(text)].join(' ');
+ const overview = () => text(f.nodes.get('operations-content'));
+ assert.match(overview(), /4 queued/);
+ assert.match(overview(), /Oldest pending: 1 hour/);
+ assert.match(overview(), /98 of 100 sent in the last 24 hours/);
+ assert.match(overview(), /Last successful dispatcher run: .*\(preview\)/);
+ assert.match(overview(), /Dispatcher stale/);
+ assert.match(overview(), /Backlog: Clear.*Last backlog detected: .*Last backlog cleared: .*Peak pending in latest backlog: 23/);
+ health.backlog_status = 'daily_limit';
+ await f.click('Refresh');
+ assert.match(overview(), /Backlog: Daily sending allowance exhausted/);
+});
+
+test('queue test shows its staging destination and offers the queue test action', async () => {
+ const f = fixture(null, [], null, 'queue_test');
+ f.panel.init(['club_admin']);
+ await f.panel.load();
+ const text = node => [node.textContent, ...node.children.flatMap(text)].join(' ');
+ assert.match(text(f.nodes.get('operations-content')), /queue_test.*configured staging test inbox/);
+ await f.click('Jobs');
+ assert.ok(f.buttons().some(b => b.textContent === 'Run queue test'));
+ assert.ok(!f.buttons().some(b => b.textContent === 'Run live dispatch'));
 });

@@ -28,29 +28,32 @@ Deno.serve(async req => {
     const body = await req.json();
     const { action } = body;
     const token = (Deno.env.get("MATCHPLAY_API_TOKEN") || "").trim();
-    if (action === "configuration") return json({
-      providers: [
-        { provider: "opdb", configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
-          note: "Weekly validated V2 archive and IPDB crosswalk. Run history and freshness are in Jobs.",
-          scheduler_configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
-        { provider: "ipdb", configured: Boolean(Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
-          note: "Monthly checked JSON reference archive for AI enrichment. Jobs shows the IPDB refresh date and import status.",
-          scheduler_configured: Boolean(Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
-        { provider: "kineticist", configured: true, test_supported: false,
-          note: "On-demand game lookup by exact OPDB ID. Game responses are cached for 24 hours." },
-        { provider: "pintips", configured: Boolean(Deno.env.get("PINTIPS_IMPORT_SCHEDULER_SECRET")), test_supported: false, note: "Daily export import. Manual refresh is in Games; counts are in Jobs." },
-        { provider: "matchplay", configured: Boolean(token), test_supported: true },
-        { provider: "ifpa", configured: null, test_supported: false, note: "Adapter not connected" },
-        { provider: "pinballmap", configured: Boolean(Deno.env.get("PINBALLMAP_API_TOKEN")), test_supported: false,
-          note: "Imports club activity and machine details. Run history and manual import are in Jobs.",
-          scheduler_configured: Boolean(Deno.env.get("PINBALLMAP_INGEST_SCHEDULER_SECRET")) },
-      ],
-      dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
-        mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview",
-        live_per_run_limit: 10, live_rolling_24h_limit: 10,
-        is_staging: new URL(url).hostname === "eptbdrwmcwogxcjleudv.supabase.co",
-        preview_email_configured: Boolean(Deno.env.get("NOTIFICATION_TEST_EMAIL") && Deno.env.get("RESEND_API_KEY") && Deno.env.get("NOTIFICATION_FROM")) },
-    });
+    if (action === "configuration") {
+      const { data: budget } = await db.rpc("snh_notification_live_status");
+      return json({
+        providers: [
+          { provider: "opdb", configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
+            note: "Weekly validated V2 archive and IPDB crosswalk. Run history and freshness are in Jobs.",
+            scheduler_configured: Boolean(Deno.env.get("OPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
+          { provider: "ipdb", configured: Boolean(Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET")), test_supported: false,
+            note: "Monthly checked JSON reference archive for AI enrichment. Jobs shows the IPDB refresh date and import status.",
+            scheduler_configured: Boolean(Deno.env.get("IPDB_REFERENCE_SYNC_SCHEDULER_SECRET")) },
+          { provider: "kineticist", configured: true, test_supported: false,
+            note: "On-demand game lookup by exact OPDB ID. Game responses are cached for 24 hours." },
+          { provider: "pintips", configured: Boolean(Deno.env.get("PINTIPS_IMPORT_SCHEDULER_SECRET")), test_supported: false, note: "Daily export import. Manual refresh is in Games; counts are in Jobs." },
+          { provider: "matchplay", configured: Boolean(token), test_supported: true },
+          { provider: "ifpa", configured: null, test_supported: false, note: "Adapter not connected" },
+          { provider: "pinballmap", configured: Boolean(Deno.env.get("PINBALLMAP_API_TOKEN")), test_supported: false,
+            note: "Imports club activity and machine details. Run history and manual import are in Jobs.",
+            scheduler_configured: Boolean(Deno.env.get("PINBALLMAP_INGEST_SCHEDULER_SECRET")) },
+        ],
+        dispatcher: { configured: Boolean(Deno.env.get("NOTIFICATION_DISPATCH_SECRET")),
+          mode: Deno.env.get("NOTIFICATION_DELIVERY_MODE") || "preview",
+          live_per_run_limit: budget?.per_run_limit ?? null, live_rolling_24h_limit: budget?.rolling_limit ?? null,
+          is_staging: new URL(url).hostname === "eptbdrwmcwogxcjleudv.supabase.co",
+          preview_email_configured: Boolean(Deno.env.get("NOTIFICATION_TEST_EMAIL") && Deno.env.get("RESEND_API_KEY") && Deno.env.get("NOTIFICATION_FROM")) },
+      });
+    }
     if (action === "set_ai_usage_budget") {
       const monthlyLimitUsd = Number(body.monthlyLimitUsd);
       if (!Number.isFinite(monthlyLimitUsd) || monthlyLimitUsd < 0 || monthlyLimitUsd > 100) {
@@ -182,6 +185,7 @@ Deno.serve(async req => {
       const message = !response.ok ? "Dispatcher failed. See Jobs for the recorded error."
         : result.mode === "preview" ? "Preview completed. No messages were sent."
         : result.mode === "test" ? (result.sent ? "Test message sent to the configured test inbox. The queue was not consumed." : "Test completed. No message was sent; the queue is empty.")
+        : result.mode === "queue_test" ? `Queue test completed: ${count(result.sent)} sent to the test inbox, ${count(result.failed)} failed, ${count(result.canceled)} canceled.`
         : result.mode === "live" ? `Dispatch completed: ${count(result.sent)} sent, ${count(result.failed)} failed, ${count(result.canceled)} canceled.`
         : "Dispatcher completed. See Jobs for the result.";
       return json({ ok: response.ok && !count(result.failed), message });

@@ -346,6 +346,32 @@
 
       var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
       el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
+      var dispatcher = configuration && configuration.dispatcher;
+      if (dispatcher?.mode === 'queue_test') {
+        el('p', 'Delivery mode: queue_test. Queued email goes only to the configured staging test inbox.', messagingCard);
+      }
+      var notificationHealth = snapshot.notification_health;
+      if (notificationHealth) {
+        var age = notificationHealth.oldest_pending_age_seconds;
+        var ageUnit = age >= 86400 ? 86400 : age >= 3600 ? 3600 : 60;
+        var ageLabel = age == null ? 'None' : age < 60 ? 'Less than 1 minute'
+          : duration(Math.floor(age / ageUnit) * ageUnit);
+        var dispatcherStatus = notificationHealth.last_successful_run_at
+          ? date(notificationHealth.last_successful_run_at) + (notificationHealth.last_successful_run_mode ? ' (' + notificationHealth.last_successful_run_mode + ')' : '')
+          : 'None recorded';
+        var backlogStatus = { daily_limit: 'Daily sending allowance exhausted', delayed: 'Delivery delayed', clear: 'Clear' };
+        el('p', 'Oldest pending: ' + ageLabel, messagingCard);
+        el('p', notificationHealth.sent_last_24h + ' of ' + notificationHealth.rolling_limit + ' sent in the last 24 hours', messagingCard);
+        el('p', 'Last successful dispatcher run: ' + dispatcherStatus, messagingCard);
+        if (notificationHealth.dispatcher_stale) el('p', 'Dispatcher stale: no successful run in the last 30 minutes', messagingCard);
+        el('p', 'Backlog: ' + backlogStatus[notificationHealth.backlog_status], messagingCard);
+        if (notificationHealth.expired_pending > 0) el('p', notificationHealth.expired_pending + ' queued past their delivery deadline', messagingCard);
+        el('p', 'Last backlog detected: ' + (notificationHealth.last_backlog_detected_at ? date(notificationHealth.last_backlog_detected_at) : 'None recorded'), messagingCard);
+        el('p', 'Last backlog cleared: ' + (notificationHealth.last_backlog_cleared_at ? date(notificationHealth.last_backlog_cleared_at) : 'None recorded'), messagingCard);
+        el('p', 'Peak pending in latest backlog: ' + (notificationHealth.peak_backlog_depth ?? 'None recorded'), messagingCard);
+      } else {
+        el('p', 'Notification queue health unavailable', messagingCard);
+      }
       button((snapshot.messages.failed || 0) + ' failed messages', messagingCard, function () { selectSection('messaging', 'failed'); });
 
       renderAiUsageSummary(cards);
@@ -489,7 +515,7 @@
       select.value = filter; select.addEventListener('change', async function () {
         filter = select.value; cursor = null; route(); await loadMessages(false);
       });
-      el('p', 'Retries keep the original recipient, content, message ID, and delivery deadline. Messages older than 23 hours or with a recorded delivery cannot be retried.', content);
+      el('p', 'Retries keep the original recipient, content, message ID, and delivery deadline. Messages past their delivery deadline or with a recorded delivery cannot be retried.', content);
       var dispatcherConfig = configuration && configuration.dispatcher;
       var pendingCount = Number(snapshot.messages.pending || 0);
       if (dispatcherConfig && dispatcherConfig.is_staging && pendingCount > 0) {
@@ -591,15 +617,20 @@
         if (job.key==='notification_dispatch') {
           var dispatcher = configuration && configuration.dispatcher;
           el('p','Delivery mode: ' + (dispatcher ? dispatcher.mode : 'Unknown'),section);
-          if (dispatcher) el('p','Live-send limits: ' + (dispatcher.live_per_run_limit || 10) +
-            ' per run and ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.',section);
+          var batchLimit = snapshot.notification_health?.per_run_limit ?? dispatcher?.live_per_run_limit;
+          var rollingLimit = snapshot.notification_health?.rolling_limit ?? dispatcher?.live_rolling_24h_limit;
+          var limitsKnown = batchLimit != null && rollingLimit != null;
+          if (limitsKnown) el('p','Queued delivery limits: ' + batchLimit + ' per run and ' + rollingLimit + ' per rolling 24 hours.',section);
           if (dispatcher && dispatcher.configured) {
-            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
+            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue'
+              : dispatcher.mode === 'queue_test' ? 'Run queue test' : 'Run live dispatch';
             var dispatchPrompt = dispatcher.mode === 'test'
               ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
               : dispatcher.mode === 'live'
-                ? 'Run live dispatch? It can send up to ' + (dispatcher.live_per_run_limit || 10) + ' messages to actual recipients, subject to a maximum of ' + (dispatcher.live_rolling_24h_limit || 10) + ' per rolling 24 hours.'
-                : 'Preview the oldest pending notification? No email will be sent.';
+                ? 'Run live dispatch? Queued messages can be sent to actual recipients.' + (limitsKnown ? ' Limits are ' + batchLimit + ' per run and ' + rollingLimit + ' per rolling 24 hours.' : '')
+                : dispatcher.mode === 'queue_test'
+                  ? 'Process eligible staging notifications? This updates the queue and sends email only to the configured test inbox.'
+                  : 'Preview the oldest pending notification? No email will be sent.';
             button(dispatchLabel,section,function () {
               mutate(function () { return edge('dispatch'); },dispatchPrompt);
             });
