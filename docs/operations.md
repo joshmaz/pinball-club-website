@@ -73,12 +73,16 @@ management remains in Member Tools; self-delete remains in My Account.
   callers must treat -1 as failure. Failures that prevent recording the run or audit
   itself still fail the whole transaction. Unfinished worker runs remain
   explicitly “running”, with a warning that completion is unknown.
-- Run Now uses the existing dispatcher secret exclusively server-side. It audits
-  the authenticated actor before invoking the worker, and uses the configured
-  preview/test/live mode. Preview does not claim mail; test sends only to the test
-  inbox; live processes up to ten messages. No preview message body is forwarded
-  through the Operations endpoint. An HTTP timeout leaves the run outcome unknown;
-  inspect Jobs before trying again.
+- Manual dispatch audits the administrator before invoking the worker with the
+  server-side dispatcher secret. **Preview queue** reports metadata without
+  claiming mail. **Send test email** sends a synthetic message. **Run queue
+  test** processes staging rows and sends only to the configured test inbox.
+  **Run live dispatch** processes production rows and sends to the queued
+  recipients. Both queue-processing modes handle up to ten jobs per run.
+  Operations Overview shows the staging queue-test destination policy, the
+  last successful mode, and backlog detection and clearance. The manual
+  response omits the preview body. After an HTTP timeout, inspect Jobs to
+  determine the run outcome before retrying.
 
 All browser RPCs check `club_admin` server-side with a fixed empty search path.
 The Operations Edge Function independently validates the session and club-admin

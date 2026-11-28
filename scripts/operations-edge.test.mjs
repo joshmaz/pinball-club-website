@@ -13,6 +13,7 @@ function setup(t,name,options={}) {
  MATCHPLAY_API_TOKEN:'private-token',NOTIFICATION_DISPATCH_SECRET:'private-dispatch',...options.env};
  const fakeFetch=async(input,init={})=>{
   const url=new URL(input); calls.push({url,init});
+  if(url.hostname==='api.resend.com') return Response.json({id:'mock-provider-id'});
   if(url.pathname==='/auth/v1/user') return Response.json({id:'user'});
   if(url.pathname==='/rest/v1/members') return Response.json(options.denied ? [] : [{id:'member'}]);
   if(url.pathname==='/rest/v1/rpc/snh_notification_live_status') return Response.json({rolling_limit:100,per_run_limit:10,sent_last_24h:0,in_flight:0,used:0,remaining:100,eligible_pending:1,waiting_pending:0,expired_pending:0});
@@ -73,6 +74,7 @@ test('dispatcher records preview completion without consuming queue or retaining
 for (const [result, expected] of [
  [{mode:'preview',next:{body:'private-message'}},'Preview completed. No messages were sent.'],
  [{mode:'test',sent:true},'Test message sent to the configured test inbox. The queue was not consumed.'],
+ [{mode:'queue_test',sent:2,failed:0,canceled:1},'Queue test completed: 2 sent to the test inbox, 0 failed, 1 canceled.'],
  [{mode:'live',sent:2,failed:1,canceled:0},'Dispatch completed: 2 sent, 1 failed, 0 canceled.'],
 ]) test('dispatch reports '+result.mode+' outcome safely',async t=>{
  const f=setup(t,'operations',{dispatchResult:result});const response=await f.request({action:'dispatch'});
@@ -107,4 +109,38 @@ test('preview reports an old never-attempted notification as eligible', async t 
  const result = await f.request({}, {'x-notification-secret':'private-dispatch'});
  assert.equal(result.status,200);
  assert.equal(JSON.parse(f.calls.find(c=>c.init.method==='PATCH').init.body).result.preview.live_eligible,true);
+});
+
+for (const [label, url, inbox] of [
+ ['outside staging', 'https://test.supabase.co', 'valid@example.com'],
+ ['with no test inbox', 'https://eptbdrwmcwogxcjleudv.supabase.co', undefined],
+ ['with a malformed test inbox', 'https://eptbdrwmcwogxcjleudv.supabase.co', 'Name <valid@example.com>'],
+ ['with multiple test inboxes', 'https://eptbdrwmcwogxcjleudv.supabase.co', 'one@example.com,two@example.com'],
+]) test('queue_test is blocked ' + label, async t => {
+ const f = setup(t, 'notification-dispatch', {env:{
+  SUPABASE_URL:url, NOTIFICATION_DELIVERY_MODE:'queue_test', NOTIFICATION_TEST_EMAIL:inbox,
+  RESEND_API_KEY:'private-provider', NOTIFICATION_FROM:'club@example.com',
+ }});
+ const result = await f.request({}, {'x-notification-secret':'private-dispatch','x-notification-scheduled':'true'});
+ assert.equal(result.status,409);
+ assert.equal((await result.json()).mode,'queue_test');
+ assert.ok(!f.calls.some(c=>c.url.hostname==='api.resend.com' || /snh_claim_notification|snh_expire_notification_jobs/.test(c.url.pathname)));
+});
+
+for (const action of ['synthetic', 'send_preview']) test(action + ' still sends only one test copy without consuming the queue', async t => {
+ const id = '00000000-0000-0000-0000-000000000001';
+ const isPreview = action === 'send_preview';
+ const f = setup(t, 'notification-dispatch', {
+  env:{SUPABASE_URL:'https://eptbdrwmcwogxcjleudv.supabase.co', NOTIFICATION_DELIVERY_MODE:isPreview ? 'queue_test' : 'test',
+   NOTIFICATION_TEST_EMAIL:'test@example.com', RESEND_API_KEY:'private-provider', NOTIFICATION_FROM:'club@example.com'},
+  queue:[{id,kind:'example',subject:'Subject',body:'Body',status:'pending'}],
+ });
+ const result = await f.request(isPreview ? {action,notification_id:id} : {}, {'x-notification-secret':'private-dispatch'});
+ assert.equal(result.status,200);
+ assert.equal((await result.json()).sent,true);
+ const sends = f.calls.filter(c=>c.url.hostname==='api.resend.com');
+ assert.equal(sends.length,1);
+ assert.deepEqual(JSON.parse(sends[0].init.body).to,['test@example.com']);
+ assert.match(JSON.parse(sends[0].init.body).subject,isPreview ? /^\[STAGING PREVIEW\]/ : /^\[STAGING TEST\]/);
+ assert.ok(!f.calls.some(c=>/snh_(claim_notification|finish_notification|expire_notification_jobs)/.test(c.url.pathname)));
 });

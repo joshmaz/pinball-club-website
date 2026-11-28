@@ -346,6 +346,10 @@
 
       var messagingCard = el('section', null, cards); el('h4', 'Messaging', messagingCard);
       el('p', (snapshot.messages.pending || 0) + ' queued | ' + (snapshot.messages.sending || 0) + ' sending | ' + (snapshot.messages.failed || 0) + ' failed', messagingCard);
+      var dispatcher = configuration && configuration.dispatcher;
+      if (dispatcher?.mode === 'queue_test') {
+        el('p', 'Delivery mode: queue_test. Queued email goes only to the configured staging test inbox.', messagingCard);
+      }
       var notificationHealth = snapshot.notification_health;
       if (notificationHealth) {
         var age = notificationHealth.oldest_pending_age_seconds;
@@ -616,14 +620,17 @@
           var batchLimit = snapshot.notification_health?.per_run_limit ?? dispatcher?.live_per_run_limit;
           var rollingLimit = snapshot.notification_health?.rolling_limit ?? dispatcher?.live_rolling_24h_limit;
           var limitsKnown = batchLimit != null && rollingLimit != null;
-          if (limitsKnown) el('p','Live-send limits: ' + batchLimit + ' per run and ' + rollingLimit + ' per rolling 24 hours.',section);
+          if (limitsKnown) el('p','Queued delivery limits: ' + batchLimit + ' per run and ' + rollingLimit + ' per rolling 24 hours.',section);
           if (dispatcher && dispatcher.configured) {
-            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue' : 'Run live dispatch';
+            var dispatchLabel = dispatcher.mode === 'test' ? 'Send test email' : dispatcher.mode === 'preview' ? 'Preview queue'
+              : dispatcher.mode === 'queue_test' ? 'Run queue test' : 'Run live dispatch';
             var dispatchPrompt = dispatcher.mode === 'test'
               ? 'Send a synthetic test email to the configured test inbox? It will not read or change the queue; each run sends another test copy.'
               : dispatcher.mode === 'live'
                 ? 'Run live dispatch? Queued messages can be sent to actual recipients.' + (limitsKnown ? ' Limits are ' + batchLimit + ' per run and ' + rollingLimit + ' per rolling 24 hours.' : '')
-                : 'Preview the oldest pending notification? No email will be sent.';
+                : dispatcher.mode === 'queue_test'
+                  ? 'Process eligible staging notifications? This updates the queue and sends email only to the configured test inbox.'
+                  : 'Preview the oldest pending notification? No email will be sent.';
             button(dispatchLabel,section,function () {
               mutate(function () { return edge('dispatch'); },dispatchPrompt);
             });
