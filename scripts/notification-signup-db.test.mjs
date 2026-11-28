@@ -339,5 +339,25 @@ try {
   assert.equal((await overview()).dispatcher_stale, false);
   assert.equal((await overview()).last_successful_run_mode, 'test');
   await db.exec('reset role');
+  await db.exec(`delete from notification_outbox;
+    select private.snh_enqueue_member_confirmation_reminder('${uid(101)}', '${uid(1)}', 'admin@example.com', now()-interval '7 days');
+    select private.snh_enqueue_member_confirmation_reminder('${uid(102)}', '${uid(2)}', 'admin2@example.com', now()-interval '7 days');
+    select private.snh_enqueue_member_confirmation_reminder('${uid(103)}', '${uid(1)}', 'admin@example.com', now()-interval '7 days');
+    update notification_outbox set attempts=1 where event_key='member_confirmation_reminder:${uid(102)}';
+    update notification_outbox set status='failed' where event_key='member_confirmation_reminder:${uid(103)}';`);
+  await migration('20261128150008_confirmation_reminder_first_attempt.sql');
+  await db.exec(`select private.snh_enqueue_member_confirmation_reminder('${uid(104)}', '${uid(1)}', 'admin@example.com', now());`);
+  const reminders = (await db.query(`select event_key, status, delivery_deadline_at='infinity' as no_deadline,
+    available_at between now()+interval '23 hours' and now()+interval '24 hours' as due_tomorrow
+    from notification_outbox order by event_key`)).rows;
+  assert.deepEqual(reminders.map(r => [r.status,r.no_deadline,r.due_tomorrow]),
+    [['pending',true,false],['pending',false,false],['failed',false,false],['pending',true,true]]);
+  const [overdue] = (await db.query('select * from public.snh_claim_notification()')).rows;
+  assert.equal(overdue.event_key, 'member_confirmation_reminder:' + uid(101));
+  assert.equal(overdue.attempts, 1);
+  assert.ok(Date.parse(overdue.delivery_deadline_at) > Date.now() + 23*60*60*1000);
+  assert.ok(Date.parse(overdue.delivery_deadline_at) <= Date.now() + 24*60*60*1000);
+  assert.equal((await db.query('select * from public.snh_claim_notification()')).rows.length, 0,
+    'The delay before the first attempt still applies, and expired retries stay expired');
   console.log('PASS: real Auth trigger path without JWT, audit coexistence, recipient filtering, deduplication, profile edits, imports, no backfill, signed-in fallback, helper permissions, enqueue-only authorization, post-revocation delivery, and dispatch retry boundaries.');
 } finally { await db.close(); }

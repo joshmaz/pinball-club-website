@@ -62,19 +62,20 @@ recipient and record the provider ID or a safe error summary. Recipient
 authorization occurs only at enqueue, using the canonical effective Membership
 Editor role. Removing a qualifying role afterward does not suppress already
 queued mail; removing it before the next signup prevents new mail for that
-recipient. Both sending limits leave unclaimed messages pending. Ordinary app
+recipient. Both sending limits leave unclaimed messages pending. Queued app
 messages can wait for their first attempt across capacity delays. The first
 claim starts a 24-hour retry window and subsequent attempts keep the same
 deadline and Resend idempotency key. A job with an active lease can record its
 in-flight result after the deadline. Pending retries whose deadline has passed
 become visible failures during queued dispatch, even when the rolling budget is exhausted.
 
-Confirmation reminders have a relevance deadline 24 hours after their scheduled
-send time. A retry cannot extend that deadline, and the dispatcher still checks
-whether the account has already confirmed. The migration gives existing
-never-attempted pending messages the new policy, except confirmation reminders.
-Previously attempted messages retain their deadlines. Failed and canceled rows
-retain their recorded status. Supabase Auth SMTP delivery is separate.
+Confirmation reminders become eligible 24 hours after signup and can wait for
+their first attempt across capacity delays. Before sending, the dispatcher
+cancels the reminder if Supabase Auth shows the email is confirmed. The first
+claim starts the same 24-hour retry window as for other queued notifications.
+The migration removes the old deadline from never-attempted pending reminders.
+Previously attempted messages retain their deadlines, and failed and canceled
+rows retain their status. Supabase Auth SMTP delivery is separate.
 
 ### Member account onboarding
 
