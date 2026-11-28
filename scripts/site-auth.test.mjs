@@ -165,9 +165,11 @@ test("requireAuth preserves the member route when redirecting to sign in", async
 test("delegation requires an assignable catalog target and the correct administrator", () => {
   const { auth } = loadSiteAuth();
   const targets = Object.keys(auth.ROLE_CATALOG).filter(slug => auth.ROLE_CATALOG[slug].assignable);
-  assert.equal(targets.length, 11);
+  assert.equal(targets.length, 12);
+  assert.ok(targets.includes("game_coordinator"));
   for (const actor of [[], ["membership_editor"], ["membership_admin"], ["club_admin"],
-    ["events_admin"], ["website_volunteer"], ["unknown_role"], ["membership_editor", "membership_admin"]]) {
+    ["events_admin"], ["game_coordinator"], ["board"], ["website_volunteer"], ["unknown_role"],
+    ["membership_editor", "membership_admin"]]) {
     for (const target of targets) {
       const expected = actor.includes("club_admin") ||
         (actor.includes("membership_admin") && !["club_admin", "membership_admin"].includes(target));

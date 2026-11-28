@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="clubhouse club-account">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>SNHPC - Bring a Game</title>
+  <script src="assets/js/theme.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/clubhouse.css">
+  <link rel="stylesheet" href="assets/css/club-account.css">
+  <link rel="stylesheet" href="assets/css/game-offers.css">
+  <script defer src="assets/js/config.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script defer src="assets/js/supabase-init.js"></script>
+  <script defer src="assets/js/site-auth.js"></script>
+  <script defer src="assets/js/member-game-offers.js"></script>
+</head>
+<body>
+<a class="club-skip" href="#account-main">Skip to content</a>
+<header id="page-top">
+  <a class="club-brand" href="index.html"><img src="assets/images/SNHPC_logo_color.png" alt="Southern New Hampshire Pinball Club" width="150"></a>
+  <div class="club-header-links"><a href="members.html">My account</a></div>
+</header>
+<main id="account-main">
+  <section class="club-page-heading club-page-heading--quiet">
+    <div><h1>Bring a Game</h1><p class="club-lead">Offer a pinball machine to the club and see which games are up for member feedback.</p></div>
+  </section>
+  <div class="content game-offers">
+    <p id="offer-status" class="members-page-status" role="status" tabindex="-1">Checking your account…</p>
+    <nav class="offer-actions" aria-label="Bring a Game sections" hidden id="offer-nav">
+      <a href="#new-offer">Offer a game</a>
+      <a href="#my-offers">My offers</a>
+      <a href="#published-offers">Published candidates</a>
+      <a href="#offer-review" id="offer-review-link" hidden>Review offers</a>
+      <a href="#rotation-plans" id="rotation-plans-link" hidden>Rotation plans</a>
+      <a href="#placement-history" id="placement-history-link" hidden>Placement history</a>
+    </nav>
+    <div id="member-offers" hidden>
+      <section id="new-offer" class="membership-card" aria-labelledby="offer-form-title">
+        <h2 id="offer-form-title">Offer a game</h2>
+        <p class="member-panel-intro">Your submission is private. A Game Coordinator reviews what can be shared with members.</p>
+        <form id="offer-form" class="members-profile-form">
+          <label class="club-field">Club catalog match (optional)
+            <select name="game_id"><option value="">Enter a title manually</option></select>
+          </label>
+          <label class="club-field">Game title <input name="title" required maxlength="160"></label>
+          <label class="club-field">Condition <textarea name="condition" maxlength="2000" rows="2"></textarea></label>
+          <label class="club-field">Availability <textarea name="availability" maxlength="1000" rows="2"></textarea></label>
+          <label class="club-field">Approximate loan duration <textarea name="loan_terms" maxlength="1000" rows="2" placeholder="For example, open-ended or about six months"></textarea></label>
+          <label class="club-field">Transportation considerations <textarea name="transport" maxlength="2000" rows="2"></textarea></label>
+          <div class="offer-actions"><button type="submit">Submit offer</button><button type="button" id="cancel-offer-edit" hidden>Cancel edit</button></div>
+        </form>
+      </section>
+      <section aria-labelledby="my-offers"><h2 id="my-offers">My offers</h2><div id="own-offer-list" class="offer-list"></div></section>
+      <section aria-labelledby="published-offers"><h2 id="published-offers">Published candidates</h2>
+        <p class="member-panel-intro">These games are open for feedback. Publication does not confirm an arrival.</p>
+        <div id="published-offer-list" class="offer-list"></div>
+      </section>
+    </div>
+    <section id="offer-review" aria-labelledby="offer-review-title" hidden>
+      <h2 id="offer-review-title">Game Rotation · Offer review</h2>
+      <p id="offer-review-mode" class="member-panel-intro"></p>
+      <div id="review-offer-list" class="offer-list"></div>
+    </section>
+    <section id="rotation-plans" aria-labelledby="rotation-plans-title" hidden>
+      <h2 id="rotation-plans-title">Rotation plans</h2>
+      <p class="member-panel-intro">Confirm moves after they happen. Confirmations update cabinet placement history and leave public lineup and loan records unchanged.</p>
+      <p id="rotation-status" class="members-page-status" role="status"></p>
+      <div id="rotation-controls" class="offer-list" hidden>
+        <form id="cabinet-form" class="membership-card members-profile-form">
+          <h3>Register a cabinet</h3>
+          <label class="club-field">Catalog game <select name="game_id" required><option value="">Choose a game</option></select></label>
+          <label class="club-field">Cabinet label <input name="label" required maxlength="120" aria-describedby="cabinet-label-hint"></label>
+          <p id="cabinet-label-hint" class="member-form-hint">Use the same label for a returning cabinet. Give each physical copy its own label.</p>
+          <div><button type="submit">Register cabinet</button></div>
+        </form>
+        <form id="rotation-plan-form" class="membership-card members-profile-form">
+          <h3 id="rotation-form-title">New plan</h3>
+          <label class="club-field">Incoming cabinet <select name="incoming"><option value="">No incoming cabinet</option></select></label>
+          <label class="club-field">Tentative arrival <input name="arrival" type="date"></label>
+          <label class="club-field">Outgoing cabinet <select name="outgoing"><option value="">No outgoing cabinet</option></select></label>
+          <label class="club-field">Tentative departure <input name="departure" type="date"></label>
+          <label class="club-field">Private planning note <textarea name="note" maxlength="4000" rows="2"></textarea></label>
+          <div class="offer-actions"><button type="submit">Save plan</button><button type="button" id="cancel-plan-edit" hidden>Cancel edit</button></div>
+        </form>
+      </div>
+      <div id="rotation-plan-list" class="offer-list"></div>
+    </section>
+    <section id="placement-history" aria-labelledby="placement-history-title" hidden>
+      <h2 id="placement-history-title">Placement history</h2>
+      <p id="placement-status" class="members-page-status" role="status"></p>
+      <div id="placement-list" class="offer-list"></div>
+    </section>
+  </div>
+</main>
+</body>
+</html>
